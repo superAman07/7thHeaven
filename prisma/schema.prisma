@@ -31,6 +31,7 @@ model User {
   fullAddress       String?
   refreshTokenHash  String?
   orders            Order[]
+  reviews           Review[]
 }
 
 model Category {
@@ -50,9 +51,24 @@ model Product {
   variants    ProductVariant[]
   inStock     Boolean          @default(true)
   ratingsAvg  Float?
+  reviews     Review[]
   createdAt   DateTime         @default(now())
   categoryId  String
   category    Category         @relation(fields: [categoryId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  text      String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
 }
 
 model ProductVariant {
