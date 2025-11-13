@@ -1,7 +1,7 @@
 'use client';
 import Header from '@/components/admin/Header';
 import SideNav from '@/components/admin/SideNav';
-import { usePathname } from '@/hooks/usePathname';
+import { usePathname } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 
 // Placeholder Pages

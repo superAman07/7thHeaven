@@ -47,7 +47,7 @@ model Product {
   name        String
   description String?
   images      String[]
-  genderTags  String[]
+  genderTags  GenderTages[]
   variants    ProductVariant[]
   inStock     Boolean          @default(true)
   ratingsAvg  Float?
@@ -141,4 +141,10 @@ model MLMAuditLog {
   reason    String?
   meta      Json?
   createdAt DateTime @default(now())
+}
+
+enum GenderTages {
+  Male
+  Female
+  Unisex
 }
