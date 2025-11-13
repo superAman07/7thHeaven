@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ setSideNavOpen }) => {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+            className="flex items-center cursor-pointer space-x-2 p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
             aria-haspopup="true"
             aria-expanded={dropdownOpen}
           >
