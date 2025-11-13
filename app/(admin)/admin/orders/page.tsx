@@ -7,6 +7,6 @@ const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
   </div>
 );
 
-export default function DashboardPage() {
-  return <PlaceholderPage title="Dashboard" />;
+export default function OrdersPage() {
+  return <PlaceholderPage title="Orders" />;
 }
