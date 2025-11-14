@@ -5,10 +5,18 @@ import { usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 import SideNav from '@/components/admin/SideNav';
 import Header from '@/components/admin/Header';
+ 
+interface AdminUser {
+  id: string;
+  fullName: string;
+  email: string;
+  isAdmin: boolean;
+}
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sideNavOpen, setSideNavOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<AdminUser | null>(null);  
   const pathname = usePathname();
   const router = useRouter();
 
@@ -20,7 +28,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const checkAuth = async () => {
       try {
-        await axios.get('/api/v1/admin/me');
+        const response = await axios.get('/api/v1/admin/me');
+        setUser(response.data.data); 
         setIsLoading(false);
       } catch (error) {
         router.push('/admin/login');
@@ -32,6 +41,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     setSideNavOpen(false);
   }, [pathname]);
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('/api/v1/admin/logout');
+      router.push('/admin/login');
+    } catch (error) {
+      console.error('Failed to logout:', error);
+      alert('Logout failed. Please try again.');
+    }
+  };
 
   if (pathname === '/admin/login') {
     return <>{children}</>;
@@ -56,7 +75,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <SideNav isOpen={sideNavOpen} setIsOpen={setSideNavOpen} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header setSideNavOpen={setSideNavOpen} />
+        <Header setSideNavOpen={setSideNavOpen} user={user} onLogout={handleLogout} />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-neutral-100">
           <div className="container mx-auto px-6 py-8">
             {children}

@@ -3,11 +3,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { UserCircle, User, Settings, LogOut, ChevronDown, Menu } from '../icons';
 
-interface HeaderProps {
-  setSideNavOpen: (open: boolean) => void;
+interface AdminUser {
+  id: string;
+  fullName: string;
+  email: string;
+  isAdmin: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ setSideNavOpen }) => {
+interface HeaderProps {
+  setSideNavOpen: (open: boolean) => void;
+  user: AdminUser | null;
+  onLogout: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ setSideNavOpen, user, onLogout }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -22,6 +31,10 @@ const Header: React.FC<HeaderProps> = ({ setSideNavOpen }) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+  const handleLogoutClick = () => {
+    setDropdownOpen(false);
+    onLogout();
+  };
 
   const closeDropdown = () => setDropdownOpen(false);
 
@@ -44,21 +57,21 @@ const Header: React.FC<HeaderProps> = ({ setSideNavOpen }) => {
             aria-expanded={dropdownOpen}
           >
             <UserCircle className="w-8 h-8 text-gray-600" />
-            <span className="hidden sm:inline text-sm font-medium text-gray-700">Aman</span>
+            <span className="hidden sm:inline text-sm font-medium text-gray-700">{user?.fullName || 'Admin'}</span>
             <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
           </button>
           
           <div className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 z-10 transition-all duration-200 ease-out transform ${dropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
-            <button onClick={closeDropdown} className="w-full text-left flex cursor-pointer items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            <button onClick={() => setDropdownOpen(false)} className="w-full text-left flex cursor-pointer items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
               <User className="w-4 h-4 mr-2" />
               Profile
             </button>
-            <button onClick={closeDropdown} className="w-full text-left flex cursor-pointer items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            <button onClick={() => setDropdownOpen(false)} className="w-full text-left flex cursor-pointer items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
               <Settings className="w-4 h-4 mr-2" />
               Settings
             </button>
             <div className="border-t border-gray-100 my-1"></div>
-            <button onClick={closeDropdown} className="w-full text-left flex cursor-pointer items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            <button onClick={handleLogoutClick} className="w-full text-left flex cursor-pointer items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
               <LogOut className="w-4 h-4 mr-2" />
               Log Out
             </button>
