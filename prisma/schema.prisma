@@ -48,7 +48,7 @@ model Product {
   name        String
   description String?
   images      String[]
-  genderTags  GenderTages[]
+  genderTags  GenderTags[]
   variants    ProductVariant[]
   inStock     Boolean          @default(true)
   ratingsAvg  Float?
@@ -144,7 +144,7 @@ model MLMAuditLog {
   createdAt DateTime @default(now())
 }
 
-enum GenderTages {
+enum GenderTags {
   Male
   Female
   Unisex
