@@ -7,8 +7,8 @@ import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Sitemap, X } from 
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/categories', label: 'Categories', icon: Tags },
+  { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
   { href: '/admin/customers', label: 'Customers', icon: Users },
   { href: '/admin/mlm', label: 'MLM Settings', icon: Sitemap },
