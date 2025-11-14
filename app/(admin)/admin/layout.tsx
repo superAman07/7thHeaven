@@ -2,25 +2,53 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import axios from 'axios';
 import SideNav from '@/components/admin/SideNav';
 import Header from '@/components/admin/Header';
+import { LoginModal } from '@/components/admin/LoginModal';
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sideNavOpen, setSideNavOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
 
-  // Close sidebar on route change on mobile
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await axios.get('/api/v1/admin/me');
+        setIsAuthenticated(true);
+      } catch (error) {
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
   useEffect(() => {
     setSideNavOpen(false);
   }, [pathname]);
 
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-neutral-100">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginModal onLoginSuccess={handleLoginSuccess} />;
+  }
+
   return (
     <div className="flex h-screen bg-neutral-100 overflow-hidden">
-      {/* Backdrop for mobile */}
       <div 
         onClick={() => setSideNavOpen(false)}
         className={`fixed inset-0 bg-black/60 z-20 md:hidden transition-opacity duration-300 ease-in-out ${sideNavOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
