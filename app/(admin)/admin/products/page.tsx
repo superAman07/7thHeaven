@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import { ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
-import React, { useState, useEffect, FormEvent, useCallback } from 'react';
+import React, { useState, useEffect, FormEvent, useCallback, useRef } from 'react';
 import { useDebounce } from 'use-debounce';
 
 interface ProductVariant {
@@ -58,7 +58,9 @@ export default function ProductsPage() {
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [images, setImages] = useState('');
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [categoryId, setCategoryId] = useState('');
   const [genderTags, setGenderTags] = useState<string[]>([]);
   const [inStock, setInStock] = useState(true);
@@ -122,7 +124,7 @@ export default function ProductsPage() {
   const resetForm = () => {
     setName('');
     setDescription('');
-    setImages('');
+    setImageUrls([]);
     setCategoryId(categories[0]?.id || '');
     setGenderTags([]);
     setInStock(true);
@@ -139,7 +141,7 @@ export default function ProductsPage() {
     setCurrentProduct(product);
     setName(product.name);
     setDescription(product.description || '');
-    setImages(product.images.join(', '));
+    setImageUrls(product.images);
     setCategoryId(product.category.id);
     setGenderTags(product.genderTags);
     setInStock(product.inStock);
@@ -161,7 +163,7 @@ export default function ProductsPage() {
     const payload = {
       name,
       description,
-      images: images.split(',').map(url => url.trim()).filter(Boolean),
+      images: imageUrls,
       categoryId,
       genderTags,
       inStock,
@@ -180,6 +182,41 @@ export default function ProductsPage() {
       console.error(errorData);
       alert(`Error: ${message}`);
     }
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    setIsUploading(true);
+    const uploadedUrls: string[] = [];
+
+    for (const file of Array.from(files)) {
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const response = await axios.post('/api/v1/admin/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        if (response.data.success) {
+          uploadedUrls.push(response.data.data.url);
+        }
+      } catch (err) {
+        console.error('Image upload failed:', err);
+        alert('An image failed to upload. Please try again.');
+      }
+    }
+
+    setImageUrls(prev => [...prev, ...uploadedUrls]);
+    setIsUploading(false);
+    // Clear the file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeImage = (urlToRemove: string) => {
+    setImageUrls(prev => prev.filter(url => url !== urlToRemove));
   };
 
   const handleDelete = async (id: string) => {
@@ -215,15 +252,6 @@ export default function ProductsPage() {
     setFilters({ category: '', status: '' });
     setCurrentPage(1);
   };
-
-  // const filteredProducts = products
-  //   .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-  //   .filter(p => filters.category ? p.category.id === filters.category : true)
-  //   .filter(p => filters.status ? String(p.inStock) === filters.status : true)
-  //   .filter(p => filters.gender ? p.genderTags.includes(filters.gender as any) : true);
-
-  // const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  // const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
   const formatPriceRange = (variants: ProductVariant[]): string => {
     if (variants.length === 0) return 'N/A';
@@ -318,7 +346,7 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
-      
+
       <div className={`fixed inset-0 z-40 transition-opacity duration-300 ease-in-out ${isPanelOpen ? 'bg-black/60' : 'pointer-events-none opacity-0'}`} onClick={closePanel}></div>
       <div className={`fixed top-0 right-0 h-full w-full max-w-2xl bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <form className="flex flex-col h-full" onSubmit={handleFormSubmit}>
@@ -337,11 +365,25 @@ export default function ProductsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Images</label>
-              <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center">
-                <ImagePlus className="mx-auto h-12 w-12 text-gray-400" />
-                <p className="mt-2 text-xs text-gray-500">Paste comma-separated URLs below.</p>
+              <div className="mt-2 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                {imageUrls.map(url => (
+                  <div key={url} className="relative group">
+                    <img src={url} alt="Product image" className="h-24 w-24 object-cover rounded-lg" />
+                    <button type="button" onClick={() => removeImage(url)} className="absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+                <label className="flex items-center justify-center w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400">
+                  {isUploading ? (
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+                  ) : (
+                    <ImagePlus className="h-8 w-8 text-gray-400" />
+                  )}
+                  <input type="file" multiple accept="image/*" onChange={handleImageUpload} ref={fileInputRef} className="hidden" />
+                </label>
               </div>
-              <textarea id="images" value={images} onChange={e => setImages(e.target.value)} placeholder="https://.../image1.jpg, https://.../image2.jpg" rows={3} className="w-full mt-2 px-4 py-2.5 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all"></textarea>
+              {isUploading && <p className="text-sm text-gray-500 mt-2">Uploading images...</p>}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
