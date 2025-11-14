@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "target": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true
+  },
+  "include": ["prisma/seed.ts"]
+}
