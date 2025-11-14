@@ -1,7 +1,9 @@
 'use client'
 
+import axios from 'axios';
 import { ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
-import React, { useState, useEffect, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent, useCallback } from 'react';
+import { useDebounce } from 'use-debounce';
 
 interface ProductVariant {
   id: string;
@@ -26,6 +28,13 @@ interface Product {
   variants: ProductVariant[];
 }
 
+interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 const StockBadge: React.FC<{ inStock: boolean }> = ({ inStock }) => (
   <span className={`px-2 py-1 text-xs font-medium rounded-full ${inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
     {inStock ? 'In Stock' : 'Out of Stock'}
@@ -41,6 +50,7 @@ const ToggleSwitch: React.FC<{ checked: boolean; onChange: (checked: boolean) =>
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
@@ -55,25 +65,32 @@ export default function ProductsPage() {
   const [variants, setVariants] = useState<{ id?: string; size: string; price: string }[]>([{ size: '', price: '' }]);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({ category: '', status: '', gender: '' });
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+  const [filters, setFilters] = useState({ category: '', status: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/v1/admin/products');
-      if (!response.ok) throw new Error('Failed to fetch products');
-      const data = await response.json();
-      setProducts(data.data);
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: itemsPerPage.toString(),
+        search: debouncedSearchTerm,
+        category: filters.category,
+        status: filters.status,
+      });
+      const response = await axios.get(`/api/v1/admin/products?${params.toString()}`);
+      setProducts(response.data.data);
+      setMeta(response.data.meta);
     } catch (err) {
       setError('Failed to fetch products. Please try again.');
       console.error(err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, debouncedSearchTerm, filters, itemsPerPage]);
 
   const fetchCategories = async () => {
     try {
@@ -91,6 +108,9 @@ export default function ProductsPage() {
 
   useEffect(() => {
     fetchProducts();
+  }, [fetchProducts]);
+
+  useEffect(() => {
     fetchCategories();
   }, []);
 
@@ -136,7 +156,7 @@ export default function ProductsPage() {
     e.preventDefault();
     const isEditing = !!currentProduct;
     const url = isEditing ? `/api/v1/admin/products/${currentProduct.id}` : '/api/v1/admin/products';
-    const method = isEditing ? 'PUT' : 'POST';
+    const method = isEditing ? 'put' : 'post';
 
     const payload = {
       name,
@@ -149,29 +169,23 @@ export default function ProductsPage() {
     };
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      if (data.success) {
+      const response = await axios[method](url, payload);
+      if (response.data.success) {
         await fetchProducts();
         closePanel();
-      } else {
-        const message = data.error?.message || 'An unknown error occurred.';
-        alert(`Error: ${message}`);
       }
     } catch (err: any) {
-      console.error(err);
-      alert(`Error: ${err.message || 'An unknown error occurred.'}`);
+      const errorData = err.response?.data?.error;
+      const message = errorData?.message || 'An unknown error occurred.';
+      console.error(errorData);
+      alert(`Error: ${message}`);
     }
   };
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this product?')) {
       try {
-        await fetch(`/api/v1/admin/products/${id}`, { method: 'DELETE' });
+        await axios.delete(`/api/v1/admin/products/${id}`);
         await fetchProducts();
       } catch (err) {
         alert('Failed to delete product.');
@@ -196,21 +210,20 @@ export default function ProductsPage() {
     setFilters(prev => ({ ...prev, [name]: value }));
     setCurrentPage(1);
   };
-
   const resetFilters = () => {
     setSearchTerm('');
-    setFilters({ category: '', status: '', gender: '' });
+    setFilters({ category: '', status: '' });
     setCurrentPage(1);
   };
 
-  const filteredProducts = products
-    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter(p => filters.category ? p.category.id === filters.category : true)
-    .filter(p => filters.status ? String(p.inStock) === filters.status : true)
-    .filter(p => filters.gender ? p.genderTags.includes(filters.gender as any) : true);
+  // const filteredProducts = products
+  //   .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  //   .filter(p => filters.category ? p.category.id === filters.category : true)
+  //   .filter(p => filters.status ? String(p.inStock) === filters.status : true)
+  //   .filter(p => filters.gender ? p.genderTags.includes(filters.gender as any) : true);
 
-  const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  // const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  // const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
   const formatPriceRange = (variants: ProductVariant[]): string => {
     if (variants.length === 0) return 'N/A';
@@ -234,24 +247,22 @@ export default function ProductsPage() {
         </div>
 
         <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="lg:col-span-2">
-              <label htmlFor="search" className="sr-only">Search</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-5 w-5 text-gray-400" /></div>
-                <input type="text" id="search" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }} className="w-full pl-10 pr-3 py-2.5 bg-white text-gray-800 placeholder:text-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 sm:text-sm transition-all" placeholder="Search by product name..." />
+                <input type="text" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }} className="w-full pl-10 pr-3 py-2 border text-gray-600 border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Search by product name..." />
               </div>
             </div>
-            <select name="category" value={filters.category} onChange={handleFilterChange} className="w-full px-3 py-2.5 bg-white text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 sm:text-sm cursor-pointer transition-all">
+            <select name="category" value={filters.category} onChange={handleFilterChange} className="w-full px-3 py-2 border text-gray-600 cursor-pointer border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
               <option value="">All Categories</option>
               {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-            <select name="status" value={filters.status} onChange={handleFilterChange} className="w-full px-3 py-2.5 bg-white text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 sm:text-sm cursor-pointer transition-all">
+            <select name="status" value={filters.status} onChange={handleFilterChange} className="w-full px-3 py-2 border text-gray-600 cursor-pointer border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
               <option value="">Any Status</option>
               <option value="true">In Stock</option>
               <option value="false">Out of Stock</option>
             </select>
-            <button onClick={resetFilters} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer">Reset</button>
           </div>
         </div>
 
@@ -268,7 +279,8 @@ export default function ProductsPage() {
               </tr>
             </thead>
             <tbody>
-              {paginatedProducts.length > 0 ? paginatedProducts.map(product => (
+              {isLoading && <tr><td colSpan={6} className="text-center py-8 text-gray-500">Fetching data...</td></tr>}
+              {!isLoading && products.length > 0 ? products.map(product => (
                 <tr key={product.id} className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                     <div className="flex items-center gap-3">
@@ -282,30 +294,31 @@ export default function ProductsPage() {
                   <td className="px-6 py-4">{new Date(product.createdAt).toLocaleDateString()}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end space-x-2">
-                      <button onClick={() => openPanelForEdit(product)} className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 hover:text-blue-600 cursor-pointer"><Pencil className="w-4 h-4" /></button>
-                      <button onClick={() => handleDelete(product.id)} className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 hover:text-red-600 cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => openPanelForEdit(product)} className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 hover:text-blue-600"><Pencil className="w-4 h-4" /></button>
+                      <button onClick={() => handleDelete(product.id)} className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </td>
                 </tr>
-              )) : (
+              )) : !isLoading && (
                 <tr><td colSpan={6} className="text-center py-8 text-gray-500">No products found.</td></tr>
               )}
             </tbody>
           </table>
         </div>
 
-        {totalPages > 1 && (
+        {/* Pagination */}
+        {meta && meta.totalPages > 1 && (
           <div className="flex items-center justify-between mt-4 px-2 py-3 border-t">
-            <span className="text-sm text-gray-700">Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredProducts.length)}</span> of <span className="font-medium">{filteredProducts.length}</span> results</span>
+            <span className="text-sm text-gray-700">Showing <span className="font-medium">{(meta.page - 1) * meta.limit + 1}</span> to <span className="font-medium">{Math.min(meta.page * meta.limit, meta.total)}</span> of <span className="font-medium">{meta.total}</span> results</span>
             <div className="flex items-center space-x-2">
-              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 cursor-pointer"><ChevronLeft className="w-5 h-5" /></button>
-              <span className="text-sm font-medium">{currentPage} / {totalPages}</span>
-              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 cursor-pointer"><ChevronRight className="w-5 h-5" /></button>
+              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={meta.page === 1} className="p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"><ChevronLeft className="w-5 h-5" /></button>
+              <span className="text-sm font-medium">{meta.page} / {meta.totalPages}</span>
+              <button onClick={() => setCurrentPage(p => Math.min(meta.totalPages, p + 1))} disabled={meta.page === meta.totalPages} className="p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"><ChevronRight className="w-5 h-5" /></button>
             </div>
           </div>
         )}
       </div>
-
+      
       <div className={`fixed inset-0 z-40 transition-opacity duration-300 ease-in-out ${isPanelOpen ? 'bg-black/60' : 'pointer-events-none opacity-0'}`} onClick={closePanel}></div>
       <div className={`fixed top-0 right-0 h-full w-full max-w-2xl bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <form className="flex flex-col h-full" onSubmit={handleFormSubmit}>
