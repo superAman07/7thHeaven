@@ -11,7 +11,7 @@ const navItems = [
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
   { href: '/admin/customers', label: 'Customers', icon: Users },
-  { href: '/admin/mlm', label: 'MLM Settings', icon: Sitemap },
+  { href: '/admin/network', label: 'Network Settings', icon: Sitemap },
 ];
 
 interface NavLinkProps {
