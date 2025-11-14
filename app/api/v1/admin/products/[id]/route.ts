@@ -13,7 +13,7 @@ const variantSchema = z.object({
 const updateProductSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional().nullable(),
-  images: z.array(z.string().url()).min(1).optional(),
+  images: z.array(z.string()).min(1).optional(),
   genderTags: z.array(genderTagsEnum).min(1).optional(),
   categoryId: z.string().cuid().optional(),
   inStock: z.boolean().optional(),
