@@ -1,39 +1,41 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 import SideNav from '@/components/admin/SideNav';
 import Header from '@/components/admin/Header';
-import { LoginModal } from '@/components/admin/LoginModal';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sideNavOpen, setSideNavOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
+    if (pathname === '/admin/login') {
+      setIsLoading(false);
+      return;
+    }
+
     const checkAuth = async () => {
       try {
         await axios.get('/api/v1/admin/me');
-        setIsAuthenticated(true);
-      } catch (error) {
-        setIsAuthenticated(false);
-      } finally {
         setIsLoading(false);
+      } catch (error) {
+        router.push('/admin/login');
       }
     };
     checkAuth();
-  }, []);
+  }, [pathname, router]);
 
   useEffect(() => {
     setSideNavOpen(false);
   }, [pathname]);
 
-  const handleLoginSuccess = () => {
-    setIsAuthenticated(true);
-  };
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
 
   if (isLoading) {
     return (
@@ -41,10 +43,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <p>Loading...</p>
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    return <LoginModal onLoginSuccess={handleLoginSuccess} />;
   }
 
   return (
