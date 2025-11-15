@@ -2,6 +2,7 @@ import CategoryGender from "./home/CategoryGender";
 import HowItWorksPage from "./home/HowItWorks";
 import NavBar from "./home/NavBar";
 import ProductSectionPage from "./home/ProductSection";
+import ProductSection2 from "./home/ProductSection2";
 import SliderSection from "./home/SliderSection";
 
 export default function HeroPage() {
@@ -12,6 +13,7 @@ export default function HeroPage() {
             <HowItWorksPage/>
             <ProductSectionPage />
             <CategoryGender/>
+            <ProductSection2/>
         </div>
     </>
 }
