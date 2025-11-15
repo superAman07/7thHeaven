@@ -43,7 +43,7 @@ export default function NavBar() {
                                 className="col-xl-6 col-lg-4 d-flex flex-wrap justify-content-lg-start justify-content-center align-items-center">
                                 <div className="header-top-links color-white">
                                     <div className="logo">
-                                        <Link href="/"><img src="/assets/images/logo.png" alt="" style={{height: "46px"}} /></Link>
+                                        <Link href="/"><img src="/assets/images/logo.png" alt="" style={{height: "35px"}} /></Link>
                                     </div>
                                 </div>
                             </div>
