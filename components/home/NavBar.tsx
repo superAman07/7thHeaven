@@ -1,58 +1,105 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+
+const MOBILE_BREAKPOINT = 991; // matches meanScreenWidth from original JS
 
 export default function NavBar() {
     const [isSticky, setSticky] = useState(false);
     const [isSearchOpen, setSearchOpen] = useState(false);
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-    // Effect for the sticky header
+    const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+
+    // Sticky header (same behaviour as original jQuery)
     useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 300) {
-                setSticky(true);
-            } else {
-                setSticky(false);
-            }
+        const onScroll = () => {
+            setSticky(window.scrollY > 300);
         };
-
-        window.addEventListener('scroll', handleScroll);
-
-        // Cleanup function to remove the event listener
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+        return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
-    // Function to toggle the search form
-    const toggleSearch = () => {
-        setSearchOpen(!isSearchOpen);
-    };
+    // Close mobile menu when resizing to desktop
+    useEffect(() => {
+        const onResize = () => {
+            if (window.innerWidth > MOBILE_BREAKPOINT && isMobileOpen) {
+                setIsMobileOpen(false);
+            }
+        };
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, [isMobileOpen]);
+
+    // lock body scroll while mobile menu is open
+    useEffect(() => {
+        const body = document.body;
+        if (isMobileOpen) {
+            body.style.overflow = 'hidden';
+        } else {
+            body.style.overflow = '';
+        }
+        return () => {
+            body.style.overflow = '';
+        };
+    }, [isMobileOpen]);
+
+    // close on Escape and close on click outside mobile menu
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isMobileOpen) setIsMobileOpen(false);
+        };
+        const onMouseDown = (e: MouseEvent) => {
+            if (!isMobileOpen) return;
+            const el = mobileMenuRef.current;
+            if (el && !el.contains(e.target as Node)) setIsMobileOpen(false);
+        };
+        document.addEventListener('keydown', onKey);
+        document.addEventListener('mousedown', onMouseDown);
+        return () => {
+            document.removeEventListener('keydown', onKey);
+            document.removeEventListener('mousedown', onMouseDown);
+        };
+    }, [isMobileOpen]);
+
+    const toggleSearch = () => setSearchOpen((s) => !s);
+    const toggleMobile = () => setIsMobileOpen((s) => !s);
+
+    // Links list kept same as your markup so CSS selectors still work
+    const links = [
+        { href: '/', label: 'Home' },
+        { href: '/about', label: 'About Us' },
+        { href: '#', label: 'ACCESSORIES' },
+        { href: '#', label: 'Women' },
+        { href: '#', label: 'Men' },
+        { href: '#', label: 'BRANDS' },
+        { href: '#', label: 'NEW ARRIVALS' },
+        { href: '#', label: 'Partials' },
+        { href: '#', label: 'Bath & Body' },
+        { href: '/contact', label: 'Contact Us' },
+    ];
 
     return (
         <>
-            {/* The 'is-sticky' class is now controlled by React state */}
             <header className={`header header-transparent header-sticky ${isSticky ? 'is-sticky' : ''}`}>
                 <div className="header-top bg-dark">
-                    <div
-                        className="container-fluid pl-75 pr-75 pl-lg-15 pr-lg-15 pl-md-15 pr-md-15 pl-sm-15 pr-sm-15 pl-xs-15 pr-xs-15">
+                    <div className="container-fluid pl-75 pr-75 pl-lg-15 pr-lg-15 pl-md-15 pr-md-15 pl-sm-15 pr-sm-15 pl-xs-15 pr-xs-15">
                         <div className="row align-items-center">
-
-                            <div
-                                className="col-xl-6 col-lg-4 d-flex flex-wrap justify-content-lg-start justify-content-center align-items-center">
+                            <div className="col-xl-6 col-lg-4 d-flex flex-wrap justify-content-lg-start justify-content-center align-items-center">
                                 <div className="header-top-links color-white">
                                     <div className="logo">
-                                        <Link href="/"><img src="/assets/images/logo.png" alt="" style={{height: "35px"}} /></Link>
+                                        <Link href="/"><img src="/assets/images/logo.png" alt="logo" style={{ height: '35px' }} /></Link>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="col-xl-6 col-lg-8">
-                                <div
-                                    className="ht-right d-flex justify-content-lg-end justify-content-center align-items-center">
+                                <div className="ht-right d-flex justify-content-lg-end justify-content-center align-items-center">
                                     <ul className="ht-us-menu color-white d-flex">
-                                        <li><a href="#"><i className="fa fa-user-circle-o"></i></a>
+                                        <li>
+                                            <a href="#"><i className="fa fa-user-circle-o" /></a>
                                             <ul className="ht-dropdown right">
                                                 <li><a href="compare.html">Compare Products</a></li>
                                                 <li><a href="my-account.html">My Account</a></li>
@@ -63,57 +110,42 @@ export default function NavBar() {
                                     </ul>
 
                                     <div className="header-search">
-                                        {/* Search button now uses an onClick handler */}
                                         <button onClick={toggleSearch} className={`header-search-toggle color-white ${isSearchOpen ? 'open' : ''}`}>
-                                            <i className={`fa ${isSearchOpen ? 'fa-times' : 'fa-search'}`}></i>
+                                            <i className={`fa ${isSearchOpen ? 'fa-times' : 'fa-search'}`} />
                                         </button>
-                                        {/* The search form's visibility is controlled by state */}
                                         <div className="header-search-form" style={{ display: isSearchOpen ? 'block' : 'none' }}>
                                             <form action="#">
                                                 <input type="text" placeholder="Type and hit enter" />
-                                                <button>
-                                                    <i className="fa fa-search"></i>
-                                                </button>
+                                                <button><i className="fa fa-search" /></button>
                                             </form>
                                         </div>
                                     </div>
+
                                     <div className="header-cart color-white">
-                                        <a href="cart.html"><i className="fa fa-shopping-cart"></i><span>3</span></a>
-                                       
+                                        <a href="cart.html"><i className="fa fa-shopping-cart" /><span>3</span></a>
                                         <div className="header-cart-dropdown">
                                             <ul className="cart-items">
                                                 <li className="single-cart-item">
                                                     <div className="cart-img">
-                                                        <a href="cart.html">
-                                                            <img src="/assets/images/cart/cart-1.jpg" alt="" />
-                                                        </a>
+                                                        <a href="cart.html"><img src="/assets/images/cart/cart-1.jpg" alt="" /></a>
                                                     </div>
                                                     <div className="cart-content">
-                                                        <h5 className="product-name"><a href="#">Dell Inspiron
-                                                            24</a></h5>
+                                                        <h5 className="product-name"><a href="#">Dell Inspiron 24</a></h5>
                                                         <span className="product-quantity">1 ×</span>
                                                         <span className="product-price">$278.00</span>
                                                     </div>
-                                                    <div className="cart-item-remove">
-                                                        <a title="Remove" href="#"><i className="fa fa-trash"></i></a>
-                                                    </div>
+                                                    <div className="cart-item-remove"><a title="Remove" href="#"><i className="fa fa-trash" /></a></div>
                                                 </li>
                                                 <li className="single-cart-item">
                                                     <div className="cart-img">
-                                                        <a href="cart.html">
-                                                            <img src="/assets/images/cart/cart-2.jpg" alt="" />
-                                                        </a>
+                                                        <a href="cart.html"><img src="/assets/images/cart/cart-2.jpg" alt="" /></a>
                                                     </div>
                                                     <div className="cart-content">
-                                                        <h5 className="product-name"><a href="#">Lenovo
-                                                            Ideacentre
-                                                            300</a></h5>
+                                                        <h5 className="product-name"><a href="#">Lenovo Ideacentre 300</a></h5>
                                                         <span className="product-quantity">1 ×</span>
                                                         <span className="product-price">$23.39</span>
                                                     </div>
-                                                    <div className="cart-item-remove">
-                                                        <a title="Remove" href="#"><i className="fa fa-trash"></i></a>
-                                                    </div>
+                                                    <div className="cart-item-remove"><a title="Remove" href="#"><i className="fa fa-trash" /></a></div>
                                                 </li>
                                             </ul>
                                             <div className="cart-total">
@@ -126,7 +158,7 @@ export default function NavBar() {
                                                 <a href="cart.html">View Cart</a>
                                                 <a href="checkout.html">checkout</a>
                                             </div>
-                                        </div> 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -136,35 +168,74 @@ export default function NavBar() {
                 </div>
 
                 <div className="header-bottom menu-right bg-light">
-                    <div
-                        className="container-fluid pl-75 pr-75 pl-lg-15 pr-lg-15 pl-md-15 pr-md-15 pl-sm-15 pr-sm-15 pl-xs-15 pr-xs-15">
+                    <div className="container-fluid pl-75 pr-75 pl-lg-15 pr-lg-15 pl-md-15 pr-md-15 pl-sm-15 pr-sm-15 pl-xs-15 pr-xs-15">
                         <div className="row align-items-center">
-                            <div
-                                className="col-lg-12 col-md-12 col-12 order-lg-2 order-md-2 order-3 d-flex justify-content-center">
+                            <div className="col-lg-12 col-md-12 col-12 order-lg-2 order-md-2 order-3 d-flex justify-content-center">
                                 <nav className="main-menu color-black">
                                     <ul>
-                                        <li><Link href="/">Home</Link></li>
-                                        <li><a href="about.html">About Us</a></li>
-                                        <li><a href="#">ACCESSORIES</a></li>
-                                        <li><a href="#">Women</a></li>
-                                        <li><a href="#">Men</a></li>
-                                        <li><a href="#">BRANDS</a></li>
-                                        <li><a href="#">NEW ARRIVALS</a></li>
-                                        <li><a href="#">Partials</a></li>
-                                        <li><a href="#">Bath & Body</a></li>
-                                        <li><a href="contact.html">Contact Us</a></li>
+                                        {links.map((l) => (
+                                            <li key={l.label}><Link href={l.href}>{l.label}</Link></li>
+                                        ))}
                                     </ul>
                                 </nav>
                             </div>
                         </div>
+
+                        {/* MOBILE: hamburger + mobile-menu container */}
                         <div className="row">
-                            <div className="col-12 d-flex d-lg-none ">
-                                <div className="mobile-menu"></div>
+                            <div className="col-12 d-flex d-lg-none align-items-center justify-content-end">
+                                <div className={`mobile-menu ${isMobileOpen ? 'open' : ''}`} style={{ width: '100%' }}>
+                                    <div className="mean-bar" style={{ position: 'relative' }}>
+                                        <button
+                                            type="button"
+                                            className="meanmenu-reveal"
+                                            aria-expanded={isMobileOpen}
+                                            aria-label={isMobileOpen ? 'Close menu' : 'Open menu'}
+                                            onClick={() => setIsMobileOpen((s) => !s)}
+                                            style={{
+                                                position: 'absolute',
+                                                right: 8,
+                                                background: 'transparent',
+                                                border: 0,
+                                                padding: 6,
+                                                zIndex: 9999,
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <span
+                                                className="menu-bar"
+                                                aria-hidden="true"
+                                                style={{ display: isMobileOpen ? 'none' : 'block' }}
+                                            />
+                                            <span
+                                                className="menu-close"
+                                                aria-hidden="true"
+                                                style={{ display: isMobileOpen ? 'block' : 'none' }}
+                                            />
+                                        </button>
+
+                                        <nav className="mean-nav" aria-hidden={!isMobileOpen}>
+                                            <ul style={{ display: isMobileOpen ? 'block' : 'none' }}>
+                                                {links.map((l) => (
+                                                    <li key={l.label}>
+                                                        <Link href={l.href} onClick={() => setIsMobileOpen(false)}>
+                                                            {l.label}
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+
                     </div>
                 </div>
             </header>
         </>
-    )
+    );
 }
