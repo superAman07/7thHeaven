@@ -2,6 +2,7 @@ import AboutUsAreaSection from "./home/AboutUsArea";
 import BlogSectionArea from "./home/BlogSectionArea";
 import CategoryGender from "./home/CategoryGender";
 import FeatureSectionPage from "./home/FeatureSection";
+import FooterPage from "./home/Footer";
 import HowItWorksPage from "./home/HowItWorks";
 import NavBar from "./home/NavBar";
 import ProductSectionPage from "./home/ProductSection";
@@ -20,6 +21,7 @@ export default function HeroPage() {
             <AboutUsAreaSection/>
             <BlogSectionArea/>
             <FeatureSectionPage/>
+            <FooterPage/>
         </div>
     </>
 }
