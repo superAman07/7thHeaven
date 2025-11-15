@@ -1,3 +1,4 @@
+import CategoryGender from "./home/CategoryGender";
 import HowItWorksPage from "./home/HowItWorks";
 import NavBar from "./home/NavBar";
 import ProductSectionPage from "./home/ProductSection";
@@ -10,6 +11,7 @@ export default function HeroPage() {
             <SliderSection/>
             <HowItWorksPage/>
             <ProductSectionPage />
+            <CategoryGender/>
         </div>
     </>
 }
