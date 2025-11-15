@@ -7995,3 +7995,45 @@ h2.entry-title:before {
         height: 38px !important;
     }
 }
+
+/* Scroll to top button visuals */
+.scroll-to-top {
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;            /* default radius */
+  background: transparent;        /* start transparent; hover changes it */
+  border: none;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  color: #111;                    /* icon default color */
+  transition: background-color 200ms ease, color 200ms ease, transform 200ms ease;
+}
+
+/* hover background color you requested */
+.scroll-to-top:hover,
+.scroll-to-top:focus {
+  background-color: #ddb040;      /* requested hover color */
+  color: #000;                    /* icon color on hover */
+}
+
+/* smaller radius on phones/small devices */
+@media (max-width: 640px) {
+  .scroll-to-top {
+    border-radius: 6px;
+    width: 40px;
+    height: 40px;
+    padding: 6px;
+  }
+}
+
+/* optionally tweak for very small devices */
+@media (max-width: 400px) {
+  .scroll-to-top {
+    width: 36px;
+    height: 36px;
+    border-radius: 5px;
+  }
+}
