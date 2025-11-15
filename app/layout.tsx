@@ -26,7 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Fav icon */}
-        <link rel="icon" href="/assets/images/favicon.ico" />
+        <link rel="icon" href="/next.svg" />
 
         <link
           rel="stylesheet"
