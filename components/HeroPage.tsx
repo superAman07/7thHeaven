@@ -1,3 +1,4 @@
+import HowItWorksPage from "./home/HowItWorks";
 import NavBar from "./home/NavBar";
 import SliderSection from "./home/SliderSection";
 
@@ -6,6 +7,7 @@ export default function HeroPage() {
         <div id="main-wrapper">
             <NavBar />
             <SliderSection/>
+            <HowItWorksPage/>
         </div>
     </>
 }
