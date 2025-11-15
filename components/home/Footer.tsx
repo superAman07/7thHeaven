@@ -2,6 +2,7 @@
 'use client'
 
 import React from "react";
+import ScrollToTopButton from "./ScrollToTopButton";
 
 type LinkItem = { label: string; href?: string };
 type Props = {
@@ -52,6 +53,7 @@ Discover long-lasting perfumes, luxury collections, and exclusive signature scen
   logoHeight = 30,
 }: Props) {
   return (
+    <>
     <footer className="footer-section section bg-dark">
       {/* Footer Top start */}
       <div className="footer-top section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-45 pb-lg-25 pb-md-15 pb-sm-5 pb-xs-0">
@@ -148,7 +150,8 @@ Discover long-lasting perfumes, luxury collections, and exclusive signature scen
           </div>
         </div>
       </div>
-      {/* Footer bottom end */}
     </footer>
+    <ScrollToTopButton mode="start" />
+    </>
   );
 }
