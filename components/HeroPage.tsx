@@ -1,3 +1,4 @@
+import AboutUsAreaSection from "./home/AboutUsArea";
 import CategoryGender from "./home/CategoryGender";
 import HowItWorksPage from "./home/HowItWorks";
 import NavBar from "./home/NavBar";
@@ -14,6 +15,7 @@ export default function HeroPage() {
             <ProductSectionPage />
             <CategoryGender/>
             <ProductSection2/>
+            <AboutUsAreaSection/>
         </div>
     </>
 }
