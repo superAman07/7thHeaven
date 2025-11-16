@@ -68,7 +68,6 @@ export default function ProductSection2({
     return tabs.feature;
   }, [activeTab, tabs]);
 
-  // hide dots when items count <= slidesToShow * 1 (rows handled by slick)
   const shouldShowDots = activeProducts.length > 4;
 
   const finalSliderSettings = useMemo(
@@ -212,7 +211,6 @@ export default function ProductSection2({
         <div className="row">
           <div className="col-12">
             <div className="tab-content">
-              {/* only render the active tab's slider to keep DOM small */}
               <div
                 className={`tab-pane fade ${activeTab === "products" ? "show active" : ""
                   }`}
@@ -253,7 +251,7 @@ export default function ProductSection2({
             </div>
           </div>
         </div>
-      </div> {/* end container */}
+      </div>
     </div>
   );
 }
