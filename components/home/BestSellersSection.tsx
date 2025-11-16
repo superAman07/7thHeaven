@@ -33,10 +33,8 @@ async function getBestSellers(): Promise<PublicProduct[]> {
 
 export default async function BestSellersSection() {
     const products = await getBestSellers();
-    // This server component fetches the data and passes it to the client component.
     return <>
             <ProductSectionPage products={products} />
-            {/* --- ADD THIS: Show More Button --- */}
             {products.length > 0 && (
                 <div className="row">
                     <div className="col-12 text-center mb-40">
