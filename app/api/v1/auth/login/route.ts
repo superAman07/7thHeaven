@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 
 const loginSchema = z.object({
-  phone: z.string().regex(/^\d{10}$/, { message: 'Phone number must be 10 digits' }),
+  identifier: z.string().min(1, 'Email or phone number is required'),
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -19,24 +19,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: { message: 'Invalid input.', details: validation.error.flatten().fieldErrors } }, { status: 400 });
     }
 
-    const { phone, password } = validation.data;
+    const { identifier, password } = validation.data;
 
-    const user = await prisma.user.findUnique({
-      where: { phone },
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: identifier },
+          { phone: identifier },
+        ],
+      },
     });
 
     if (!user || !user.passwordHash) {
-      return NextResponse.json({ success: false, error: { message: 'Invalid phone number or password.' } }, { status: 401 });
+      return NextResponse.json({ success: false, error: { message: 'Invalid credentials.' } }, { status: 401 });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!isPasswordValid) {
-      return NextResponse.json({ success: false, error: { message: 'Invalid phone number or password.' } }, { status: 401 });
+      return NextResponse.json({ success: false, error: { message: 'Invalid credentials.' } }, { status: 401 });
     }
 
     const sessionToken = jwt.sign(
-      { userId: user.id, phone: user.phone, fullName: user.fullName },
+      { userId: user.id, phone: user.phone, fullName: user.fullName, email: user.email },
       process.env.JWT_SECRET!,
       { expiresIn: '7d' }
     );
@@ -44,7 +49,7 @@ export async function POST(request: Request) {
     const cookie = serialize('session_token', sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 7, 
+      maxAge: 60 * 60 * 24 * 7,
       path: '/',
       sameSite: 'lax',
     });
