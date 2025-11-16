@@ -2,6 +2,8 @@
 import React from "react";
 import { PublicProduct } from "../HeroPage";
 import Link from "next/link";
+import { ProductCardSkeleton } from "./ProductCardSkeleton";
+import { NoProductsPlaceholder } from "./NoProductsPlaceholder";
 
 type Product = {
   id: string;
@@ -13,48 +15,6 @@ type Product = {
   description: string;
 };
 
-const defaultProducts = [
-  {
-    id: "p1",
-    title: "White Shave Brush",
-    image: "assets/images/product/Sovaze_graphic_v3.webp",
-    sticker: "New Arrival",
-    price: 130.0,
-    oldPrice: null,
-    description:
-      "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
-  },
-  {
-    id: "p2",
-    title: "White Shave Brush",
-    image: "assets/images/product/Sovaze_graphic_v3.webp",
-    sticker: "New Arrival",
-    price: 130.0,
-    oldPrice: null,
-    description:
-      "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
-  },
-  {
-    id: "p3",
-    title: "White Shave Brush",
-    image: "assets/images/product/Sovaze_graphic_v3.webp",
-    sticker: "New Arrival",
-    price: 130.0,
-    oldPrice: null,
-    description:
-      "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
-  },
-  {
-    id: "p4",
-    title: "White Shave Brush",
-    image: "assets/images/product/Sovaze_graphic_v3.webp",
-    sticker: "New Arrival",
-    price: 130.0,
-    oldPrice: null,
-    description:
-      "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
-  },
-];
 const getLowestPrice = (variants: PublicProduct['variants']) => {
   if (!variants || variants.length === 0) return 0;
   return variants[0].price;
@@ -85,7 +45,11 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
                       <div id="grid" className="tab-pane fade active show">
                         <div className="product-grid-view">
                           <div className="row">
-                            {products.map((product) => (
+                            {!products ? (
+                              Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)
+                            ) : products.length === 0 ? (
+                              <NoProductsPlaceholder />
+                            ) : (products.map((product) => (
                               <div
                                 key={product.id}
                                 className="col-lg-3 col-md-6 col-sm-6"
@@ -136,7 +100,8 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
                                 </div>
                                 {/* Single Product End */}
                               </div>
-                            ))}
+                            ))
+                            )}
                           </div>
 
                           <br />
