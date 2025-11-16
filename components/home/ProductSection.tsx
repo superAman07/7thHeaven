@@ -1,14 +1,7 @@
-// ProfuctSectionPage.jsx
+'use client'
 import React from "react";
-
-/**
- * ProfuctSectionPage
- * - Keeps all original classes/attributes (hover effects, data-bs-* attributes, etc.)
- * - Renders products from `products` prop (defaults to one example product)
- *
- * Usage:
- * <ProfuctSectionPage products={[ myProduct, ... ]} />
- */
+import { PublicProduct } from "../HeroPage";
+import Link from "next/link";
 
 type Product = {
   id: string;
@@ -62,8 +55,12 @@ const defaultProducts = [
       "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
   },
 ];
+const getLowestPrice = (variants: PublicProduct['variants']) => {
+  if (!variants || variants.length === 0) return 0;
+  return variants[0].price;
+};
 
-export default function ProductSectionPage({ products = defaultProducts }: { products?: Product[] }) {
+export default function ProductSectionPage({ products }: { products: PublicProduct[] }) {
   return (
     <>
       <div className="shop-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45 pb-70 pb-lg-50 pb-md-40 pb-sm-60 pb-xs-50">
@@ -96,18 +93,11 @@ export default function ProductSectionPage({ products = defaultProducts }: { pro
                                 {/* Single Product Start */}
                                 <div className="single-product mb-30">
                                   <div className="product-img">
-                                    <a href="#">
-                                      <img
-                                        src={product.image}
-                                        alt={product.title}
-                                      />
-                                    </a>
-
-                                    {product.sticker && (
-                                      <span className="sticker">
-                                        {product.sticker}
-                                      </span>
-                                    )}
+                                    <Link href={`/collections/${product.category.slug}/${product.id}`}>
+                                      <img src={product.images[0] || '/assets/images/product/shop.webp'} alt={product.name} />
+                                    </Link>
+                                    {product.isNewArrival && <span className="sticker">New Arrival</span>}
+                                    {product.discountPercentage && product.discountPercentage > 0 && <span className="descount-sticker">-{product.discountPercentage}%</span>}
 
                                     <div className="product-action d-flex justify-content-between">
                                       <a className="product-btn" href="#">
@@ -138,19 +128,9 @@ export default function ProductSectionPage({ products = defaultProducts }: { pro
                                   </div>
 
                                   <div className="product-content">
-                                    <h3>
-                                      <a href="#">{product.title}</a>
-                                    </h3>
-
+                                    <h3><Link href={`/collections/${product.category.slug}/${product.id}`}>{product.name}</Link></h3>
                                     <h4 className="price">
-                                      <span className="new">
-                                        Rs. {product.price.toFixed(2)}
-                                      </span>
-                                      {product.oldPrice && (
-                                        <span className="old">
-                                          Rs. {product.oldPrice.toFixed(2)}
-                                        </span>
-                                      )}
+                                      <span className="new">Rs. {getLowestPrice(product.variants).toFixed(2)}</span>
                                     </h4>
                                   </div>
                                 </div>
@@ -180,18 +160,11 @@ export default function ProductSectionPage({ products = defaultProducts }: { pro
                                 <div className="col-md-4 col-sm-6">
                                   <div className="single-product">
                                     <div className="product-img mb-0 mb-xs-25">
-                                      <a href="#">
-                                        <img
-                                          src={product.image}
-                                          alt={product.title}
-                                        />
-                                      </a>
-
-                                      {product.sticker && (
-                                        <span className="sticker">
-                                          {product.sticker}
-                                        </span>
-                                      )}
+                                      <Link href={`/collections/${product.category.slug}/${product.id}`}>
+                                        <img src={product.images[0] || '/assets/images/product/shop.webp'} alt={product.name} />
+                                      </Link>
+                                      {product.isNewArrival && <span className="sticker">New Arrival</span>}
+                                      {product.discountPercentage && product.discountPercentage > 0 && <span className="descount-sticker">-{product.discountPercentage}%</span>}
                                     </div>
                                   </div>
                                 </div>
@@ -199,57 +172,10 @@ export default function ProductSectionPage({ products = defaultProducts }: { pro
                                 <div className="col-md-8 col-sm-6">
                                   <div className="product-content-shop-list">
                                     <div className="product-content">
-                                      <h3>
-                                        <a href="#">{product.title}</a>
-                                      </h3>
+                                      <h3><Link href={`/collections/${product.category.slug}/${product.id}`}>{product.name}</Link></h3>
                                       <h4 className="price">
-                                        <span className="new">
-                                          Rs. {product.price.toFixed(2)}
-                                        </span>
-                                        {product.oldPrice && (
-                                          <span className="old">
-                                            Rs. {product.oldPrice.toFixed(2)}
-                                          </span>
-                                        )}
+                                        <span className="new">Rs. {getLowestPrice(product.variants).toFixed(2)}</span>
                                       </h4>
-
-                                      {/* keep existing rating stars structure */}
-                                      <div className="ratting">
-                                        <i className="fa fa-star"></i>
-                                        <i className="fa fa-star"></i>
-                                        <i className="fa fa-star"></i>
-                                        <i className="fa fa-star"></i>
-                                        <i className="fa fa-star"></i>
-                                      </div>
-
-                                      <p>{product.description}</p>
-
-                                      <div className="product-action d-flex justify-content-between">
-                                        <a className="product-btn" href="#">
-                                          Add to Cart
-                                        </a>
-                                        <ul className="d-flex">
-                                          <li>
-                                            <a
-                                              href="#quick-view-modal-container"
-                                              data-bs-toggle="modal"
-                                              title="Quick View"
-                                            >
-                                              <i className="fa fa-eye"></i>
-                                            </a>
-                                          </li>
-                                          <li>
-                                            <a href="#">
-                                              <i className="fa fa-heart-o"></i>
-                                            </a>
-                                          </li>
-                                          <li>
-                                            <a href="#">
-                                              <i className="fa fa-exchange"></i>
-                                            </a>
-                                          </li>
-                                        </ul>
-                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -257,11 +183,11 @@ export default function ProductSectionPage({ products = defaultProducts }: { pro
                             </div>
                           ))}
                         </div>
-                      </div> 
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div> 
+              </div>
             </div>
           </div>
         </div>
