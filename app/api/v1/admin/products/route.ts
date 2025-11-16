@@ -14,6 +14,8 @@ const createProductSchema = z.object({
   genderTags: z.array(genderTagsEnum).min(1, 'At least one gender tag is required'),
   categoryId: z.string().cuid('Invalid category ID'),
   inStock: z.boolean().default(true),
+  isNewArrival: z.boolean().default(false),
+  discountPercentage: z.number().min(0).max(100).optional(),
   variants: z.array(variantSchema).min(1, 'At least one product variant is required'),
 });
 

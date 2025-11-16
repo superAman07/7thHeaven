@@ -17,6 +17,8 @@ const updateProductSchema = z.object({
   genderTags: z.array(genderTagsEnum).min(1).optional(),
   categoryId: z.string().cuid().optional(),
   inStock: z.boolean().optional(),
+  isNewArrival: z.boolean().optional(),
+  discountPercentage: z.number().min(0).max(100).optional(),
   variants: z.array(variantSchema).min(1).optional(),
 });
 
