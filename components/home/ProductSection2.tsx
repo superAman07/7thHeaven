@@ -12,70 +12,11 @@ type TabsPayload = {
   feature: PublicProduct[];
 };
 
-// const sampleProduct = (
-//   id: string,
-//   title: string,
-//   price: number,
-//   oldPrice: number | null = null,
-//   image = "assets/images/product/shop.webp",
-//   sticker = "New",
-//   discount = "-10%"
-// ): Product => ({
-//   id,
-//   title,
-//   image,
-//   sticker,
-//   discount,
-//   price,
-//   oldPrice,
-// });
-
-// const defaultTabs: TabsPayload = {
-//   products: [
-//     sampleProduct("p1", "White Shave Brush", 110, 130),
-//     sampleProduct("p2", "White Shave Brux", 130),
-//     sampleProduct("p3", "White Shave Bruz", 130),
-//     sampleProduct("p4", "White Shave Bruk", 115),
-//     sampleProduct("p5", "White Shave Brush", 130),
-//     sampleProduct("p6", "White Shave Brug", 70, 100),
-//     sampleProduct("p7", "White Shave Bruc", 70),
-//     sampleProduct("p8", "White Shave Brusb", 90),
-//     sampleProduct("p9", "White Shave Brusb", 90),
-//     sampleProduct("p10", "White Shave Brusb", 90),
-//     sampleProduct("p11", "White Shave Brusb", 90),
-//   ],
-//   onsale: [
-//     sampleProduct("o1", "White Shave Brush", 130),
-//     sampleProduct("o2", "White Shave Brug", 70, 100),
-//     sampleProduct("o3", "White Shave Bruc", 70),
-//     sampleProduct("o4", "White Shave Brusb", 90),
-//     sampleProduct("o5", "White Shave Brusb", 90),
-//     sampleProduct("o6", "White Shave Brusb", 90),
-//     sampleProduct("o7", "White Shave Brusb", 90),
-//     sampleProduct("o8", "White Shave Brusb", 90),
-//   ],
-//   feature: [
-//     sampleProduct("f1", "White Shave Brush (F)", 110, 130),
-//     sampleProduct("f2", "White Shave Brux (F)", 130),
-//     sampleProduct("f3", "White Shave Bruz (F)", 130),
-//     sampleProduct("f4", "White Shave Brusb (F)", 90),
-//     sampleProduct("f5", "White Shave Brusb (F)", 90),
-//     sampleProduct("f6", "White Shave Brusb (F)", 90),
-//     sampleProduct("f7", "White Shave Brusb (F)", 90),
-//     sampleProduct("f8", "White Shave Brusb (F)", 90),
-//   ],
-// };
-
-// type Props = {
-//   tabs?: TabsPayload;
-//   defaultActiveTab?: "products" | "onsale" | "feature";
-// };
 type Props = {
-  tabs: TabsPayload; // It's no longer optional
+  tabs: TabsPayload;
   defaultActiveTab?: "products" | "onsale" | "feature";
 };
 
-// Helper to get the lowest price
 const getLowestPrice = (variants: PublicProduct['variants']) => {
   if (!variants || variants.length === 0) return 0;
   return variants[0].price;
