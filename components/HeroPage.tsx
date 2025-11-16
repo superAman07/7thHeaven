@@ -63,11 +63,11 @@ export default async function HeroPage() {
             <HowItWorksPage />
             <ProductSectionPage products={products.slice(0, 8)} />
             <CategoryGender />
-            {/* <ProductSection2 tabs={{
+            <ProductSection2 tabs={{
                 products: newArrivals,
                 onsale: onSaleProducts,
                 feature: [...products].reverse().slice(0, 8)
-            }} /> */}
+            }} />
             <AboutUsAreaSection />
             <BlogSectionArea />
             <FeatureSectionPage />
