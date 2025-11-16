@@ -2,6 +2,7 @@ import React from 'react';
 import prisma from '@/lib/prisma';
 import ProductSection2 from './ProductSection2';
 import { PublicProduct } from '../HeroPage';
+import Link from 'next/link';
 
 async function getProductsForTabs(): Promise<{
   newArrivals: PublicProduct[];
@@ -32,15 +33,26 @@ async function getProductsForTabs(): Promise<{
 }
 
 export default async function TabbedProductsSection() {
-    const { newArrivals, onSaleProducts, featuredProducts } = await getProductsForTabs();
+    const { newArrivals, onSaleProducts, featuredProducts, allProducts } = await getProductsForTabs();
 
     return (
-        <ProductSection2
-            tabs={{
-                products: newArrivals,
-                onsale: onSaleProducts,
-                feature: featuredProducts,
-            }}
-        />
+        <>
+            <ProductSection2
+                tabs={{
+                    products: newArrivals,
+                    onsale: onSaleProducts,
+                    feature: featuredProducts,
+                }}
+            />
+            {allProducts.length > 0 && (
+                <div className="row">
+                    <div className="col-12 text-center mt-20 mb-40">
+                        <Link href="/collections" className="btn btn-dark">
+                            Explore All Products
+                        </Link>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }
