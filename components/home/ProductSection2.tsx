@@ -91,7 +91,7 @@ export default function ProductSection2({
               <img
                 src={product.images[0] || 'assets/images/product/shop.webp'}
                 alt={product.name}
-                style={{ width: "100%", height: 220, objectFit: "cover", display: "block" }}
+                style={{ aspectRatio: '1 / 1', objectFit: 'cover', width: "100%", display: "block" }}
               />
             </a>
 

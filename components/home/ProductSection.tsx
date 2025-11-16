@@ -55,7 +55,7 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
                                 <div className="single-product mb-30">
                                   <div className="product-img">
                                     <Link href={`/collections/${product.category.slug}/${product.id}`}>
-                                      <img src={product.images[0] || '/assets/images/product/shop.webp'} alt={product.name} />
+                                      <img src={product.images[0] || '/assets/images/product/shop.webp'} alt={product.name} style={{ aspectRatio: '1 / 1', objectFit: 'cover', width: '100%' }}/>
                                     </Link>
                                     {product.isNewArrival && <span className="sticker">New Arrival</span>}
                                     {product.discountPercentage && product.discountPercentage > 0 && <span className="descount-sticker">-{product.discountPercentage}%</span>}
