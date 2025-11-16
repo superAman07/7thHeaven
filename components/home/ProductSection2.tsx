@@ -5,6 +5,7 @@ import Slider, { CustomArrowProps } from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { PublicProduct } from "../HeroPage";
+import { NoProductsPlaceholder } from "./NoProductsPlaceholder";
 
 type TabsPayload = {
   products: PublicProduct[];
@@ -218,9 +219,13 @@ export default function ProductSection2({
                 id="products"
               >
                 <div className="product-slider tf-element-carousel" data-slick-options>
+                  {activeProducts.length === 0 ? (
+                  <NoProductsPlaceholder message={`No ${activeTab} products available right now.`} />
+                ) : (
                   <Slider {...finalSliderSettings}>
                     {activeProducts.map(renderProduct)}
                   </Slider>
+                )}
                 </div>
               </div>
 

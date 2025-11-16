@@ -11,6 +11,8 @@ import SliderSection from "./home/SliderSection";
 import { Suspense } from "react";
 import { ProductCardSkeleton } from './home/ProductCardSkeleton';
 import BestSellersSection from "./home/BestSellersSection";
+import { ProductSection2Skeleton } from "./home/ProductSection2Skeleton";
+import TabbedProductsSection from "./home/TabbedProductsSection";
 
 export type PublicProduct = {
     id: string;
@@ -21,38 +23,6 @@ export type PublicProduct = {
     variants: { price: number }[];
     category: { slug: string };
 };
-
-async function getProducts(): Promise<PublicProduct[]> {
-    try {
-        const productsFromDb = await prisma.product.findMany({
-            where: { inStock: true },
-            orderBy: { createdAt: 'desc' },
-            take: 20,
-            select: {
-                id: true,
-                name: true,
-                images: true,
-                isNewArrival: true,
-                discountPercentage: true,
-                variants: {
-                    select: { price: true },
-                    orderBy: { price: 'asc' }
-                },
-                category: { select: { slug: true } }
-            }
-        });
-        return productsFromDb.map(p => ({
-            ...p,
-            discountPercentage: p.discountPercentage ? p.discountPercentage.toNumber() : null,
-            variants: p.variants.map(v => ({
-                price: v.price.toNumber()
-            }))
-        }));
-    } catch (error) {
-        console.error("Failed to fetch products for homepage:", error);
-        return [];
-    }
-}
 
 const ProductSectionSkeleton = () => (
     <div className="shop-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45 pb-70 pb-lg-50 pb-md-40 pb-sm-60 pb-xs-50">
@@ -76,9 +46,6 @@ const ProductSectionSkeleton = () => (
 );
 
 export default async function HeroPage() {
-    const products = await getProducts();
-    const newArrivals = products.filter(p => p.isNewArrival);
-    const onSaleProducts = products.filter(p => p.discountPercentage && p.discountPercentage > 0);
     return <>
         <div id="main-wrapper">
             <NavBar />
@@ -88,11 +55,9 @@ export default async function HeroPage() {
                 <BestSellersSection />
             </Suspense>         
             <CategoryGender />
-            <ProductSection2 tabs={{
-                products: newArrivals,
-                onsale: onSaleProducts,
-                feature: [...products].reverse().slice(0, 8)
-            }} />
+            <Suspense fallback={<ProductSection2Skeleton />}>
+                <TabbedProductsSection />
+            </Suspense>
             <AboutUsAreaSection />
             <BlogSectionArea />
             <FeatureSectionPage />
