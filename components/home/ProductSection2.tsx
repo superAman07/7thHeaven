@@ -164,43 +164,28 @@ export default function ProductSection2({
             <div className="product-tab-menu mb-40 mb-xs-20">
               <ul className="nav">
                 <li>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setActiveTab("products");
-                    }}
-                    className={activeTab === "products" ? "active" : undefined}
-                    aria-current={activeTab === "products" ? "true" : "false"}
+                  <button
+                    className={activeTab === 'products' ? 'active' : ''}
+                    onClick={() => setActiveTab('products')}
                   >
                     New Products
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setActiveTab("onsale");
-                    }}
-                    className={activeTab === "onsale" ? "active" : undefined}
-                    aria-current={activeTab === "onsale" ? "true" : "false"}
+                  <button
+                    className={activeTab === 'onsale' ? 'active' : ''}
+                    onClick={() => setActiveTab('onsale')}
                   >
                     OnSale
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setActiveTab("feature");
-                    }}
-                    className={activeTab === "feature" ? "active" : undefined}
-                    aria-current={activeTab === "feature" ? "true" : "false"}
+                  <button
+                    className={activeTab === 'feature' ? 'active' : ''}
+                    onClick={() => setActiveTab('feature')}
                   >
                     Feature Products
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -211,20 +196,14 @@ export default function ProductSection2({
         <div className="row">
           <div className="col-12">
             <div className="tab-content">
-              <div
-                className={`tab-pane fade ${activeTab === "products" ? "show active" : ""
-                  }`}
-                id="products"
-              >
-                <div className="product-slider tf-element-carousel" data-slick-options>
-                  {activeProducts.length === 0 ? (
+              <div className="product-slider tf-element-carousel">
+                {activeProducts.length === 0 ? (
                   <NoProductsPlaceholder message={`No ${activeTab} products available right now.`} />
                 ) : (
                   <Slider {...finalSliderSettings}>
                     {activeProducts.map(renderProduct)}
                   </Slider>
                 )}
-                </div>
               </div>
 
               <div
