@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
 
     const { phone, otp } = validation.data;
 
-    // 1. Find the user and their OTP info
     const user = await prisma.user.findUnique({
       where: { phone },
     });
@@ -29,19 +28,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: { message: 'Invalid request. Please try signing up again.' } }, { status: 400 });
     }
 
-    // 2. Check if OTP has expired
     if (new Date() > user.otpExpiry) {
       return NextResponse.json({ success: false, error: { message: 'OTP has expired. Please request a new one.' } }, { status: 410 }); // 410 Gone
     }
 
-    // 3. Securely compare the provided OTP with the stored hash
     const isOtpValid = await bcrypt.compare(otp, user.otpHash);
 
     if (!isOtpValid) {
       return NextResponse.json({ success: false, error: { message: 'Invalid OTP.' } }, { status: 401 });
     }
 
-    // 4. OTP is valid. Clear it from the database to prevent reuse.
     await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -50,14 +46,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 5. Generate a short-lived "verification token" (JWT)
     const verificationToken = jwt.sign(
       { userId: user.id, phone: user.phone },
       process.env.JWT_SECRET!,
-      { expiresIn: '15m' } // This token is valid for 15 minutes
+      { expiresIn: '15m' } 
     );
 
-    // Determine if the user needs to set a password
     const needsPasswordSetup = !user.passwordHash;
 
     return NextResponse.json({
@@ -65,7 +59,7 @@ export async function POST(request: NextRequest) {
       message: 'OTP verified successfully.',
       data: {
         verificationToken,
-        needsPasswordSetup, // Tell the frontend if the next step is setting a password
+        needsPasswordSetup, 
       },
     });
 
