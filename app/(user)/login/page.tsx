@@ -3,7 +3,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 
-// --- Inlined from types.ts ---
 enum View {
     LOGIN = 'LOGIN',
     SIGNUP_STEP_1_PHONE = 'SIGNUP_STEP_1_PHONE',
@@ -12,7 +11,6 @@ enum View {
     LOGIN_OTP = 'LOGIN_OTP'
 }
 
-// --- Inlined from components/Icons.tsx ---
 interface IconProps {
     className?: string;
 }
@@ -50,7 +48,6 @@ const LoaderIcon: React.FC<IconProps> = ({ className }) => (
     </svg>
 );
 
-// --- Inlined from components/AuthInput.tsx ---
 interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     id: string;
     label: string;
@@ -76,14 +73,12 @@ const AuthInput: React.FC<AuthInputProps> = ({ id, label, icon, ...props }) => {
     );
 };
 
-// --- Inlined from components/OtpInput.tsx ---
 interface OtpInputProps {
     otp: string;
     setOtp: (otp: string) => void;
 }
 
 const OtpInput: React.FC<OtpInputProps> = ({ otp, setOtp }) => {
-    // FIX: Allow nulls in the ref array to correctly handle component unmounting.
     const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     useEffect(() => {
@@ -146,9 +141,6 @@ const OtpInput: React.FC<OtpInputProps> = ({ otp, setOtp }) => {
     );
 };
 
-
-// --- Main Auth Page Component ---
-// Mock API call function to simulate network requests
 const mockApiCall = (successCondition: boolean, successData: any, errorMessage: string, delay: number = 1000): Promise<any> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
