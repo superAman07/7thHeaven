@@ -51,19 +51,19 @@ const LoaderIcon: React.FC<IconProps> = ({ className }) => (
 );
 
 const EyeIcon: React.FC<IconProps> = ({ className }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-  </svg>
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+    </svg>
 );
 
 const EyeOffIcon: React.FC<IconProps> = ({ className }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
-    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
-    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
-    <line x1="2" x2="22" y1="2" y2="22"/>
-  </svg>
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+        <line x1="2" x2="22" y1="2" y2="22" />
+    </svg>
 );
 
 interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -88,7 +88,7 @@ const AuthInput: React.FC<AuthInputProps> = ({ id, label, icon, endIcon, ...prop
                 {...props}
                 className={`w-full h-14 pl-12 ${endIcon ? 'pr-12' : 'pr-4'} py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] transition-all duration-300`}
             />
-             {endIcon && (
+            {endIcon && (
                 <div className="absolute inset-y-0 right-0 flex items-center pr-4">
                     {endIcon}
                 </div>
@@ -170,6 +170,7 @@ export default function AuthPage() {
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState('');
     const [verificationToken, setVerificationToken] = useState('');
@@ -214,7 +215,7 @@ export default function AuthPage() {
         setError(null);
         setIsLoading(true);
         try {
-            await axios.post('/api/v1/auth/request-otp', { fullName, phone });
+            await axios.post('/api/v1/auth/request-otp', { fullName, email, phone });
             toast.success('OTP sent to your phone.');
             switchView(View.SIGNUP_STEP_2_OTP);
         } catch (err) {
@@ -231,7 +232,7 @@ export default function AuthPage() {
         try {
             const response = await axios.post('/api/v1/auth/verify-otp', { phone, otp });
             const { data } = response.data;
-            
+
             toast.success('OTP Verified!');
             if (data.needsPasswordSetup) {
                 setVerificationToken(data.verificationToken);
@@ -309,14 +310,14 @@ export default function AuthPage() {
                         </div>
                         <form onSubmit={handleLoginSubmit} className="space-y-6">
                             <AuthInput id="identifier" label="Email or Phone" icon={<MailIcon className="w-5 h-5" />} value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
-                            <AuthInput 
-                                id="password" 
-                                label="Password" 
-                                type={showPassword ? 'text' : 'password'} 
-                                icon={<LockIcon className="w-5 h-5" />} 
-                                value={password} 
-                                onChange={(e) => setPassword(e.target.value)} 
-                                required 
+                            <AuthInput
+                                id="password"
+                                label="Password"
+                                type={showPassword ? 'text' : 'password'}
+                                icon={<LockIcon className="w-5 h-5" />}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
                                 endIcon={passwordToggleIcon}
                             />
                             <button type="submit" disabled={isLoading} className={commonButtonClasses}>
@@ -341,14 +342,28 @@ export default function AuthPage() {
                         </div>
                         <form onSubmit={handleRequestSignupOtp} className="space-y-6">
                             <AuthInput id="fullName" label="Full Name" icon={<UserIcon className="w-5 h-5" />} value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+                            <AuthInput
+                                id="email"
+                                label="Email Address"
+                                icon={<MailIcon className="w-5 h-5 text-gray-400" />}
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Email Address"
+                                required
+                            />
                             <AuthInput id="phone" label="Phone Number" type="tel" icon={<PhoneIcon className="w-5 h-5" />} value={phone} onChange={(e) => setPhone(e.target.value)} required />
                             <button type="submit" disabled={isLoading} className={commonButtonClasses}>
                                 {isLoading ? <><LoaderIcon className="w-5 h-5 animate-spin" /> Sending OTP...</> : 'Send OTP'}
                             </button>
+                            {error && <p className="mt-4 text-center text-red-400">{error}</p>}
+                            <p className="text-center text-gray-400">
+                                Already have an account?{' '}
+                                <button type="button" onClick={() => switchView(View.LOGIN)} className="font-semibold text-golden hover:underline">
+                                    Login
+                                </button>
+                            </p>
                         </form>
-                        <div className="mt-6 text-center text-sm text-gray-500">
-                            Already have an account? <button type="button" onClick={() => switchView(View.LOGIN)} className="text-[#D4AF37] font-semibold hover:text-[#B8941F] transition-colors">Login</button>
-                        </div>
                     </>
                 );
             case View.SIGNUP_STEP_2_OTP:
@@ -383,15 +398,15 @@ export default function AuthPage() {
                             <p className="text-gray-500 mt-1">Step 3 of 3: Secure your new account</p>
                         </div>
                         <form onSubmit={handleSetPassword} className="space-y-6">
-                            <AuthInput 
-                                id="newPassword" 
-                                label="Password" 
+                            <AuthInput
+                                id="newPassword"
+                                label="Password"
                                 type={showPassword ? 'text' : 'password'}
-                                icon={<LockIcon className="w-5 h-5" />} 
-                                value={password} 
-                                onChange={(e) => setPassword(e.target.value)} 
-                                required 
-                                minLength={8} 
+                                icon={<LockIcon className="w-5 h-5" />}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                minLength={8}
                                 endIcon={passwordToggleIcon}
                             />
                             <p className="text-xs text-gray-500 -mt-4 pl-2">Minimum 8 characters.</p>
