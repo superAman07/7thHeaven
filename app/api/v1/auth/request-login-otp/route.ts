@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
@@ -7,7 +7,7 @@ const requestLoginOtpSchema = z.object({
   phone: z.string().regex(/^\d{10}$/, { message: 'Phone number must be 10 digits' }),
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const validation = requestLoginOtpSchema.safeParse(body);
@@ -23,7 +23,13 @@ export async function POST(request: Request) {
     });
 
     if (!user || !user.passwordHash) {
-      return NextResponse.json({ success: false, error: { message: 'No account found with this phone number. Please sign up.' } }, { status: 404 });
+      return NextResponse.json({
+        success: false,
+        error: {
+          message: 'No account found with this phone number. Please sign up to continue.',
+          code: 'USER_NOT_FOUND'
+        }
+      }, { status: 404 });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();

@@ -1,6 +1,9 @@
 'use client';
 
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useState, useRef, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 enum View {
     LOGIN = 'LOGIN',
@@ -47,13 +50,30 @@ const LoaderIcon: React.FC<IconProps> = ({ className }) => (
     </svg>
 );
 
+const EyeIcon: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  </svg>
+);
+
+const EyeOffIcon: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+    <line x1="2" x2="22" y1="2" y2="22"/>
+  </svg>
+);
+
 interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     id: string;
     label: string;
     icon: React.ReactNode;
+    endIcon?: React.ReactNode;
 }
 
-const AuthInput: React.FC<AuthInputProps> = ({ id, label, icon, ...props }) => {
+const AuthInput: React.FC<AuthInputProps> = ({ id, label, icon, endIcon, ...props }) => {
     return (
         <div className="relative">
             <label htmlFor={id} className="absolute -top-2.5 left-3 text-xs text-gray-500 bg-white px-1 z-10">
@@ -66,8 +86,13 @@ const AuthInput: React.FC<AuthInputProps> = ({ id, label, icon, ...props }) => {
                 id={id}
                 name={id}
                 {...props}
-                className="w-full h-14 pl-12 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] transition-all duration-300"
+                className={`w-full h-14 pl-12 ${endIcon ? 'pr-12' : 'pr-4'} py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] transition-all duration-300`}
             />
+             {endIcon && (
+                <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+                    {endIcon}
+                </div>
+            )}
         </div>
     );
 };
@@ -124,7 +149,6 @@ const OtpInput: React.FC<OtpInputProps> = ({ otp, setOtp }) => {
             {[...Array(6)].map((_, index) => (
                 <input
                     key={index}
-                    // FIX: Ref callbacks should not return a value. Using a block body ensures a void return.
                     ref={(el) => { otpRefs.current[index] = el; }}
                     type="text"
                     inputMode="numeric"
@@ -140,19 +164,8 @@ const OtpInput: React.FC<OtpInputProps> = ({ otp, setOtp }) => {
     );
 };
 
-const mockApiCall = (successCondition: boolean, successData: any, errorMessage: string, delay: number = 1000): Promise<any> => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (successCondition) {
-                resolve(successData);
-            } else {
-                reject(new Error(errorMessage));
-            }
-        }, delay);
-    });
-};
-
 export default function AuthPage() {
+    const router = useRouter();
     const [view, setView] = useState<View>(View.LOGIN);
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
@@ -162,10 +175,22 @@ export default function AuthPage() {
     const [verificationToken, setVerificationToken] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     const switchView = (newView: View) => {
         setError(null);
         setView(newView);
+    };
+
+    const getErrorMessage = (error: any): string => {
+        if (axios.isAxiosError(error) && error.response) {
+            const data = error.response.data;
+            if (data.error?.details) {
+                return Object.values(data.error.details).flat().join(' ');
+            }
+            return data.error?.message || 'An error occurred.';
+        }
+        return error.message || 'An unknown network error occurred.';
     };
 
     const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -173,10 +198,12 @@ export default function AuthPage() {
         setError(null);
         setIsLoading(true);
         try {
-            await mockApiCall(password === 'password123', {}, 'Invalid email or password.');
-            alert('Login successful!');
+            await axios.post('/api/v1/auth/login', { identifier, password });
+            toast.success('Logged in successfully!');
+            router.push('/');
+            router.refresh();
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An unknown error occurred');
+            setError(getErrorMessage(err));
         } finally {
             setIsLoading(false);
         }
@@ -187,10 +214,11 @@ export default function AuthPage() {
         setError(null);
         setIsLoading(true);
         try {
-            await mockApiCall(phone.length > 5, {}, 'Failed to send OTP. Please check the number.');
+            await axios.post('/api/v1/auth/request-otp', { fullName, phone });
+            toast.success('OTP sent to your phone.');
             switchView(View.SIGNUP_STEP_2_OTP);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An unknown error occurred');
+            setError(getErrorMessage(err));
         } finally {
             setIsLoading(false);
         }
@@ -201,11 +229,19 @@ export default function AuthPage() {
         setError(null);
         setIsLoading(true);
         try {
-            const data = await mockApiCall(otp === '123456', { verificationToken: 'mock-token-123' }, 'Invalid OTP. Please try again.');
-            setVerificationToken(data.verificationToken);
-            switchView(View.SIGNUP_STEP_3_PASSWORD);
+            const response = await axios.post('/api/v1/auth/verify-otp', { phone, otp });
+            const { data } = response.data;
+            
+            toast.success('OTP Verified!');
+            if (data.needsPasswordSetup) {
+                setVerificationToken(data.verificationToken);
+                switchView(View.SIGNUP_STEP_3_PASSWORD);
+            } else {
+                router.push('/');
+                router.refresh();
+            }
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An unknown error occurred');
+            setError(getErrorMessage(err));
         } finally {
             setIsLoading(false);
         }
@@ -216,10 +252,12 @@ export default function AuthPage() {
         setError(null);
         setIsLoading(true);
         try {
-            await mockApiCall(password.length >= 8, {}, 'Password is too short.');
-            alert('Account created successfully!');
+            await axios.post('/api/v1/auth/set-password', { verificationToken, password });
+            toast.success('Account created! Welcome!');
+            router.push('/');
+            router.refresh();
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An unknown error occurred');
+            setError(getErrorMessage(err));
         } finally {
             setIsLoading(false);
         }
@@ -230,10 +268,15 @@ export default function AuthPage() {
         setError(null);
         setIsLoading(true);
         try {
-            await mockApiCall(phone.length > 5, {}, 'Failed to send OTP. Please check the number.');
+            await axios.post('/api/v1/auth/request-login-otp', { phone });
+            toast.success('OTP sent to your phone.');
             switchView(View.SIGNUP_STEP_2_OTP);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An unknown error occurred');
+            const errorMessage = getErrorMessage(err);
+            setError(errorMessage);
+            if (axios.isAxiosError(err) && err.response?.data.error?.code === 'USER_NOT_FOUND') {
+                switchView(View.SIGNUP_STEP_1_PHONE);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -241,6 +284,17 @@ export default function AuthPage() {
 
     const renderContent = () => {
         const commonButtonClasses = "w-full text-white font-semibold h-12 text-lg rounded-lg flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-[#D4AF37] hover:bg-[#B8941F]";
+
+        const passwordToggleIcon = (
+            <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-gray-500 hover:text-[#D4AF37] transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+                {showPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+            </button>
+        );
 
         switch (view) {
             case View.LOGIN:
@@ -255,7 +309,16 @@ export default function AuthPage() {
                         </div>
                         <form onSubmit={handleLoginSubmit} className="space-y-6">
                             <AuthInput id="identifier" label="Email or Phone" icon={<MailIcon className="w-5 h-5" />} value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
-                            <AuthInput id="password" label="Password" type="password" icon={<LockIcon className="w-5 h-5" />} value={password} onChange={(e) => setPassword(e.target.value)} required />
+                            <AuthInput 
+                                id="password" 
+                                label="Password" 
+                                type={showPassword ? 'text' : 'password'} 
+                                icon={<LockIcon className="w-5 h-5" />} 
+                                value={password} 
+                                onChange={(e) => setPassword(e.target.value)} 
+                                required 
+                                endIcon={passwordToggleIcon}
+                            />
                             <button type="submit" disabled={isLoading} className={commonButtonClasses}>
                                 {isLoading ? <><LoaderIcon className="w-5 h-5 animate-spin" /> Signing In...</> : 'Sign In'}
                             </button>
@@ -320,7 +383,17 @@ export default function AuthPage() {
                             <p className="text-gray-500 mt-1">Step 3 of 3: Secure your new account</p>
                         </div>
                         <form onSubmit={handleSetPassword} className="space-y-6">
-                            <AuthInput id="newPassword" label="Password" type="password" icon={<LockIcon className="w-5 h-5" />} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
+                            <AuthInput 
+                                id="newPassword" 
+                                label="Password" 
+                                type={showPassword ? 'text' : 'password'}
+                                icon={<LockIcon className="w-5 h-5" />} 
+                                value={password} 
+                                onChange={(e) => setPassword(e.target.value)} 
+                                required 
+                                minLength={8} 
+                                endIcon={passwordToggleIcon}
+                            />
                             <p className="text-xs text-gray-500 -mt-4 pl-2">Minimum 8 characters.</p>
                             <button type="submit" disabled={isLoading} className={commonButtonClasses}>
                                 {isLoading ? <><LoaderIcon className="w-5 h-5 animate-spin" /> Creating Account...</> : 'Complete Signup'}

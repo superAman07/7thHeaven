@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
@@ -10,7 +10,7 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const validation = loginSchema.safeParse(body);
