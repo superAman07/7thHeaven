@@ -3,6 +3,7 @@ import axios from 'axios';
 import React, { useState, useEffect, useMemo } from 'react';
 import { PublicProduct } from '../HeroPage';
 import { FacebookIcon, GooglePlusIcon, InstagramIcon, PinterestIcon, StarIcon, TwitterIcon, VimeoIcon } from '../icons';
+import ImageLightbox from '../ImageLightBox';
 
 interface ProductQuickViewModalProps {
     isOpen: boolean;
@@ -17,6 +18,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [imageLoading, setImageLoading] = useState(false);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -69,7 +71,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
         if (!product || product.images.length <= 1) return;
         setImageLoading(true);
         setTimeout(() => {
-            setActiveImageIndex((prev) => 
+            setActiveImageIndex((prev) =>
                 prev === 0 ? product.images.length - 1 : prev - 1
             );
             setImageLoading(false);
@@ -80,7 +82,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
         if (!product || product.images.length <= 1) return;
         setImageLoading(true);
         setTimeout(() => {
-            setActiveImageIndex((prev) => 
+            setActiveImageIndex((prev) =>
                 prev === product.images.length - 1 ? 0 : prev + 1
             );
             setImageLoading(false);
@@ -94,20 +96,6 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
             setActiveImageIndex(index);
             setImageLoading(false);
         }, 150);
-    };
-
-    const handleImageAreaClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!product || product.images.length <= 1 || imageLoading) return;
-        
-        const rect = e.currentTarget.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const halfWidth = rect.width / 2;
-        
-        if (clickX < halfWidth) {
-            handlePrevImage();
-        } else {
-            handleNextImage();
-        }
     };
 
     const displayProduct = useMemo(() => {
@@ -150,11 +138,13 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     };
 
     const handleImagePreview = () => {
-        // You can implement this as a lightbox/fullscreen view
-        // For now, let's open the image in a new tab as a preview
-        if (displayProduct && displayProduct.images[activeImageIndex]) {
-            window.open(displayProduct.images[activeImageIndex], '_blank');
+        if (displayProduct && displayProduct.images.length > 0) {
+            setLightboxOpen(true);
         }
+    };
+
+    const handleCloseLightbox = () => {
+        setLightboxOpen(false);
     };
 
     if (!isOpen) {
@@ -162,11 +152,11 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     }
 
     return (
-        <div 
-            className="modal fade quick-view-modal-container show" 
-            id="quick-view-modal-container" 
-            tabIndex={-1} 
-            role="dialog" 
+        <div
+            className="modal fade quick-view-modal-container show"
+            id="quick-view-modal-container"
+            tabIndex={-1}
+            role="dialog"
             aria-modal="true"
             style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
             onClick={onClose}
@@ -196,15 +186,15 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                         <div className="product-details-left">
                                             {/* Main Image Display with Click Navigation */}
                                             <div className="relative w-full mb-4">
-                                                <div 
+                                                <div
                                                     className="aspect-square w-full overflow-hidden rounded-lg border border-gray-200 relative cursor-pointer select-none"
                                                     // onClick={handleImageAreaClick}
                                                     title={displayProduct.images.length > 1 ? "Click left/right to navigate images" : ""}
                                                 >
                                                     {displayProduct.images.length > 0 && (
                                                         <>
-                                                            <img 
-                                                                src={displayProduct.images[activeImageIndex]} 
+                                                            <img
+                                                                src={displayProduct.images[activeImageIndex]}
                                                                 alt={`${displayProduct.name} view ${activeImageIndex + 1}`}
                                                                 className={`w-full h-full object-cover transition-all duration-300 ${imageLoading ? 'opacity-50 scale-105' : 'opacity-100 scale-100'}`}
                                                                 draggable={false}
@@ -213,25 +203,25 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                             {/* Invisible navigation zones for better UX feedback */}
                                                             {displayProduct.images.length > 1 && (
                                                                 <>
-                                                                    <div 
-                                                                        className="absolute left-0 top-0 w-1/4 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer" 
+                                                                    <div
+                                                                        className="absolute left-0 top-0 w-1/4 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer"
                                                                         onClick={handlePrevImage}
                                                                         title="Previous image"
                                                                     />
-                                                                    <div 
-                                                                        className="absolute right-0 top-0 w-1/4 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer" 
+                                                                    <div
+                                                                        className="absolute right-0 top-0 w-1/4 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer"
                                                                         onClick={handleNextImage}
                                                                         title="Next image"
                                                                     />
                                                                 </>
                                                             )}
-                                                            <div 
-                                                                className="absolute left-1/4 top-0 w-1/2 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer flex items-center justify-center group/preview" 
+                                                            <div
+                                                                className="absolute left-1/4 top-0 w-1/2 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer flex items-center justify-center group/preview"
                                                                 onClick={handleImagePreview}
                                                                 title="Click to preview full image"
                                                             >
                                                                 {/* Expand icon that appears on hover */}
-                                                                <div className="opacity-0 group-hover/preview:opacity-100 transition-opacity duration-200 bg-black bg-opacity-60 rounded-full p-2">
+                                                                <div className="opacity-0 group-hover/preview:opacity-100 transition-opacity duration-200 bg-transparent bg-opacity-60 rounded-full p-2">
                                                                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                                                                     </svg>
@@ -255,15 +245,14 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                     {displayProduct.images.map((img, index) => (
                                                         <div
                                                             key={index}
-                                                            className={`shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                                                                activeImageIndex === index 
-                                                                    ? 'border-yellow-500 bg-yellow-100 shadow-lg ring-2 ring-yellow-300' 
-                                                                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-                                                            }`}
+                                                            className={`shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 ${activeImageIndex === index
+                                                                ? 'border-yellow-500 bg-yellow-100 shadow-lg ring-2 ring-yellow-300'
+                                                                : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                                                                }`}
                                                             onClick={() => handleThumbnailClick(index)}
                                                         >
-                                                            <img 
-                                                                src={img} 
+                                                            <img
+                                                                src={img}
                                                                 alt={`${displayProduct.name} thumb ${index + 1}`}
                                                                 className="w-full h-full object-cover"
                                                                 draggable={false}
@@ -279,8 +268,8 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                             {/* Top-right Navigation Arrows - Now Functional */}
                                             {displayProduct.images.length > 1 && (
                                                 <div className="product-nav">
-                                                    <a 
-                                                        href="#" 
+                                                    <a
+                                                        href="#"
                                                         onClick={(e) => {
                                                             e.preventDefault();
                                                             handlePrevImage();
@@ -290,8 +279,8 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                     >
                                                         <i className="fa fa-angle-left"></i>
                                                     </a>
-                                                    <a 
-                                                        href="#" 
+                                                    <a
+                                                        href="#"
                                                         onClick={(e) => {
                                                             e.preventDefault();
                                                             handleNextImage();
@@ -303,7 +292,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                     </a>
                                                 </div>
                                             )}
-                                            
+
                                             <h2>{displayProduct.name}</h2>
                                             <div className="single-product-reviews">
                                                 <div className="d-flex">
@@ -325,11 +314,11 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                             <div className="single-product-quantity">
                                                 <form className="add-quantity" action="#" onSubmit={handleAddToCart}>
                                                     <div className="product-quantity">
-                                                        <input 
-                                                            value={quantity} 
-                                                            type="number" 
-                                                            min="1" 
-                                                            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))} 
+                                                        <input
+                                                            value={quantity}
+                                                            type="number"
+                                                            min="1"
+                                                            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                                                         />
                                                     </div>
                                                     <div className="add-to-cart">
@@ -371,6 +360,15 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                     </div>
                 </div>
             </div>
+            {displayProduct && (
+                <ImageLightbox
+                    isOpen={lightboxOpen}
+                    onClose={handleCloseLightbox}
+                    images={displayProduct.images}
+                    initialIndex={activeImageIndex}
+                    productName={displayProduct.name}
+                />
+            )}
         </div>
     );
 };
