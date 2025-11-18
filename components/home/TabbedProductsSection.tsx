@@ -5,24 +5,46 @@ import { PublicProduct } from '../HeroPage';
 import Link from 'next/link';
 
 async function getProductsForTabs(): Promise<{
-  newArrivals: PublicProduct[];
-  onSaleProducts: PublicProduct[];
-  featuredProducts: PublicProduct[];
-  allProducts: PublicProduct[];
+    newArrivals: PublicProduct[];
+    onSaleProducts: PublicProduct[];
+    featuredProducts: PublicProduct[];
+    allProducts: PublicProduct[];
 }> {
     const productsFromDb = await prisma.product.findMany({
         where: { inStock: true },
         orderBy: { createdAt: 'desc' },
         take: 20,
         select: {
-            id: true, name: true, images: true, isNewArrival: true, discountPercentage: true,
-            variants: { select: { price: true }, orderBy: { price: 'asc' } },
-            category: { select: { slug: true } }
+            id: true,
+            name: true,
+            // slug: true,
+            description: true,
+            images: true,
+            genderTags: true,
+            inStock: true,
+            ratingsAvg: true,
+            createdAt: true,
+            categoryId: true,
+            isNewArrival: true,
+            discountPercentage: true,
+            category: {
+                select: { name: true, slug: true }
+            },
+            variants: {
+                select: { id: true, price: true, size: true },
+                orderBy: { price: 'asc' }
+            },
+            reviews: {
+                select: { id: true }
+            }
         }
     }).then(products => products.map(p => ({
         ...p,
         discountPercentage: p.discountPercentage ? p.discountPercentage.toNumber() : null,
-        variants: p.variants.map(v => ({ price: v.price.toNumber() }))
+        variants: p.variants.map(v => ({
+            ...v,
+            price: v.price.toNumber()
+        }))
     })));
 
     const newArrivals = productsFromDb.filter(p => p.isNewArrival);

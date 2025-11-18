@@ -12,19 +12,32 @@ async function getBestSellers(): Promise<PublicProduct[]> {
         select: {
             id: true,
             name: true,
+            // slug: true,
+            description: true,
             images: true,
+            genderTags: true,
+            inStock: true,
+            ratingsAvg: true,
+            createdAt: true,
+            categoryId: true,
             isNewArrival: true,
             discountPercentage: true,
+            category: {
+                select: { name: true, slug: true }
+            },
             variants: {
-                select: { price: true },
+                select: { id: true, price: true, size: true },
                 orderBy: { price: 'asc' }
             },
-            category: { select: { slug: true } }
+            reviews: {
+                select: { id: true }
+            }
         }
     }).then(productsFromDb => productsFromDb.map(p => ({
         ...p,
         discountPercentage: p.discountPercentage ? p.discountPercentage.toNumber() : null,
         variants: p.variants.map(v => ({
+            ...v,
             price: v.price.toNumber()
         }))
     })));
