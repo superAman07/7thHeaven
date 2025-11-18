@@ -231,28 +231,6 @@ export default function ProductSection2({
                   </Slider>
                 )}
               </div>
-
-              <div
-                className={`tab-pane fade ${activeTab === "onsale" ? "show active" : ""}`}
-                id="onsale"
-              >
-                <div className="product-slider tf-element-carousel" data-slick-options>
-                  <Slider {...finalSliderSettings}>
-                    {activeProducts.map(renderProduct)}
-                  </Slider>
-                </div>
-              </div>
-
-              <div
-                className={`tab-pane fade ${activeTab === "feature" ? "show active" : ""}`}
-                id="featureproducts"
-              >
-                <div className="product-slider tf-element-carousel" data-slick-options>
-                  <Slider {...finalSliderSettings}>
-                    {activeProducts.map(renderProduct)}
-                  </Slider>
-                </div>
-              </div>
             </div>
           </div>
         </div>
