@@ -1,23 +1,34 @@
-'use client'; // This is now a client component
+'use client';
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Slider from "react-slick";
 import { PublicProduct } from "../HeroPage";
 import { NoProductsPlaceholder } from "./NoProductsPlaceholder";
+import ProductQuickViewModal from "./QuickViewModal";
 
 const getLowestPrice = (variants: PublicProduct['variants']) => {
   if (!variants || variants.length === 0) return 0;
   return variants[0].price;
 };
 
-// The component now receives products as a prop
 export default function ProductSectionPage({ products }: { products: PublicProduct[] }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
 
+  const handleOpenModal = (product: PublicProduct) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
   const sliderSettings = {
     slidesToShow: 4,
     slidesToScroll: 1,
-    infinite: products.length > 4, // Only be infinite if there are enough products
+    infinite: products.length > 4,
     arrows: false,
     dots: true,
     responsive: [
@@ -55,14 +66,25 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
                                 <div className="single-product mb-30">
                                   <div className="product-img">
                                     <Link href={`/collections/${product.category.slug}/${product.id}`}>
-                                      <img src={product.images[0] || '/assets/images/product/shop.webp'} alt={product.name} style={{ aspectRatio: '1 / 1', objectFit: 'cover', width: '100%' }}/>
+                                      <img src={product.images[0] || '/assets/images/product/shop.webp'} alt={product.name} style={{ aspectRatio: '1 / 1', objectFit: 'cover', width: '100%' }} />
                                     </Link>
                                     {product.isNewArrival && <span className="sticker">New Arrival</span>}
                                     {product.discountPercentage && product.discountPercentage > 0 && <span className="descount-sticker">-{product.discountPercentage}%</span>}
                                     <div className="product-action d-flex justify-content-between">
                                       <a className="product-btn" href="#">Add to Cart</a>
                                       <ul className="d-flex">
-                                        <li><a href="#quick-view-modal-container" data-bs-toggle="modal" title="Quick View"><i className="fa fa-eye"></i></a></li>
+                                        <li>
+                                          <a
+                                            href="#"
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              handleOpenModal(product);
+                                            }}
+                                            title="Quick View"
+                                          >
+                                            <i className="fa fa-eye"></i>
+                                          </a>
+                                        </li>
                                         <li><a href="#"><i className="fa fa-heart-o"></i></a></li>
                                         <li><a href="#"><i className="fa fa-exchange"></i></a></li>
                                       </ul>
@@ -88,6 +110,13 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
           </div>
         </div>
       </div>
+      {selectedProduct && (
+        <ProductQuickViewModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          productId={selectedProduct.id}
+        />
+      )}
     </div>
   );
 }

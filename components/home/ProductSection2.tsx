@@ -6,6 +6,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { PublicProduct } from "../HeroPage";
 import { NoProductsPlaceholder } from "./NoProductsPlaceholder";
+import ProductQuickViewModal from "./QuickViewModal";
 
 type TabsPayload = {
   products: PublicProduct[];
@@ -28,6 +29,18 @@ export default function ProductSection2({
   defaultActiveTab = "products",
 }: Props) {
   const [activeTab, setActiveTab] = useState(defaultActiveTab);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
+  
+  const handleOpenModal = (product: PublicProduct) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
 
   const sliderSettings = useMemo(
     () => ({
@@ -83,6 +96,16 @@ export default function ProductSection2({
     const discount = product.discountPercentage || 0;
     const discountedPrice = originalPrice * (1 - discount / 100);
 
+    const quickViewProduct = {
+      id: product.id,
+      name: product.name,
+      images: product.images,
+      reviews: { rating: product.ratingsAvg ?? 0, count: product.reviews.length },
+      price: { current: discountedPrice, regular: originalPrice },
+      description: product.description,
+      categories: [product.category.name],
+    };
+
     return (
       <div key={product.id} className="col-12" style={{ padding: 6 }}>
         <div className="single-product mb-30">
@@ -105,8 +128,11 @@ export default function ProductSection2({
               <ul className="d-flex">
                 <li>
                   <a
-                    href="#quick-view-modal-container"
-                    data-bs-toggle="modal"
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleOpenModal(product);
+                    }}
                     title="Quick View"
                   >
                     <i className="fa fa-eye"></i>
@@ -231,6 +257,13 @@ export default function ProductSection2({
           </div>
         </div>
       </div>
+      {selectedProduct && (
+        <ProductQuickViewModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          productId={selectedProduct.id}
+        />
+      )}
     </div>
   );
 }

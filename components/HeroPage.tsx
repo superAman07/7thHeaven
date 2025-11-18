@@ -13,15 +13,32 @@ import { ProductCardSkeleton } from './home/ProductCardSkeleton';
 import BestSellersSection from "./home/BestSellersSection";
 import { ProductSection2Skeleton } from "./home/ProductSection2Skeleton";
 import TabbedProductsSection from "./home/TabbedProductsSection";
+import { GenderTags } from "@prisma/client";
 
 export type PublicProduct = {
     id: string;
     name: string;
+    description: string | null;
     images: string[];
+    genderTags: GenderTags[];
+    inStock: boolean;
+    ratingsAvg: number | null;
+    createdAt: Date;
+    categoryId: string;
     isNewArrival: boolean;
     discountPercentage: number | null;
-    variants: { price: number }[];
-    category: { slug: string };
+    category: {
+        name: string;
+        slug: string;
+    };
+    variants: {
+        id: string;
+        price: number;
+        size: string;
+    }[];
+    reviews: {
+        id: string;
+    }[];
 };
 
 const ProductSectionSkeleton = () => (
@@ -53,7 +70,7 @@ export default async function HeroPage() {
             <HowItWorksPage />
             <Suspense fallback={<ProductSectionSkeleton />}>
                 <BestSellersSection />
-            </Suspense>         
+            </Suspense>
             <CategoryGender />
             <Suspense fallback={<ProductSection2Skeleton />}>
                 <TabbedProductsSection />
