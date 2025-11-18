@@ -2,6 +2,7 @@
 import axios from 'axios';
 import React, { useState, useEffect, useMemo } from 'react';
 import { PublicProduct } from '../HeroPage';
+import { FacebookIcon, GooglePlusIcon, InstagramIcon, PinterestIcon, StarIcon, TwitterIcon, VimeoIcon } from '../icons';
 
 interface ProductQuickViewModalProps {
     isOpen: boolean;
@@ -15,11 +16,11 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     const [error, setError] = useState<string | null>(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
+    const [imageLoading, setImageLoading] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
-            // Reset state when modal is opened
             setActiveImageIndex(0);
             setQuantity(1);
             setProduct(null);
@@ -43,11 +44,71 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
         } else {
             document.body.style.overflow = 'auto';
         }
-        // Cleanup function
         return () => {
             document.body.style.overflow = 'auto';
         };
     }, [isOpen, productId]);
+
+    // Keyboard navigation
+    useEffect(() => {
+        if (!isOpen || !product) return;
+
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowLeft') {
+                handlePrevImage();
+            } else if (e.key === 'ArrowRight') {
+                handleNextImage();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyPress);
+        return () => document.removeEventListener('keydown', handleKeyPress);
+    }, [isOpen, product, activeImageIndex]);
+
+    const handlePrevImage = () => {
+        if (!product || product.images.length <= 1) return;
+        setImageLoading(true);
+        setTimeout(() => {
+            setActiveImageIndex((prev) => 
+                prev === 0 ? product.images.length - 1 : prev - 1
+            );
+            setImageLoading(false);
+        }, 150);
+    };
+
+    const handleNextImage = () => {
+        if (!product || product.images.length <= 1) return;
+        setImageLoading(true);
+        setTimeout(() => {
+            setActiveImageIndex((prev) => 
+                prev === product.images.length - 1 ? 0 : prev + 1
+            );
+            setImageLoading(false);
+        }, 150);
+    };
+
+    const handleThumbnailClick = (index: number) => {
+        if (index === activeImageIndex) return;
+        setImageLoading(true);
+        setTimeout(() => {
+            setActiveImageIndex(index);
+            setImageLoading(false);
+        }, 150);
+    };
+
+    const handleImageAreaClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!product || product.images.length <= 1 || imageLoading) return;
+        
+        const rect = e.currentTarget.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const halfWidth = rect.width / 2;
+        
+        if (clickX < halfWidth) {
+            handlePrevImage();
+        } else {
+            handleNextImage();
+        }
+    };
 
     const displayProduct = useMemo(() => {
         if (!product) return null;
@@ -76,6 +137,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     const handleAddToCart = (e: React.FormEvent) => {
         e.preventDefault();
         if (!displayProduct) return;
+
         const payload: any = {
             productId: displayProduct.id,
             productName: displayProduct.name,
@@ -92,11 +154,11 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     }
 
     return (
-        <div
-            className="modal fade quick-view-modal-container show"
-            id="quick-view-modal-container"
-            tabIndex={-1}
-            role="dialog"
+        <div 
+            className="modal fade quick-view-modal-container show" 
+            id="quick-view-modal-container" 
+            tabIndex={-1} 
+            role="dialog" 
             aria-modal="true"
             style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
             onClick={onClose}
@@ -109,63 +171,149 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                         </button>
                     </div>
                     <div className="modal-body">
-                        {loading && <p>Loading...</p>}
-                        {error && <p style={{ color: 'red' }}>{error}</p>}
+                        {loading && (
+                            <div className="text-center p-4">
+                                <p>Loading...</p>
+                            </div>
+                        )}
+                        {error && (
+                            <div className="text-center p-4">
+                                <p style={{ color: 'red' }}>{error}</p>
+                            </div>
+                        )}
                         {displayProduct && !loading && (
                             <div className="col-xl-12 col-lg-12">
                                 <div className="row">
                                     <div className="col-xl-5 col-lg-6 col-md-6 mb-xxs-25 mb-xs-25 mb-sm-25">
                                         <div className="product-details-left">
-                                            <div className="product-details-images slider-lg-image-1 tf-element-carousel">
-                                                {/* Main image: display only the active one */}
-                                                {displayProduct.images.map((img: any, index: any) => (
-                                                    <div className="lg-image" key={index} style={{ display: index === activeImageIndex ? 'block' : 'none' }}>
-                                                        <img src={img} alt={displayProduct.name} />
-                                                    </div>
-                                                ))}
+                                            {/* Main Image Display with Click Navigation */}
+                                            <div className="relative w-full mb-4">
+                                                <div 
+                                                    className="aspect-square w-full overflow-hidden rounded-lg border border-gray-200 relative cursor-pointer select-none"
+                                                    // onClick={handleImageAreaClick}
+                                                    title={displayProduct.images.length > 1 ? "Click left/right to navigate images" : ""}
+                                                >
+                                                    {displayProduct.images.length > 0 && (
+                                                        <>
+                                                            <img 
+                                                                src={displayProduct.images[activeImageIndex]} 
+                                                                alt={`${displayProduct.name} view ${activeImageIndex + 1}`}
+                                                                className={`w-full h-full object-cover transition-all duration-300 ${imageLoading ? 'opacity-50 scale-105' : 'opacity-100 scale-100'}`}
+                                                                draggable={false}
+                                                            />
+
+                                                            {/* Invisible navigation zones for better UX feedback */}
+                                                            {displayProduct.images.length > 1 && (
+                                                                <>
+                                                                    <div 
+                                                                        className="absolute left-0 top-0 w-1/4 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer" 
+                                                                        onClick={handlePrevImage}
+                                                                        title="Previous image"
+                                                                    />
+                                                                    <div 
+                                                                        className="absolute right-0 top-0 w-1/4 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer" 
+                                                                        onClick={handleNextImage}
+                                                                        title="Next image"
+                                                                    />
+                                                                </>
+                                                            )}
+
+                                                            {/* Image Counter */}
+                                                            {displayProduct.images.length > 1 && (
+                                                                <div className="absolute bottom-2 right-2 bg-transparent bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                                                                    {activeImageIndex + 1} / {displayProduct.images.length}
+                                                                </div>
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div className="product-details-thumbs slider-thumbs-1 tf-element-carousel">
-                                                {/* Thumbnails */}
-                                                {displayProduct.images.map((img: any, index: any) => (
-                                                    <div
-                                                        className="sm-image"
-                                                        key={index}
-                                                        onClick={() => setActiveImageIndex(index)}
-                                                        style={{ cursor: 'pointer', border: activeImageIndex === index ? '2px solid #007bff' : '2px solid transparent', padding: '2px' }} // Simple active state styling
-                                                    >
-                                                        <img src={img} alt={`product image thumb ${index + 1}`} />
-                                                    </div>
-                                                ))}
-                                            </div>
+
+                                            {/* Thumbnail Images */}
+                                            {displayProduct.images.length > 1 && (
+                                                <div className="flex gap-2 overflow-x-auto pb-2">
+                                                    {displayProduct.images.map((img, index) => (
+                                                        <div
+                                                            key={index}
+                                                            className={`shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 ${
+                                                                activeImageIndex === index 
+                                                                    ? 'border-yellow-500 bg-yellow-100 shadow-lg ring-2 ring-yellow-300' 
+                                                                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                                                            }`}
+                                                            onClick={() => handleThumbnailClick(index)}
+                                                        >
+                                                            <img 
+                                                                src={img} 
+                                                                alt={`${displayProduct.name} thumb ${index + 1}`}
+                                                                className="w-full h-full object-cover"
+                                                                draggable={false}
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="col-xl-7 col-lg-6 col-md-6">
                                         <div className="product-details-content">
-                                            <div className="product-nav">
-                                                <a href="#"><i className="fa fa-angle-left"></i></a>
-                                                <a href="#"><i className="fa fa-angle-right"></i></a>
-                                            </div>
+                                            {/* Top-right Navigation Arrows - Now Functional */}
+                                            {displayProduct.images.length > 1 && (
+                                                <div className="product-nav">
+                                                    <a 
+                                                        href="#" 
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handlePrevImage();
+                                                        }}
+                                                        className={`transition-opacity duration-200 ${imageLoading ? 'opacity-50 pointer-events-none' : 'hover:opacity-70'}`}
+                                                        title="Previous image"
+                                                    >
+                                                        <i className="fa fa-angle-left"></i>
+                                                    </a>
+                                                    <a 
+                                                        href="#" 
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handleNextImage();
+                                                        }}
+                                                        className={`transition-opacity duration-200 ${imageLoading ? 'opacity-50 pointer-events-none' : 'hover:opacity-70'}`}
+                                                        title="Next image"
+                                                    >
+                                                        <i className="fa fa-angle-right"></i>
+                                                    </a>
+                                                </div>
+                                            )}
+                                            
                                             <h2>{displayProduct.name}</h2>
                                             <div className="single-product-reviews">
-                                                {[...Array(5)].map((_, i) => (
-                                                    <i key={i} className={`fa ${i < displayProduct.reviews.rating ? 'fa-star' : 'fa-star-o'}`}></i>
-                                                ))}
+                                                <div className="d-flex">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <StarIcon key={i} filled={i < Math.round(displayProduct.reviews.rating)} />
+                                                    ))}
+                                                </div>
                                                 <a className="review-link" href="#">({displayProduct.reviews.count} customer review)</a>
                                             </div>
                                             <div className="single-product-price">
-                                                <span className="price new-price">Rs.{displayProduct.price.current.toFixed(2)}</span>
-                                                <span className="regular-price">Rs.{displayProduct.price.regular.toFixed(2)}</span>
+                                                <span className="price new-price">Rs. {displayProduct.price.current.toFixed(2)}</span>
+                                                {displayProduct.price.current < displayProduct.price.regular && (
+                                                    <span className="regular-price">Rs. {displayProduct.price.regular.toFixed(2)}</span>
+                                                )}
                                             </div>
                                             <div className="product-description">
-                                                <p>{displayProduct.description}</p>
+                                                <p>{displayProduct.description || 'No description available.'}</p>
                                             </div>
                                             <div className="single-product-quantity">
                                                 <form className="add-quantity" action="#" onSubmit={handleAddToCart}>
                                                     <div className="product-quantity">
-                                                        <input value={quantity} type="number" min="1" onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))} />
+                                                        <input 
+                                                            value={quantity} 
+                                                            type="number" 
+                                                            min="1" 
+                                                            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))} 
+                                                        />
                                                     </div>
-                                                    <div className="add-to-link">
-                                                        <button type="submit" className="product-add-btn" data-text="add to cart">add to cart</button>
+                                                    <div className="add-to-cart">
+                                                        <button type="submit" className="btn">Add to cart</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -176,7 +324,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                             <div className="product-meta">
                                                 <span className="posted-in">
                                                     Categories:
-                                                    {displayProduct.categories.map((cat: any, index: any) => (
+                                                    {displayProduct.categories.map((cat, index) => (
                                                         <React.Fragment key={cat}>
                                                             <a href="#"> {cat}</a>
                                                             {index < displayProduct.categories.length - 1 && ','}
@@ -186,13 +334,13 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                             </div>
                                             <div className="single-product-sharing">
                                                 <h3>Share this product</h3>
-                                                <ul>
-                                                    <li><a href="#"><i className="fa fa-twitter"></i></a></li>
-                                                    <li><a href="#"><i className="fa fa-facebook"></i></a></li>
-                                                    <li><a href="#"><i className="fa fa-google-plus"></i></a></li>
-                                                    <li><a href="#"><i className="fa fa-pinterest"></i></a></li>
-                                                    <li><a href="#"><i className="fa fa-instagram"></i></a></li>
-                                                    <li><a href="#"><i className="fa fa-vimeo"></i></a></li>
+                                                <ul className="d-flex">
+                                                    <li><a href="#" title="Twitter"><TwitterIcon /></a></li>
+                                                    <li><a href="#" title="Facebook"><FacebookIcon /></a></li>
+                                                    <li><a href="#" title="Google Plus"><GooglePlusIcon /></a></li>
+                                                    <li><a href="#" title="Pinterest"><PinterestIcon /></a></li>
+                                                    <li><a href="#" title="Instagram"><InstagramIcon /></a></li>
+                                                    <li><a href="#" title="Vimeo"><VimeoIcon /></a></li>
                                                 </ul>
                                             </div>
                                         </div>
