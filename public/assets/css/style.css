@@ -427,7 +427,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 .product-tab-menu ul li:last-child {
   padding-right: 0;
 }
-.product-tab-menu ul li button {
+.product-tab-menu ul li a {
   font-size: 20px;
   line-height: 1;
   color: #333333;
@@ -436,12 +436,12 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   font-weight: 400;
 }
 @media only screen and (max-width: 767px) {
-  .product-tab-menu ul li button {
+  .product-tab-menu ul li a {
     line-height: 30px;
     font-size: 16px;
   }
 }
-.product-tab-menu ul li button.active, .product-tab-menu ul li button:hover {
+.product-tab-menu ul li a.active, .product-tab-menu ul li a:hover {
   color: #ddb040;
 }
 
@@ -562,7 +562,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 /*-- Page Banner --*/
 .page-banner h1 {
   font-size: 48px;
-  color: #333333;
+  color: #f8f4f4;
   font-weight: 600;
   letter-spacing: 0.1px;
   text-transform: uppercase;
@@ -596,7 +596,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
           justify-content: center;
 }
 .page-breadcrumb li {
-  color: #333333;
+  color: #f8f4f4;
   font-size: 18px;
   font-weight: 400;
   letter-spacing: 0.5px;
@@ -6739,7 +6739,7 @@ h2.entry-title:before {
   border-bottom: none;
   color: #333333;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 18px;
   display: block;
   padding: 15px 15px 13px;
   text-transform: uppercase;
@@ -6752,7 +6752,7 @@ h2.entry-title:before {
   color: #ffffff;
 }
 .myaccount-tab-menu a i {
-  font-size: 14px;
+  font-size: 18px;
   text-align: center;
   width: 25px;
 }
@@ -6760,7 +6760,7 @@ h2.entry-title:before {
 /*-- My Account Content -*/
 .myaccount-content {
   background-color: #ffffff;
-  font-size: 14px;
+  font-size: 18px;
   border: 1px solid #eeeeee;
   padding: 30px;
 }
@@ -6820,7 +6820,7 @@ h2.entry-title:before {
 /*-- My Account Table -*/
 .myaccount-table {
   white-space: nowrap;
-  font-size: 15px;
+  font-size: 18px;
 }
 .myaccount-table table th, .myaccount-table .table th {
   padding: 10px;
@@ -6837,7 +6837,7 @@ h2.entry-title:before {
   border-top: 3px solid #ddb040;
   border-radius: 5px 5px 0 0;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 18px;
   padding: 20px;
 }
 
@@ -7993,5 +7993,63 @@ h2.entry-title:before {
     }
     .header-sticky.is-sticky .logo img {
         height: 38px !important;
+    }
+}
+
+.contact-cards-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.contact-card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border: 1px solid #f2f2f2;
+    transition: 0.3s;
+}
+
+.contact-card:hover {
+    box-shadow: 0 16px 45px rgba(0,0,0,0.15);
+    transform: translateY(-6px);
+}
+
+.contact-card .icon {
+    font-size: 40px;
+    color: #ddb040; /* perfume theme pink */
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.contact-card h4 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #333;
+}
+
+.contact-card p {
+    font-size: 15px;
+    color: #555;
+    line-height: 22px;
+}
+
+.contact-card a {
+    color: #555;
+    text-decoration: none;
+}
+
+.contact-card a:hover {
+    color: #ddb040;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .contact-cards-wrapper {
+        grid-template-columns: 1fr;
     }
 }
