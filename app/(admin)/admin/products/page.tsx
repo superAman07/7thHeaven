@@ -19,6 +19,7 @@ interface Category {
 interface Product {
   id: string;
   name: string;
+  slug: string;
   description: string | null;
   images: string[];
   genderTags: ('Male' | 'Female' | 'Unisex')[];
@@ -57,6 +58,7 @@ export default function ProductsPage() {
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
 
   const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -123,6 +125,7 @@ export default function ProductsPage() {
 
   const resetForm = () => {
     setName('');
+    setSlug('');
     setDescription('');
     setImageUrls([]);
     setCategoryId(categories[0]?.id || '');
@@ -140,6 +143,7 @@ export default function ProductsPage() {
   const openPanelForEdit = (product: Product) => {
     setCurrentProduct(product);
     setName(product.name);
+    setSlug(product.slug);
     setDescription(product.description || '');
     setImageUrls(product.images);
     setCategoryId(product.category.id);
@@ -162,6 +166,7 @@ export default function ProductsPage() {
 
     const payload = {
       name,
+      slug,
       description,
       images: imageUrls,
       categoryId,
@@ -358,6 +363,10 @@ export default function ProductsPage() {
             <div>
               <label htmlFor="product-name" className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
               <input type="text" id="product-name" value={name} onChange={e => setName(e.target.value)} required placeholder="Enter product name" className="w-full px-4 py-2.5 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" />
+            </div>
+            <div>
+              <label htmlFor="product-slug" className="block text-sm font-medium text-gray-700 mb-1">Product Slug</label>
+              <input type="text" id="product-slug" value={slug} onChange={e => setSlug(e.target.value)} required placeholder="e.g., celestial-aura-perfume" className="w-full px-4 py-2.5 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" />
             </div>
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>

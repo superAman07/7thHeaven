@@ -47,6 +47,7 @@ model Category {
 model Product {
   id                 String           @id @default(cuid())
   name               String
+  slug               String           @unique
   description        String?
   images             String[]
   genderTags         GenderTags[]

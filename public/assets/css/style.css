@@ -19,7 +19,7 @@ body {
   font-style: normal;
   font-weight: normal;
   visibility: visible;
-   font-family: "Cormorant Garamond", serif;
+   /* font-family: "Cormorant Garamond", serif; */
   color: #333333;
   position: relative;
 }

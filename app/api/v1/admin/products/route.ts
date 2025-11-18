@@ -9,6 +9,7 @@ const variantSchema = z.object({
 });
 const createProductSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
+  slug: z.string().min(1, 'Product slug is required'),
   description: z.string().optional(),
   images: z.array(z.string()).min(1, 'At least one image is required'),
   genderTags: z.array(genderTagsEnum).min(1, 'At least one gender tag is required'),
