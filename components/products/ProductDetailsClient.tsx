@@ -354,49 +354,76 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                     <div className="shop-product">
                                         <div id="myTabContent-2" className="tab-content">
                                             <div id="grid" className="tab-pane fade active show">
-                                                <div className="product-slider tf-element-carousel">
-                                                    <Slider {...sliderSettings}>
-                                                        {relatedProducts.map((item) => {
-                                                            const itemPrice = item.variants?.[0]?.price ? parseFloat(item.variants[0].price as any) : 0;
-                                                            const itemDiscount = item.discountPercentage ? parseFloat(item.discountPercentage as any) : 0;
-                                                            const currentItemPrice = itemPrice * (1 - itemDiscount / 100);
+                                                {relatedProducts.length > 0 ? (
+                                                    <div className="product-slider tf-element-carousel">
+                                                        <Slider {...sliderSettings}>
+                                                            {relatedProducts.map((item) => {
+                                                                const itemPrice = item.variants?.[0]?.price || 0;
+                                                                const itemDiscount = item.discountPercentage || 0;
+                                                                const currentItemPrice = itemPrice * (1 - itemDiscount / 100);
 
-                                                            return (
-                                                                <div key={item.id} className="col-12" style={{ padding: '0 15px' }}>
-                                                                    <div className="single-product mb-30">
-                                                                        <div className="product-img">
-                                                                            <Link href={`/products/${item.slug}`}>
-                                                                                <img src={item.images[0]} alt={item.name} style={{ aspectRatio: '1 / 1', objectFit: 'cover', width: '100%' }} />
-                                                                            </Link>
-                                                                            {item.isNewArrival && <span className="sticker">New</span>}
-                                                                            {itemDiscount > 0 && <span className="descount-sticker">-{itemDiscount}%</span>}
-                                                                            <div className="product-action d-flex justify-content-between">
-                                                                                <a className="product-btn" href="#">Add to Cart</a>
-                                                                                <ul className="d-flex">
-                                                                                    <li><a href="#" title="Quick View"><i className="fa fa-eye"></i></a></li>
-                                                                                    <li><a href="#"><i className="fa fa-heart-o"></i></a></li>
-                                                                                    <li><a href="#"><i className="fa fa-exchange"></i></a></li>
-                                                                                </ul>
+                                                                return (
+                                                                    <div key={item.id} className="col-12" style={{ padding: '0 15px' }}>
+                                                                        <div className="single-product mb-30">
+                                                                            <div className="product-img">
+                                                                                <Link href={`/products/${item.slug}`}>
+                                                                                    <img src={item.images[0]} alt={item.name} style={{ aspectRatio: '1 / 1', objectFit: 'cover', width: '100%' }} />
+                                                                                </Link>
+                                                                                {item.isNewArrival && <span className="sticker">New</span>}
+                                                                                {itemDiscount > 0 && <span className="descount-sticker">-{itemDiscount}%</span>}
+                                                                                <div className="product-action d-flex justify-content-between">
+                                                                                    <a className="product-btn" href="#">Add to Cart</a>
+                                                                                    <ul className="d-flex">
+                                                                                        <li><a href="#" title="Quick View"><i className="fa fa-eye"></i></a></li>
+                                                                                        <li><a href="#"><i className="fa fa-heart-o"></i></a></li>
+                                                                                        <li><a href="#"><i className="fa fa-exchange"></i></a></li>
+                                                                                    </ul>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                        <div className="product-content">
-                                                                            <h3><Link href={`/products/${item.slug}`}>{item.name}</Link></h3>
-                                                                            <div className="ratting">
-                                                                                {[...Array(5)].map((_, i) => (
-                                                                                    <i key={i} className={`fa ${i < (item.ratingsAvg || 0) ? 'fa-star' : 'fa-star-o'}`}></i>
-                                                                                ))}
+                                                                            <div className="product-content">
+                                                                                <h3><Link href={`/products/${item.slug}`}>{item.name}</Link></h3>
+                                                                                <div className="ratting">
+                                                                                    {[...Array(5)].map((_, i) => (
+                                                                                        <i key={i} className={`fa ${i < (item.ratingsAvg || 0) ? 'fa-star' : 'fa-star-o'}`}></i>
+                                                                                    ))}
+                                                                                </div>
+                                                                                <h4 className="price">
+                                                                                    <span className="new">Rs. {currentItemPrice.toFixed(2)}</span>
+                                                                                    {itemDiscount > 0 && <span className="old">Rs. {itemPrice.toFixed(2)}</span>}
+                                                                                </h4>
                                                                             </div>
-                                                                            <h4 className="price">
-                                                                                <span className="new">Rs. {currentItemPrice.toFixed(2)}</span>
-                                                                                {itemDiscount > 0 && <span className="old">Rs. {itemPrice.toFixed(2)}</span>}
-                                                                            </h4>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            )
-                                                        })}
-                                                    </Slider>
-                                                </div>
+                                                                );
+                                                            })}
+                                                        </Slider>
+                                                    </div>
+                                                ) : (
+                                                    // No Related Products Fallback UI
+                                                    <div className="no-products-message text-center py-5">
+                                                        <div className="mb-4">
+                                                            <i className="fa fa-box-open" style={{ fontSize: '4rem', color: '#ddd' }}></i>
+                                                        </div>
+                                                        <h4 className="mb-3" style={{ color: '#666' }}>No Related Products Found</h4>
+                                                        <p className="mb-4" style={{ color: '#888', fontSize: '0.95rem' }}>
+                                                            We don't have any related products in the same category at the moment.<br />
+                                                            Check back soon or explore our other collections!
+                                                        </p>
+                                                        <Link 
+                                                            href="/collections" 
+                                                            className="btn btn-primary px-4 py-2"
+                                                            style={{ 
+                                                                backgroundColor: '#333', 
+                                                                border: 'none',
+                                                                borderRadius: '4px',
+                                                                textDecoration: 'none',
+                                                                display: 'inline-block'
+                                                            }}
+                                                        >
+                                                            Browse All Products
+                                                        </Link>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
