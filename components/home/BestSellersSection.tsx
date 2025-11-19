@@ -12,7 +12,7 @@ async function getBestSellers(): Promise<PublicProduct[]> {
         select: {
             id: true,
             name: true,
-            // slug: true,
+            slug: true,
             description: true,
             images: true,
             genderTags: true,

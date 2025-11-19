@@ -1,0 +1,414 @@
+'use client';
+
+import React, { useMemo, useState } from 'react';
+import Link from "next/link";
+import Slider from "react-slick";
+import { PublicProduct } from '../HeroPage';
+
+interface ProductDetailsClientProps {
+    product: PublicProduct;
+    relatedProducts: PublicProduct[];
+}
+
+const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsClientProps) => {
+
+    const [quantity, setQuantity] = useState(1);
+    const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
+
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
+    const [imageLoading, setImageLoading] = useState(false);
+
+    const displayPrice = useMemo(() => {
+        if (!product.variants || product.variants.length === 0) {
+            return { current: 0, regular: 0 };
+        }
+        const regularPrice = product.variants[0].price;
+        const discount = product.discountPercentage || 0;
+        const currentPrice = regularPrice * (1 - discount / 100);
+        return { current: currentPrice, regular: regularPrice };
+    }, [product]);
+
+    // EVENT HANDLERS
+    const handleImageChange = (index: number) => {
+        if (index === activeImageIndex) return;
+        setImageLoading(true);
+        setActiveImageIndex(index);
+        setTimeout(() => setImageLoading(false), 300);
+    };
+
+    const handlePrevImage = () => {
+        const newIndex = activeImageIndex === 0 ? product.images.length - 1 : activeImageIndex - 1;
+        handleImageChange(newIndex);
+    };
+
+    const handleNextImage = () => {
+        const newIndex = activeImageIndex === product.images.length - 1 ? 0 : activeImageIndex + 1;
+        handleImageChange(newIndex);
+    };
+
+    const handleAddToCart = (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log(`Added ${quantity} items of ${product.id} to cart.`);
+        alert(`Added ${quantity} item(s) to cart!`);
+    };
+
+    // Related Products Slider Settings (Same as ProductSection.tsx)
+    const sliderSettings = {
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        infinite: relatedProducts.length > 4,
+        arrows: false,
+        dots: true,
+        responsive: [
+            { breakpoint: 1199, settings: { slidesToShow: 3 } },
+            { breakpoint: 992, settings: { slidesToShow: 2 } },
+            { breakpoint: 768, settings: { slidesToShow: 2, arrows: false, autoplay: true } },
+            { breakpoint: 575, settings: { slidesToShow: 1, arrows: false, autoplay: true } },
+        ],
+    };
+
+    return (
+        <>
+            {/* Single Product Section Start - Using QuickViewModal CSS Structure */}
+            <div className="single-product-section section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-100 pb-lg-80 pb-md-70 pb-sm-30 pb-xs-20">
+                <div className="container">
+                    <div className="row">
+                        <div className="col-xl-5 col-lg-6 col-md-6 mb-xxs-25 mb-xs-25 mb-sm-25">
+                            {/* Product Details Left - Same structure as QuickViewModal */}
+                            <div className="product-details-left">
+                                {/* Main Image Display */}
+                                <div className="w-full mb-4">
+                                    <div className="aspect-square w-full overflow-hidden rounded-lg border border-gray-200 relative">
+                                        {product.images.length > 0 && (
+                                            <>
+                                                <img
+                                                    src={product.images[activeImageIndex]}
+                                                    alt={product.name}
+                                                    className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-50 scale-105' : 'opacity-100 scale-100'}`}
+                                                />
+
+                                                {/* Navigation zones */}
+                                                {product.images.length > 1 && (
+                                                    <>
+                                                        <div
+                                                            className="absolute left-0 top-0 w-1/4 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer"
+                                                            onClick={handlePrevImage}
+                                                            title="Previous image"
+                                                        />
+                                                        <div
+                                                            className="absolute right-0 top-0 w-1/4 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer"
+                                                            onClick={handleNextImage}
+                                                            title="Next image"
+                                                        />
+                                                    </>
+                                                )}
+
+                                                {/* Image Counter */}
+                                                {product.images.length > 1 && (
+                                                    <div className="absolute bottom-2 right-2 bg-transparent bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                                                        {activeImageIndex + 1} / {product.images.length}
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Thumbnail Images */}
+                                {product.images.length > 1 && (
+                                    <div className="flex gap-2 overflow-x-auto pb-2">
+                                        {product.images.map((img, index) => (
+                                            <div
+                                                key={index}
+                                                className={`shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 ${activeImageIndex === index
+                                                    ? 'border-yellow-500 bg-yellow-100 shadow-lg ring-2 ring-yellow-300'
+                                                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                                                    }`}
+                                                onClick={() => handleImageChange(index)}
+                                            >
+                                                <img
+                                                    src={img}
+                                                    alt={`${product.name} thumb ${index + 1}`}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="col-xl-7 col-lg-6 col-md-6">
+                            {/* Product Details Content - Same structure as QuickViewModal */}
+                            <div className="product-details-content">
+                                <div className="product-nav">
+                                    <a href="#" onClick={(e) => { e.preventDefault(); handlePrevImage(); }} title="Previous image">
+                                        <i className="fa fa-angle-left"></i>
+                                    </a>
+                                    <a href="#" onClick={(e) => { e.preventDefault(); handleNextImage(); }} title="Next image">
+                                        <i className="fa fa-angle-right"></i>
+                                    </a>
+                                </div>
+
+                                <h2>{product.name}</h2>
+
+                                <div className="single-product-reviews">
+                                    <div className="d-flex">
+                                        {[...Array(5)].map((_, i) => (
+                                            <i key={i} className={`fa ${i < Math.round(product.ratingsAvg || 0) ? 'fa-star' : 'fa-star-o'}`}></i>
+                                        ))}
+                                    </div>
+                                    <a className="review-link" href="#">({product.reviews.length} customer review)</a>
+                                </div>
+
+                                <div className="single-product-price">
+                                    <span className="price new-price">{displayPrice.current.toFixed(2)}</span>
+                                    {displayPrice.current < displayPrice.regular && (
+                                        <span className="regular-price">Rs. {displayPrice.regular.toFixed(2)}</span>
+                                    )}
+                                </div>
+
+                                <div className="product-description">
+                                    <p>{product.description}</p>
+                                </div>
+
+                                <div className="single-product-quantity">
+                                    <form className="add-quantity" action="#" onSubmit={handleAddToCart}>
+                                        <div className="product-quantity">
+                                            <input
+                                                value={quantity}
+                                                type="number"
+                                                min="1"
+                                                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                                            />
+                                        </div>
+                                        <div className="add-to-cart">
+                                            <button type="submit" className="btn">Add to cart</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div className="wishlist-compare-btn">
+                                    <a href="#" className="wishlist-btn mb-md-10 mb-sm-10">Add to Wishlist</a>
+                                    <a href="#" className="add-compare">Compare</a>
+                                </div>
+
+                                <div className="product-meta">
+                                    <span className="posted-in">
+                                        Categories: {` `}
+                                        <a href={`/collections/${product.category.slug}`}> {product.category.name}</a>
+                                    </span>
+                                    {product.genderTags && product.genderTags.length > 0 && (
+                                        <span className="posted-in">
+                                            Tags: {` `}
+                                            {product.genderTags.map((tag, index) => (
+                                                <React.Fragment key={tag}>
+                                                    <a href="#"> {tag}</a>
+                                                    {index < product.genderTags.length - 1 && ','}
+                                                </React.Fragment>
+                                            ))}
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="single-product-sharing">
+                                    <h3>Share this product</h3>
+                                    <ul className="d-flex">
+                                        <li><a href="#" title="Twitter"><i className="fa fa-twitter"></i></a></li>
+                                        <li><a href="#" title="Facebook"><i className="fa fa-facebook"></i></a></li>
+                                        <li><a href="#" title="Google Plus"><i className="fa fa-google-plus"></i></a></li>
+                                        <li><a href="#" title="Pinterest"><i className="fa fa-pinterest"></i></a></li>
+                                        <li><a href="#" title="Instagram"><i className="fa fa-instagram"></i></a></li>
+                                        <li><a href="#" title="Vimeo"><i className="fa fa-vimeo"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {/* Single Product Section End */}
+
+            {/* Product Description Review Section Start */}
+            <div className="product-description-review-section section">
+                <div className="container">
+                    <div className="row">
+                        <div className="col-md-12">
+                            <div className="product-review-tab">
+                                {/* Review And Description Tab Menu Start */}
+                                <ul className="nav dec-and-review-menu">
+                                    <li>
+                                        <a
+                                            className={activeTab === 'description' ? "active" : ""}
+                                            href="#description"
+                                            onClick={(e) => { e.preventDefault(); setActiveTab('description'); }}
+                                        >
+                                            Description
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            className={activeTab === 'reviews' ? "active" : ""}
+                                            href="#reviews"
+                                            onClick={(e) => { e.preventDefault(); setActiveTab('reviews'); }}
+                                        >
+                                            Reviews ({product.reviews.length})
+                                        </a>
+                                    </li>
+                                </ul>
+                                {/* Review And Description Tab Menu End */}
+
+                                {/* Review And Description Tab Content Start */}
+                                <div className="tab-content product-review-content-tab" id="myTabContent-4">
+                                    <div className={`tab-pane fade ${activeTab === 'description' ? 'active show' : ''}`} id="description">
+                                        <div className="single-product-description" dangerouslySetInnerHTML={{ __html: product.description || '' }} />
+                                    </div>
+                                    <div className={`tab-pane fade ${activeTab === 'reviews' ? 'active show' : ''}`} id="reviews">
+                                        <div className="review-page-comment">
+                                            <h2>{product.reviews.length} review for {product.name}</h2>
+                                            <ul>
+                                                {product.reviews.map((review: any) => (
+                                                    <li key={review.id}>
+                                                        <div className="product-comment">
+                                                            <img src="https://via.placeholder.com/60" alt="author" />
+                                                            <div className="product-comment-content">
+                                                                <div className="product-reviews">
+                                                                    {[...Array(5)].map((_, i) => (
+                                                                        <i key={i} className={`fa ${i < review.rating ? 'fa-star' : 'fa-star-o'}`}></i>
+                                                                    ))}
+                                                                </div>
+                                                                <p className="meta">
+                                                                    <strong>{review.author}</strong> - <span>{review.date}</span>
+                                                                </p>
+                                                                <div className="description">
+                                                                    <p>{review.content}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            <div className="review-form-wrapper">
+                                                <div className="review-form">
+                                                    <span className="comment-reply-title">Add a review </span>
+                                                    <form action="#">
+                                                        <p className="comment-notes">
+                                                            <span id="email-notes">Your email address will not be published.</span>
+                                                            Required fields are marked
+                                                            <span className="required">*</span>
+                                                        </p>
+                                                        <div className="comment-form-rating">
+                                                            <label>Your rating</label>
+                                                            <div className="rating">
+                                                                <i className="fa fa-star-o"></i>
+                                                                <i className="fa fa-star-o"></i>
+                                                                <i className="fa fa-star-o"></i>
+                                                                <i className="fa fa-star-o"></i>
+                                                                <i className="fa fa-star-o"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div className="input-element">
+                                                            <div className="comment-form-comment">
+                                                                <label>Comment</label>
+                                                                <textarea name="message" cols={40} rows={8}></textarea>
+                                                            </div>
+                                                            <div className="review-comment-form-author">
+                                                                <label>Name </label>
+                                                                <input required type="text" />
+                                                            </div>
+                                                            <div className="review-comment-form-email">
+                                                                <label>Email </label>
+                                                                <input required type="text" />
+                                                            </div>
+                                                            <div className="comment-submit">
+                                                                <button type="submit" className="form-button">Submit</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* Review And Description Tab Content End */}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Related Products Section Start - Using ProductSection.tsx CSS Structure */}
+            <div className="shop-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45 pb-70 pb-lg-50 pb-md-40 pb-sm-60 pb-xs-50">
+                <div className="container">
+                    <div className="row">
+                        <div className="col-lg-12 order-lg-2 order-1">
+                            <div className="row">
+                                <div className="col-12">
+                                    <div className="shop-banner-title text-center">
+                                        <h2>RELATED PRODUCTS</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-12">
+                                    <div className="shop-product">
+                                        <div id="myTabContent-2" className="tab-content">
+                                            <div id="grid" className="tab-pane fade active show">
+                                                <div className="product-slider tf-element-carousel">
+                                                    <Slider {...sliderSettings}>
+                                                        {relatedProducts.map((item) => {
+                                                            const itemPrice = item.variants?.[0]?.price ? parseFloat(item.variants[0].price as any) : 0;
+                                                            const itemDiscount = item.discountPercentage ? parseFloat(item.discountPercentage as any) : 0;
+                                                            const currentItemPrice = itemPrice * (1 - itemDiscount / 100);
+
+                                                            return (
+                                                                <div key={item.id} className="col-12" style={{ padding: '0 15px' }}>
+                                                                    <div className="single-product mb-30">
+                                                                        <div className="product-img">
+                                                                            <Link href={`/products/${item.slug}`}>
+                                                                                <img src={item.images[0]} alt={item.name} style={{ aspectRatio: '1 / 1', objectFit: 'cover', width: '100%' }} />
+                                                                            </Link>
+                                                                            {item.isNewArrival && <span className="sticker">New</span>}
+                                                                            {itemDiscount > 0 && <span className="descount-sticker">-{itemDiscount}%</span>}
+                                                                            <div className="product-action d-flex justify-content-between">
+                                                                                <a className="product-btn" href="#">Add to Cart</a>
+                                                                                <ul className="d-flex">
+                                                                                    <li><a href="#" title="Quick View"><i className="fa fa-eye"></i></a></li>
+                                                                                    <li><a href="#"><i className="fa fa-heart-o"></i></a></li>
+                                                                                    <li><a href="#"><i className="fa fa-exchange"></i></a></li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="product-content">
+                                                                            <h3><Link href={`/products/${item.slug}`}>{item.name}</Link></h3>
+                                                                            <div className="ratting">
+                                                                                {[...Array(5)].map((_, i) => (
+                                                                                    <i key={i} className={`fa ${i < (item.ratingsAvg || 0) ? 'fa-star' : 'fa-star-o'}`}></i>
+                                                                                ))}
+                                                                            </div>
+                                                                            <h4 className="price">
+                                                                                <span className="new">Rs. {currentItemPrice.toFixed(2)}</span>
+                                                                                {itemDiscount > 0 && <span className="old">Rs. {itemPrice.toFixed(2)}</span>}
+                                                                            </h4>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        })}
+                                                    </Slider>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {/* Related Products Section End */}
+        </>
+    );
+};
+
+export default ProductDetailsClientPage;

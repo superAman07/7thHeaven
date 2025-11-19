@@ -18,6 +18,7 @@ import { GenderTags } from "@prisma/client";
 export type PublicProduct = {
     id: string;
     name: string;
+    slug: string;
     description: string | null;
     images: string[];
     genderTags: GenderTags[];
