@@ -1,3 +1,5 @@
+import FooterPage from "@/components/home/Footer";
+import NavBar from "@/components/home/NavBar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,8 +13,12 @@ export default function UserPagesLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
-      {children}
-    </>
+    <div id="main-wrapper">
+      <NavBar />
+      <main>
+        {children}
+      </main>
+      <FooterPage />
+    </div>
   );
 }

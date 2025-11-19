@@ -65,7 +65,6 @@ const ProductSectionSkeleton = () => (
 export default async function HeroPage() {
     return <>
         <div id="main-wrapper">
-            <NavBar />
             <SliderSection />
             <HowItWorksPage />
             <Suspense fallback={<ProductSectionSkeleton />}>
@@ -78,7 +77,6 @@ export default async function HeroPage() {
             <AboutUsAreaSection />
             <BlogSectionArea />
             <FeatureSectionPage />
-            <FooterPage />
         </div>
     </>
 }
