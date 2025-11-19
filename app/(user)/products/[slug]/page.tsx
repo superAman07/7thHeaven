@@ -216,12 +216,12 @@ const ProductPage = () => {
                                             {product.images.length > 1 && (
                                                 <>
                                                     <div 
-                                                        className="absolute left-0 top-0 w-1/4 h-full hover:bg-black hover:bg-opacity-5 transition-all duration-200 cursor-pointer" 
+                                                        className="absolute left-0 top-0 w-1/4 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer" 
                                                         onClick={handlePrevImage}
                                                         title="Previous image"
                                                     />
                                                     <div 
-                                                        className="absolute right-0 top-0 w-1/4 h-full hover:bg-black hover:bg-opacity-5 transition-all duration-200 cursor-pointer" 
+                                                        className="absolute right-0 top-0 w-1/4 h-full hover:bg-transparent hover:bg-opacity-5 transition-all duration-200 cursor-pointer" 
                                                         onClick={handleNextImage}
                                                         title="Next image"
                                                     />
@@ -230,7 +230,7 @@ const ProductPage = () => {
 
                                             {/* Image Counter */}
                                             {product.images.length > 1 && (
-                                                <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                                                <div className="absolute bottom-2 right-2 bg-transparent bg-opacity-60 text-white text-xs px-2 py-1 rounded">
                                                     {activeImageIndex + 1} / {product.images.length}
                                                 </div>
                                             )}
