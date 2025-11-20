@@ -170,7 +170,7 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
 
                                 <div className="product-description">
                                     <p>{product.description}</p>
-                                </div>
+                                </div>a
 
                                 <div className="single-product-quantity">
                                     <form className="add-quantity" action="#" onSubmit={handleAddToCart}>
