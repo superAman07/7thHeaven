@@ -399,7 +399,6 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                         </Slider>
                                                     </div>
                                                 ) : (
-                                                    // No Related Products Fallback UI
                                                     <div className="no-products-message text-center py-5">
                                                         <div className="mb-4">
                                                             <i className="fa fa-box-open" style={{ fontSize: '4rem', color: '#ddd' }}></i>
