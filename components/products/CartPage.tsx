@@ -3,22 +3,18 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useCart } from '../CartContext';
 
-const CartPageComponent: React.FC = () => {
-  // Use cart context instead of local state
+const CartPageComponent: React.FC = () => { 
   const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotal } = useCart();
-  
-  // Form states for payload (keep these as they are for shipping and coupon functionality)
+   
   const [shippingCountry, setShippingCountry] = useState('Bangladesh');
   const [shippingCity, setShippingCity] = useState('Dhaka');
   const [zipCode, setZipCode] = useState('');
   const [couponCode, setCouponCode] = useState('');
-
-  // Calculations - now using cartTotal from context, but keeping the same structure
+ 
   const subTotal = cartTotal;
-  const shippingCost = 0; // This could be calculated dynamically
+  const shippingCost = 0;
   const grandTotal = subTotal + shippingCost;
 
-  // Handlers - updated to use context functions but keeping same UI behavior
   const handleIncrement = (id: string) => {
     const item = cartItems.find(item => item.id === id);
     if (item) {
@@ -130,9 +126,9 @@ const CartPageComponent: React.FC = () => {
                                                 <td className="pro-quantity">
                                                     <div className="pro-qty">
                                                         {/* Custom Quantity Buttons - same UI, different handlers */}
-                                                        <span className="dec qtybtn" onClick={() => handleDecrement(item.id)}>-</span>
+                                                        <span className="dec qtybtn cursor-pointer pt-1" onClick={() => handleDecrement(item.id)}>-</span>
                                                         <input type="text" value={item.quantity} readOnly />
-                                                        <span className="inc qtybtn" onClick={() => handleIncrement(item.id)}>+</span>
+                                                        <span className="inc qtybtn cursor-pointer pt-1" onClick={() => handleIncrement(item.id)}>+</span>
                                                     </div>
                                                 </td>
                                                 <td className="pro-subtotal">
