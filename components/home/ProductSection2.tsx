@@ -7,6 +7,8 @@ import "slick-carousel/slick/slick-theme.css";
 import { PublicProduct } from "../HeroPage";
 import { NoProductsPlaceholder } from "./NoProductsPlaceholder";
 import ProductQuickViewModal from "./QuickViewModal";
+import { useCart } from "../CartContext";
+import Link from "next/link";
 
 type TabsPayload = {
   products: PublicProduct[];
@@ -31,7 +33,9 @@ export default function ProductSection2({
   const [activeTab, setActiveTab] = useState(defaultActiveTab);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
-  
+  const { addToCart } = useCart();
+  const [addingProductId, setAddingProductId] = useState<string | null>(null);
+
   const handleOpenModal = (product: PublicProduct) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
@@ -40,6 +44,18 @@ export default function ProductSection2({
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
+  };
+
+
+  const handleAddToCart = (e: React.MouseEvent, product: PublicProduct) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setAddingProductId(product.id);
+    addToCart(product, 1);
+
+    setTimeout(() => {
+      setAddingProductId(null);
+    }, 2000);
   };
 
   const sliderSettings = useMemo(
@@ -122,8 +138,12 @@ export default function ProductSection2({
             {product.isNewArrival && <span className="sticker">New</span>}
 
             <div className="product-action d-flex justify-content-between">
-              <a className="product-btn" href="#">
-                Add to Cart
+              <a
+                href="#"
+                className="product-btn"
+                onClick={(e) => handleAddToCart(e, product)}
+              >
+                {addingProductId === product.id ? 'Added!' : 'Add to Cart'}
               </a>
               <ul className="d-flex">
                 <li>
@@ -153,7 +173,9 @@ export default function ProductSection2({
           </div>
 
           <div className="product-content">
-            <h3><a href={`/collections/${product.category.slug}/${product.id}`}>{product.name}</a></h3>
+            <h3>
+              <Link href={`/products/${product.slug}`}>{product.name}</Link>
+            </h3>
 
             <div className="ratting">
               <i className="fa fa-star" />
