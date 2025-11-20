@@ -4,6 +4,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { PublicProduct } from '../HeroPage';
 import { FacebookIcon, GooglePlusIcon, InstagramIcon, PinterestIcon, StarIcon, TwitterIcon, VimeoIcon } from '../icons';
 import ImageLightbox from '../ImageLightBox';
+import { useCart } from '../CartContext';
+import { useRouter } from 'next/navigation';
 
 interface ProductQuickViewModalProps {
     isOpen: boolean;
@@ -19,6 +21,10 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     const [quantity, setQuantity] = useState(1);
     const [imageLoading, setImageLoading] = useState(false);
     const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [isAdding, setIsAdding] = useState(false);
+
+    const { addToCart } = useCart();
+    const router = useRouter();
 
     useEffect(() => {
         if (isOpen) {
@@ -27,6 +33,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
             setQuantity(1);
             setProduct(null);
             setError(null);
+            setIsAdding(false);
 
             const fetchProduct = async () => {
                 if (!productId) return;
@@ -124,17 +131,12 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
 
     const handleAddToCart = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!displayProduct) return;
+        if (!product || isAdding) return;
 
-        const payload: any = {
-            productId: displayProduct.id,
-            productName: displayProduct.name,
-            price: displayProduct.price.current,
-            quantity: quantity,
-        };
-        console.log('Cart Payload:', payload);
-        alert(`Added ${quantity} of ${displayProduct.name} to cart! Check the console for the payload.`);
-        onClose();
+        setIsAdding(true);
+        addToCart(product, quantity);
+
+        router.push('/cart');
     };
 
     const handleImagePreview = () => {
@@ -322,8 +324,9 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                         />
                                                     </div>
                                                     <div className="add-to-cart">
-                                                        <button type="submit" className="btn">Add to cart</button>
-                                                    </div>
+                                                        <button type="submit" className="btn" disabled={isAdding}>
+                                                            {isAdding ? 'Redirecting...' : 'Add to cart'}
+                                                        </button>                                                    </div>
                                                 </form>
                                             </div>
                                             <div className="wishlist-compare-btn">
