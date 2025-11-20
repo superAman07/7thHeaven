@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import Link from "next/link";
 import Slider from "react-slick";
 import { PublicProduct } from '../HeroPage';
+import { useCart } from '../CartContext';
 
 interface ProductDetailsClientProps {
     product: PublicProduct;
@@ -11,6 +12,8 @@ interface ProductDetailsClientProps {
 }
 
 const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsClientProps) => {
+    const { addToCart } = useCart();
+    const [isAdding, setIsAdding] = useState(false);
 
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
@@ -28,7 +31,6 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
         return { current: currentPrice, regular: regularPrice };
     }, [product]);
 
-    // EVENT HANDLERS
     const handleImageChange = (index: number) => {
         if (index === activeImageIndex) return;
         setImageLoading(true);
@@ -48,11 +50,16 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
 
     const handleAddToCart = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(`Added ${quantity} items of ${product.id} to cart.`);
-        alert(`Added ${quantity} item(s) to cart!`);
+        if (isAdding) return;
+
+        setIsAdding(true);
+        addToCart(product, quantity);
+
+        setTimeout(() => {
+            setIsAdding(false);
+        }, 2500);
     };
 
-    // Related Products Slider Settings (Same as ProductSection.tsx)
     const sliderSettings = {
         slidesToShow: 4,
         slidesToScroll: 1,
@@ -69,7 +76,6 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
 
     return (
         <>
-            {/* Single Product Section Start - Using QuickViewModal CSS Structure */}
             <div className="single-product-section section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-100 pb-lg-80 pb-md-70 pb-sm-30 pb-xs-20">
                 <div className="container">
                     <div className="row">
@@ -170,7 +176,7 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
 
                                 <div className="product-description">
                                     <p>{product.description}</p>
-                                </div>a
+                                </div>
 
                                 <div className="single-product-quantity">
                                     <form className="add-quantity" action="#" onSubmit={handleAddToCart}>
@@ -183,7 +189,9 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                             />
                                         </div>
                                         <div className="add-to-cart">
-                                            <button type="submit" className="btn">Add to cart</button>
+                                            <button type="submit" className="btn" disabled={isAdding}>
+                                                {isAdding ? 'Added to Cart!' : 'Add to cart'}
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -408,11 +416,11 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                             We don't have any related products in the same category at the moment.<br />
                                                             Check back soon or explore our other collections!
                                                         </p>
-                                                        <Link 
-                                                            href="/collections" 
+                                                        <Link
+                                                            href="/collections"
                                                             className="btn btn-primary px-4 py-2"
-                                                            style={{ 
-                                                                backgroundColor: '#333', 
+                                                            style={{
+                                                                backgroundColor: '#333',
                                                                 border: 'none',
                                                                 borderRadius: '4px',
                                                                 textDecoration: 'none',

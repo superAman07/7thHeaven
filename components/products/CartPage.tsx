@@ -1,73 +1,56 @@
 'use client'
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
+import { useCart } from '../CartContext';
 
-// Mock data matching the user's screenshot items
-const INITIAL_ITEMS: any[] = [
-  {
-    id: 1,
-    name: 'Black Cable Restorer',
-    price: 25.00,
-    quantity: 1,
-    image: 'assets/images/product/shop.webp',
-  },
-  {
-    id: 2,
-    name: 'Black Die Grinder',
-    price: 25.00,
-    quantity: 1,
-    image: 'assets/images/product/shop.webp',
-  },
-  {
-    id: 3,
-    name: 'Orange Decker drill',
-    price: 25.00,
-    quantity: 1,
-    image: 'assets/images/product/shop.webp',
-  },
-];
-
-export const CartPage: React.FC = () => {
-  const [cartItems, setCartItems] = useState<any[]>(INITIAL_ITEMS);
+const CartPageComponent: React.FC = () => {
+  // Use cart context instead of local state
+  const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotal } = useCart();
   
-  // Form states for payload
+  // Form states for payload (keep these as they are for shipping and coupon functionality)
   const [shippingCountry, setShippingCountry] = useState('Bangladesh');
   const [shippingCity, setShippingCity] = useState('Dhaka');
   const [zipCode, setZipCode] = useState('');
   const [couponCode, setCouponCode] = useState('');
 
-  // Calculations
-  const subTotal = useMemo(() => {
-    return cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  }, [cartItems]);
-
+  // Calculations - now using cartTotal from context, but keeping the same structure
+  const subTotal = cartTotal;
   const shippingCost = 0; // This could be calculated dynamically
   const grandTotal = subTotal + shippingCost;
 
-  // Handlers
-  const handleIncrement = (id: number) => {
-    setCartItems(prev => prev.map(item => 
-      item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-    ));
+  // Handlers - updated to use context functions but keeping same UI behavior
+  const handleIncrement = (id: string) => {
+    const item = cartItems.find(item => item.id === id);
+    if (item) {
+      updateQuantity(id, item.quantity + 1);
+    }
   };
 
-  const handleDecrement = (id: number) => {
-    setCartItems(prev => prev.map(item => 
-      item.id === id && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
-    ));
+  const handleDecrement = (id: string) => {
+    const item = cartItems.find(item => item.id === id);
+    if (item && item.quantity > 1) {
+      updateQuantity(id, item.quantity - 1);
+    }
   };
 
-  const handleRemove = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+  const handleRemove = (id: string) => {
+    removeFromCart(id);
   };
 
   const handleCheckout = () => {
     const payload: any = {
-      items: cartItems.map(item => ({
-        productId: item.id,
-        quantity: item.quantity,
-        unitPrice: item.price,
-        totalPrice: item.price * item.quantity
-      })),
+      items: cartItems.map(item => {
+        const price = item.variants?.[0]?.price || 0;
+        const discount = item.discountPercentage || 0;
+        const currentPrice = price * (1 - discount / 100);
+        
+        return {
+          productId: item.id,
+          quantity: item.quantity,
+          unitPrice: currentPrice,
+          totalPrice: currentPrice * item.quantity
+        };
+      }),
       currency: 'Rs',
       summary: {
         subTotal,
@@ -87,7 +70,7 @@ export const CartPage: React.FC = () => {
   };
 
   return (
-    <div id="main-wrapper">
+    <>
         {/* Page Banner Section Start */}
         <div className="page-banner-section section" style={{ backgroundColor: '#ddb040' }}>
             <div className="container">
@@ -96,7 +79,7 @@ export const CartPage: React.FC = () => {
                         <div className="page-banner text-center">
                             <h1>Shopping Cart</h1>
                             <ul className="page-breadcrumb">
-                                <li><a href="#">Home</a></li>
+                                <li><Link href="/">Home</Link></li>
                                 <li>Cart</li>
                             </ul>
                         </div>
@@ -110,7 +93,6 @@ export const CartPage: React.FC = () => {
         <div className="cart-section section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-70 pb-lg-50 pb-md-40 pb-sm-30 pb-xs-20">
             <div className="container">
                 <div className="row">
-                    
                     <div className="col-12">            
                         {/* Cart Table */}
                         <div className="cart-table table-responsive mb-30">
@@ -126,39 +108,48 @@ export const CartPage: React.FC = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {cartItems.map((item) => (
-                                        <tr key={item.id}>
-                                            <td className="pro-thumbnail">
-                                                <a href="#"><img src={item.image} alt={item.name} /></a>
-                                            </td>
-                                            <td className="pro-title">
-                                                <a href="#">{item.name}</a>
-                                            </td>
-                                            <td className="pro-price">
-                                                <span>Rs.{item.price.toFixed(2)}</span>
-                                            </td>
-                                            <td className="pro-quantity">
-                                                <div className="pro-qty">
-                                                    {/* Custom Quantity Buttons */}
-                                                    <span className="dec qtybtn" onClick={() => handleDecrement(item.id)}>-</span>
-                                                    <input type="text" value={item.quantity} readOnly />
-                                                    <span className="inc qtybtn" onClick={() => handleIncrement(item.id)}>+</span>
-                                                </div>
-                                            </td>
-                                            <td className="pro-subtotal">
-                                                <span>Rs.{(item.price * item.quantity).toFixed(2)}</span>
-                                            </td>
-                                            <td className="pro-remove">
-                                                <a href="#" onClick={(e) => { e.preventDefault(); handleRemove(item.id); }}>
-                                                    <i className="fa fa-trash-o"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                    {cartItems.map((item) => {
+                                        // Calculate price with discount (same as ProductDetailsClient)
+                                        const price = item.variants?.[0]?.price || 0;
+                                        const discount = item.discountPercentage || 0;
+                                        const currentPrice = price * (1 - discount / 100);
+
+                                        return (
+                                            <tr key={item.id}>
+                                                <td className="pro-thumbnail">
+                                                    <Link href={`/products/${item.slug}`}>
+                                                        <img src={item.images[0]} alt={item.name} />
+                                                    </Link>
+                                                </td>
+                                                <td className="pro-title">
+                                                    <Link href={`/products/${item.slug}`}>{item.name}</Link>
+                                                </td>
+                                                <td className="pro-price">
+                                                    <span>Rs.{currentPrice.toFixed(2)}</span>
+                                                </td>
+                                                <td className="pro-quantity">
+                                                    <div className="pro-qty">
+                                                        {/* Custom Quantity Buttons - same UI, different handlers */}
+                                                        <span className="dec qtybtn" onClick={() => handleDecrement(item.id)}>-</span>
+                                                        <input type="text" value={item.quantity} readOnly />
+                                                        <span className="inc qtybtn" onClick={() => handleIncrement(item.id)}>+</span>
+                                                    </div>
+                                                </td>
+                                                <td className="pro-subtotal">
+                                                    <span>Rs.{(currentPrice * item.quantity).toFixed(2)}</span>
+                                                </td>
+                                                <td className="pro-remove">
+                                                    <a href="#" onClick={(e) => { e.preventDefault(); handleRemove(item.id); }}>
+                                                        <i className="fa fa-trash-o"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                     {cartItems.length === 0 && (
                                         <tr>
                                             <td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>
-                                                Your cart is empty.
+                                                Your cart is empty. <Link href="/collections">Continue shopping</Link>
                                             </td>
                                         </tr>
                                     )}
@@ -167,9 +158,8 @@ export const CartPage: React.FC = () => {
                         </div>
 
                         <div className="row">
-
                             <div className="col-lg-6 col-12 mb-5">
-                                {/* Calculate Shipping */}
+                                {/* Calculate Shipping - Keep same UI */}
                                 <div className="calculate-shipping">
                                     <h4>Calculate Shipping</h4>
                                     <form action="#">
@@ -201,7 +191,7 @@ export const CartPage: React.FC = () => {
                                         </div>
                                     </form>
                                 </div>
-                                {/* Discount Coupon */}
+                                {/* Discount Coupon - Keep same UI */}
                                 <div className="discount-coupon">
                                     <h4>Discount Coupon Code</h4>
                                     <form action="#">
@@ -217,7 +207,7 @@ export const CartPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Cart Summary */}
+                            {/* Cart Summary - Keep same UI */}
                             <div className="col-lg-6 col-12 mb-30 d-flex">
                                 <div className="cart-summary">
                                     <div className="cart-summary-wrap">
@@ -228,19 +218,18 @@ export const CartPage: React.FC = () => {
                                     </div>
                                     <div className="cart-summary-button">
                                         <button className="btn" onClick={handleCheckout}>Checkout</button>
-                                        <button className="btn">Update Cart</button>
+                                        <button className="btn" onClick={() => clearCart()}>Clear Cart</button>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-                        
                     </div>
-                    
                 </div>            
             </div>
         </div>
         {/* Cart section end */}
-    </div>
+    </>
   );
 };
+
+export default CartPageComponent;

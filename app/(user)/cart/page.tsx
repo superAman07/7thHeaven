@@ -1,5 +1,11 @@
-import { CartPage } from "@/components/products/CartPage";
+import CartPageComponent from "@/components/products/CartPage";
+import React from "react";
 
-export default function (){
-    return <CartPage/>
+export const metadata = {
+  title: "Your Shopping Cart - 7th Heaven",
+  description: "Review and manage items in your shopping cart before checkout.",
+};
+
+export default function CartPage() {
+  return <CartPageComponent />;
 }

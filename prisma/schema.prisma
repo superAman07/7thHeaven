@@ -7,6 +7,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -31,6 +32,7 @@ model User {
   state            String?
   fullAddress      String?
   refreshTokenHash String?
+  cart             Cart?
   orders           Order[]
   reviews          Review[]
 }
@@ -53,6 +55,7 @@ model Product {
   variants           ProductVariant[]
   inStock            Boolean          @default(true)
   ratingsAvg         Float?
+  cartItems          CartItem[]
   reviews            Review[]
   createdAt          DateTime         @default(now())
   categoryId         String
@@ -104,6 +107,27 @@ model Order {
   mlmWasEligible     Boolean   @default(false)
   createdAt          DateTime  @default(now())
   Payment            Payment[]
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique // Each cart belongs to one user
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+// New Model: Represents an item within a cart
+model CartItem {
+  id        String  @id @default(cuid())
+  quantity  Int
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId]) // A product can only appear once per cart
 }
 
 model Coupon {

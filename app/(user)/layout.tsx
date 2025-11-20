@@ -1,5 +1,6 @@
 import FooterPage from "@/components/home/Footer";
 import NavBar from "@/components/home/NavBar";
+import { CartProvider } from "@/components/CartContext";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,11 +15,13 @@ export default function UserPagesLayout({
 }>) {
   return (
     <div id="main-wrapper">
-      <NavBar />
-      <main>
-        {children}
-      </main>
-      <FooterPage />
+      <CartProvider>
+        <NavBar />
+        <main>
+          {children}
+        </main>
+        <FooterPage />
+      </CartProvider>
     </div>
   );
 }
