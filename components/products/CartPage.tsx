@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useCart } from '../CartContext';
 
 const CartPageComponent: React.FC = () => { 
-  const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotal } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotal, saveCart } = useCart();
    
   const [shippingCountry, setShippingCountry] = useState('Bangladesh');
   const [shippingCity, setShippingCity] = useState('Dhaka');
@@ -33,7 +33,8 @@ const CartPageComponent: React.FC = () => {
     removeFromCart(id);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
+    await saveCart();
     const payload: any = {
       items: cartItems.map(item => {
         const price = item.variants?.[0]?.price || 0;

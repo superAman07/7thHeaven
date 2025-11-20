@@ -13,6 +13,7 @@ interface CartContextType {
     removeFromCart: (productId: string) => void;
     updateQuantity: (productId: string, quantity: number) => void;
     clearCart: () => void;
+    saveCart: () => Promise<void>;
     cartCount: number;
     cartTotal: number;
     isLoggedIn: boolean; 
@@ -36,7 +37,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     // Helper to get token if it exists in localStorage (fallback)
     const getLocalToken = () => {
         if (typeof window !== 'undefined') {
-            return localStorage.getItem('token'); 
+            const token = localStorage.getItem('token');
+            if (token === 'null' || token === 'undefined') return null;
+            return token; 
         }
         return null;
     };
@@ -64,7 +67,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             await fetch('/api/v1/cart', {
                 method: 'POST',
                 headers,
-                body: JSON.stringify({ cartItems: payload })
+                body: JSON.stringify({ cartItems: payload }),
+                credentials: 'include'
             });
         } catch (error) {
             console.error("Failed to sync cart with server", error);
@@ -77,7 +81,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             
             // 1. Load Local Storage Items
             try {
-                const storedCart = localStorage.getItem('7thHeavenCart');
+                const storedCart = localStorage.getItem('CelciusCart');
                 if (storedCart) {
                     localItems = JSON.parse(storedCart);
                 }
@@ -93,10 +97,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                     headers['Authorization'] = `Bearer ${token}`;
                 }
 
-                const res = await fetch('/api/v1/cart', { headers });
+                const res = await fetch('/api/v1/cart', { headers, credentials: 'include' });
 
                 if (res.ok) {
-                    // SUCCESS: User is logged in (via Cookie or Token)
                     setIsLoggedIn(true);
                     
                     const data = await res.json();
@@ -110,7 +113,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                     const mergedItems = Array.from(mergedMap.values());
                     setCartItems(mergedItems);
                     
-                    // Sync back immediately if we had local items
                     if (localItems.length > 0) {
                         // We can't use syncCartWithServer here because isLoggedIn state 
                         // might not have updated in the closure yet.
@@ -136,11 +138,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     // Persistence Effect
     useEffect(() => {
         if (!isLoaded) return;
-
-        // 1. Save to LocalStorage
-        localStorage.setItem('7thHeavenCart', JSON.stringify(cartItems));
-
-        // 2. Sync to Server (Debounced)
+        localStorage.setItem('CelciusCart', JSON.stringify(cartItems));
         if (isLoggedIn) {
             const timeoutId = setTimeout(() => {
                 syncCartWithServer(cartItems);
@@ -181,6 +179,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setCartItems([]);
     };
 
+    const saveCart = async () => {
+        if (isLoggedIn && cartItems.length > 0) {
+            await syncCartWithServer(cartItems);
+        }
+    };
+
     const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
     const cartTotal = cartItems.reduce((total, item) => {
@@ -196,6 +200,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         removeFromCart,
         updateQuantity,
         clearCart,
+        saveCart,
         cartCount,
         cartTotal,
         isLoggedIn,
