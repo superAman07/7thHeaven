@@ -6,6 +6,7 @@ import Slider from "react-slick";
 import { PublicProduct } from "../HeroPage";
 import { NoProductsPlaceholder } from "./NoProductsPlaceholder";
 import ProductQuickViewModal from "./QuickViewModal";
+import { useCart } from "../CartContext";
 
 const getLowestPrice = (variants: PublicProduct['variants']) => {
   if (!variants || variants.length === 0) return 0;
@@ -13,8 +14,22 @@ const getLowestPrice = (variants: PublicProduct['variants']) => {
 };
 
 export default function ProductSectionPage({ products }: { products: PublicProduct[] }) {
+  const { addToCart } = useCart();
+  const [addingProductId, setAddingProductId] = useState<string | null>(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
+
+  const handleAddToCart = (e: React.MouseEvent, product: PublicProduct) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setAddingProductId(product.id);
+    addToCart(product, 1);
+
+    setTimeout(() => {
+      setAddingProductId(null);
+    }, 2000);
+  };
 
   const handleOpenModal = (product: PublicProduct) => {
     setSelectedProduct(product);
@@ -71,7 +86,13 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
                                     {product.isNewArrival && <span className="sticker">New Arrival</span>}
                                     {product.discountPercentage && product.discountPercentage > 0 && <span className="descount-sticker">-{product.discountPercentage}%</span>}
                                     <div className="product-action d-flex justify-content-between">
-                                      <a className="product-btn" href="#">Add to Cart</a>
+                                      <a
+                                        href="#"
+                                        className="product-btn"
+                                        onClick={(e) => handleAddToCart(e, product)}
+                                      >
+                                        {addingProductId === product.id ? 'Added!' : 'Add to Cart'}
+                                      </a>
                                       <ul className="d-flex">
                                         <li>
                                           <a
@@ -91,7 +112,9 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
                                     </div>
                                   </div>
                                   <div className="product-content">
-                                    <h3><Link href={`/collections/${product.category.slug}/${product.id}`}>{product.name}</Link></h3>
+                                    <h3>
+                                      <Link href={`/products/${product.slug}`}>{product.name}</Link>
+                                    </h3>
                                     <h4 className="price">
                                       <span className="new">Rs. {getLowestPrice(product.variants).toFixed(2)}</span>
                                     </h4>
