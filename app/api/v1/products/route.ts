@@ -1,26 +1,28 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
+import { getProducts } from '@/services/product';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const products = await prisma.product.findMany({
-      where: {
-        inStock: true, 
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: 20,  
-      include: {
-        variants: true, 
-        category: {
-          select: { slug: true } 
-        }
-      },
+    const { searchParams } = new URL(req.url);
+    
+    const params = {
+      page: parseInt(searchParams.get('page') || '1'),
+      limit: parseInt(searchParams.get('limit') || '20'),
+      search: searchParams.get('search') || undefined,
+      category: searchParams.get('category') || undefined,
+      gender: searchParams.get('gender') || undefined,
+      sort: searchParams.get('sort') || undefined,
+    };
+
+    const result = await getProducts(params);
+
+    return NextResponse.json({ 
+      success: true, 
+      data: result.data, 
+      meta: result.meta 
     });
-    return NextResponse.json({ success: true, data: products });
   } catch (error) {
-    console.error('Error fetching public products:', error);
-    return NextResponse.json({ success: false, error: { message: 'An unexpected error occurred.' } }, { status: 500 });
+    console.error('GET /api/v1/products Error:', error);
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }

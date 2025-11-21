@@ -1,8 +1,8 @@
 import React from 'react';
-import prisma from '@/lib/prisma';
 import ProductSection2 from './ProductSection2';
 import { PublicProduct } from '../HeroPage';
 import Link from 'next/link';
+import { getProducts } from '@/services/product';
 
 async function getProductsForTabs(): Promise<{
     newArrivals: PublicProduct[];
@@ -10,48 +10,29 @@ async function getProductsForTabs(): Promise<{
     featuredProducts: PublicProduct[];
     allProducts: PublicProduct[];
 }> {
-    const productsFromDb = await prisma.product.findMany({
-        where: { inStock: true },
-        orderBy: { createdAt: 'desc' },
-        take: 20,
-        select: {
-            id: true,
-            name: true,
-            slug: true,
-            description: true,
-            images: true,
-            genderTags: true,
-            inStock: true,
-            ratingsAvg: true,
-            createdAt: true,
-            categoryId: true,
-            isNewArrival: true,
-            discountPercentage: true,
-            category: {
-                select: { name: true, slug: true }
-            },
-            variants: {
-                select: { id: true, price: true, size: true },
-                orderBy: { price: 'asc' }
-            },
-            reviews: {
-                select: { id: true }
-            }
-        }
-    }).then(products => products.map(p => ({
-        ...p,
-        discountPercentage: p.discountPercentage ? p.discountPercentage.toNumber() : null,
-        variants: p.variants.map(v => ({
-            ...v,
-            price: v.price.toNumber()
-        }))
-    })));
+    // Fetch all required data in parallel
+    const [newArrivalsResult, onSaleProductsResult, featuredProductsResult] = await Promise.all([
+        getProducts({ limit: 8, sort: 'newest' }),
+        getProducts({ limit: 8, onSale: true }),
+        getProducts({ limit: 8, sort: 'name_asc' })
+    ]);
 
-    const newArrivals = productsFromDb.filter(p => p.isNewArrival);
-    const onSaleProducts = productsFromDb.filter(p => p.discountPercentage && p.discountPercentage > 0);
-    const featuredProducts = [...productsFromDb].reverse().slice(0, 8);
+    const newArrivals = newArrivalsResult.data as unknown as PublicProduct[];
+    const onSaleProducts = onSaleProductsResult.data as unknown as PublicProduct[];
+    const featuredProducts = featuredProductsResult.data as unknown as PublicProduct[];
 
-    return { newArrivals, onSaleProducts, featuredProducts, allProducts: productsFromDb };
+    // Restore allProducts: Combine lists to ensure the "Explore" button check works
+    // We use a Map to remove duplicates
+    const allProductsMap = new Map();
+    [...newArrivals, ...onSaleProducts, ...featuredProducts].forEach(p => allProductsMap.set(p.id, p));
+    const allProducts = Array.from(allProductsMap.values()) as PublicProduct[];
+
+    return { 
+        newArrivals, 
+        onSaleProducts, 
+        featuredProducts, 
+        allProducts 
+    };
 }
 
 export default async function TabbedProductsSection() {
