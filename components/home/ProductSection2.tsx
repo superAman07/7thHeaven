@@ -126,7 +126,7 @@ export default function ProductSection2({
       <div key={product.id} className="col-12" style={{ padding: 6 }}>
         <div className="single-product mb-30">
           <div className="product-img">
-            <a href={`/collections/${product.category.slug}/${product.id}`}>
+            <a href={`/products/${product.slug}`}>
               <img
                 src={product.images[0] || 'assets/images/product/shop.webp'}
                 alt={product.name}

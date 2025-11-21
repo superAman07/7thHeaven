@@ -80,7 +80,7 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
                               <div key={product.id} className="col-12" style={{ padding: '0 15px' }}>
                                 <div className="single-product mb-30">
                                   <div className="product-img">
-                                    <Link href={`/collections/${product.category.slug}/${product.id}`}>
+                                    <Link href={`/products/${product.slug}`}>
                                       <img src={product.images[0] || '/assets/images/product/shop.webp'} alt={product.name} style={{ aspectRatio: '1 / 1', objectFit: 'cover', width: '100%' }} />
                                     </Link>
                                     {product.isNewArrival && <span className="sticker">New Arrival</span>}
