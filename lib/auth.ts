@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
 import prisma from './prisma';
+import { NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
 
 interface JWTPayload {
   userId: string;
@@ -14,7 +16,7 @@ export async function verifyToken(token: string) {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload;
-    
+
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: {
@@ -27,13 +29,13 @@ export async function verifyToken(token: string) {
     });
 
     if (!user) {
-      return null; // User not found
+      return null;
     }
 
     return user;
   } catch (error) {
     console.error('Token verification failed:', error);
-    return null; // Invalid token
+    return null;
   }
 }
 
@@ -45,49 +47,45 @@ export function generateToken(userId: string): string {
   return jwt.sign(
     { userId },
     process.env.JWT_SECRET,
-    { expiresIn: '7d' } // Token expires in 7 days
+    { expiresIn: '7d' } 
   );
 }
 
-export async function getUserIdFromToken(req: Request): Promise<string | null> {
-    try {
-        let token: string | undefined;
+export async function getUserIdFromToken(req: NextRequest): Promise<string | null> {
+  try {
+    let token: string | undefined;
 
-        // 1. Check Authorization Header (Priority: Mobile Apps)
-        const authHeader = req.headers.get('authorization');
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-            token = authHeader.split(' ')[1];
-        }
-
-        // 2. Check Cookies (Fallback: Web Browser)
-        if (!token) {
-            const cookieHeader = req.headers.get('cookie');
-            if (cookieHeader) {
-                // Parse cookies manually from the header string
-                const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
-                    const [key, value] = cookie.trim().split('=');
-                    acc[key] = value;
-                    return acc;
-                }, {} as Record<string, string>);
-                
-                token = cookies['session_token'];
-            }
-        }
-
-        if (!token) {
-            return null; // No token found in header or cookies
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-        
-        if (typeof decoded === 'string' || !decoded.userId) {
-            return null; // Invalid token payload
-        }
-
-        return decoded.userId;
-
-    } catch (error) {
-        // This will catch expired tokens, invalid signatures, etc.
-        return null;
+    const authHeader = req.headers.get('authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
     }
+
+    if (!token) {
+      const cookieHeader = req.headers.get('cookie');
+      if (cookieHeader) {
+        const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+          const [key, value] = cookie.trim().split('=');
+          acc[key] = value;
+          return acc;
+        }, {} as Record<string, string>);
+
+        token = cookies['admin_session'] || cookies['session_token'];
+      }
+    }
+
+    if (!token) {
+      return null;
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+
+    if (!decoded.userId) {
+      return null;
+    }
+
+    return decoded.userId;
+
+  } catch (error) {
+    return null;
+  }
 }
