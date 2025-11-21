@@ -14,25 +14,24 @@ const CartPageComponent: React.FC = () => {
     const [city, setCity] = useState('');
     const [state, setState] = useState('');
     const [pincode, setPincode] = useState('');
-    const [shippingCountry, setShippingCountry] = useState('Bangladesh');
-    const [shippingCity, setShippingCity] = useState('Dhaka');
-    const [zipCode, setZipCode] = useState('');
 
-    // Coupon & Membership State
+    // Loading state for pincode lookup
+    const [isFetchingPincode, setIsFetchingPincode] = useState(false);
+
     const [couponCode, setCouponCode] = useState('');
     const [is7thHeavenOptIn, setIs7thHeavenOptIn] = useState(false);
 
-    // Admin Setting (Placeholder)
     const MIN_PURCHASE_FOR_MEMBERSHIP = 2000;
 
-    // Fetch user data if logged in
+    // 1. Fetch User Data
     useEffect(() => {
         const fetchUserData = async () => {
             if (isLoggedIn) {
                 try {
                     const { data } = await axios.get('/api/v1/auth/me', {
                         withCredentials: true
-                    }); if (data.success && data.user) {
+                    });
+                    if (data.success && data.user) {
                         const { user } = data;
                         setFullName(user.fullName || '');
                         setPhone(user.phone || '');
@@ -49,6 +48,37 @@ const CartPageComponent: React.FC = () => {
         };
         fetchUserData();
     }, [isLoggedIn]);
+
+    // 2. Auto-fetch City/State from Pincode
+    useEffect(() => {
+        const fetchLocationFromPincode = async () => {
+            // Only fetch if pincode is valid (6 digits for India)
+            if (pincode.length === 6) {
+                setIsFetchingPincode(true);
+                try {
+                    const response = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
+                    const data = response.data;
+
+                    if (data && data[0].Status === 'Success') {
+                        const postOffice = data[0].PostOffice[0];
+                        setCity(postOffice.District);
+                        setState(postOffice.State);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch pincode details", error);
+                } finally {
+                    setIsFetchingPincode(false);
+                }
+            }
+        };
+
+        // Debounce slightly to avoid API spam while typing
+        const timeoutId = setTimeout(() => {
+            fetchLocationFromPincode();
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [pincode]);
 
     const subTotal = cartTotal;
     const shippingCost = 0;
@@ -73,7 +103,14 @@ const CartPageComponent: React.FC = () => {
     };
 
     const handleCheckout = async () => {
+        // Basic Validation
+        if (!fullName || !phone || !fullAddress || !city || !pincode) {
+            alert("Please fill in all required shipping details.");
+            return;
+        }
+
         await saveCart();
+
         const payload: any = {
             items: cartItems.map(item => {
                 const price = item.variants?.[0]?.price || 0;
@@ -94,15 +131,22 @@ const CartPageComponent: React.FC = () => {
                 grandTotal
             },
             shippingDetails: {
-                country: shippingCountry,
-                city: shippingCity,
-                zipCode
+                fullName,
+                phone,
+                email,
+                fullAddress,
+                city,
+                state,
+                pincode,
+                country: 'India'
             },
-            couponCode: couponCode || undefined
+            couponCode: couponCode || undefined,
+            mlmOptIn: is7thHeavenOptIn
         };
 
         console.log('Checkout Payload:', payload);
         alert('Checkout Payload generated! Check console.');
+        // Next step: await axios.post('/api/v1/orders', payload);
     };
 
     return (
@@ -145,7 +189,6 @@ const CartPageComponent: React.FC = () => {
                                     </thead>
                                     <tbody>
                                         {cartItems.map((item) => {
-                                            // Calculate price with discount (same as ProductDetailsClient)
                                             const price = item.variants?.[0]?.price || 0;
                                             const discount = item.discountPercentage || 0;
                                             const currentPrice = price * (1 - discount / 100);
@@ -165,7 +208,6 @@ const CartPageComponent: React.FC = () => {
                                                     </td>
                                                     <td className="pro-quantity">
                                                         <div className="pro-qty">
-                                                            {/* Custom Quantity Buttons - same UI, different handlers */}
                                                             <span className="dec qtybtn cursor-pointer pt-1" onClick={() => handleDecrement(item.id)}>-</span>
                                                             <input type="text" value={item.quantity} readOnly />
                                                             <span className="inc qtybtn cursor-pointer pt-1" onClick={() => handleIncrement(item.id)}>+</span>
@@ -195,22 +237,57 @@ const CartPageComponent: React.FC = () => {
 
                             <div className="row">
                                 <div className="col-lg-6 col-12 mb-5">
-                                    {/* Calculate Shipping - Keep same UI */}
+                                    {/* Calculate Shipping */}
                                     <div className="calculate-shipping">
                                         <h4>Shipping Details</h4>
                                         <form action="#">
                                             <div className="row">
                                                 <div className="col-md-6 col-12 mb-25">
-                                                    <input type="text" placeholder="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+                                                    {/* Read-only if logged in (assuming name is fixed) */}
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Full Name"
+                                                        value={fullName}
+                                                        onChange={(e) => setFullName(e.target.value)}
+                                                        readOnly={isLoggedIn && !!fullName}
+                                                        className={isLoggedIn && !!fullName ? "bg-light" : ""}
+                                                        required
+                                                    />
                                                 </div>
                                                 <div className="col-md-6 col-12 mb-25">
-                                                    <input type="text" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Phone Number"
+                                                        value={phone}
+                                                        onChange={(e) => setPhone(e.target.value)}
+                                                        readOnly={isLoggedIn && !!phone}
+                                                        className={isLoggedIn && !!phone ? "bg-light" : ""}
+                                                        required
+                                                    />
                                                 </div>
                                                 <div className="col-12 mb-25">
-                                                    <input type="email" placeholder="Email Address (Optional)" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                                    <input
+                                                        type="email"
+                                                        placeholder="Email Address (Optional)"
+                                                        value={email}
+                                                        onChange={(e) => setEmail(e.target.value)}
+                                                        readOnly={isLoggedIn && !!email}
+                                                        className={isLoggedIn && !!email ? "bg-light" : ""}
+                                                    />
                                                 </div>
                                                 <div className="col-12 mb-25">
                                                     <input type="text" placeholder="Full Address (House No, Street, Area)" value={fullAddress} onChange={(e) => setFullAddress(e.target.value)} required />
+                                                </div>
+                                                <div className="col-md-6 col-12 mb-25">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Pincode / Zip"
+                                                        value={pincode}
+                                                        onChange={(e) => setPincode(e.target.value)}
+                                                        maxLength={6}
+                                                        required
+                                                    />
+                                                    {isFetchingPincode && <small className="text-muted">Fetching location...</small>}
                                                 </div>
                                                 <div className="col-md-6 col-12 mb-25">
                                                     <input type="text" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} required />
@@ -218,13 +295,10 @@ const CartPageComponent: React.FC = () => {
                                                 <div className="col-md-6 col-12 mb-25">
                                                     <input type="text" placeholder="State" value={state} onChange={(e) => setState(e.target.value)} />
                                                 </div>
-                                                <div className="col-md-6 col-12 mb-25">
-                                                    <input type="text" placeholder="Pincode / Zip" value={pincode} onChange={(e) => setPincode(e.target.value)} required />
-                                                </div>
                                             </div>
                                         </form>
                                     </div>
-                                    {/* Discount Coupon - Keep same UI */}
+                                    {/* Discount Coupon */}
                                     <div className="discount-coupon">
                                         <h4>Discount Coupon Code</h4>
                                         <form action="#">
@@ -240,17 +314,18 @@ const CartPageComponent: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Cart Summary - Keep same UI */}
+                                {/* Cart Summary */}
                                 <div className="col-lg-6 col-12 mb-30 d-flex">
                                     <div className="cart-summary">
                                         <div className="cart-summary-wrap">
                                             <h4>Cart Summary</h4>
                                             <p>Sub Total <span>Rs.{subTotal.toFixed(2)}</span></p>
                                             <p>Shipping Cost <span>Rs.{shippingCost.toFixed(2)}</span></p>
+                                            <p>Discount <span>- Rs.0.00</span></p>
                                             <h2>Grand Total <span>Rs.{grandTotal.toFixed(2)}</span></h2>
                                         </div>
                                         {subTotal >= MIN_PURCHASE_FOR_MEMBERSHIP && (
-                                            <div className="mt-3 p-3" style={{ backgroundColor: '#f9f9f9', border: '1px solid #eee', borderRadius: '5px' }}>
+                                            <div className="mt-3 p-3" style={{ backgroundColor: '#ddb040', color: '#000', border: '1px solid #eee', borderRadius: '5px' }}>
                                                 <div className="form-check">
                                                     <input
                                                         className="form-check-input"
@@ -260,8 +335,8 @@ const CartPageComponent: React.FC = () => {
                                                         onChange={(e) => setIs7thHeavenOptIn(e.target.checked)}
                                                         style={{ width: '18px', height: '18px', marginTop: '3px' }}
                                                     />
-                                                    <label className="form-check-label ms-2" htmlFor="heavenOptIn" style={{ fontSize: '15px', fontWeight: 500 }}>
-                                                        Do you want to be part of 7th Heaven?
+                                                    <label className="form-check-label ms-2" htmlFor="heavenOptIn" style={{ fontSize: '16px', fontWeight: 700, cursor: 'pointer' }}>
+                                                        Join 7th Heaven Club?
                                                     </label>
                                                 </div>
                                                 <p className="text-muted mt-1" style={{ fontSize: '13px', marginLeft: '28px' }}>
@@ -271,7 +346,11 @@ const CartPageComponent: React.FC = () => {
                                         )}
                                         <div className="cart-summary-button">
                                             <button className="btn" onClick={handleCheckout}>Checkout</button>
-                                            <button className="btn" onClick={() => clearCart()}>Clear Cart</button>
+                                            <button className="btn" onClick={() => {
+                                                if (window.confirm('Are you sure you want to remove all items from your cart?')) {
+                                                    clearCart();
+                                                }
+                                            }}>Clear Cart</button>
                                         </div>
                                     </div>
                                 </div>
