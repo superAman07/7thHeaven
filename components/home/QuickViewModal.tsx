@@ -39,8 +39,12 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                 if (!productId) return;
                 setLoading(true);
                 try {
-                    const response = await axios.get<PublicProduct>(`/api/v1/products/${productId}`);
-                    setProduct(response.data);
+                    const response = await axios.get<{ success: boolean; data: PublicProduct }>(`/api/v1/products/${productId}`);
+                    if (response.data.success) {
+                        setProduct(response.data.data);
+                    } else {
+                        setError('Failed to load product data');
+                    }
                 } catch (err) {
                     setError('Failed to fetch product details.');
                     console.error(err);

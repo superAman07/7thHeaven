@@ -1,57 +1,25 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
+import { getProductById } from '@/services/product';
 
 export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ productId: string }> }
+    req: NextRequest,
+    { params }: { params: Promise<{ productId: string }> }
 ) {
-  const { productId } = await params;
+    try {
+        const { productId } = await params;
+        if (!productId) {
+            return NextResponse.json({ success: false, error: 'Product ID is required' }, { status: 400 });
+        }
 
-  if (!productId) {
-    return NextResponse.json(
-      { error: 'Product ID is required' },
-      { status: 400 }
-    );
-  }
+        const product = await getProductById(productId);
+        if (!product) {
+            return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+        }
 
-  try {
-    const product = await prisma.product.findUnique({
-      where: {
-        id: productId,
-      },
-      include: {
-        category: {
-          select: {
-            name: true,
-            slug: true,
-          },
-        },
-        variants: {
-          orderBy: {
-            price: 'asc',
-          },
-        },
-        reviews: {
-          select: {
-            id: true, // We only need the count, so fetching just the ID is efficient
-          },
-        },
-      },
-    });
+        return NextResponse.json({ success: true, data: product });
 
-    if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+    } catch (error) {
+        console.error(`GET /api/v1/products/[id] Error:`, error);
+        return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
     }
-
-    return NextResponse.json(product);
-  } catch (error) {
-    console.error('[PRODUCT_GET_ERROR]', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
-  }
 }

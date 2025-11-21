@@ -69,6 +69,43 @@ export async function getProducts(params: ProductFilterParams) {
     };
 }
 
+export async function getProductById(productId: string) {
+    const product = await prisma.product.findUnique({
+        where: { id: productId },
+        include: {
+            category: true,
+            variants: { orderBy: { price: 'asc' } },
+            reviews: {
+                select: {
+                    id: true,
+                    rating: true, 
+                    createdAt: true,
+                }
+            }
+        }
+    });
+
+    if (!product) {
+        return null;
+    }
+
+    const p = product as any;
+
+    const formattedProduct = {
+        ...product,
+        discountPercentage: product.discountPercentage?.toNumber() || 0,
+        variants: p.variants.map((v: any) => ({ ...v, price: v.price.toNumber() })),
+        ratingsAvg: p.reviews.length > 0
+            ? p.reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / p.reviews.length
+            : 0,
+        reviews: p.reviews.map((r: any) => ({
+            ...r,
+        }))
+    };
+
+    return formattedProduct;
+}
+
 export async function getCategories() {
     return await prisma.category.findMany({
         include: {
