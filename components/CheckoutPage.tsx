@@ -141,11 +141,17 @@ const CheckoutPageComponent: React.FC = () => {
 
         try {
             console.log("Placing Order:", payload);
-            // const { data } = await axios.post('/api/v1/orders', payload);
+            
+            // Replace simulation with real API call
+            const { data } = await axios.post('/api/v1/orders', payload, { withCredentials: true });
 
-            alert("Order Placed Successfully (Simulation)! Redirecting to payment...");
-            const simulatedOrderId = `ORD-${Date.now()}`;
-            router.push(`/checkout/payment?orderId=${simulatedOrderId}`);
+            if (data.success) {
+                alert("Order created! Redirecting to payment...");
+                // Use the real orderId and amount from the API response
+                router.push(`/checkout/payment?orderId=${data.orderId}&amount=${data.totalAmount}`);
+            } else {
+                throw new Error(data.error || 'Failed to create order.');
+            }
 
         } catch (error) {
             console.error("Order failed", error);
