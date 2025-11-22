@@ -3,10 +3,12 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '../CartContext';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 const CartPageComponent: React.FC = () => {
     const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotal, saveCart, isLoggedIn } = useCart();
 
+    const router = useRouter();
     const [fullName, setFullName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
@@ -14,15 +16,21 @@ const CartPageComponent: React.FC = () => {
     const [city, setCity] = useState('');
     const [state, setState] = useState('');
     const [pincode, setPincode] = useState('');
-
-    // Loading state for pincode lookup
     const [isFetchingPincode, setIsFetchingPincode] = useState(false);
-
     const [couponCode, setCouponCode] = useState('');
     const [is7thHeavenOptIn, setIs7thHeavenOptIn] = useState(false);
+    const [isProcessingCheckout, setIsProcessingCheckout] = useState(false);
+    const [minPurchaseLimit, setMinPurchaseLimit] = useState(0);
 
-    const MIN_PURCHASE_FOR_MEMBERSHIP = 2000;
-
+    useEffect(() => {
+        axios.get('/api/v1/settings')
+            .then(res => {
+                if (res.data.success) {
+                    setMinPurchaseLimit(res.data.value);
+                }
+            })
+            .catch(err => console.error("Failed to fetch settings", err));
+    }, []);
     // 1. Fetch User Data
     useEffect(() => {
         const fetchUserData = async () => {
@@ -109,6 +117,12 @@ const CartPageComponent: React.FC = () => {
             return;
         }
 
+        if (cartItems.length === 0) {
+            alert("Your cart is empty.");
+            return;
+        }
+
+        setIsProcessingCheckout(true);
         await saveCart();
 
         const payload: any = {
@@ -144,9 +158,30 @@ const CartPageComponent: React.FC = () => {
             mlmOptIn: is7thHeavenOptIn
         };
 
-        console.log('Checkout Payload:', payload);
-        alert('Checkout Payload generated! Check console.');
-        // Next step: await axios.post('/api/v1/orders', payload);
+        try {
+            // This is where we will create the order and get an orderId
+            // For now, we will simulate this and redirect.
+            console.log('Creating order with payload:', payload);
+
+            // ** FUTURE IMPLEMENTATION: **
+            // const { data } = await axios.post('/api/v1/orders', payload, { withCredentials: true });
+            // if (data.success) {
+            //   router.push(`/checkout/payment?orderId=${data.orderId}`);
+            // } else {
+            //   alert(`Error: ${data.error}`);
+            // }
+
+            alert('Order created (simulation)! Redirecting to payment page...');
+            // We will create a placeholder order ID for now
+            const simulatedOrderId = `ORD-${Date.now()}`;
+            router.push(`/checkout/payment?orderId=${simulatedOrderId}`);
+
+        } catch (error) {
+            console.error("Checkout failed", error);
+            alert("There was an error during checkout. Please try again.");
+        } finally {
+            setIsProcessingCheckout(false);
+        }
     };
 
     return (
@@ -324,28 +359,55 @@ const CartPageComponent: React.FC = () => {
                                             <p>Discount <span>- Rs.0.00</span></p>
                                             <h2>Grand Total <span>Rs.{grandTotal.toFixed(2)}</span></h2>
                                         </div>
-                                        {subTotal >= MIN_PURCHASE_FOR_MEMBERSHIP && (
-                                            <div className="mt-3 p-3" style={{ backgroundColor: '#ddb040', color: '#000', border: '1px solid #eee', borderRadius: '5px' }}>
-                                                <div className="form-check">
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="checkbox"
-                                                        id="heavenOptIn"
-                                                        checked={is7thHeavenOptIn}
-                                                        onChange={(e) => setIs7thHeavenOptIn(e.target.checked)}
-                                                        style={{ width: '18px', height: '18px', marginTop: '3px' }}
-                                                    />
-                                                    <label className="form-check-label ms-2" htmlFor="heavenOptIn" style={{ fontSize: '16px', fontWeight: 700, cursor: 'pointer' }}>
-                                                        Join 7th Heaven Club?
-                                                    </label>
+                                        {subTotal > 0 && (
+                                            subTotal >= minPurchaseLimit ? (
+                                                <div className="mt-3 p-3" style={{
+                                                    backgroundColor: '#ddb040',
+                                                    color: '#000',
+                                                    border: '1px solid #cca33b',
+                                                    borderRadius: '5px',
+                                                    boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                                                }}>
+                                                    <div className="form-check">
+                                                        <input
+                                                            className="form-check-input"
+                                                            type="checkbox"
+                                                            id="heavenOptIn"
+                                                            checked={is7thHeavenOptIn}
+                                                            onChange={(e) => setIs7thHeavenOptIn(e.target.checked)}
+                                                            style={{ width: '18px', height: '18px', marginTop: '3px', cursor: 'pointer' }}
+                                                        />
+                                                        <label className="form-check-label ms-2" htmlFor="heavenOptIn" style={{ fontSize: '16px', fontWeight: 700, cursor: 'pointer' }}>
+                                                            Join 7th Heaven Club?
+                                                        </label>
+                                                    </div>
+                                                    <p className="mt-1 mb-0" style={{ fontSize: '14px', marginLeft: '28px', fontWeight: 500 }}>
+                                                        Unlock exclusive benefits and referral rewards!
+                                                    </p>
                                                 </div>
-                                                <p className="text-muted mt-1" style={{ fontSize: '13px', marginLeft: '28px' }}>
-                                                    Unlock exclusive benefits and referral rewards.
-                                                </p>
-                                            </div>
+                                            ) : (
+                                                <div className="mt-3 p-3 text-center" style={{
+                                                    backgroundColor: '#f8f9fa',
+                                                    border: '1px dashed #ddb040',
+                                                    borderRadius: '5px'
+                                                }}>
+                                                    <p className="mb-1" style={{ fontSize: '14px', fontWeight: 600, color: '#555' }}>
+                                                        Want to join the <strong>7th Heaven Club</strong>?
+                                                    </p>
+                                                    <p className="mb-0" style={{ fontSize: '13px', color: '#ddb040', fontWeight: 700 }}>
+                                                        Add items worth Rs.{(minPurchaseLimit - subTotal).toFixed(2)} more to unlock membership!
+                                                    </p>
+                                                </div>
+                                            )
                                         )}
                                         <div className="cart-summary-button">
-                                            <button className="btn" onClick={handleCheckout}>Checkout</button>
+                                            <button
+                                                className="btn"
+                                                onClick={handleCheckout}
+                                                disabled={isProcessingCheckout}
+                                            >
+                                                {isProcessingCheckout ? 'Processing...' : 'Proceed to Checkout'}
+                                            </button>
                                             <button className="btn" onClick={() => {
                                                 if (window.confirm('Are you sure you want to remove all items from your cart?')) {
                                                     clearCart();
