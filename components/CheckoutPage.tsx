@@ -25,19 +25,16 @@ const CheckoutPageComponent: React.FC = () => {
             .catch(err => console.error("Failed to fetch settings", err));
     }, []);
 
-    // Billing State
     const [billing, setBilling] = useState({
         firstName: '', lastName: '', email: '', phone: '',
         address1: '', address2: '', country: '', city: '', state: '', zip: ''
     });
 
-    // Shipping State
     const [shipping, setShipping] = useState({
         firstName: '', lastName: '', email: '', phone: '',
         address1: '', address2: '', country: 'India', city: '', state: '', zip: ''
     });
 
-    // 1. Fetch User Data on Load
     useEffect(() => {
         const fetchUserData = async () => {
             if (isLoggedIn) {
