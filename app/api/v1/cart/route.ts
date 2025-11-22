@@ -148,3 +148,40 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
+
+export async function DELETE(req: NextRequest) {
+    try {
+        const userId = await getUserIdFromToken(req);
+        if (!userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const body = await req.json();
+        const { productId } = body;
+
+        if (!productId) {
+            return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
+        }
+
+        const cart = await prisma.cart.findUnique({
+            where: { userId },
+        });
+
+        if (!cart) {
+            return NextResponse.json({ success: true, message: 'Cart not found, nothing to delete.' });
+        }
+
+        await prisma.cartItem.deleteMany({
+            where: {
+                cartId: cart.id,
+                productId: productId,
+            },
+        });
+
+        return NextResponse.json({ success: true, message: 'Item removed from cart.' });
+
+    } catch (error) {
+        console.error('DELETE /api/cart Error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}

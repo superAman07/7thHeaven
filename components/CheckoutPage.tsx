@@ -27,13 +27,13 @@ const CheckoutPageComponent: React.FC = () => {
 
     // Billing State
     const [billing, setBilling] = useState({
-        firstName: '', lastName: '', email: '', phone: '', company: '',
-        address1: '', address2: '', country: 'India', city: '', state: '', zip: ''
+        firstName: '', lastName: '', email: '', phone: '',
+        address1: '', address2: '', country: '', city: '', state: '', zip: ''
     });
 
     // Shipping State
     const [shipping, setShipping] = useState({
-        firstName: '', lastName: '', email: '', phone: '', company: '',
+        firstName: '', lastName: '', email: '', phone: '',
         address1: '', address2: '', country: 'India', city: '', state: '', zip: ''
     });
 
@@ -58,7 +58,8 @@ const CheckoutPageComponent: React.FC = () => {
                             address1: u.fullAddress || '',
                             city: u.city || '',
                             state: u.state || '',
-                            zip: u.pincode || ''
+                            zip: u.pincode || '',
+                            country: u.country || 'India'
                         }));
                     }
                 } catch (error) {
@@ -69,14 +70,19 @@ const CheckoutPageComponent: React.FC = () => {
         fetchUserData();
     }, [isLoggedIn]);
 
-    // 2. Auto-fetch City/State from Pincode (Billing)
+    // 2. Auto-fetch City, State, and Country from Pincode (Billing)
     useEffect(() => {
         if (billing.zip.length === 6) {
             axios.get(`https://api.postalpincode.in/pincode/${billing.zip}`)
                 .then(res => {
                     if (res.data && res.data[0].Status === 'Success') {
                         const po = res.data[0].PostOffice[0];
-                        setBilling(prev => ({ ...prev, city: po.District, state: po.State }));
+                        setBilling(prev => ({ 
+                            ...prev, 
+                            city: po.District, 
+                            state: po.State,
+                            country: po.Country
+                        }));
                     }
                 })
                 .catch(err => console.error(err));
@@ -138,7 +144,6 @@ const CheckoutPageComponent: React.FC = () => {
 
         try {
             console.log("Placing Order:", payload);
-            // Simulate API Call
             // const { data } = await axios.post('/api/v1/orders', payload);
 
             alert("Order Placed Successfully (Simulation)! Redirecting to payment...");
@@ -151,6 +156,12 @@ const CheckoutPageComponent: React.FC = () => {
         } finally {
             setIsProcessing(false);
         }
+    };
+
+    const readOnlyInputStyle = {
+        backgroundColor: '#f8f9fa',
+        cursor: 'not-allowed',
+        color: '#6c757d'
     };
 
     return (
@@ -184,38 +195,38 @@ const CheckoutPageComponent: React.FC = () => {
                                         <div id="billing-form" className="mb-10">
                                             <h4 className="checkout-title">Billing Address</h4>
                                             <div className="row">
+                                                {/* NON-EDITABLE FIELDS */}
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>First Name*</label>
-                                                    <input type="text" placeholder="First Name" value={billing.firstName} onChange={e => setBilling({ ...billing, firstName: e.target.value })} required />
+                                                    <input type="text" value={billing.firstName} readOnly style={readOnlyInputStyle} />
                                                 </div>
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>Last Name*</label>
-                                                    <input type="text" placeholder="Last Name" value={billing.lastName} onChange={e => setBilling({ ...billing, lastName: e.target.value })} required />
+                                                    <input type="text" value={billing.lastName} readOnly style={readOnlyInputStyle} />
                                                 </div>
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>Email Address*</label>
-                                                    <input type="email" placeholder="Email Address" value={billing.email} onChange={e => setBilling({ ...billing, email: e.target.value })} required />
+                                                    <input type="email" value={billing.email} readOnly style={readOnlyInputStyle} />
                                                 </div>
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>Phone no*</label>
-                                                    <input type="text" placeholder="Phone number" value={billing.phone} onChange={e => setBilling({ ...billing, phone: e.target.value })} required />
+                                                    <input type="text" value={billing.phone} readOnly style={readOnlyInputStyle} />
                                                 </div>
-                                                <div className="col-12 mb-20">
-                                                    <label>Company Name</label>
-                                                    <input type="text" placeholder="Company Name" value={billing.company} onChange={e => setBilling({ ...billing, company: e.target.value })} />
-                                                </div>
+
                                                 <div className="col-12 mb-20">
                                                     <label>Address*</label>
                                                     <input type="text" placeholder="Address line 1" className="mb-2" value={billing.address1} onChange={e => setBilling({ ...billing, address1: e.target.value })} required />
                                                     <input type="text" placeholder="Address line 2" value={billing.address2} onChange={e => setBilling({ ...billing, address2: e.target.value })} />
                                                 </div>
+                                                
+                                                {/* REORDERED FIELDS */}
+                                                <div className="col-md-6 col-12 mb-20">
+                                                    <label>Zip Code*</label>
+                                                    <input type="text" placeholder="Zip Code" value={billing.zip} onChange={e => setBilling({ ...billing, zip: e.target.value })} maxLength={6} required />
+                                                </div>
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>Country*</label>
-                                                    <select className="nice-select" value={billing.country} onChange={e => setBilling({ ...billing, country: e.target.value })}>
-                                                        <option value="India">India</option>
-                                                        <option value="Bangladesh">Bangladesh</option>
-                                                        <option value="China">China</option>
-                                                    </select>
+                                                    <input type="text" placeholder="Country" value={billing.country} onChange={e => setBilling({ ...billing, country: e.target.value })} required />
                                                 </div>
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>Town/City*</label>
@@ -224,10 +235,6 @@ const CheckoutPageComponent: React.FC = () => {
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>State*</label>
                                                     <input type="text" placeholder="State" value={billing.state} onChange={e => setBilling({ ...billing, state: e.target.value })} required />
-                                                </div>
-                                                <div className="col-md-6 col-12 mb-20">
-                                                    <label>Zip Code*</label>
-                                                    <input type="text" placeholder="Zip Code" value={billing.zip} onChange={e => setBilling({ ...billing, zip: e.target.value })} maxLength={6} required />
                                                 </div>
 
                                                 <div className="col-12 mb-20">
@@ -239,55 +246,47 @@ const CheckoutPageComponent: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        {/* Shipping Address (Conditional) */}
+                                        {/* Shipping Address (Conditional & Fixed) */}
                                         {shipToDifferentAddress && (
                                             <div id="shipping-form">
                                                 <h4 className="checkout-title">Shipping Address</h4>
                                                 <div className="row">
                                                     <div className="col-md-6 col-12 mb-20">
                                                         <label>First Name*</label>
-                                                        <input type="text" placeholder="First Name" value={shipping.firstName} onChange={e => setShipping({ ...shipping, firstName: e.target.value })} />
+                                                        <input type="text" placeholder="First Name" value={shipping.firstName} onChange={e => setShipping({ ...shipping, firstName: e.target.value })} required />
                                                     </div>
                                                     <div className="col-md-6 col-12 mb-20">
                                                         <label>Last Name*</label>
-                                                        <input type="text" placeholder="Last Name" value={shipping.lastName} onChange={e => setShipping({ ...shipping, lastName: e.target.value })} />
+                                                        <input type="text" placeholder="Last Name" value={shipping.lastName} onChange={e => setShipping({ ...shipping, lastName: e.target.value })} required />
                                                     </div>
                                                     <div className="col-md-6 col-12 mb-20">
                                                         <label>Email Address*</label>
-                                                        <input type="email" placeholder="Email Address" value={shipping.email} onChange={e => setShipping({ ...shipping, email: e.target.value })} />
+                                                        <input type="email" placeholder="Email Address" value={shipping.email} onChange={e => setShipping({ ...shipping, email: e.target.value })} required />
                                                     </div>
                                                     <div className="col-md-6 col-12 mb-20">
                                                         <label>Phone no*</label>
-                                                        <input type="text" placeholder="Phone number" value={shipping.phone} onChange={e => setShipping({ ...shipping, phone: e.target.value })} />
-                                                    </div>
-                                                    <div className="col-12 mb-20">
-                                                        <label>Company Name</label>
-                                                        <input type="text" placeholder="Company Name" value={shipping.company} onChange={e => setShipping({ ...shipping, company: e.target.value })} />
+                                                        <input type="text" placeholder="Phone number" value={shipping.phone} onChange={e => setShipping({ ...shipping, phone: e.target.value })} required />
                                                     </div>
                                                     <div className="col-12 mb-20">
                                                         <label>Address*</label>
-                                                        <input type="text" placeholder="Address line 1" className="mb-2" value={shipping.address1} onChange={e => setShipping({ ...shipping, address1: e.target.value })} />
+                                                        <input type="text" placeholder="Address line 1" className="mb-2" value={shipping.address1} onChange={e => setShipping({ ...shipping, address1: e.target.value })} required />
                                                         <input type="text" placeholder="Address line 2" value={shipping.address2} onChange={e => setShipping({ ...shipping, address2: e.target.value })} />
                                                     </div>
                                                     <div className="col-md-6 col-12 mb-20">
+                                                        <label>Zip Code*</label>
+                                                        <input type="text" placeholder="Zip Code" value={shipping.zip} onChange={e => setShipping({ ...shipping, zip: e.target.value })} maxLength={6} required />
+                                                    </div>
+                                                    <div className="col-md-6 col-12 mb-20">
                                                         <label>Country*</label>
-                                                        <select className="nice-select" value={shipping.country} onChange={e => setShipping({ ...shipping, country: e.target.value })}>
-                                                            <option value="India">India</option>
-                                                            <option value="Bangladesh">Bangladesh</option>
-                                                            <option value="China">China</option>
-                                                        </select>
+                                                        <input type="text" placeholder="Country" value={shipping.country} onChange={e => setShipping({ ...shipping, country: e.target.value })} required />
                                                     </div>
                                                     <div className="col-md-6 col-12 mb-20">
                                                         <label>Town/City*</label>
-                                                        <input type="text" placeholder="Town/City" value={shipping.city} onChange={e => setShipping({ ...shipping, city: e.target.value })} />
+                                                        <input type="text" placeholder="Town/City" value={shipping.city} onChange={e => setShipping({ ...shipping, city: e.target.value })} required />
                                                     </div>
                                                     <div className="col-md-6 col-12 mb-20">
                                                         <label>State*</label>
-                                                        <input type="text" placeholder="State" value={shipping.state} onChange={e => setShipping({ ...shipping, state: e.target.value })} />
-                                                    </div>
-                                                    <div className="col-md-6 col-12 mb-20">
-                                                        <label>Zip Code*</label>
-                                                        <input type="text" placeholder="Zip Code" value={shipping.zip} onChange={e => setShipping({ ...shipping, zip: e.target.value })} maxLength={6} />
+                                                        <input type="text" placeholder="State" value={shipping.state} onChange={e => setShipping({ ...shipping, state: e.target.value })} required />
                                                     </div>
                                                 </div>
                                             </div>

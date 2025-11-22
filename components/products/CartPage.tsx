@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '../CartContext';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 const CartPageComponent: React.FC = () => {
     const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotal, saveCart } = useCart();
@@ -24,8 +25,21 @@ const CartPageComponent: React.FC = () => {
         if (item && item.quantity > 1) updateQuantity(id, item.quantity - 1);
     };
 
-    const handleRemove = (id: string) => {
-        removeFromCart(id);
+    const handleRemove = async (id: string) => {
+        try {
+            // API call to remove the item from the database cart
+            await axios.delete('/api/v1/cart', { 
+                data: { productId: id },
+                withCredentials: true 
+            });
+            
+            // Update the local state via context
+            removeFromCart(id);
+
+        } catch (error) {
+            console.error("Failed to remove item from cart", error);
+            alert("Error removing item. Please try again.");
+        }
     };
 
     const handleProceedToCheckout = async () => {
