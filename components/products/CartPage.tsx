@@ -406,7 +406,7 @@ const CartPageComponent: React.FC = () => {
                                                 onClick={handleCheckout}
                                                 disabled={isProcessingCheckout}
                                             >
-                                                {isProcessingCheckout ? 'Processing...' : 'Proceed to Checkout'}
+                                                {isProcessingCheckout ? 'Processing...' : 'Checkout'}
                                             </button>
                                             <button className="btn" onClick={() => {
                                                 if (window.confirm('Are you sure you want to remove all items from your cart?')) {
