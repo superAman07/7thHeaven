@@ -12,6 +12,18 @@ const CheckoutPageComponent: React.FC = () => {
     const [paymentMethod, setPaymentMethod] = useState('check');
     const [shipToDifferentAddress, setShipToDifferentAddress] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [is7thHeavenOptIn, setIs7thHeavenOptIn] = useState(false);
+    const [minPurchaseLimit, setMinPurchaseLimit] = useState(2000);
+
+    useEffect(() => {
+        axios.get('/api/v1/settings')
+            .then(res => {
+                if (res.data.success) {
+                    setMinPurchaseLimit(res.data.value);
+                }
+            })
+            .catch(err => console.error("Failed to fetch settings", err));
+    }, []);
 
     // Billing State
     const [billing, setBilling] = useState({
@@ -120,7 +132,8 @@ const CheckoutPageComponent: React.FC = () => {
                 pincode: finalShipping.zip,
                 country: finalShipping.country
             },
-            paymentMethod
+            paymentMethod,
+            mlmOptIn: is7thHeavenOptIn
         };
 
         try {
@@ -305,6 +318,26 @@ const CheckoutPageComponent: React.FC = () => {
                                                     <p>Shipping Fee <span>Rs.0.00</span></p>
                                                     <h4>Grand Total <span>Rs.{cartTotal.toFixed(2)}</span></h4>
                                                 </div>
+                                            </div>
+
+                                            {/* START: 7th Heaven Logic */}
+                                            <div className="col-12 mb-30">
+                                                {cartTotal > 0 && (
+                                                    cartTotal >= minPurchaseLimit ? (
+                                                        <div className="p-3" style={{ backgroundColor: '#ddb040', color: '#000', border: '1px solid #cca33b', borderRadius: '5px' }}>
+                                                            <div className="check-box">
+                                                                <input type="checkbox" id="heavenOptIn" checked={is7thHeavenOptIn} onChange={(e) => setIs7thHeavenOptIn(e.target.checked)} />
+                                                                <label htmlFor="heavenOptIn" style={{ fontSize: '16px', fontWeight: 700 }}>Join 7th Heaven Club?</label>
+                                                            </div>
+                                                            <p className="mt-1 mb-0" style={{ fontSize: '14px', marginLeft: '28px', fontWeight: 500 }}>Unlock exclusive benefits and referral rewards!</p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="p-3 text-center" style={{ backgroundColor: '#f8f9fa', border: '1px dashed #ddb040', borderRadius: '5px' }}>
+                                                            <p className="mb-1" style={{ fontSize: '14px', fontWeight: 600, color: '#555' }}>Want to join the <strong>7th Heaven Club</strong>?</p>
+                                                            <p className="mb-0" style={{ fontSize: '13px', color: '#ddb040', fontWeight: 700 }}>Add items worth Rs.{(minPurchaseLimit - cartTotal).toFixed(2)} more to unlock!</p>
+                                                        </div>
+                                                    )
+                                                )}
                                             </div>
 
                                             {/* Payment Method */}
