@@ -147,7 +147,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [cartItems, isLoaded, isLoggedIn, syncCartWithServer]);
 
-    const addToCart = (product: PublicProduct, quantity: number) => {
+    const addToCart = useCallback((product: PublicProduct, quantity: number) => {
         setCartItems(prevItems => {
             const existingItem = prevItems.find(item => item.id === product.id);
             if (existingItem) {
@@ -157,13 +157,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             }
             return [...prevItems, { ...product, quantity }];
         });
-    };
+    }, [cartItems]);
 
-    const removeFromCart = (productId: string) => {
+    const removeFromCart = useCallback((productId: string) => {
         setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
-    };
+    }, [cartItems]);
 
-    const updateQuantity = (productId: string, quantity: number) => {
+    const updateQuantity = useCallback((productId: string, quantity: number) => {
         if (quantity <= 0) {
             removeFromCart(productId);
         } else {
@@ -173,11 +173,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 )
             );
         }
-    };
+    }, [cartItems, removeFromCart]);
 
-    const clearCart = () => {
+    const clearCart = useCallback(() => {
         setCartItems([]);
-    };
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('cartItems');
+        }
+    }, []);
 
     const saveCart = async () => {
         if (isLoggedIn && cartItems.length > 0) {
