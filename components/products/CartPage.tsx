@@ -27,13 +27,10 @@ const CartPageComponent: React.FC = () => {
 
     const handleRemove = async (id: string) => {
         try {
-            // API call to remove the item from the database cart
             await axios.delete('/api/v1/cart', { 
                 data: { productId: id },
                 withCredentials: true 
             });
-            
-            // Update the local state via context
             removeFromCart(id);
 
         } catch (error) {
@@ -47,7 +44,6 @@ const CartPageComponent: React.FC = () => {
             alert("Your cart is empty.");
             return;
         }
-        // Save cart state before redirecting
         await saveCart();
         router.push('/checkout');
     };
