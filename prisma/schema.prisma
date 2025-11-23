@@ -99,6 +99,7 @@ model Order {
   currency           String    @default("INR")
   couponCode         String?
   paymentStatus      String //<-- enum PENDING / PAID / FAILED / REFUNDED
+  status             String    @default("PENDING")
   paymentGateway     String?
   gatewayOrderId     String?
   shippingAddress    Json?
