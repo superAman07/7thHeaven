@@ -4,8 +4,8 @@ import * as jose from 'jose';
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  
-  if (path.startsWith('/checkout')) {
+
+  if (path.startsWith('/cart/checkout')) {
     const userToken = request.cookies.get('session_token')?.value;
 
     if (!userToken) {

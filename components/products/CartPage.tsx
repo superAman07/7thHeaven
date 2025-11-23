@@ -45,7 +45,7 @@ const CartPageComponent: React.FC = () => {
             return;
         }
         await saveCart();
-        router.push('/checkout');
+        router.push('/cart/checkout');
     };
 
     return (
