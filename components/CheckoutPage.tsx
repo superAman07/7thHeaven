@@ -120,7 +120,7 @@ const CheckoutPageComponent: React.FC = () => {
 
         const finalShipping = shipToDifferentAddress ? shipping : billing;
 
-        const payload = {
+        const orderPayload = {
             items: cartItems.map(item => ({
                 productId: item.id,
                 quantity: item.quantity,
@@ -135,27 +135,35 @@ const CheckoutPageComponent: React.FC = () => {
                 pincode: finalShipping.zip,
                 country: finalShipping.country
             },
-            paymentMethod,
             mlmOptIn: is7thHeavenOptIn
         };
 
         try {
-            console.log("Placing Order:", payload);
-            
-            // Replace simulation with real API call
-            const { data } = await axios.post('/api/v1/orders', payload, { withCredentials: true });
+            // Step 1: Create the order in our database
+            const orderResponse = await axios.post('/api/v1/orders', orderPayload, { withCredentials: true });
 
-            if (data.success) {
-                alert("Order created! Redirecting to payment...");
-                // Use the real orderId and amount from the API response
-                router.push(`/checkout/payment?orderId=${data.orderId}&amount=${data.totalAmount}`);
-            } else {
-                throw new Error(data.error || 'Failed to create order.');
+            if (!orderResponse.data.success) {
+                throw new Error(orderResponse.data.error || 'Failed to create order.');
             }
 
+            const { orderId } = orderResponse.data;
+            
+            // Step 2: Initiate payment with PhonePe using the new orderId
+            const paymentResponse = await axios.post('/api/v1/payment/initiate', { orderId }, { withCredentials: true });
+
+            if (!paymentResponse.data.success) {
+                throw new Error(paymentResponse.data.error || 'Failed to initiate payment.');
+            }
+
+            // Step 3: Redirect user to the PhonePe payment page
+            const { paymentUrl } = paymentResponse.data;
+            router.push(paymentUrl);
+
         } catch (error) {
-            console.error("Order failed", error);
-            alert("Failed to place order.");
+            console.error("Checkout process failed", error);
+            const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
+            alert(`Failed to place order: ${errorMessage}`);
+            setIsProcessing(false);
         } finally {
             setIsProcessing(false);
         }
@@ -346,27 +354,30 @@ const CheckoutPageComponent: React.FC = () => {
                                             <div className="col-12 mb-30">
                                                 <h4 className="checkout-title">Payment Method</h4>
                                                 <div className="checkout-payment-method">
-                                                    {['check', 'bank', 'cash', 'paypal', 'payoneer'].map(method => (
-                                                        <div className="single-method" key={method}>
-                                                            <input
-                                                                type="radio"
-                                                                id={`payment_${method}`}
-                                                                name="payment-method"
-                                                                value={method}
-                                                                checked={paymentMethod === method}
-                                                                onChange={() => setPaymentMethod(method)}
-                                                            />
-                                                            <label htmlFor={`payment_${method}`}>
-                                                                {method === 'check' ? 'Check Payment' :
-                                                                    method === 'bank' ? 'Direct Bank Transfer' :
-                                                                        method === 'cash' ? 'Cash on Delivery' :
-                                                                            method.charAt(0).toUpperCase() + method.slice(1)}
-                                                            </label>
-                                                            <p style={getSlideStyle(method)}>
-                                                                Please send a Check to Store name with Store Street, Store Town, Store State, Store Postcode, Store Country.
-                                                            </p>
-                                                        </div>
-                                                    ))}
+                                                    <div className="single-method">
+                                                        <input
+                                                            type="radio"
+                                                            id="payment_phonepe"
+                                                            name="payment-method"
+                                                            value="phonepe"
+                                                            checked // Always selected
+                                                            readOnly
+                                                        />
+                                                        <label htmlFor="payment_phonepe">
+                                                            PhonePe / UPI / Cards / NetBanking
+                                                        </label>
+                                                        <p style={{
+                                                            maxHeight: '150px',
+                                                            opacity: 1,
+                                                            padding: '10px 15px',
+                                                            margin: '10px 0 0 0',
+                                                            fontSize: '14px',
+                                                            backgroundColor: '#f8f9fa',
+                                                            borderRadius: '4px',
+                                                        }}>
+                                                            You will be redirected to the secure PhonePe payment gateway to complete your purchase.
+                                                        </p>
+                                                    </div>
 
                                                     <div className="single-method">
                                                         <input type="checkbox" id="accept_terms" required />

@@ -29,6 +29,7 @@ model User {
   pincode          String?
   city             String?
   state            String?
+  country          String?   @default("India")
   fullAddress      String?
   refreshTokenHash String?
   cart             Cart?

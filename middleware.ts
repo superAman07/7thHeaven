@@ -67,7 +67,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/checkout/:path*',
+    '/cart/checkout/:path*',
     '/api/v1/admin/((?!login).*)',
   ],
 };
