@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
 import Link from 'next/link';
+import { useCart } from '@/components/CartContext';
 
 interface OrderStatus {
     id: string;
@@ -14,6 +15,7 @@ interface OrderStatus {
 export default function PaymentStatusPage() {
     const params = useParams();
     const { transactionId } = params;
+    const { clearCart } = useCart();
 
     const [status, setStatus] = useState<'loading' | 'success' | 'failed' | 'error'>('loading');
     const [order, setOrder] = useState<OrderStatus | null>(null);
@@ -30,6 +32,7 @@ export default function PaymentStatusPage() {
                     setOrder(orderData);
                     if (orderData.paymentStatus === 'PAID') {
                         setStatus('success');
+                        clearCart();
                     } else {
                         setStatus('failed');
                     }
@@ -49,7 +52,7 @@ export default function PaymentStatusPage() {
 
         return () => clearTimeout(timer);
 
-    }, [transactionId]);
+    }, [transactionId, clearCart]);
 
     if (status === 'loading') {
         return (

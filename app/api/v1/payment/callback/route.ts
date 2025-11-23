@@ -49,6 +49,13 @@ export async function POST(req: NextRequest) {
                 }
             });
 
+            if (order.mlmOptInRequested) {
+                await prisma.user.update({
+                    where: { id: order.userId },
+                    data: { is7thHeaven: true } 
+                });
+            }
+
             // NEW: Clear the user's cart after successful payment
             const cart = await prisma.cart.findUnique({
                 where: { userId: order.userId }

@@ -5,21 +5,21 @@ import { z } from 'zod';
 
 // Define schema for incoming request body
 const orderSchema = z.object({
-  items: z.array(z.object({
-    productId: z.string(),
-    quantity: z.number().min(1),
-  })).min(1),
-  shippingDetails: z.object({
-    fullName: z.string(),
-    phone: z.string(),
-    email: z.string().email(),
-    fullAddress: z.string(),
-    city: z.string(),
-    state: z.string(),
-    pincode: z.string(),
-    country: z.string(),
-  }),
-  mlmOptIn: z.boolean().optional(),
+    items: z.array(z.object({
+        productId: z.string(),
+        quantity: z.number().min(1),
+    })).min(1),
+    shippingDetails: z.object({
+        fullName: z.string(),
+        phone: z.string(),
+        email: z.string().email(),
+        fullAddress: z.string(),
+        city: z.string(),
+        state: z.string(),
+        pincode: z.string(),
+        country: z.string(),
+    }),
+    mlmOptIn: z.boolean().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -38,6 +38,12 @@ export async function POST(req: NextRequest) {
         }
         const { items, shippingDetails, mlmOptIn } = validation.data;
 
+        console.log("------------------------------------------------------------------");
+        console.log("CREATE ORDER REQUEST");
+        console.log("User ID:", userId);
+        console.log("mlmOptIn received:", mlmOptIn);
+        console.log("------------------------------------------------------------------");
+
         // 3. Fetch product prices from DB and calculate totalAmount securely
         const productIds = items.map(item => item.productId);
         const productsFromDb = await prisma.product.findMany({
@@ -51,11 +57,11 @@ export async function POST(req: NextRequest) {
             if (!product || !product.variants || product.variants.length === 0) {
                 throw new Error(`Product with ID ${item.productId} not found or has no variants.`);
             }
-            
+
             const price = product.variants[0].price;
             // FIX 2: Convert Decimal to number for calculation
-            subtotal += price.toNumber() * item.quantity; 
-            
+            subtotal += price.toNumber() * item.quantity;
+
             return {
                 productId: item.productId,
                 quantity: item.quantity,
@@ -91,9 +97,9 @@ export async function POST(req: NextRequest) {
         });
 
         // 5. Return success response
-        return NextResponse.json({ 
-            success: true, 
-            orderId: newOrder.id, 
+        return NextResponse.json({
+            success: true,
+            orderId: newOrder.id,
             totalAmount: newOrder.subtotal // FIX 1 & 3: Return `subtotal`
         });
 

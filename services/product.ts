@@ -33,20 +33,19 @@ export async function getProducts(params: ProductFilterParams) {
     if (sort === 'name_asc') orderBy = { name: 'asc' };
     if (sort === 'name_desc') orderBy = { name: 'desc' };
 
-    const [products, total] = await prisma.$transaction([
-        prisma.product.findMany({
-            where,
-            include: {
-                category: true,
-                variants: true,
-                reviews: { select: { rating: true } }
-            },
-            orderBy,
-            skip,
-            take: limit,
-        }),
-        prisma.product.count({ where }),
-    ]);
+    const products = await prisma.product.findMany({
+        where,
+        include: {
+            category: true,
+            variants: true,
+            reviews: { select: { rating: true } }
+        },
+        orderBy,
+        skip,
+        take: limit,
+    });
+
+    const total = await prisma.product.count({ where });
 
     const formattedProducts = products.map(p => ({
         ...p,
