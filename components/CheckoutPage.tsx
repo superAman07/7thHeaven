@@ -118,27 +118,27 @@ const CheckoutPageComponent: React.FC = () => {
 
         setIsProcessing(true);
 
-        const finalShipping = shipToDifferentAddress ? shipping : billing;
-
-        const orderPayload = {
-            items: cartItems.map(item => ({
-                productId: item.id,
-                quantity: item.quantity,
-            })),
-            shippingDetails: {
-                fullName: `${finalShipping.firstName} ${finalShipping.lastName}`,
-                phone: finalShipping.phone,
-                email: finalShipping.email,
-                fullAddress: `${finalShipping.address1} ${finalShipping.address2}`,
-                city: finalShipping.city,
-                state: finalShipping.state,
-                pincode: finalShipping.zip,
-                country: finalShipping.country
-            },
-            mlmOptIn: is7thHeavenOptIn
-        };
-
+        
         try {
+            const finalShipping = shipToDifferentAddress ? shipping : billing;
+    
+            const orderPayload = {
+                items: cartItems.map(item => ({
+                    productId: item.id,
+                    quantity: item.quantity,
+                })),
+                shippingDetails: {
+                    fullName: `${finalShipping.firstName} ${finalShipping.lastName}`,
+                    phone: finalShipping.phone,
+                    email: finalShipping.email,
+                    fullAddress: `${finalShipping.address1} ${finalShipping.address2}`,
+                    city: finalShipping.city,
+                    state: finalShipping.state,
+                    pincode: finalShipping.zip,
+                    country: finalShipping.country
+                },
+                mlmOptIn: is7thHeavenOptIn
+            };
             // Step 1: Create the order in our database
             const orderResponse = await axios.post('/api/v1/orders', orderPayload, { withCredentials: true });
 
