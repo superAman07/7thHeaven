@@ -45,14 +45,6 @@ export default function ProfilePage() {
                                 <div className="col-lg-3 col-12">
                                     <div className="myaccount-tab-menu nav" role="tablist">
                                         <a
-                                            href="#dashboard"
-                                            className={activeTab === 'dashboard' ? 'active' : ''}
-                                            onClick={(e) => { e.preventDefault(); setActiveTab('dashboard'); }}
-                                        >
-                                            <i className="fa fa-dashboard"></i> Dashboard
-                                        </a>
-
-                                        <a
                                             href="#orders"
                                             className={activeTab === 'orders' ? 'active' : ''}
                                             onClick={(e) => { e.preventDefault(); setActiveTab('orders'); }}
@@ -86,18 +78,6 @@ export default function ProfilePage() {
                                 {/* My Account Tab Content Start */}
                                 <div className="col-lg-9 col-12">
                                     <div className="tab-content" id="myaccountContent">
-
-                                        {/* Dashboard Tab */}
-                                        <div className={`tab-pane fade ${activeTab === 'dashboard' ? 'show active' : ''}`} id="dashboard" role="tabpanel">
-                                            <div className="myaccount-content">
-                                                <h3>Dashboard</h3>
-                                                <div className="welcome mb-20">
-                                                    <p>Hello, <strong>User</strong> (If Not <strong>User !</strong><a href="#" onClick={handleLogout} className="logout"> Logout</a>)</p>
-                                                </div>
-                                                <p className="mb-0">From your account dashboard. you can easily check & view your recent orders, manage your shipping and billing addresses and edit your password and account details.</p>
-                                            </div>
-                                        </div>
-
                                         {/* Orders Tab */}
                                         <div className={`tab-pane fade ${activeTab === 'orders' ? 'show active' : ''}`} id="orders" role="tabpanel">
                                             <div className="myaccount-content">
