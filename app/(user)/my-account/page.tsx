@@ -229,9 +229,9 @@ export default function ProfilePage() {
         );
     };
 
-    if (loading) {
-        return <div className="text-center pt-100 pb-100">Loading your profile...</div>;
-    }
+    // if (loading) {
+    //     return <div className="text-center pt-100 pb-100">Loading your profile...</div>;
+    // }
 
     return (
         <div id="main-wrapper">
@@ -253,147 +253,149 @@ export default function ProfilePage() {
             </div>
 
             {/* My Account Section */}
-            <div className="my-account-section section pt-100 pb-100">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-12">
-                            <div className="row">
-                                {/* Tab Menu */}
-                                <div className="col-lg-3 col-12">
-                                    <div className="myaccount-tab-menu nav" role="tablist">
-                                        <a href="#orders" className={activeTab === 'orders' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('orders'); }}>
-                                            <i className="fa fa-cart-arrow-down"></i> Orders
-                                        </a>
-                                        <a href="#address" className={activeTab === 'address' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('address'); }}>
-                                            <i className="fa fa-map-marker"></i> Address
-                                        </a>
-                                        <a href="#account-info" className={activeTab === 'account-info' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('account-info'); }}>
-                                            <i className="fa fa-user"></i> Account Details
-                                        </a>
-                                        <a href="#logout" onClick={handleLogout}>
-                                            <i className="fa fa-sign-out"></i> Logout
-                                        </a>
+            {loading ? (<div className="text-center pt-100 pb-100">Loading your profile...</div>) : (
+                <div className="my-account-section section pt-100 pb-100">
+                    <div className="container">
+                        <div className="row">
+                            <div className="col-12">
+                                <div className="row">
+                                    {/* Tab Menu */}
+                                    <div className="col-lg-3 col-12">
+                                        <div className="myaccount-tab-menu nav" role="tablist">
+                                            <a href="#orders" className={activeTab === 'orders' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('orders'); }}>
+                                                <i className="fa fa-cart-arrow-down"></i> Orders
+                                            </a>
+                                            <a href="#address" className={activeTab === 'address' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('address'); }}>
+                                                <i className="fa fa-map-marker"></i> Address
+                                            </a>
+                                            <a href="#account-info" className={activeTab === 'account-info' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('account-info'); }}>
+                                                <i className="fa fa-user"></i> Account Details
+                                            </a>
+                                            <a href="#logout" onClick={handleLogout}>
+                                                <i className="fa fa-sign-out"></i> Logout
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
 
-                                {/* Tab Content */}
-                                <div className="col-lg-9 col-12">
-                                    <div className="tab-content" id="myaccountContent">
+                                    {/* Tab Content */}
+                                    <div className="col-lg-9 col-12">
+                                        <div className="tab-content" id="myaccountContent">
 
-                                        {/* Orders Tab */}
-                                        <div className={`tab-pane fade ${activeTab === 'orders' ? 'show active' : ''}`}>
-                                            <div className="myaccount-content">
-                                                <h3>Orders</h3>
-                                                <div className="myaccount-table table-responsive text-center">
-                                                    <table className="table table-bordered">
-                                                        <thead className="thead-light">
-                                                            <tr>
-                                                                <th>Order ID</th>
-                                                                <th>Date</th>
-                                                                <th>Status</th>
-                                                                <th>Total</th>
-                                                                <th>Payment</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {orders.length > 0 ? orders.map(order => (
-                                                                <tr key={order.id}>
-                                                                    <td>#{order.id.slice(-6).toUpperCase()}</td>
-                                                                    <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                                                                    <td>{getStatusBadge(order.status)}</td>
-                                                                    <td>Rs. {order.subtotal}</td>
-                                                                    <td>{getStatusBadge(order.paymentStatus)}</td>
+                                            {/* Orders Tab */}
+                                            <div className={`tab-pane fade ${activeTab === 'orders' ? 'show active' : ''}`}>
+                                                <div className="myaccount-content">
+                                                    <h3>Orders</h3>
+                                                    <div className="myaccount-table table-responsive text-center">
+                                                        <table className="table table-bordered">
+                                                            <thead className="thead-light">
+                                                                <tr>
+                                                                    <th>Order ID</th>
+                                                                    <th>Date</th>
+                                                                    <th>Status</th>
+                                                                    <th>Total</th>
+                                                                    <th>Payment</th>
                                                                 </tr>
-                                                            )) : (
-                                                                <tr><td colSpan={5}>No orders found.</td></tr>
-                                                            )}
-                                                        </tbody>
-                                                    </table>
+                                                            </thead>
+                                                            <tbody>
+                                                                {orders.length > 0 ? orders.map(order => (
+                                                                    <tr key={order.id}>
+                                                                        <td>#{order.id.slice(-6).toUpperCase()}</td>
+                                                                        <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                                                                        <td>{getStatusBadge(order.status)}</td>
+                                                                        <td>Rs. {order.subtotal}</td>
+                                                                        <td>{getStatusBadge(order.paymentStatus)}</td>
+                                                                    </tr>
+                                                                )) : (
+                                                                    <tr><td colSpan={5}>No orders found.</td></tr>
+                                                                )}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        {/* Address Tab */}
-                                        <div className={`tab-pane fade ${activeTab === 'address' ? 'show active' : ''}`}>
-                                            <div className="myaccount-content">
-                                                <h3>Billing Address</h3>
-                                                {!isEditingAddress ? (
-                                                    <>
-                                                        <address>
-                                                            <p><strong>{user?.fullName}</strong></p>
-                                                            <p>{user?.fullAddress || 'No address set'}</p>
-                                                            <p>{user?.city} {user?.state} {user?.pincode}</p>
-                                                            <p>{user?.country}</p>
-                                                            <p>Mobile: {user?.phone}</p>
-                                                        </address>
-                                                        <button onClick={() => setIsEditingAddress(true)} className="btn d-inline-block edit-address-btn">
-                                                            <i className="fa fa-edit"></i> Edit Address
-                                                        </button>
-                                                    </>
-                                                ) : (
-                                                    <form onSubmit={handleAddressUpdate}>
-                                                        <div className="row">
-                                                            <div className="col-12 mb-30"><input placeholder="Full Address" type="text" value={addressData.fullAddress} onChange={e => setAddressData({ ...addressData, fullAddress: e.target.value })} /></div>
-                                                            <div className="col-lg-6 col-12 mb-30"><input placeholder="City" type="text" value={addressData.city} onChange={e => setAddressData({ ...addressData, city: e.target.value })} /></div>
-                                                            <div className="col-lg-6 col-12 mb-30"><input placeholder="State" type="text" value={addressData.state} onChange={e => setAddressData({ ...addressData, state: e.target.value })} /></div>
-                                                            <div className="col-lg-6 col-12 mb-30"><input placeholder="Pincode" type="text" value={addressData.pincode} onChange={e => setAddressData({ ...addressData, pincode: e.target.value })} /></div>
-                                                            <div className="col-lg-6 col-12 mb-30"><input placeholder="Country" type="text" value={addressData.country} onChange={e => setAddressData({ ...addressData, country: e.target.value })} /></div>
-                                                            <div className="col-12">
-                                                                <button className="save-change-btn mr-2">Save Address</button>
-                                                                <button type="button" onClick={() => setIsEditingAddress(false)} className="btn btn-secondary">Cancel</button>
+                                            {/* Address Tab */}
+                                            <div className={`tab-pane fade ${activeTab === 'address' ? 'show active' : ''}`}>
+                                                <div className="myaccount-content">
+                                                    <h3>Billing Address</h3>
+                                                    {!isEditingAddress ? (
+                                                        <>
+                                                            <address>
+                                                                <p><strong>{user?.fullName}</strong></p>
+                                                                <p>{user?.fullAddress || 'No address set'}</p>
+                                                                <p>{user?.city} {user?.state} {user?.pincode}</p>
+                                                                <p>{user?.country}</p>
+                                                                <p>Mobile: {user?.phone}</p>
+                                                            </address>
+                                                            <button onClick={() => setIsEditingAddress(true)} className="btn d-inline-block edit-address-btn">
+                                                                <i className="fa fa-edit"></i> Edit Address
+                                                            </button>
+                                                        </>
+                                                    ) : (
+                                                        <form onSubmit={handleAddressUpdate}>
+                                                            <div className="row">
+                                                                <div className="col-12 mb-30"><input placeholder="Full Address" type="text" value={addressData.fullAddress} onChange={e => setAddressData({ ...addressData, fullAddress: e.target.value })} /></div>
+                                                                <div className="col-lg-6 col-12 mb-30"><input placeholder="City" type="text" value={addressData.city} onChange={e => setAddressData({ ...addressData, city: e.target.value })} /></div>
+                                                                <div className="col-lg-6 col-12 mb-30"><input placeholder="State" type="text" value={addressData.state} onChange={e => setAddressData({ ...addressData, state: e.target.value })} /></div>
+                                                                <div className="col-lg-6 col-12 mb-30"><input placeholder="Pincode" type="text" value={addressData.pincode} onChange={e => setAddressData({ ...addressData, pincode: e.target.value })} /></div>
+                                                                <div className="col-lg-6 col-12 mb-30"><input placeholder="Country" type="text" value={addressData.country} onChange={e => setAddressData({ ...addressData, country: e.target.value })} /></div>
+                                                                <div className="col-12">
+                                                                    <button className="save-change-btn mr-2">Save Address</button>
+                                                                    <button type="button" onClick={() => setIsEditingAddress(false)} className="btn btn-secondary">Cancel</button>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </form>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* Account Details Tab */}
-                                        <div className={`tab-pane fade ${activeTab === 'account-info' ? 'show active' : ''}`}>
-                                            <div className="myaccount-content">
-                                                <h3>Account Details</h3>
-                                                <div className="account-details-form">
-                                                    <form onSubmit={handleProfileUpdate}>
-                                                        <div className="row">
-                                                            <div className="col-12 mb-30">
-                                                                <label>Full Name</label>
-                                                                <input placeholder="Full Name" type="text" value={formData.fullName} onChange={e => setFormData({ ...formData, fullName: e.target.value })} />
-                                                            </div>
-                                                            <div className="col-lg-6 col-12 mb-30">
-                                                                <label>Email Address (Requires OTP)</label>
-                                                                <input placeholder="Email Address" type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-                                                            </div>
-                                                            <div className="col-lg-6 col-12 mb-30">
-                                                                <label>Phone Number (Requires OTP)</label>
-                                                                <input placeholder="Phone Number" type="text" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-                                                            </div>
-
-                                                            <div className="col-12 mb-30"><h4>Password Change</h4></div>
-                                                            <div className="col-12 mb-30">
-                                                                <input placeholder="Current Password" type="password" value={formData.currentPassword} onChange={e => setFormData({ ...formData, currentPassword: e.target.value })} />
-                                                            </div>
-                                                            <div className="col-lg-6 col-12 mb-30">
-                                                                <input placeholder="New Password" type="password" value={formData.newPassword} onChange={e => setFormData({ ...formData, newPassword: e.target.value })} />
-                                                            </div>
-                                                            <div className="col-lg-6 col-12 mb-30">
-                                                                <input placeholder="Confirm Password" type="password" value={formData.confirmPassword} onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })} />
-                                                            </div>
-                                                            <div className="col-12">
-                                                                <button className="save-change-btn">Save Changes</button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
+                                                        </form>
+                                                    )}
                                                 </div>
                                             </div>
-                                        </div>
 
+                                            {/* Account Details Tab */}
+                                            <div className={`tab-pane fade ${activeTab === 'account-info' ? 'show active' : ''}`}>
+                                                <div className="myaccount-content">
+                                                    <h3>Account Details</h3>
+                                                    <div className="account-details-form">
+                                                        <form onSubmit={handleProfileUpdate}>
+                                                            <div className="row">
+                                                                <div className="col-12 mb-30">
+                                                                    <label>Full Name</label>
+                                                                    <input placeholder="Full Name" type="text" value={formData.fullName} onChange={e => setFormData({ ...formData, fullName: e.target.value })} />
+                                                                </div>
+                                                                <div className="col-lg-6 col-12 mb-30">
+                                                                    <label>Email Address (Requires OTP)</label>
+                                                                    <input placeholder="Email Address" type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                                                                </div>
+                                                                <div className="col-lg-6 col-12 mb-30">
+                                                                    <label>Phone Number (Requires OTP)</label>
+                                                                    <input placeholder="Phone Number" type="text" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+                                                                </div>
+
+                                                                <div className="col-12 mb-30"><h4>Password Change</h4></div>
+                                                                <div className="col-12 mb-30">
+                                                                    <input placeholder="Current Password" type="password" value={formData.currentPassword} onChange={e => setFormData({ ...formData, currentPassword: e.target.value })} />
+                                                                </div>
+                                                                <div className="col-lg-6 col-12 mb-30">
+                                                                    <input placeholder="New Password" type="password" value={formData.newPassword} onChange={e => setFormData({ ...formData, newPassword: e.target.value })} />
+                                                                </div>
+                                                                <div className="col-lg-6 col-12 mb-30">
+                                                                    <input placeholder="Confirm Password" type="password" value={formData.confirmPassword} onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })} />
+                                                                </div>
+                                                                <div className="col-12">
+                                                                    <button className="save-change-btn">Save Changes</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* OTP Modal */}
             {showOtpModal && (
