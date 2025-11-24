@@ -32,13 +32,42 @@ export async function GET(req: NextRequest) {
         const orders = await prisma.order.findMany({
             where: { userId },
             orderBy: { createdAt: 'desc' },
-            include: {
-                // We don't need full user details here, just the order info
-                // Items are stored as JSON, so they are automatically included
+        });
+
+        const productIds = new Set<string>();
+        orders.forEach(order => {
+            const items = order.items as any[];
+            if (Array.isArray(items)) {
+                items.forEach(item => {
+                    if (item.productId) productIds.add(item.productId);
+                });
             }
         });
 
-        return NextResponse.json({ success: true, orders });
+        const products = await prisma.product.findMany({
+            where: { id: { in: Array.from(productIds) } },
+            select: {
+                id: true,
+                name: true,
+                images: true,
+                genderTags: true,
+                category: {
+                    select: { name: true }
+                }
+            }
+        });
+
+        const productMap = new Map(products.map(p => [p.id, p]));
+
+        const enrichedOrders = orders.map(order => {
+            const items = (order.items as any[]).map((item: any) => ({
+                ...item,
+                product: productMap.get(item.productId) || null
+            }));
+            return { ...order, items };
+        });
+
+        return NextResponse.json({ success: true, orders: enrichedOrders });
 
     } catch (error) {
         console.error('Fetch User Orders Error:', error);

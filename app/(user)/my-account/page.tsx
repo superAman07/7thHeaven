@@ -26,6 +26,7 @@ interface Order {
     subtotal: string;
     paymentStatus: string;
     items: any[];
+    genderTags: string[];
     shippingAddress: any;
 }
 
@@ -42,6 +43,10 @@ export default function ProfilePage() {
     const itemsPerPage = 5;
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [showOrderModal, setShowOrderModal] = useState(false);
+    const indexOfLastOrder = currentPage * itemsPerPage;
+    const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
+    const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
+    const totalPages = Math.ceil(orders.length / itemsPerPage);
 
     // Form States
     const [formData, setFormData] = useState({
@@ -231,6 +236,11 @@ export default function ProfilePage() {
         );
     };
 
+    const handleOrderClick = (order: Order) => {
+        setSelectedOrder(order);
+        setShowOrderModal(true);
+    };
+
     return (
         <div id="main-wrapper">
             {/* Page Banner */}
@@ -283,32 +293,53 @@ export default function ProfilePage() {
                                             <div className={`tab-pane fade ${activeTab === 'orders' ? 'show active' : ''}`}>
                                                 <div className="myaccount-content">
                                                     <h3>Orders</h3>
-                                                    <div className="myaccount-table table-responsive text-center">
-                                                        <table className="table table-bordered">
-                                                            <thead className="thead-light">
+                                                    <div className="myaccount-table table-responsive text-center" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                                                        <table className="table table-bordered table-hover">
+                                                            <thead className="thead-light" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                                                                 <tr>
                                                                     <th>Order ID</th>
                                                                     <th>Date</th>
                                                                     <th>Status</th>
                                                                     <th>Total</th>
                                                                     <th>Payment</th>
+                                                                    <th>Action</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                {orders.length > 0 ? orders.map(order => (
-                                                                    <tr key={order.id}>
+                                                                {currentOrders.length > 0 ? currentOrders.map(order => (
+                                                                    <tr key={order.id} onClick={() => handleOrderClick(order)} style={{ cursor: 'pointer' }} title="Click to view details">
                                                                         <td>#{order.id.slice(-6).toUpperCase()}</td>
                                                                         <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                                                                         <td>{getStatusBadge(order.status)}</td>
                                                                         <td>Rs. {order.subtotal}</td>
                                                                         <td>{getStatusBadge(order.paymentStatus)}</td>
+                                                                        <td><button className="btn btn-sm btn-primary" style={{ backgroundColor: '#ddb040', borderColor: '#ddb040' }}>View</button></td>
                                                                     </tr>
                                                                 )) : (
-                                                                    <tr><td colSpan={5}>No orders found.</td></tr>
+                                                                    <tr><td colSpan={6}>No orders found.</td></tr>
                                                                 )}
                                                             </tbody>
                                                         </table>
                                                     </div>
+                                                    {orders.length > itemsPerPage && (
+                                                        <div className="d-flex justify-content-center mt-3 gap-2" style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
+                                                            <button
+                                                                className="btn btn-secondary btn-sm"
+                                                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                                                disabled={currentPage === 1}
+                                                            >
+                                                                Previous
+                                                            </button>
+                                                            <span className="align-self-center">Page {currentPage} of {totalPages}</span>
+                                                            <button
+                                                                className="btn btn-secondary btn-sm"
+                                                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                                                disabled={currentPage === totalPages}
+                                                            >
+                                                                Next
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -385,7 +416,6 @@ export default function ProfilePage() {
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -412,6 +442,104 @@ export default function ProfilePage() {
                         <div className="flex justify-end gap-2" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                             <button onClick={() => setShowOtpModal(false)} className="btn btn-secondary" style={{ padding: '8px 16px' }}>Cancel</button>
                             <button onClick={verifyOtpAndUpdate} className="btn btn-primary" style={{ padding: '8px 16px', backgroundColor: '#ddb040', color: 'white', border: 'none' }}>Verify & Update</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showOrderModal && selectedOrder && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+                    <div className="bg-white p-6 rounded-lg shadow-lg" style={{ backgroundColor: 'white', padding: '30px', borderRadius: '8px', width: '90%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+                        <div className="d-flex justify-content-between align-items-center mb-4" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+                            <h3 className="text-lg font-bold m-0">Order Details #{selectedOrder.id.slice(-6).toUpperCase()}</h3>
+                            <button onClick={() => setShowOrderModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
+                        </div>
+
+                        <div className="row mb-4">
+                            <div className="col-6">
+                                <p><strong>Date:</strong> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                                <p><strong>Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
+                            </div>
+                            <div className="col-6 text-right" style={{ textAlign: 'right' }}>
+                                <p><strong>Total:</strong> Rs. {selectedOrder.subtotal}</p>
+                                <p><strong>Payment:</strong> {selectedOrder.paymentStatus}</p>
+                            </div>
+                        </div>
+
+                        <h4 className="mb-3" style={{ fontSize: '1.1rem', fontWeight: 'bold', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Items</h4>
+                        <div className="table-responsive mb-4">
+                            <table className="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th className='text-center'>Qty</th>
+                                        <th className="text-center">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {selectedOrder.items && Array.isArray(selectedOrder.items) ? selectedOrder.items.map((item: any, idx: number) => (
+                                        <tr key={idx}>
+                                            <td>
+                                                <div className="d-flex align-items-center" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                                    {/* Product Image */}
+                                                    <div style={{ width: '60px', height: '60px', flexShrink: 0, backgroundColor: '#f8f9fa', borderRadius: '8px', overflow: 'hidden', border: '1px solid #eee' }}>
+                                                        {item.product?.images?.[0] ? (
+                                                            <img
+                                                                src={item.product.images[0]}
+                                                                alt={item.product.name}
+                                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                            />
+                                                        ) : (
+                                                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}>
+                                                                <i className="fa fa-image"></i>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Product Details */}
+                                                    <div>
+                                                        <p className="mb-1 font-weight-bold" style={{ fontWeight: '600', margin: 0, color: '#333' }}>
+                                                            {item.product?.name || 'Product Unavailable'}
+                                                        </p>
+                                                        <div className="text-muted small" style={{ fontSize: '0.85rem', color: '#666' }}>
+                                                            {item.product?.genderTags && (
+                                                                <span className="badge badge-light mr-1" style={{ backgroundColor: '#25252b', marginRight: '5px', fontWeight: 'normal' }}>
+                                                                    {item.product.genderTags.join(', ')}
+                                                                </span>
+                                                            )}
+                                                            {item.product?.category?.name && (
+                                                                <span style={{ color: '#888' }}>
+                                                                    {item.product.category.name}
+                                                                </span>
+                                                            )}
+                                                            {!item.product && <span className="text-danger">Item details not found</span>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="text-center" style={{ verticalAlign: 'middle' }}>{item.quantity}</td>
+                                            <td className="text-center" style={{ verticalAlign: 'middle' }}>Rs. {item.priceAtPurchase || 'N/A'}</td>
+                                        </tr>
+                                    )) : (
+                                        <tr><td colSpan={3}>No items details available</td></tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4 className="mb-3" style={{ fontSize: '1.1rem', fontWeight: 'bold', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Shipping Address</h4>
+                        {selectedOrder.shippingAddress ? (
+                            <div className="bg-light p-3 rounded" style={{ backgroundColor: '#f8f9fa', padding: '15px', borderRadius: '5px' }}>
+                                <p className="mb-1"><strong>{selectedOrder.shippingAddress.fullName}</strong></p>
+                                <p className="mb-1">{selectedOrder.shippingAddress.fullAddress}</p>
+                                <p className="mb-1">{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} - {selectedOrder.shippingAddress.pincode}</p>
+                                <p className="mb-0">{selectedOrder.shippingAddress.country}</p>
+                                <p className="mb-0">Phone: {selectedOrder.shippingAddress.phone}</p>
+                            </div>
+                        ) : (
+                            <p>No shipping address available.</p>
+                        )}
+                        <div className="mt-4 text-right" style={{ textAlign: 'right', marginTop: '20px' }}>
+                            <button onClick={() => setShowOrderModal(false)} className="btn btn-secondary">Close</button>
                         </div>
                     </div>
                 </div>
