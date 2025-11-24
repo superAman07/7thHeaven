@@ -33,6 +33,10 @@ export default function ProfilePage() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState('orders');
     const [loading, setLoading] = useState(true);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [isUpdatingAddress, setIsUpdatingAddress] = useState(false);
+    const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+    const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
     const [user, setUser] = useState<UserProfile | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
@@ -112,6 +116,8 @@ export default function ProfilePage() {
 
     const handleLogout = async (e: React.MouseEvent) => {
         e.preventDefault();
+        if (isLoggingOut) return;
+        setIsLoggingOut(true);
         try {
             await axios.post('/api/v1/auth/logout');
             toast.success('Logged out successfully');
@@ -119,11 +125,14 @@ export default function ProfilePage() {
             router.refresh();
         } catch (error) {
             toast.error('Logout failed');
+            setIsLoggingOut(false);
         }
     };
 
     const handleAddressUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isUpdatingAddress) return;
+        setIsUpdatingAddress(true);
         try {
             const res = await axios.put('/api/v1/profile', addressData);
             if (res.data.success) {
@@ -133,11 +142,15 @@ export default function ProfilePage() {
             }
         } catch (err: any) {
             toast.error(err.response?.data?.error || "Failed to update address");
+        } finally {
+            setIsUpdatingAddress(false);
         }
     };
 
     const handleProfileUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isUpdatingProfile) return;
+        setIsUpdatingProfile(true);
 
         const payload: any = {
             fullName: formData.fullName,
@@ -146,10 +159,12 @@ export default function ProfilePage() {
         if (formData.newPassword) {
             if (formData.newPassword !== formData.confirmPassword) {
                 toast.error("New passwords do not match");
+                setIsUpdatingProfile(false);
                 return;
             }
             if (!formData.currentPassword) {
                 toast.error("Current password is required to set a new one");
+                setIsUpdatingProfile(false);
                 return;
             }
             payload.currentPassword = formData.currentPassword;
@@ -174,10 +189,13 @@ export default function ProfilePage() {
                 setShowOtpModal(true);
             } catch (err: any) {
                 toast.error(err.response?.data?.error || "Failed to send OTP");
+            } finally {
+                setIsUpdatingProfile(false);
             }
             return;
         }
-        submitUpdate(payload);
+        await submitUpdate(payload);
+        setIsUpdatingProfile(false);
     };
 
     const submitUpdate = async (payload: any) => {
@@ -196,9 +214,12 @@ export default function ProfilePage() {
         }
     };
 
-    const verifyOtpAndUpdate = () => {
+    const verifyOtpAndUpdate = async () => {
         if (!otp || !pendingUpdate) return;
-        submitUpdate({ ...pendingUpdate, otp });
+        if (isVerifyingOtp) return;
+        setIsVerifyingOtp(true);
+        await submitUpdate({ ...pendingUpdate, otp });
+        setIsVerifyingOtp(false);
     };
 
     useEffect(() => {
@@ -217,7 +238,7 @@ export default function ProfilePage() {
                         toast.success("Location details fetched!");
                     }
                 } catch (error) {
-                    console.error("Pincode fetch error:", error); 
+                    console.error("Pincode fetch error:", error);
                 }
             };
             fetchPincodeDetails();
@@ -283,17 +304,17 @@ export default function ProfilePage() {
                                     {/* Tab Menu */}
                                     <div className="col-lg-3 col-12">
                                         <div className="myaccount-tab-menu nav" role="tablist">
-                                            <a href="#orders" className={activeTab === 'orders' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('orders'); }}>
+                                            <a href="" className={activeTab === 'orders' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('orders'); }}>
                                                 <i className="fa fa-cart-arrow-down"></i> Orders
                                             </a>
-                                            <a href="#address" className={activeTab === 'address' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('address'); }}>
+                                            <a href="" className={activeTab === 'address' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('address'); }}>
                                                 <i className="fa fa-map-marker"></i> Address
                                             </a>
-                                            <a href="#account-info" className={activeTab === 'account-info' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('account-info'); }}>
+                                            <a href="" className={activeTab === 'account-info' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('account-info'); }}>
                                                 <i className="fa fa-user"></i> Account Details
                                             </a>
-                                            <a href="#logout" onClick={handleLogout}>
-                                                <i className="fa fa-sign-out"></i> Logout
+                                            <a href="#logout" onClick={handleLogout} style={{ pointerEvents: isLoggingOut ? 'none' : 'auto', opacity: isLoggingOut ? 0.6 : 1 }}>
+                                                <i className="fa fa-sign-out"></i> {isLoggingOut ? 'Logging out...' : 'Logout'}
                                             </a>
                                         </div>
                                     </div>
@@ -382,8 +403,10 @@ export default function ProfilePage() {
                                                                 <div className="col-lg-6 col-12 mb-30"><input placeholder="Pincode" type="text" value={addressData.pincode} onChange={e => setAddressData({ ...addressData, pincode: e.target.value })} /></div>
                                                                 <div className="col-lg-6 col-12 mb-30"><input placeholder="Country" type="text" value={addressData.country} onChange={e => setAddressData({ ...addressData, country: e.target.value })} /></div>
                                                                 <div className="col-12 gap-x-2" style={{ display: 'flex', gap: '10px' }}>
-                                                                    <button className="save-change-btn mr-2">Save Address</button>
-                                                                    <button type="button" onClick={() => setIsEditingAddress(false)} className="btn btn-secondary rounded-[3px]">Cancel</button>
+                                                                    <button className="save-change-btn mr-2" disabled={isUpdatingAddress} style={{ opacity: isUpdatingAddress ? 0.7 : 1 }}>
+                                                                        {isUpdatingAddress ? 'Saving...' : 'Save Address'}
+                                                                    </button>
+                                                                    <button type="button" onClick={() => setIsEditingAddress(false)} className="btn btn-secondary rounded-[3px]" disabled={isUpdatingAddress}>Cancel</button>
                                                                 </div>
                                                             </div>
                                                         </form>
@@ -422,7 +445,9 @@ export default function ProfilePage() {
                                                                     <input placeholder="Confirm Password" type="password" value={formData.confirmPassword} onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })} />
                                                                 </div>
                                                                 <div className="col-12">
-                                                                    <button className="save-change-btn">Save Changes</button>
+                                                                    <button className="save-change-btn" disabled={isUpdatingProfile} style={{ opacity: isUpdatingProfile ? 0.7 : 1 }}>
+                                                                        {isUpdatingProfile ? 'Saving...' : 'Save Changes'}
+                                                                    </button>
                                                                 </div>
                                                             </div>
                                                         </form>
@@ -453,8 +478,10 @@ export default function ProfilePage() {
                             placeholder="Enter OTP"
                         />
                         <div className="flex justify-end gap-2" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                            <button onClick={() => setShowOtpModal(false)} className="btn btn-secondary" style={{ padding: '8px 16px' }}>Cancel</button>
-                            <button onClick={verifyOtpAndUpdate} className="btn btn-primary" style={{ padding: '8px 16px', backgroundColor: '#ddb040', color: 'white', border: 'none' }}>Verify & Update</button>
+                            <button onClick={() => setShowOtpModal(false)} className="btn btn-secondary" style={{ padding: '8px 16px' }} disabled={isVerifyingOtp}>Cancel</button>
+                            <button onClick={verifyOtpAndUpdate} className="btn btn-primary" style={{ padding: '8px 16px', backgroundColor: '#ddb040', color: 'white', border: 'none', opacity: isVerifyingOtp ? 0.7 : 1 }} disabled={isVerifyingOtp}>
+                                {isVerifyingOtp ? 'Verifying...' : 'Verify & Update'}
+                            </button>
                         </div>
                     </div>
                 </div>
