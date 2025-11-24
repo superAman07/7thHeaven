@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// --- Types ---
 interface UserProfile {
     id: string;
     fullName: string;
@@ -35,7 +34,6 @@ export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState('orders');
     const [loading, setLoading] = useState(true);
 
-    // Data States
     const [user, setUser] = useState<UserProfile | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
 
@@ -48,7 +46,6 @@ export default function ProfilePage() {
     const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
     const totalPages = Math.ceil(orders.length / itemsPerPage);
 
-    // Form States
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -146,7 +143,6 @@ export default function ProfilePage() {
             fullName: formData.fullName,
         };
 
-        // Password Validation
         if (formData.newPassword) {
             if (formData.newPassword !== formData.confirmPassword) {
                 toast.error("New passwords do not match");
@@ -160,12 +156,10 @@ export default function ProfilePage() {
             payload.newPassword = formData.newPassword;
         }
 
-        // Check for sensitive changes (Phone/Email)
         const phoneChanged = formData.phone !== user?.phone;
         const emailChanged = formData.email !== user?.email;
 
         if (phoneChanged || emailChanged) {
-            // Prioritize Phone OTP if both changed, or just the one that changed
             const type = phoneChanged ? 'phone' : 'email';
             const value = phoneChanged ? formData.phone : formData.email;
 
@@ -173,7 +167,6 @@ export default function ProfilePage() {
                 await axios.post('/api/v1/profile', { type, value });
                 toast.success(`OTP sent to ${value}`);
 
-                // Add sensitive fields to payload
                 if (phoneChanged) payload.phone = formData.phone;
                 if (emailChanged) payload.email = formData.email;
 
@@ -184,8 +177,6 @@ export default function ProfilePage() {
             }
             return;
         }
-
-        // No sensitive changes, update directly
         submitUpdate(payload);
     };
 
@@ -195,7 +186,6 @@ export default function ProfilePage() {
             if (res.data.success) {
                 toast.success("Profile updated successfully");
                 setUser(res.data.user);
-                // Reset password fields
                 setFormData(prev => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }));
                 setShowOtpModal(false);
                 setOtp('');
@@ -210,6 +200,29 @@ export default function ProfilePage() {
         if (!otp || !pendingUpdate) return;
         submitUpdate({ ...pendingUpdate, otp });
     };
+
+    useEffect(() => {
+        if (addressData.pincode && addressData.pincode.length === 6) {
+            const fetchPincodeDetails = async () => {
+                try {
+                    const res = await axios.get(`https://api.postalpincode.in/pincode/${addressData.pincode}`);
+                    if (res.data && res.data[0].Status === "Success") {
+                        const details = res.data[0].PostOffice[0];
+                        setAddressData(prev => ({
+                            ...prev,
+                            city: details.District,
+                            state: details.State,
+                            country: 'India'
+                        }));
+                        toast.success("Location details fetched!");
+                    }
+                } catch (error) {
+                    console.error("Pincode fetch error:", error); 
+                }
+            };
+            fetchPincodeDetails();
+        }
+    }, [addressData.pincode]);
 
     const getStatusBadge = (status: string) => {
         const s = status.toUpperCase();
