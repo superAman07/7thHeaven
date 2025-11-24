@@ -25,6 +25,8 @@ interface Order {
     status: string;
     subtotal: string;
     paymentStatus: string;
+    items: any[];
+    shippingAddress: any;
 }
 
 export default function ProfilePage() {
@@ -35,6 +37,11 @@ export default function ProfilePage() {
     // Data States
     const [user, setUser] = useState<UserProfile | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [showOrderModal, setShowOrderModal] = useState(false);
 
     // Form States
     const [formData, setFormData] = useState({
@@ -55,12 +62,10 @@ export default function ProfilePage() {
     });
     const [isEditingAddress, setIsEditingAddress] = useState(false);
 
-    // OTP States
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [otp, setOtp] = useState('');
     const [pendingUpdate, setPendingUpdate] = useState<any>(null);
 
-    // --- Fetch Data on Mount ---
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -102,7 +107,6 @@ export default function ProfilePage() {
         fetchData();
     }, []);
 
-    // --- Handlers ---
 
     const handleLogout = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -202,7 +206,6 @@ export default function ProfilePage() {
         submitUpdate({ ...pendingUpdate, otp });
     };
 
-    // --- Render Helpers ---
     const getStatusBadge = (status: string) => {
         const s = status.toUpperCase();
         let color = 'badge-secondary';
@@ -211,7 +214,6 @@ export default function ProfilePage() {
         if (s === 'CANCELLED' || s === 'FAILED') color = 'badge-danger';
         if (s === 'PENDING') color = 'badge-warning';
 
-        // Using inline styles for simplicity if bootstrap classes aren't perfect
         const styleMap: any = {
             'DELIVERED': { backgroundColor: '#28a745', color: 'white' },
             'PAID': { backgroundColor: '#28a745', color: 'white' },
@@ -228,10 +230,6 @@ export default function ProfilePage() {
             </span>
         );
     };
-
-    // if (loading) {
-    //     return <div className="text-center pt-100 pb-100">Loading your profile...</div>;
-    // }
 
     return (
         <div id="main-wrapper">
