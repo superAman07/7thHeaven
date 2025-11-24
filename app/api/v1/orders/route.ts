@@ -22,6 +22,30 @@ const orderSchema = z.object({
     mlmOptIn: z.boolean().optional(),
 });
 
+export async function GET(req: NextRequest) {
+    try {
+        const userId = await getUserIdFromToken(req);
+        if (!userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const orders = await prisma.order.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' },
+            include: {
+                // We don't need full user details here, just the order info
+                // Items are stored as JSON, so they are automatically included
+            }
+        });
+
+        return NextResponse.json({ success: true, orders });
+
+    } catch (error) {
+        console.error('Fetch User Orders Error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
+
 export async function POST(req: NextRequest) {
     try {
         // 1. Authenticate user
@@ -37,13 +61,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid request body', details: validation.error }, { status: 400 });
         }
         const { items, shippingDetails, mlmOptIn } = validation.data;
-
-        console.log("------------------------------------------------------------------");
-        console.log("CREATE ORDER REQUEST");
-        console.log("User ID:", userId);
-        console.log("mlmOptIn received:", mlmOptIn);
-        console.log("------------------------------------------------------------------");
-
+        
         // 3. Fetch product prices from DB and calculate totalAmount securely
         const productIds = items.map(item => item.productId);
         const productsFromDb = await prisma.product.findMany({
