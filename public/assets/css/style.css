@@ -500,7 +500,8 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   font-weight: 600;
   padding: 15px 30px;
   text-transform: uppercase;
-  border-radius: 0px;
+  border-radius: 3px;
+  border: none;
   position: relative;
   -webkit-transition: all 0.3s ease 0s;
   transition: all 0.3s ease 0s;

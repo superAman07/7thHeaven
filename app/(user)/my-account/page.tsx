@@ -368,9 +368,9 @@ export default function ProfilePage() {
                                                                 <div className="col-lg-6 col-12 mb-30"><input placeholder="State" type="text" value={addressData.state} onChange={e => setAddressData({ ...addressData, state: e.target.value })} /></div>
                                                                 <div className="col-lg-6 col-12 mb-30"><input placeholder="Pincode" type="text" value={addressData.pincode} onChange={e => setAddressData({ ...addressData, pincode: e.target.value })} /></div>
                                                                 <div className="col-lg-6 col-12 mb-30"><input placeholder="Country" type="text" value={addressData.country} onChange={e => setAddressData({ ...addressData, country: e.target.value })} /></div>
-                                                                <div className="col-12">
+                                                                <div className="col-12 gap-x-2" style={{ display: 'flex', gap: '10px' }}>
                                                                     <button className="save-change-btn mr-2">Save Address</button>
-                                                                    <button type="button" onClick={() => setIsEditingAddress(false)} className="btn btn-secondary">Cancel</button>
+                                                                    <button type="button" onClick={() => setIsEditingAddress(false)} className="btn btn-secondary rounded-[3px]">Cancel</button>
                                                                 </div>
                                                             </div>
                                                         </form>
