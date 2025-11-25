@@ -94,10 +94,9 @@ export default function NavBar() {
                                         <li>
                                             <a href="#"><i className="fa fa-user-circle-o" /></a>
                                             <ul className="ht-dropdown right">
-                                                <li><a href="compare.html">Compare Products</a></li>
-                                                <li><a href="my-account.html">My Account</a></li>
-                                                <li><a href="wishlist.html">My Wish List</a></li>
-                                                <li><a href="login-register.html">Sign In</a></li>
+                                                <li><a href="/my-account">My Account</a></li>
+                                                <li><a href="/wishlist">My Wish List</a></li>
+                                                <li><a href="/login">Sign In</a></li>
                                             </ul>
                                         </li>
                                     </ul>
