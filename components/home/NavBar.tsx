@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
-const MOBILE_BREAKPOINT = 991; // matches meanScreenWidth from original JS
+const MOBILE_BREAKPOINT = 991;
 
 export default function NavBar() {
     const [isSticky, setSticky] = useState(false);
@@ -12,7 +12,6 @@ export default function NavBar() {
 
     const mobileMenuRef = useRef<HTMLDivElement | null>(null);
 
-    // Sticky header (same behaviour as original jQuery)
     useEffect(() => {
         const onScroll = () => {
             setSticky(window.scrollY > 300);
@@ -22,7 +21,6 @@ export default function NavBar() {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
-    // Close mobile menu when resizing to desktop
     useEffect(() => {
         const onResize = () => {
             if (window.innerWidth > MOBILE_BREAKPOINT && isMobileOpen) {
@@ -33,7 +31,6 @@ export default function NavBar() {
         return () => window.removeEventListener('resize', onResize);
     }, [isMobileOpen]);
 
-    // lock body scroll while mobile menu is open
     useEffect(() => {
         const body = document.body;
         if (isMobileOpen) {
@@ -46,7 +43,6 @@ export default function NavBar() {
         };
     }, [isMobileOpen]);
 
-    // close on Escape and close on click outside mobile menu
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isMobileOpen) setIsMobileOpen(false);
@@ -67,11 +63,10 @@ export default function NavBar() {
     const toggleSearch = () => setSearchOpen((s) => !s);
     const toggleMobile = () => setIsMobileOpen((s) => !s);
 
-    // Links list kept same as your markup so CSS selectors still work
     const links = [
         { href: '/', label: 'Home' },
         { href: '/about', label: 'About Us' },
-        { href: '#', label: 'ACCESSORIES' },
+        { href: '/collections', label: 'Collections' },
         { href: '#', label: 'Women' },
         { href: '#', label: 'Men' },
         { href: '#', label: 'BRANDS' },
