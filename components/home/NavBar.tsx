@@ -66,10 +66,10 @@ export default function NavBar() {
     const links = [
         { href: '/', label: 'Home' },
         { href: '/collections', label: 'Collections' },
-        { href: '#', label: 'Women' },
-        { href: '#', label: 'Men' },
-        { href: '#', label: 'Unisex' },
-        { href: '#', label: 'NEW ARRIVALS' },
+        { href: '/collections?gender=Women', label: 'Women' },
+        { href: '/collections?gender=Men', label: 'Men' },
+        { href: '/collections?gender=Unisex', label: 'Unisex' },
+        { href: '/collections?sort=newest', label: 'NEW ARRIVALS' },
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact Us' },
     ];
