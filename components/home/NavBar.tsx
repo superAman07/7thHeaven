@@ -65,14 +65,12 @@ export default function NavBar() {
 
     const links = [
         { href: '/', label: 'Home' },
-        { href: '/about', label: 'About Us' },
         { href: '/collections', label: 'Collections' },
         { href: '#', label: 'Women' },
         { href: '#', label: 'Men' },
-        { href: '#', label: 'BRANDS' },
+        { href: '#', label: 'Unisex' },
         { href: '#', label: 'NEW ARRIVALS' },
-        { href: '#', label: 'Partials' },
-        { href: '#', label: 'Bath & Body' },
+        { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact Us' },
     ];
 
