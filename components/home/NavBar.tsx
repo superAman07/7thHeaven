@@ -204,8 +204,7 @@ export default function NavBar() {
                                                         })}
                                                     </ul>
                                                     <div className="cart-total">
-                                                        <span>Total:</span>
-                                                        <span className="total-price">Rs. {cartTotal.toFixed(2)}</span>
+                                                        <h5>Total:<span className="float-right">Rs. {cartTotal.toFixed(2)}</span></h5>
                                                     </div>
                                                     <div className="cart-btn">
                                                         <a href="/cart" className="btn">View Cart</a>
