@@ -15,6 +15,8 @@ const CheckoutPageComponent: React.FC = () => {
     const [is7thHeavenOptIn, setIs7thHeavenOptIn] = useState(false);
     const [minPurchaseLimit, setMinPurchaseLimit] = useState(2000);
 
+    const [isAlreadyMember, setIsAlreadyMember] = useState(false);
+
     useEffect(() => {
         axios.get('/api/v1/settings')
             .then(res => {
@@ -42,6 +44,9 @@ const CheckoutPageComponent: React.FC = () => {
                     const { data } = await axios.get('/api/v1/auth/me', { withCredentials: true });
                     if (data.success && data.user) {
                         const u = data.user;
+                        if (u.is7thHeaven) {
+                            setIsAlreadyMember(true);
+                        }
                         const names = (u.fullName || '').split(' ');
                         const firstName = names[0] || '';
                         const lastName = names.slice(1).join(' ') || '';
@@ -67,16 +72,15 @@ const CheckoutPageComponent: React.FC = () => {
         fetchUserData();
     }, [isLoggedIn]);
 
-    // 2. Auto-fetch City, State, and Country from Pincode (Billing)
     useEffect(() => {
         if (billing.zip.length === 6) {
             axios.get(`https://api.postalpincode.in/pincode/${billing.zip}`)
                 .then(res => {
                     if (res.data && res.data[0].Status === 'Success') {
                         const po = res.data[0].PostOffice[0];
-                        setBilling(prev => ({ 
-                            ...prev, 
-                            city: po.District, 
+                        setBilling(prev => ({
+                            ...prev,
+                            city: po.District,
                             state: po.State,
                             country: po.Country
                         }));
@@ -118,10 +122,9 @@ const CheckoutPageComponent: React.FC = () => {
 
         setIsProcessing(true);
 
-        
         try {
             const finalShipping = shipToDifferentAddress ? shipping : billing;
-    
+
             const orderPayload = {
                 items: cartItems.map(item => ({
                     productId: item.id,
@@ -139,7 +142,6 @@ const CheckoutPageComponent: React.FC = () => {
                 },
                 mlmOptIn: is7thHeavenOptIn
             };
-            // Step 1: Create the order in our database
             const orderResponse = await axios.post('/api/v1/orders', orderPayload, { withCredentials: true });
 
             if (!orderResponse.data.success) {
@@ -147,15 +149,12 @@ const CheckoutPageComponent: React.FC = () => {
             }
 
             const { orderId } = orderResponse.data;
-            
-            // Step 2: Initiate payment with PhonePe using the new orderId
             const paymentResponse = await axios.post('/api/v1/payment/initiate', { orderId }, { withCredentials: true });
 
             if (!paymentResponse.data.success) {
                 throw new Error(paymentResponse.data.error || 'Failed to initiate payment.');
             }
 
-            // Step 3: Redirect user to the PhonePe payment page
             const { paymentUrl } = paymentResponse.data;
             router.push(paymentUrl);
 
@@ -229,7 +228,7 @@ const CheckoutPageComponent: React.FC = () => {
                                                     <input type="text" placeholder="Address line 1" className="mb-2" value={billing.address1} onChange={e => setBilling({ ...billing, address1: e.target.value })} required />
                                                     <input type="text" placeholder="Address line 2" value={billing.address2} onChange={e => setBilling({ ...billing, address2: e.target.value })} />
                                                 </div>
-                                                
+
                                                 {/* REORDERED FIELDS */}
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>Zip Code*</label>
@@ -332,20 +331,30 @@ const CheckoutPageComponent: React.FC = () => {
 
                                             {/* START: 7th Heaven Logic */}
                                             <div className="col-12 mb-30">
-                                                {cartTotal > 0 && (
-                                                    cartTotal >= minPurchaseLimit ? (
-                                                        <div className="p-3" style={{ backgroundColor: '#ddb040', color: '#000', border: '1px solid #cca33b', borderRadius: '5px' }}>
-                                                            <div className="check-box">
-                                                                <input type="checkbox" id="heavenOptIn" checked={is7thHeavenOptIn} onChange={(e) => setIs7thHeavenOptIn(e.target.checked)} />
-                                                                <label htmlFor="heavenOptIn" style={{ fontSize: '16px', fontWeight: 700 }}>Join 7th Heaven Club?</label>
+                                                {isAlreadyMember ? (
+                                                    <div className="p-3" style={{ backgroundColor: '#d4edda', color: '#155724', border: '1px solid #c3e6cb', borderRadius: '5px' }}>
+                                                        <p className="mb-0" style={{ fontSize: '15px', fontWeight: 600 }}>
+                                                            <i className="fa fa-check-circle mr-2"></i>
+                                                            You are a <strong>7th Heaven Club</strong> member!
+                                                        </p>
+                                                        <p className="mb-0 mt-1" style={{ fontSize: '13px' }}>Enjoy your exclusive benefits on this order.</p>
+                                                    </div>
+                                                ) : (
+                                                    cartTotal > 0 && (
+                                                        cartTotal >= minPurchaseLimit ? (
+                                                            <div className="p-3" style={{ backgroundColor: '#ddb040', color: '#000', border: '1px solid #cca33b', borderRadius: '5px' }}>
+                                                                <div className="check-box">
+                                                                    <input type="checkbox" id="heavenOptIn" checked={is7thHeavenOptIn} onChange={(e) => setIs7thHeavenOptIn(e.target.checked)} />
+                                                                    <label htmlFor="heavenOptIn" style={{ fontSize: '16px', fontWeight: 700 }}>Join 7th Heaven Club?</label>
+                                                                </div>
+                                                                <p className="mt-1 mb-0" style={{ fontSize: '14px', marginLeft: '28px', fontWeight: 500 }}>Unlock exclusive benefits and referral rewards!</p>
                                                             </div>
-                                                            <p className="mt-1 mb-0" style={{ fontSize: '14px', marginLeft: '28px', fontWeight: 500 }}>Unlock exclusive benefits and referral rewards!</p>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="p-3 text-center" style={{ backgroundColor: '#f8f9fa', border: '1px dashed #ddb040', borderRadius: '5px' }}>
-                                                            <p className="mb-1" style={{ fontSize: '14px', fontWeight: 600, color: '#555' }}>Want to join the <strong>7th Heaven Club</strong>?</p>
-                                                            <p className="mb-0" style={{ fontSize: '13px', color: '#ddb040', fontWeight: 700 }}>Add items worth Rs.{(minPurchaseLimit - cartTotal).toFixed(2)} more to unlock!</p>
-                                                        </div>
+                                                        ) : (
+                                                            <div className="p-3 text-center" style={{ backgroundColor: '#f8f9fa', border: '1px dashed #ddb040', borderRadius: '5px' }}>
+                                                                <p className="mb-1" style={{ fontSize: '14px', fontWeight: 600, color: '#555' }}>Want to join the <strong>7th Heaven Club</strong>?</p>
+                                                                <p className="mb-0" style={{ fontSize: '13px', color: '#ddb040', fontWeight: 700 }}>Add items worth Rs.{(minPurchaseLimit - cartTotal).toFixed(2)} more to unlock!</p>
+                                                            </div>
+                                                        )
                                                     )
                                                 )}
                                             </div>
