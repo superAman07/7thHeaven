@@ -22,6 +22,8 @@ export async function GET(req: NextRequest) {
                 city: true,
                 state: true,
                 fullAddress: true,
+                country: true,
+                is7thHeaven: true,
             }
         });
 
