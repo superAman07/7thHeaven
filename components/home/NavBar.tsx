@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useCart } from '../CartContext';
 
 const MOBILE_BREAKPOINT = 991;
 
@@ -9,6 +10,7 @@ export default function NavBar() {
     const [isSticky, setSticky] = useState(false);
     const [isSearchOpen, setSearchOpen] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const { cartItems, removeFromCart, cartCount, cartTotal } = useCart();
 
     const mobileMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -112,9 +114,8 @@ export default function NavBar() {
                                             </form>
                                         </div>
                                     </div>
-
                                     <div className="header-cart color-white">
-                                        <a href="cart.html"><i className="fa fa-shopping-cart" /><span>3</span></a>
+                                        <a href="/cart"><i className="fa fa-shopping-cart"></i> <span>{cartCount}</span></a>
                                         <div className="header-cart-dropdown">
                                             <ul className="cart-items">
                                                 <li className="single-cart-item">
@@ -150,6 +151,68 @@ export default function NavBar() {
                                                 <a href="cart.html">View Cart</a>
                                                 <a href="checkout.html">checkout</a>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="header-cart color-white">
+                                        <a href="/cart"><i className="fa fa-shopping-cart"></i> <span>{cartCount}</span></a>
+
+                                        {/* Cart Dropdown */}
+                                        <div className="header-cart-dropdown">
+                                            {cartItems.length === 0 ? (
+                                                <div className="text-center p-3">
+                                                    <p>Your cart is empty.</p>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <ul className="cart-items">
+                                                        {cartItems.map((item) => {
+                                                            // Calculate price logic
+                                                            const price = item.variants?.[0]?.price || 0;
+                                                            const discount = item.discountPercentage || 0;
+                                                            const finalPrice = price * (1 - discount / 100);
+
+                                                            return (
+                                                                <li key={item.id} className='single-cart-item'>
+                                                                    <div className="cart-img">
+                                                                        <a href={`/products/${item.slug}`}>
+                                                                            <img
+                                                                                src={item.images?.[0] || '/assets/images/product/default.jpg'}
+                                                                                alt={item.name}
+                                                                            />
+                                                                        </a>
+                                                                    </div>
+                                                                    <div className="cart-content">
+                                                                        <h4 className="product-name"><a href={`/products/${item.slug}`}>{item.name}</a></h4>
+                                                                        <span className="product-quantity">{item.quantity} x</span>
+                                                                        <span className="product-price"> Rs. {finalPrice.toFixed(2)}</span>
+                                                                    </div>
+                                                                    <div className="cart-item-remove">
+                                                                        <a title="Remove" href="">
+                                                                            <i
+                                                                                className="fa fa-trash"
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    removeFromCart(item.id);
+                                                                                }}
+                                                                                style={{ cursor: 'pointer' }}
+                                                                            ></i>
+                                                                        </a>
+                                                                    </div>
+                                                                </li>
+                                                            );
+                                                        })}
+                                                    </ul>
+                                                    <div className="cart-total">
+                                                        <span>Total:</span>
+                                                        <span className="total-price">Rs. {cartTotal.toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="cart-btn">
+                                                        <a href="/cart" className="btn">View Cart</a>
+                                                        <a href="/cart/checkout" className="btn">Checkout</a>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
