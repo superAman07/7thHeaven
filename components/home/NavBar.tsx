@@ -207,8 +207,8 @@ export default function NavBar() {
                                                         <h5>Total:<span className="float-right">Rs. {cartTotal.toFixed(2)}</span></h5>
                                                     </div>
                                                     <div className="cart-btn">
-                                                        <a href="/cart" className="btn">View Cart</a>
-                                                        <a href="/cart/checkout" className="btn">Checkout</a>
+                                                        <a href="/cart">View Cart</a>
+                                                        <a href="/cart/checkout">Checkout</a>
                                                     </div>
                                                 </>
                                             )}
