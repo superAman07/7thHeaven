@@ -114,45 +114,6 @@ export default function NavBar() {
                                             </form>
                                         </div>
                                     </div>
-                                    <div className="header-cart color-white">
-                                        <a href="/cart"><i className="fa fa-shopping-cart"></i> <span>{cartCount}</span></a>
-                                        <div className="header-cart-dropdown">
-                                            <ul className="cart-items">
-                                                <li className="single-cart-item">
-                                                    <div className="cart-img">
-                                                        <a href="cart.html"><img src="/assets/images/cart/cart-1.jpg" alt="" /></a>
-                                                    </div>
-                                                    <div className="cart-content">
-                                                        <h5 className="product-name"><a href="#">Dell Inspiron 24</a></h5>
-                                                        <span className="product-quantity">1 ×</span>
-                                                        <span className="product-price">$278.00</span>
-                                                    </div>
-                                                    <div className="cart-item-remove"><a title="Remove" href="#"><i className="fa fa-trash" /></a></div>
-                                                </li>
-                                                <li className="single-cart-item">
-                                                    <div className="cart-img">
-                                                        <a href="cart.html"><img src="/assets/images/cart/cart-2.jpg" alt="" /></a>
-                                                    </div>
-                                                    <div className="cart-content">
-                                                        <h5 className="product-name"><a href="#">Lenovo Ideacentre 300</a></h5>
-                                                        <span className="product-quantity">1 ×</span>
-                                                        <span className="product-price">$23.39</span>
-                                                    </div>
-                                                    <div className="cart-item-remove"><a title="Remove" href="#"><i className="fa fa-trash" /></a></div>
-                                                </li>
-                                            </ul>
-                                            <div className="cart-total">
-                                                <h5>Subtotal :<span className="float-right">$39.79</span></h5>
-                                                <h5>Eco Tax (-2.00) :<span className="float-right">$7.00</span></h5>
-                                                <h5>VAT (20%) : <span className="float-right">$0.00</span></h5>
-                                                <h5>Total : <span className="float-right">$46.79</span></h5>
-                                            </div>
-                                            <div className="cart-btn">
-                                                <a href="cart.html">View Cart</a>
-                                                <a href="checkout.html">checkout</a>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     <div className="header-cart color-white">
                                         <a href="/cart"><i className="fa fa-shopping-cart"></i> <span>{cartCount}</span></a>
