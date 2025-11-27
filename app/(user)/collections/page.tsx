@@ -11,11 +11,10 @@ interface Product {
   name: string;
   slug: string;
   images: string[];
-  price: number;
-  salePrice?: number;
   discountPercentage?: number;
   rating?: number;
   isNew?: boolean;
+  variants: { price: number; size?: string }[]; // Added variants
 }
 
 interface Category {
@@ -62,7 +61,7 @@ function CollectionsContent() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get('/api/v1/categories'); // Ensure this API exists
+      const res = await axios.get('/api/v1/categories');
       if (res.data.success) setCategories(res.data.data);
     } catch (error) {
       console.error("Error fetching categories", error);
@@ -255,39 +254,48 @@ function CollectionsContent() {
                             {loading ? (
                               <div className="col-12 text-center py-5">Loading products...</div>
                             ) : products.length > 0 ? (
-                              products.map(product => (
-                                <div className="col-lg-4 col-md-6 col-sm-6" key={product.id}>
-                                  <div className="single-product mb-30">
-                                    <div className="product-img">
-                                      <Link href={`/products/${product.slug}`}>
-                                        <img src={product.images[0] || '/assets/images/product/default.jpg'} alt={product.name} />
-                                      </Link>
-                                      {product.discountPercentage && product.discountPercentage > 0 && (
-                                        <span className="descount-sticker">-{product.discountPercentage}%</span>
-                                      )}
-                                      {product.isNew && <span className="sticker">New</span>}
-                                      <div className="product-action d-flex justify-content-between">
-                                        <Link className="product-btn" href={`/products/${product.slug}`}>View Details</Link>
-                                        <ul className="d-flex">
-                                          <li><a href="#" title="Wishlist"><i className="fa fa-heart-o"></i></a></li>
-                                        </ul>
+                              products.map((product) => {
+                                // Calculate Price Logic
+                                const basePrice = product.variants?.[0]?.price || 0;
+                                const discount = product.discountPercentage || 0;
+                                const finalPrice = basePrice - (basePrice * discount / 100);
+
+                                return (
+                                  <div className="col-lg-4 col-md-6 col-sm-6" key={product.id}>
+                                    <div className="single-product mb-30">
+                                      <div className="product-img">
+                                        <Link href={`/products/${product.slug}`}>
+                                          <img src={product.images[0] || '/assets/images/product/default.jpg'} alt={product.name} />
+                                        </Link>
+                                        {/* FIX: Check strictly for > 0 to avoid rendering '0' */}
+                                        {discount > 0 && (
+                                          <span className="descount-sticker">-{discount}%</span>
+                                        )}
+                                        {product.isNew && <span className="sticker">New</span>}
+                                        <div className="product-action d-flex justify-content-between">
+                                          <Link className="product-btn" href={`/products/${product.slug}`}>View Details</Link>
+                                          <ul className="d-flex">
+                                            <li><a href="#" title="Wishlist"><i className="fa fa-heart-o"></i></a></li>
+                                          </ul>
+                                        </div>
                                       </div>
-                                    </div>
-                                    <div className="product-content">
-                                      <h3><Link href={`/products/${product.slug}`}>{product.name}</Link></h3>
-                                      <div className="ratting">
-                                        {[...Array(5)].map((_, i) => (
-                                          <i key={i} className={`fa fa-star${(product.rating || 0) > i ? '' : '-o'}`}></i>
-                                        ))}
+                                      <div className="product-content">
+                                        <h3><Link href={`/products/${product.slug}`}>{product.name}</Link></h3>
+                                        <div className="ratting">
+                                          {[...Array(5)].map((_, i) => (
+                                            <i key={i} className={`fa fa-star${(product.rating || 0) > i ? '' : '-o'}`}></i>
+                                          ))}
+                                        </div>
+                                        <h4 className="price">
+                                          {/* FIX: Display calculated prices */}
+                                          <span className="new">Rs.{finalPrice.toFixed(2)}</span>
+                                          {discount > 0 && <span className="old">Rs.{basePrice.toFixed(2)}</span>}
+                                        </h4>
                                       </div>
-                                      <h4 className="price">
-                                        <span className="new">Rs.{product.salePrice || product.price}</span>
-                                        {product.salePrice && <span className="old">Rs.{product.price}</span>}
-                                      </h4>
                                     </div>
                                   </div>
-                                </div>
-                              ))
+                                );
+                              })
                             ) : (
                               <div className="col-12 text-center py-5">No products found matching your filters.</div>
                             )}
