@@ -304,7 +304,6 @@ function CollectionsContent() {
                                         <div className="product-action d-flex justify-content-between">
                                           <a
                                             className="product-btn"
-                                            href="#"
                                             onClick={(e) => handleAddToCart(e, product)}
                                           >
                                             Add to Cart
@@ -312,7 +311,6 @@ function CollectionsContent() {
                                           <ul className="d-flex">
                                             <li>
                                               <a
-                                                href="#"
                                                 title="Quick View"
                                                 onClick={(e) => {
                                                   e.preventDefault();
@@ -323,13 +321,8 @@ function CollectionsContent() {
                                               </a>
                                             </li>
                                             <li>
-                                              <a href="#" title="Wishlist">
+                                              <a title="Wishlist">
                                                 <i className="fa fa-heart-o"></i>
-                                              </a>
-                                            </li>
-                                            <li>
-                                              <a href="#" title="Compare">
-                                                <i className="fa fa-exchange"></i>
                                               </a>
                                             </li>
                                           </ul>
@@ -343,7 +336,6 @@ function CollectionsContent() {
                                           ))}
                                         </div>
                                         <h4 className="price">
-                                          {/* FIX: Display calculated prices */}
                                           <span className="new">Rs.{finalPrice.toFixed(2)}</span>
                                           {discount > 0 && <span className="old">Rs.{basePrice.toFixed(2)}</span>}
                                         </h4>
