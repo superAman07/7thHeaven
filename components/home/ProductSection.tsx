@@ -84,10 +84,8 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
                                       <img src={product.images[0] || '/assets/images/product/shop.webp'} alt={product.name} style={{ aspectRatio: '1 / 1', objectFit: 'cover', width: '100%' }} />
                                     </Link>
                                     {product.isNewArrival && <span className="sticker">New Arrival</span>}
-                                    {product.discountPercentage && product.discountPercentage > 0 && <span className="descount-sticker">-{product.discountPercentage}%</span>}
                                     <div className="product-action d-flex justify-content-between">
                                       <a
-                                        href="#"
                                         className="product-btn"
                                         onClick={(e) => handleAddToCart(e, product)}
                                       >
@@ -96,7 +94,6 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
                                       <ul className="d-flex">
                                         <li>
                                           <a
-                                            href="#"
                                             onClick={(e) => {
                                               e.preventDefault();
                                               handleOpenModal(product);
@@ -106,8 +103,7 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
                                             <i className="fa fa-eye"></i>
                                           </a>
                                         </li>
-                                        <li><a href="#"><i className="fa fa-heart-o"></i></a></li>
-                                        <li><a href="#"><i className="fa fa-exchange"></i></a></li>
+                                        <li><a title="Wishlist"><i className="fa fa-heart-o"></i></a></li>
                                       </ul>
                                     </div>
                                   </div>
