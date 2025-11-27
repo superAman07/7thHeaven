@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
+import { useCart } from '@/components/CartContext';
 
 interface Product {
   id: string;
@@ -14,6 +15,10 @@ interface Product {
   rating?: number;
   isNew?: boolean;
   variants: { price: number; size?: string }[];
+  description?: string;
+  category?: { name: string };
+  reviews?: any[];
+  ratingsAvg?: number;
 }
 
 interface Category {
@@ -25,6 +30,10 @@ interface Category {
 function CollectionsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { addToCart } = useCart();
+  const [debouncedPriceRange, setDebouncedPriceRange] = useState([0, 57500]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,13 +57,27 @@ function CollectionsContent() {
   }, [searchParams]);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedPriceRange(priceRange);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [priceRange]);
+
+  useEffect(() => {
     fetchProducts();
-  }, [priceRange, selectedGenders, selectedCategories, sortBy]);
+  }, [debouncedPriceRange, selectedGenders, selectedCategories, sortBy]);
 
   const fetchCategories = async () => {
     try {
       const res = await axios.get('/api/v1/categories');
-      if (res.data.success) setCategories(res.data.data);
+      if (res.data.success) {
+        const mappedCategories = res.data.data.map((cat: any) => ({
+          id: cat.id,
+          name: cat.name,
+          count: cat._count?.products || 0
+        }));
+        setCategories(mappedCategories);
+      }
     } catch (error) {
       console.error("Error fetching categories", error);
     }
@@ -79,6 +102,21 @@ function CollectionsContent() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault();
+    addToCart(product as any, 1);
+  };
+
+  const handleOpenModal = (product: Product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
   };
 
   const toggleSection = (section: string) => {
