@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 import { useCart } from '@/components/CartContext';
+import ProductQuickViewModal from '@/components/home/QuickViewModal';
 
 interface Product {
   id: string;
@@ -376,8 +377,13 @@ function CollectionsContent() {
           </div>
         </div>
       </div>
-
-      {/* Inline Styles from collection.html */}
+      {selectedProduct && (
+        <ProductQuickViewModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          productId={selectedProduct.id}
+        />
+      )}
       <style jsx global>{`
                 .filter-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
                 .price-box input { border: 1px solid #dcdcdc; border-radius: 6px; padding: 10px 12px; width: 100%; font-size: 15px; }
