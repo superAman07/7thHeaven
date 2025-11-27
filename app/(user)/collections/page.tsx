@@ -6,6 +6,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import { useCart } from '@/components/CartContext';
 import ProductQuickViewModal from '@/components/home/QuickViewModal';
+import toast from 'react-hot-toast';
 
 interface Product {
   id: string;
@@ -108,6 +109,7 @@ function CollectionsContent() {
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     addToCart(product as any, 1);
+    toast.success(`${product.name} added to cart!`);
   };
 
   const handleOpenModal = (product: Product) => {
