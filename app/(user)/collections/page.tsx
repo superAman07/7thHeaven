@@ -5,7 +5,6 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 
-// --- Types ---
 interface Product {
   id: string;
   name: string;
@@ -14,7 +13,7 @@ interface Product {
   discountPercentage?: number;
   rating?: number;
   isNew?: boolean;
-  variants: { price: number; size?: string }[]; // Added variants
+  variants: { price: number; size?: string }[];
 }
 
 interface Category {
@@ -27,34 +26,27 @@ function CollectionsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // --- State ---
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // Filters
   const [priceRange, setPriceRange] = useState([0, 57500]);
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('newest');
 
-  // UI State
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
 
-  // --- Initialization ---
   useEffect(() => {
-    // Read URL params on load
     const genderParam = searchParams.get('gender');
     if (genderParam) setSelectedGenders(genderParam.split(','));
 
     const sortParam = searchParams.get('sort');
     if (sortParam) setSortBy(sortParam);
 
-    // Fetch Categories (for sidebar)
     fetchCategories();
   }, [searchParams]);
 
-  // --- Fetch Data ---
   useEffect(() => {
     fetchProducts();
   }, [priceRange, selectedGenders, selectedCategories, sortBy]);
@@ -89,7 +81,6 @@ function CollectionsContent() {
     }
   };
 
-  // --- Handlers ---
   const toggleSection = (section: string) => {
     setCollapsedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
