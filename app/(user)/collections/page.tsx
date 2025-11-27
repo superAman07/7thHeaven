@@ -296,15 +296,41 @@ function CollectionsContent() {
                                         <Link href={`/products/${product.slug}`}>
                                           <img src={product.images[0] || '/assets/images/product/default.jpg'} alt={product.name} />
                                         </Link>
-                                        {/* FIX: Check strictly for > 0 to avoid rendering '0' */}
                                         {discount > 0 && (
                                           <span className="descount-sticker">-{discount}%</span>
                                         )}
                                         {product.isNew && <span className="sticker">New</span>}
                                         <div className="product-action d-flex justify-content-between">
-                                          <Link className="product-btn" href={`/products/${product.slug}`}>View Details</Link>
+                                          <a
+                                            className="product-btn"
+                                            href="#"
+                                            onClick={(e) => handleAddToCart(e, product)}
+                                          >
+                                            Add to Cart
+                                          </a>
                                           <ul className="d-flex">
-                                            <li><a href="#" title="Wishlist"><i className="fa fa-heart-o"></i></a></li>
+                                            <li>
+                                              <a
+                                                href="#"
+                                                title="Quick View"
+                                                onClick={(e) => {
+                                                  e.preventDefault();
+                                                  handleOpenModal(product);
+                                                }}
+                                              >
+                                                <i className="fa fa-eye"></i>
+                                              </a>
+                                            </li>
+                                            <li>
+                                              <a href="#" title="Wishlist">
+                                                <i className="fa fa-heart-o"></i>
+                                              </a>
+                                            </li>
+                                            <li>
+                                              <a href="#" title="Compare">
+                                                <i className="fa fa-exchange"></i>
+                                              </a>
+                                            </li>
                                           </ul>
                                         </div>
                                       </div>
