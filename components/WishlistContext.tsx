@@ -5,7 +5,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
-// NEW: Define the shape of product data needed for the popup
+// ... existing interfaces ...
 export interface WishlistProduct {
     id: string;
     name: string;
@@ -15,7 +15,7 @@ export interface WishlistProduct {
 
 interface WishlistContextType {
     wishlistItems: string[];
-    toggleWishlist: (product: WishlistProduct) => Promise<void>; // Updated signature
+    toggleWishlist: (product: WishlistProduct) => Promise<void>;
     isInWishlist: (productId: string) => boolean;
 }
 
@@ -43,9 +43,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     const toggleWishlist = async (product: WishlistProduct) => {
         const productId = product.id;
         const isIn = wishlistItems.includes(productId);
-        
+
         if (isIn) {
-            // Remove logic (Simple toast is enough for removal)
             setWishlistItems(prev => prev.filter(id => id !== productId));
             toast.error('Removed from wishlist');
             try {
@@ -56,6 +55,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
             }
         } else {
             setWishlistItems(prev => [...prev, productId]);
+
+            // Keep the toast transient (disappears after 4s)
             toast.custom((t) => (
                 <div
                     style={{
@@ -74,32 +75,27 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
                         pointerEvents: 'auto'
                     }}
                 >
-                    {/* Product Image */}
                     <div style={{ width: '50px', height: '50px', flexShrink: 0 }}>
-                        <img 
-                            src={product.image} 
-                            alt={product.name} 
-                            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} 
+                        <img
+                            src={product.image}
+                            alt={product.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }}
                         />
                     </div>
-                    
-                    {/* Text Content */}
                     <div style={{ flex: 1, overflow: 'hidden' }}>
                         <h6 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#333' }}>Added to Wishlist</h6>
                         <p style={{ margin: 0, fontSize: '12px', color: '#666', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {product.name}
                         </p>
                     </div>
-                    
-                    {/* View Button */}
                     <div>
-                        <Link 
-                            href="/wishlist" 
+                        <Link
+                            href="/wishlist"
                             onClick={() => toast.dismiss(t.id)}
-                            style={{ 
-                                color: '#ddb040', 
-                                fontWeight: 600, 
-                                fontSize: '13px', 
+                            style={{
+                                color: '#ddb040',
+                                fontWeight: 600,
+                                fontSize: '13px',
                                 textDecoration: 'none',
                                 border: '1px solid #ddb040',
                                 padding: '4px 12px',
@@ -116,7 +112,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
             try {
                 await axios.post('/api/v1/wishlist', { productId });
             } catch (error: any) {
-                setWishlistItems(prev => prev.filter(id => id !== productId)); // Revert
+                setWishlistItems(prev => prev.filter(id => id !== productId));
                 if (error.response?.status === 401) {
                     toast.error('Please login to use wishlist');
                 } else {
@@ -133,6 +129,56 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     return (
         <WishlistContext.Provider value={{ wishlistItems, toggleWishlist, isInWishlist }}>
             {children}
+
+            {/* NEW: Persistent Floating Wishlist Button */}
+            {wishlistItems.length > 0 && (
+                <Link
+                    href="/wishlist"
+                    title="View Wishlist"
+                    style={{
+                        position: 'fixed',
+                        bottom: '90px',
+                        right: '20px',
+                        backgroundColor: '#fff',
+                        color: '#ddb040',
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                        zIndex: 999,
+                        border: '2px solid #ddb040',
+                        transition: 'transform 0.2s ease',
+                        cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                    <div style={{ position: 'relative' }}>
+                        <i className="fa fa-heart" style={{ fontSize: '24px' }}></i>
+                        <span style={{
+                            position: 'absolute',
+                            top: '-8px',
+                            right: '-10px',
+                            backgroundColor: '#dc3545',
+                            color: 'white',
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            borderRadius: '50%',
+                            width: '20px',
+                            height: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                        }}>
+                            {wishlistItems.length}
+                        </span>
+                    </div>
+                </Link>
+            )}
         </WishlistContext.Provider>
     );
 }
@@ -144,3 +190,4 @@ export function useWishlist() {
     }
     return context;
 }
+
