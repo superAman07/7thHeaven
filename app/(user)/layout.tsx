@@ -1,5 +1,6 @@
 import FooterPage from "@/components/home/Footer";
 import NavBar from "@/components/home/NavBar";
+import { WishlistProvider } from "@/components/WishlistContext";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,11 +15,13 @@ export default function UserPagesLayout({
 }>) {
   return (
     <div id="main-wrapper">
-        <NavBar />
-        <main>
+      <NavBar />
+      <main>
+        <WishlistProvider>
           {children}
-        </main>
-        <FooterPage />
+        </WishlistProvider>
+      </main>
+      <FooterPage />
     </div>
   );
 }

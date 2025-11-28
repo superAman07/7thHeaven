@@ -4,7 +4,7 @@ import { getUserIdFromToken } from '@/lib/auth';
 
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { productId: string } }
+    { params }: { params: Promise<{ productId: string }> }
 ) {
     try {
         const userId = await getUserIdFromToken(req);
@@ -12,7 +12,7 @@ export async function DELETE(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { productId } = params;
+        const { productId } = await params;
 
         const wishlist = await prisma.wishlist.findUnique({ where: { userId } });
         if (!wishlist) {

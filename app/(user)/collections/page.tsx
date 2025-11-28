@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useCart } from '@/components/CartContext';
 import ProductQuickViewModal from '@/components/home/QuickViewModal';
 import toast from 'react-hot-toast';
+import { useWishlist } from '@/components/WishlistContext';
 
 interface Product {
   id: string;
@@ -33,6 +34,7 @@ function CollectionsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [debouncedPriceRange, setDebouncedPriceRange] = useState([0, 57500]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -323,8 +325,18 @@ function CollectionsContent() {
                                               </a>
                                             </li>
                                             <li>
-                                              <a title="Wishlist">
-                                                <i className="fa fa-heart-o"></i>
+                                              <a
+                                                title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                                                onClick={(e) => {
+                                                  e.preventDefault();
+                                                  toggleWishlist(product.id);
+                                                }}
+                                                style={{ cursor: 'pointer' }}
+                                              >
+                                                <i
+                                                  className={`fa ${isInWishlist(product.id) ? 'fa-heart' : 'fa-heart-o'}`}
+                                                  style={{ color: isInWishlist(product.id) ? '#dc3545' : 'inherit' }}
+                                                ></i>
                                               </a>
                                             </li>
                                           </ul>
