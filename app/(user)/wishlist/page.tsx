@@ -60,16 +60,6 @@ export default function WishlistPage() {
         toast.success('Added to cart');
     };
 
-    // if (loading) {
-    //     return (
-    //         <div className="text-center pt-100 pb-100">
-    //             <div className="spinner-border text-warning" role="status">
-    //                 <span className="sr-only">Loading...</span>
-    //             </div>
-    //         </div>
-    //     );
-    // }
-
     return (
         <div id="main-wrapper">
             {/* Page Banner Section Start */}
