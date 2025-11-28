@@ -329,7 +329,12 @@ function CollectionsContent() {
                                                 title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
                                                 onClick={(e) => {
                                                   e.preventDefault();
-                                                  toggleWishlist(product.id);
+                                                  toggleWishlist({
+                                                    id: product.id,
+                                                    name: product.name,
+                                                    image: product.images[0] || '/assets/images/product/default.jpg',
+                                                    slug: product.slug
+                                                  });
                                                 }}
                                                 style={{ cursor: 'pointer' }}
                                               >
