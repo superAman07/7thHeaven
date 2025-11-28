@@ -92,16 +92,7 @@ export default function NavBar() {
 
                             <div className="col-xl-6 col-lg-8">
                                 <div className="ht-right d-flex justify-content-lg-end justify-content-center align-items-center">
-                                    <ul className="ht-us-menu color-white d-flex">
-                                        <li>
-                                            <a href="#"><i className="fa fa-user-circle-o" /></a>
-                                            <ul className="ht-dropdown right">
-                                                <li><a href="/my-account">My Account</a></li>
-                                                <li><a href="/wishlist">My Wish List</a></li>
-                                                <li><a href="/login">Sign In</a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
+
 
                                     <div className="header-search">
                                         <button onClick={toggleSearch} className={`header-search-toggle color-white ${isSearchOpen ? 'open' : ''}`}>
@@ -117,7 +108,6 @@ export default function NavBar() {
 
                                     <div className="header-cart color-white">
                                         <a href="/cart"><i className="fa fa-shopping-cart"></i> <span>{cartCount}</span></a>
-
                                         {/* Cart Dropdown */}
                                         <div className="header-cart-dropdown">
                                             {cartItems.length === 0 ? (
@@ -175,6 +165,16 @@ export default function NavBar() {
                                             )}
                                         </div>
                                     </div>
+                                    <ul className="ht-us-menu color-white d-flex">
+                                        <li>
+                                            <a><i className="fa fa-user-circle-o" /></a>
+                                            <ul className="ht-dropdown right">
+                                                <li><a href="/my-account">My Account</a></li>
+                                                <li><a href="/wishlist">My Wish List</a></li>
+                                                <li><a href="/login">Sign In</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
