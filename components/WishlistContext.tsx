@@ -35,8 +35,6 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
                 setWishlistItems(ids);
             }
         } catch (error) {
-            console.error('Error fetching wishlist IDs:', error);
-            toast.error('Could not load wishlist, please login.');
         }
     };
 
