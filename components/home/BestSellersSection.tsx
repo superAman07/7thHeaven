@@ -47,15 +47,13 @@ async function getBestSellers(): Promise<PublicProduct[]> {
 export default async function BestSellersSection() {
     const products = await getBestSellers();
     return <>
-            <ProductSectionPage products={products} />
-            {products.length > 0 && (
-                <div className="row">
-                    <div className="col-12 text-center mb-40">
-                        <Link href="/collections" className="btn btn-dark">
-                            View All Best Sellers
-                        </Link>
-                    </div>
-                </div>
-            )}
-        </>
+        <ProductSectionPage products={products} />
+        {products.length > 0 && (
+            <center className="mb-40">
+                <Link href="/collections" className="btn">
+                    <span>View All Best Sellers</span>
+                </Link>
+            </center>
+        )}
+    </>
 }

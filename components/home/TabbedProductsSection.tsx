@@ -27,11 +27,11 @@ async function getProductsForTabs(): Promise<{
     [...newArrivals, ...onSaleProducts, ...featuredProducts].forEach(p => allProductsMap.set(p.id, p));
     const allProducts = Array.from(allProductsMap.values()) as PublicProduct[];
 
-    return { 
-        newArrivals, 
-        onSaleProducts, 
-        featuredProducts, 
-        allProducts 
+    return {
+        newArrivals,
+        onSaleProducts,
+        featuredProducts,
+        allProducts
     };
 }
 
@@ -48,13 +48,11 @@ export default async function TabbedProductsSection() {
                 }}
             />
             {allProducts.length > 0 && (
-                <div className="row">
-                    <div className="col-12 text-center mt-20 mb-40">
-                        <Link href="/collections" className="btn btn-dark">
-                            Explore All Products
-                        </Link>
-                    </div>
-                </div>
+                <center className="mb-40">
+                    <Link href="/collections" className="btn">
+                        <span>Explore All Products</span>
+                    </Link>
+                </center>
             )}
         </>
     );
