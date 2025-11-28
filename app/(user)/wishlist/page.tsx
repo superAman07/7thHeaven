@@ -60,15 +60,15 @@ export default function WishlistPage() {
         toast.success('Added to cart');
     };
 
-    if (loading) {
-        return (
-            <div className="text-center pt-100 pb-100">
-                <div className="spinner-border text-warning" role="status">
-                    <span className="sr-only">Loading...</span>
-                </div>
-            </div>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <div className="text-center pt-100 pb-100">
+    //             <div className="spinner-border text-warning" role="status">
+    //                 <span className="sr-only">Loading...</span>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
     return (
         <div id="main-wrapper">
@@ -95,7 +95,13 @@ export default function WishlistPage() {
                 <div className="container">
                     <div className="row">
                         <div className="col-12">
-                            {wishlistItems.length === 0 ? (
+                            {loading ? (
+                                <div className="text-center pt-100 pb-100">
+                                    <div className="spinner-border text-warning" role="status">
+                                        <span className="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                            ) : wishlistItems.length === 0 ? (
                                 <div className="text-center">
                                     <h3>Your wishlist is empty.</h3>
                                     <p className="mb-4">Browse our collections to find products you love.</p>
@@ -120,7 +126,7 @@ export default function WishlistPage() {
                                             {wishlistItems.map((item) => {
                                                 const product = item.product;
                                                 const price = Number(product.variants?.[0]?.price) || 0;
-                                                
+
                                                 return (
                                                     <tr key={product.id}>
                                                         <td className="pro-thumbnail">
