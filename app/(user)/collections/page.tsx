@@ -378,9 +378,9 @@ function CollectionsContent() {
               <div className="row mb-30">
                 <div className="col">
                   <ul className="page-pagination">
-                    <li><a href="#"><i className="fa fa-angle-left"></i></a></li>
-                    <li className="active"><a href="#">01</a></li>
-                    <li><a href="#"><i className="fa fa-angle-right"></i></a></li>
+                    <li><a><i className="fa fa-angle-left"></i></a></li>
+                    <li className="active"><a>01</a></li>
+                    <li><a><i className="fa fa-angle-right"></i></a></li>
                   </ul>
                 </div>
               </div>
