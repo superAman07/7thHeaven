@@ -43,6 +43,8 @@ function CollectionsContent() {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [priceRange, setPriceRange] = useState([0, 57500]);
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -63,13 +65,14 @@ function CollectionsContent() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedPriceRange(priceRange);
+      setCurrentPage(1);
     }, 500);
     return () => clearTimeout(timer);
   }, [priceRange]);
 
   useEffect(() => {
     fetchProducts();
-  }, [debouncedPriceRange, selectedGenders, selectedCategories, sortBy]);
+  }, [debouncedPriceRange, selectedGenders, selectedCategories, sortBy, currentPage]);
 
   const fetchCategories = async () => {
     try {
@@ -97,9 +100,15 @@ function CollectionsContent() {
       if (selectedCategories.length) params.append('category', selectedCategories.join(','));
       params.append('sort', sortBy);
 
+      params.append('page', currentPage.toString());
+      params.append('limit', '12');
+
       const res = await axios.get(`/api/v1/products?${params.toString()}`);
       if (res.data.success) {
         setProducts(res.data.data);
+        if (res.data.meta) {
+          setTotalPages(res.data.meta.totalPages);
+        }
       }
     } catch (error) {
       console.error("Error fetching products", error);
@@ -132,12 +141,14 @@ function CollectionsContent() {
     setSelectedGenders(prev =>
       prev.includes(gender) ? prev.filter(g => g !== gender) : [...prev, gender]
     );
+    setCurrentPage(1);
   };
 
   const handleCategoryChange = (catId: string) => {
     setSelectedCategories(prev =>
       prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]
     );
+    setCurrentPage(1);
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
@@ -145,6 +156,17 @@ function CollectionsContent() {
     const newRange = [...priceRange];
     newRange[index] = val;
     setPriceRange(newRange);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(e.target.value);
+    setCurrentPage(1);
   };
 
   return (
@@ -266,7 +288,7 @@ function CollectionsContent() {
                     <div className="toolbar-short-area d-md-flex align-items-center">
                       <div className="toolbar-shorter">
                         <label>Sort By:</label>
-                        <select className="wide" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                        <select className="wide" value={sortBy} onChange={handleSortChange}>
                           <option value="newest">Newest</option>
                           <option value="price_asc">Price, low to high</option>
                           <option value="price_desc">Price, high to low</option>
@@ -375,15 +397,42 @@ function CollectionsContent() {
               </div>
 
               {/* Pagination (Static for now, can be made dynamic) */}
-              <div className="row mb-30">
-                <div className="col">
-                  <ul className="page-pagination">
-                    <li><a><i className="fa fa-angle-left"></i></a></li>
-                    <li className="active"><a>01</a></li>
-                    <li><a><i className="fa fa-angle-right"></i></a></li>
-                  </ul>
+              {totalPages > 1 && (
+                <div className="row mb-30">
+                  <div className="col">
+                    <ul className="page-pagination">
+                      <li>
+                        <a
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          style={{ cursor: currentPage > 1 ? 'pointer' : 'not-allowed', opacity: currentPage > 1 ? 1 : 0.5 }}
+                        >
+                          <i className="fa fa-angle-left"></i>
+                        </a>
+                      </li>
+
+                      {[...Array(totalPages)].map((_, i) => {
+                        const page = i + 1;
+                        return (
+                          <li key={page} className={currentPage === page ? "active" : ""}>
+                            <a onClick={() => handlePageChange(page)} style={{ cursor: 'pointer' }}>
+                              {page < 10 ? `0${page}` : page}
+                            </a>
+                          </li>
+                        );
+                      })}
+
+                      <li>
+                        <a
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          style={{ cursor: currentPage < totalPages ? 'pointer' : 'not-allowed', opacity: currentPage < totalPages ? 1 : 0.5 }}
+                        >
+                          <i className="fa fa-angle-right"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
