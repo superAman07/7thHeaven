@@ -396,8 +396,7 @@ function CollectionsContent() {
                 </div>
               </div>
 
-              {/* Pagination (Static for now, can be made dynamic) */}
-              {totalPages > 1 && (
+              {totalPages > 0 && (
                 <div className="row mb-30">
                   <div className="col">
                     <ul className="page-pagination">
