@@ -31,7 +31,6 @@ export async function DELETE(
         return NextResponse.json({ success: true, message: 'Removed from wishlist' });
 
     } catch (error: any) {
-        // If item doesn't exist, we still consider it a success (idempotent)
         if (error.code === 'P2025') {
             return NextResponse.json({ success: true, message: 'Item already removed' });
         }
