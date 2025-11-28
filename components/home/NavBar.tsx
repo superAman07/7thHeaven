@@ -208,7 +208,7 @@ export default function NavBar() {
                                             onClick={() => setIsMobileOpen((s) => !s)}
                                             style={{
                                                 position: 'absolute',
-                                                right: 8,
+                                                right: 0,
                                                 background: 'transparent',
                                                 border: 0,
                                                 padding: 6,
