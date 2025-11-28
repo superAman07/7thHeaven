@@ -290,7 +290,7 @@ function CollectionsContent() {
                             ) : products.length > 0 ? (
                               products.map((product) => {
                                 // Calculate Price Logic
-                                const basePrice = product.variants?.[0]?.price || 0;
+                                const basePrice = Number(product.variants?.[0]?.price) || 0;
                                 const discount = product.discountPercentage || 0;
                                 const finalPrice = basePrice - (basePrice * discount / 100);
 

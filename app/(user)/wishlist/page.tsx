@@ -119,8 +119,8 @@ export default function WishlistPage() {
                                         <tbody>
                                             {wishlistItems.map((item) => {
                                                 const product = item.product;
-                                                const price = product.variants?.[0]?.price || 0;
-
+                                                const price = Number(product.variants?.[0]?.price) || 0;
+                                                
                                                 return (
                                                     <tr key={product.id}>
                                                         <td className="pro-thumbnail">
@@ -141,7 +141,6 @@ export default function WishlistPage() {
                                                             <button
                                                                 className="btn"
                                                                 onClick={() => handleAddToCart(product)}
-                                                                style={{ backgroundColor: '#333', color: '#fff', padding: '10px 20px' }}
                                                             >
                                                                 Add to cart
                                                             </button>
