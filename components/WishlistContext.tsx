@@ -5,7 +5,6 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
-// ... existing interfaces ...
 export interface WishlistProduct {
     id: string;
     name: string;
@@ -36,7 +35,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
                 setWishlistItems(ids);
             }
         } catch (error) {
-            // User might not be logged in
+            console.error('Error fetching wishlist IDs:', error);
+            toast.error('Could not load wishlist, please login.');
         }
     };
 
@@ -56,7 +56,6 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         } else {
             setWishlistItems(prev => [...prev, productId]);
 
-            // Keep the toast transient (disappears after 4s)
             toast.custom((t) => (
                 <div
                     style={{
@@ -129,8 +128,6 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     return (
         <WishlistContext.Provider value={{ wishlistItems, toggleWishlist, isInWishlist }}>
             {children}
-
-            {/* NEW: Persistent Floating Wishlist Button */}
             {wishlistItems.length > 0 && (
                 <Link
                     href="/wishlist"
