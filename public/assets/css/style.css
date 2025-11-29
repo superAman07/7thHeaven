@@ -8055,3 +8055,17 @@ h2.entry-title:before {
         grid-template-columns: 1fr;
     }
 }
+
+.product-img img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+}
+
+/* Mobile Fix */
+@media (max-width: 768px) {
+  .product-img img {
+    height: 260px; 
+    aspect-ratio: auto;
+  }
+}
