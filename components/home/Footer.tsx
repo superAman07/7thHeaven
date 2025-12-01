@@ -49,7 +49,7 @@ Discover long-lasting perfumes, luxury collections, and exclusive signature scen
     email: "ooooooooo.com",
   },
   copyrightOwner = "Theface",
-  logoSrc = "assets/images/logo.png",
+  logoSrc = "/assets/images/logo.png",
   logoHeight = 30,
 }: Props) {
   return (

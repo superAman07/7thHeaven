@@ -16,7 +16,7 @@ const defaultParagraphs = [
 ];
 
 export default function AboutUsAreaSection({
-  image = "assets/images/product/bwebp.webp",
+  image = "/assets/images/product/bwebp.webp",
   imageAlt = "",
   paragraphs = defaultParagraphs,
   imageLink = "#",

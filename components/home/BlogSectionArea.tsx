@@ -23,7 +23,7 @@ const defaultPosts: Post[] = [
   {
     id: "b1",
     title: "LUXURY AROMA FOR MODERN SOUL",
-    image: "assets/images/product/bwebp.webp",
+    image: "/assets/images/product/bwebp.webp",
     day: "20",
     month: "Jul",
     excerpt:
@@ -33,7 +33,7 @@ const defaultPosts: Post[] = [
   {
     id: "b2",
     title: "LUXURY AROMA FOR MODERN SOUL",
-    image: "assets/images/product/b.png",
+    image: "/assets/images/product/b.png",
     day: "09",
     month: "March",
     excerpt:
@@ -43,7 +43,7 @@ const defaultPosts: Post[] = [
   {
     id: "b3",
     title: "LUXURY AROMA FOR MODERN SOUL",
-    image: "assets/images/banner/h1-banner-1..jpg",
+    image: "/assets/images/banner/h1-banner-1..jpg",
     day: "15",
     month: "May",
     excerpt:
@@ -53,7 +53,7 @@ const defaultPosts: Post[] = [
   {
     id: "b4",
     title: "LUXURY AROMA FOR MODERN SOUL",
-    image: "assets/images/product/o.webp",
+    image: "/assets/images/product/o.webp",
     day: "13",
     month: "Oct",
     excerpt:
