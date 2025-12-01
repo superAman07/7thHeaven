@@ -459,9 +459,10 @@ function CollectionsContent() {
 }
 
 export default function CollectionsPage() {
-  return (
-    <Suspense fallback={<div className="text-center py-10">Loading collections...</div>}>
-      <CollectionsContent />
-    </Suspense>
-  );
+  redirect('/collections/perfumes');
+  // return (
+  //   <Suspense fallback={<div className="text-center py-10">Loading collections...</div>}>
+  //     <CollectionsContent />
+  //   </Suspense>
+  // );
 }

@@ -67,11 +67,11 @@ export default function NavBar() {
 
     const links = [
         { href: '/', label: 'Home' },
-        { href: '/collections', label: 'Collections' },
-        { href: '/collections?gender=Women', label: 'Women' },
-        { href: '/collections?gender=Men', label: 'Men' },
-        { href: '/collections?gender=Unisex', label: 'Unisex' },
-        { href: '/collections?sort=newest', label: 'NEW ARRIVALS' },
+        { href: '/collections/perfumes', label: 'Collections' },
+        { href: '/collections/perfumes?gender=Women', label: 'Women' },
+        { href: '/collections/perfumes?gender=Men', label: 'Men' },
+        { href: '/collections/perfumes?gender=Unisex', label: 'Unisex' },
+        { href: '/collections/perfumes?sort=newest', label: 'NEW ARRIVALS' },
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact Us' },
     ];
