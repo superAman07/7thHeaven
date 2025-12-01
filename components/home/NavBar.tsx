@@ -3,6 +3,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '../CartContext';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 const MOBILE_BREAKPOINT = 991;
 
@@ -12,7 +14,35 @@ export default function NavBar() {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const { cartItems, removeFromCart, cartCount, cartTotal } = useCart();
 
+    const [user, setUser] = useState(null);
+    const router = useRouter();
+
     const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const res = await axios.get('/api/v1/auth/me');
+                if (res.data.success) {
+                    setUser(res.data.user);
+                }
+            } catch (error) {
+            }
+        };
+        checkAuth();
+    }, []);
+
+    const handleLogout = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        try {
+            await axios.post('/api/v1/auth/logout');
+            setUser(null);
+            router.push('/');
+            router.refresh();
+        } catch (error) {
+            console.error('Logout failed', error);
+        }
+    };
 
     useEffect(() => {
         const onScroll = () => {
@@ -171,7 +201,11 @@ export default function NavBar() {
                                             <ul className="ht-dropdown right">
                                                 <li><a href="/my-account">My Account</a></li>
                                                 <li><a href="/wishlist">My Wish List</a></li>
+                                                {user ? (
+                                                    <li><a href="/" onClick={handleLogout}>Logout</a></li>
+                                                ) : ( 
                                                 <li><a href="/login">Sign In</a></li>
+                                            )}
                                             </ul>
                                         </li>
                                     </ul>

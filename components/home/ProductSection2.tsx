@@ -9,6 +9,7 @@ import { NoProductsPlaceholder } from "./NoProductsPlaceholder";
 import ProductQuickViewModal from "./QuickViewModal";
 import { useCart } from "../CartContext";
 import Link from "next/link";
+import { useWishlist } from "@/components/WishlistContext";
 
 type TabsPayload = {
   products: PublicProduct[];
@@ -34,6 +35,7 @@ export default function ProductSection2({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [addingProductId, setAddingProductId] = useState<string | null>(null);
 
   const handleOpenModal = (product: PublicProduct) => {
@@ -159,8 +161,23 @@ export default function ProductSection2({
                   </a>
                 </li>
                 <li>
-                  <a href="#">
-                    <i className="fa fa-heart-o"></i>
+                  <a
+                    title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleWishlist({
+                        id: product.id,
+                        name: product.name,
+                        image: product.images[0] || 'assets/images/product/shop.webp',
+                        slug: product.slug
+                      });
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <i
+                      className={`fa ${isInWishlist(product.id) ? 'fa-heart' : 'fa-heart-o'}`}
+                      style={{ color: isInWishlist(product.id) ? '#dc3545' : 'inherit' }}
+                    ></i>
                   </a>
                 </li>
                 <li>

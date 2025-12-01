@@ -7,6 +7,7 @@ import { PublicProduct } from "../HeroPage";
 import { NoProductsPlaceholder } from "./NoProductsPlaceholder";
 import ProductQuickViewModal from "./QuickViewModal";
 import { useCart } from "../CartContext";
+import { useWishlist } from "@/components/WishlistContext";
 
 const getLowestPrice = (variants: PublicProduct['variants']) => {
   if (!variants || variants.length === 0) return 0;
@@ -15,6 +16,7 @@ const getLowestPrice = (variants: PublicProduct['variants']) => {
 
 export default function ProductSectionPage({ products }: { products: PublicProduct[] }) {
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [addingProductId, setAddingProductId] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,8 +105,26 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
                                             <i className="fa fa-eye"></i>
                                           </a>
                                         </li>
-                                        <li><a title="Wishlist"><i className="fa fa-heart-o"></i></a></li>
-                                      </ul>
+<li>
+                                          <a
+                                            title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              toggleWishlist({
+                                                id: product.id,
+                                                name: product.name,
+                                                image: product.images[0] || '/assets/images/product/shop.webp',
+                                                slug: product.slug
+                                              });
+                                            }}
+                                            style={{ cursor: 'pointer' }}
+                                          >
+                                            <i
+                                              className={`fa ${isInWishlist(product.id) ? 'fa-heart' : 'fa-heart-o'}`}
+                                              style={{ color: isInWishlist(product.id) ? '#dc3545' : 'inherit' }}
+                                            ></i>
+                                          </a>
+                                        </li>                                      </ul>
                                     </div>
                                   </div>
                                   <div className="product-content">
