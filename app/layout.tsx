@@ -62,6 +62,9 @@ export default function RootLayout({
       >
         <Toaster position="top-center" reverseOrder={false} />
         <CartProvider>
+          <Suspense fallback={null}>
+            <ReferralTracker />
+          </Suspense>
           {children}
         </CartProvider>
       </body>

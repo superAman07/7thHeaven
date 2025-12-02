@@ -34,13 +34,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: { message: 'Invalid or expired token.' } }, { status: 401 });
     }
 
+    const referralCode = request.cookies.get('referralCode')?.value;
+    let referrerId = undefined;
+
+    if (referralCode) {
+      const referrer = await prisma.user.findUnique({
+        where: { referralCode: referralCode }
+      });
+      
+      if (referrer && referrer.id !== tokenPayload.userId) {
+        referrerId = referrer.id;
+      }
+    }
+
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
+
+    const currentUser = await prisma.user.findUnique({
+        where: { id: tokenPayload.userId },
+        select: { referrerId: true }
+    });
 
     const user = await prisma.user.update({
       where: { id: tokenPayload.userId },
       data: {
         passwordHash,
+        ...(referrerId && !currentUser?.referrerId ? { referrerId } : {}),
       },
     });
 

@@ -177,6 +177,14 @@ export default function AuthPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
+    const [referralCode, setReferralCode] = useState<string | null>(null);
+
+    useEffect(() => {
+        const match = document.cookie.match(new RegExp('(^| )referralCode=([^;]+)'));
+        if (match) {
+            setReferralCode(match[2]);
+        }
+    }, []);
 
     const switchView = (newView: View) => {
         setError(null);
@@ -339,6 +347,11 @@ export default function AuthPage() {
                             </div>
                             <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
                             <p className="text-gray-500 mt-1">Step 1 of 3: Your Information</p>
+                            {referralCode && (
+                                <div className="mt-3 inline-block bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm border border-green-200">
+                                    ✓ Referred by: <strong>{referralCode}</strong>
+                                </div>
+                            )}
                         </div>
                         <form onSubmit={handleRequestSignupOtp} className="space-y-6">
                             <AuthInput id="fullName" label="Full Name" icon={<UserIcon className="w-5 h-5" />} value={fullName} onChange={(e) => setFullName(e.target.value)} required />
