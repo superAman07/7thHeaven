@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import crypto from 'crypto';
+import axios from 'axios';
+
+function generateReferralCode() {
+    return '7H-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+async function sendReferralSMS(phone: string, code: string, name: string) {
+    try {
+        // Example: Fast2SMS or Twilio logic here
+        // const message = `Welcome to 7th Heaven Club, ${name}! Your referral code is ${code}. Share it to start earning rewards.`;
+        // await axios.post('YOUR_SMS_API_URL', { ... });
+        
+        console.log(`[SMS MOCK] Sending to ${phone}: Welcome ${name}! Your code is ${code}`);
+    } catch (error) {
+        console.error("Failed to send SMS:", error);
+    }
+}
 
 export async function POST(req: NextRequest) {
     try {
@@ -21,14 +38,13 @@ export async function POST(req: NextRequest) {
 
         // 2. Decode the response payload
         const decodedResponse = JSON.parse(Buffer.from(base64Response, 'base64').toString('utf-8'));
-        
-        // FIX: 'code' is at the root level, not inside 'data'
         const { code: paymentStatus } = decodedResponse;
         const { merchantTransactionId, amount } = decodedResponse.data;
 
         // 3. Find the order
         const order = await prisma.order.findFirst({
-            where: { gatewayOrderId: merchantTransactionId }
+            where: { gatewayOrderId: merchantTransactionId } ,
+            include: { user: true }
         });
 
         if (!order) {
@@ -50,10 +66,22 @@ export async function POST(req: NextRequest) {
             });
 
             if (order.mlmOptInRequested) {
+                let newReferralCode = order.user.referralCode;
+                
+                if (!newReferralCode) {
+                    newReferralCode = generateReferralCode();
+                }
+
                 await prisma.user.update({
                     where: { id: order.userId },
-                    data: { is7thHeaven: true } 
+                    data: { 
+                        is7thHeaven: true,
+                        referralCode: newReferralCode 
+                    } 
                 });
+                if (order.user.phone && newReferralCode) {
+                    await sendReferralSMS(order.user.phone, newReferralCode, order.user.fullName);
+                }
             }
 
             // NEW: Clear the user's cart after successful payment

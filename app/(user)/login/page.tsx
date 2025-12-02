@@ -218,7 +218,7 @@ export default function AuthPage() {
         }
     };
 
-    const handleRequestSignupOtp = async (e: React.FormEvent) => {
+    const handleRequestSignup Otp = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         setIsLoading(true);
