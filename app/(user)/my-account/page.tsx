@@ -277,6 +277,17 @@ export default function ProfilePage() {
         setShowOrderModal(true);
     };
 
+    if(loading){
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-[#ddb040] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-gray-500 font-medium">Loading your Account...</p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div id="main-wrapper">
             {/* Page Banner */}
@@ -297,7 +308,6 @@ export default function ProfilePage() {
             </div>
 
             {/* My Account Section */}
-            {loading ? (<div className="text-center pt-100 pb-100">Loading your profile...</div>) : (
                 <div className="my-account-section section pt-100 pb-100">
                     <div className="container">
                         <div className="row">
@@ -515,8 +525,6 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 </div>
-            )}
-
             {/* OTP Modal */}
             {showOtpModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
