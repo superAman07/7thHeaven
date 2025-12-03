@@ -16,6 +16,8 @@ interface UserProfile {
     state: string;
     pincode: string;
     country: string;
+    referralCode?: string; // Added
+    is7thHeaven?: boolean; // Added
 }
 
 interface Order {
@@ -31,7 +33,7 @@ interface Order {
 
 export default function ProfilePage() {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState('orders');
+    const [activeTab, setActiveTab] = useState('dashboard'); // Changed default to dashboard
     const [loading, setLoading] = useState(true);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [isUpdatingAddress, setIsUpdatingAddress] = useState(false);
@@ -304,6 +306,9 @@ export default function ProfilePage() {
                                     {/* Tab Menu */}
                                     <div className="col-lg-3 col-12">
                                         <div className="myaccount-tab-menu nav" role="tablist">
+                                            <a href="" className={activeTab === 'dashboard' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('dashboard'); }}>
+                                                <i className="fa fa-dashboard"></i> Dashboard
+                                            </a>
                                             <a href="" className={activeTab === 'orders' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('orders'); }}>
                                                 <i className="fa fa-cart-arrow-down"></i> Orders
                                             </a>
@@ -313,7 +318,7 @@ export default function ProfilePage() {
                                             <a href="" className={activeTab === 'account-info' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('account-info'); }}>
                                                 <i className="fa fa-user"></i> Account Details
                                             </a>
-                                            <a href="#logout" onClick={handleLogout} style={{ pointerEvents: isLoggingOut ? 'none' : 'auto', opacity: isLoggingOut ? 0.6 : 1 }}>
+                                            <a href="" onClick={handleLogout} style={{ pointerEvents: isLoggingOut ? 'none' : 'auto', opacity: isLoggingOut ? 0.6 : 1 }}>
                                                 <i className="fa fa-sign-out"></i> {isLoggingOut ? 'Logging out...' : 'Logout'}
                                             </a>
                                         </div>
@@ -322,6 +327,55 @@ export default function ProfilePage() {
                                     {/* Tab Content */}
                                     <div className="col-lg-9 col-12">
                                         <div className="tab-content" id="myaccountContent">
+
+                                            {/* Dashboard Tab */}
+                                            <div className={`tab-pane fade ${activeTab === 'dashboard' ? 'show active' : ''}`}>
+                                                <div className="myaccount-content">
+                                                    <h3>Dashboard</h3>
+                                                    <div className="welcome">
+                                                        <p>Hello, <strong>{user?.fullName}</strong> (If Not <strong>{user?.fullName} !</strong> <a href="#" onClick={handleLogout} className="logout"> Logout</a>)</p>
+                                                    </div>
+                                                    <p className="mb-0">From your account dashboard. you can easily check & view your recent orders, manage your shipping and billing addresses and edit your password and account details.</p>
+                                                    
+                                                    {/* 7th Heaven Section */}
+                                                    <div className="mt-4 p-4 rounded" style={{ backgroundColor: '#fdf8e4', border: '1px solid #faebcc' }}>
+                                                        <h4 style={{ color: '#8a6d3b', fontSize: '18px', fontWeight: 'bold' }}>
+                                                            <i className="fa fa-users mr-2"></i> 
+                                                            7th Heaven Club
+                                                        </h4>
+                                                        {user?.is7thHeaven ? (
+                                                            <>
+                                                                <p className="mb-2">You are an active member! Share your referral code to grow your network.</p>
+                                                                <div className="d-flex align-items-center gap-3 flex-wrap mb-3">
+                                                                    <div style={{ background: '#fff', padding: '8px 15px', border: '1px dashed #8a6d3b', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '1px' }}>
+                                                                        {user.referralCode}
+                                                                    </div>
+                                                                    <button 
+                                                                        className="btn btn-sm btn-secondary"
+                                                                        onClick={() => {
+                                                                            navigator.clipboard.writeText(`${window.location.origin}/login?ref=${user.referralCode}`);
+                                                                            toast.success("Referral link copied!");
+                                                                        }}
+                                                                    >
+                                                                        Copy Link
+                                                                    </button>
+                                                                </div>
+                                                                
+                                                                <Link href="/7th-heaven" className="btn btn-primary" style={{ backgroundColor: '#ddb040', borderColor: '#ddb040', color: '#fff' }}>
+                                                                    View My Network & Progress <i className="fa fa-arrow-right ml-2"></i>
+                                                                </Link>
+                                                            </>
+                                                        ) : (
+                                                            <p className="mb-0">
+                                                                You are not a member of the 7th Heaven Club yet. 
+                                                                <Link href="/collections/perfumes" className="ml-1 text-decoration-underline" style={{ color: '#ddb040' }}>
+                                                                    Shop now
+                                                                </Link> to unlock exclusive benefits!
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
 
                                             {/* Orders Tab */}
                                             <div className={`tab-pane fade ${activeTab === 'orders' ? 'show active' : ''}`}>
