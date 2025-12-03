@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
                 fullAddress: true,
                 country: true,
                 is7thHeaven: true,
+                referralCode: true,
             }
         });
 

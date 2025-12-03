@@ -44,4 +44,4 @@ next-env.d.ts
 /prisma/seed.ts
 tsconfig.seed.json
 
-./cloudflared.exe
+/cloudflared.exe
