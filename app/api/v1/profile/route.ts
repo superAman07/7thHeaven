@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserIdFromToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
-import bcrypt from 'bcryptjs'; // Ensure you have bcryptjs installed
+import bcrypt from 'bcryptjs'; 
 
 export async function GET(req: NextRequest) {
     try {
@@ -17,7 +17,6 @@ export async function GET(req: NextRequest) {
                 fullName: true,
                 email: true,
                 phone: true,
-                // Address fields
                 fullAddress: true,
                 city: true,
                 state: true,
@@ -40,7 +39,6 @@ export async function GET(req: NextRequest) {
     }
 }
 
-// NEW: POST method to request OTP for updates
 export async function POST(req: NextRequest) {
     try {
         const userId = await getUserIdFromToken(req);
