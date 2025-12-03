@@ -10,39 +10,38 @@ export async function GET(req: NextRequest) {
         }
 
         // Fetch the user and their network (Recursive include for 7 levels)
-        // Note: Prisma doesn't support recursive queries easily, so we use nested includes.
-        // We only care about "is7thHeaven: true" users for the scheme.
+        // FIXED: Using 'children' instead of 'referrals' to match schema.prisma
         const userNetwork = await prisma.user.findUnique({
             where: { id: userId },
             select: {
                 id: true,
                 referralCode: true,
                 is7thHeaven: true,
-                referrals: { // Level 1
+                children: { // Level 1
                     where: { is7thHeaven: true },
                     select: {
                         id: true, fullName: true, createdAt: true,
-                        referrals: { // Level 2
+                        children: { // Level 2
                             where: { is7thHeaven: true },
                             select: {
                                 id: true,
-                                referrals: { // Level 3
+                                children: { // Level 3
                                     where: { is7thHeaven: true },
                                     select: {
                                         id: true,
-                                        referrals: { // Level 4
+                                        children: { // Level 4
                                             where: { is7thHeaven: true },
                                             select: {
                                                 id: true,
-                                                referrals: { // Level 5
+                                                children: { // Level 5
                                                     where: { is7thHeaven: true },
                                                     select: {
                                                         id: true,
-                                                        referrals: { // Level 6
+                                                        children: { // Level 6
                                                             where: { is7thHeaven: true },
                                                             select: {
                                                                 id: true,
-                                                                referrals: { // Level 7
+                                                                children: { // Level 7
                                                                     where: { is7thHeaven: true },
                                                                     select: { id: true }
                                                                 }
@@ -68,31 +67,32 @@ export async function GET(req: NextRequest) {
         // Calculate Counts per Level
         const levelCounts = [0, 0, 0, 0, 0, 0, 0]; // Index 0 = Level 1, Index 6 = Level 7
 
-        const level1 = userNetwork.referrals || [];
+        // FIXED: Using 'children' here as well
+        const level1 = userNetwork.children || [];
         levelCounts[0] = level1.length;
 
         level1.forEach(l1 => {
-            const level2 = l1.referrals || [];
+            const level2 = l1.children || [];
             levelCounts[1] += level2.length;
 
             level2.forEach(l2 => {
-                const level3 = l2.referrals || [];
+                const level3 = l2.children || [];
                 levelCounts[2] += level3.length;
 
                 level3.forEach(l3 => {
-                    const level4 = l3.referrals || [];
+                    const level4 = l3.children || [];
                     levelCounts[3] += level4.length;
 
                     level4.forEach(l4 => {
-                        const level5 = l4.referrals || [];
+                        const level5 = l4.children || [];
                         levelCounts[4] += level5.length;
 
                         level5.forEach(l5 => {
-                            const level6 = l5.referrals || [];
+                            const level6 = l5.children || [];
                             levelCounts[5] += level6.length;
 
                             level6.forEach(l6 => {
-                                const level7 = l6.referrals || [];
+                                const level7 = l6.children || [];
                                 levelCounts[6] += level7.length;
                             });
                         });
@@ -120,7 +120,7 @@ export async function GET(req: NextRequest) {
                 isMember: userNetwork.is7thHeaven,
                 levels: levels,
                 totalTeamSize: levelCounts.reduce((a, b) => a + b, 0),
-                directReferrals: level1.map(u => ({ name: u.fullName, joinedAt: u.createdAt })) // Send Level 1 details for display
+                directReferrals: level1.map(u => ({ name: u.fullName, joinedAt: u.createdAt }))
             }
         });
 
