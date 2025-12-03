@@ -16,8 +16,8 @@ interface UserProfile {
     state: string;
     pincode: string;
     country: string;
-    referralCode?: string; // Added
-    is7thHeaven?: boolean; // Added
+    referralCode?: string;
+    is7thHeaven?: boolean;
 }
 
 interface Order {
@@ -33,7 +33,7 @@ interface Order {
 
 export default function ProfilePage() {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState('dashboard'); // Changed default to dashboard
+    const [activeTab, setActiveTab] = useState('dashboard');
     const [loading, setLoading] = useState(true);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [isUpdatingAddress, setIsUpdatingAddress] = useState(false);
