@@ -92,7 +92,7 @@ export default function SeventhHeavenPage() {
                 </div>
             </div>
 
-            <div className="container mt-10">
+            <div className="container">
                 {/* --- Status Card --- */}
                 <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border-t-4 border-[#ddb040] relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
