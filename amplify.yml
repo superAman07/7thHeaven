@@ -3,7 +3,19 @@ frontend:
   phases:
     preBuild:
       commands:
+        - echo "Environment Variables:"
+        - printenv
+        - '[ -z "$DATABASE_URL" ] && echo "Error: DATABASE_URL is not set!" && exit 1 || echo "DATABASE_URL is set"'
+        - nvm install 20
+        - nvm use 20
         - npm ci
+        - echo "DATABASE_URL=$DATABASE_URL" >> .env.production
+        - echo "JWT_SECRET=$JWT_SECRET" >> .env.production
+        - echo "PHONEPE_MERCHANT_ID=$PHONEPE_MERCHANT_ID" >> .env.production
+        - echo "PHONEPE_SALT_KEY=$PHONEPE_SALT_KEY" >> .env.production
+        - echo "PHONEPE_SALT_INDEX=$PHONEPE_SALT_INDEX" >> .env.production
+        - echo "PHONEPE_HOST_URL=$PHONEPE_HOST_URL" >> .env.production
+        - echo "NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL" >> .env.production
         - npx prisma generate
     build:
       commands:
