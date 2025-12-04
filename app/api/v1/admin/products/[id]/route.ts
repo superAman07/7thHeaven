@@ -22,10 +22,11 @@ const updateProductSchema = z.object({
   variants: z.array(variantSchema).min(1).optional(),
 });
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }>}) {
   try {
+    const {id} = await params;
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         variants: true,
         category: true,
@@ -38,26 +39,26 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     return NextResponse.json({ success: true, data: product });
   } catch (error) {
-    console.error(`Error fetching product ${params.id}:`, error);
     return NextResponse.json({ success: false, error: { message: 'An unexpected error occurred.' } }, { status: 500 });
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }>}) {
   try {
+    const { id } = await params;
     await prisma.product.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ success: true, data: { message: 'Product deleted successfully.' } });
   } catch (error) {
-    console.error(`Error deleting product ${params.id}:`, error);
     return NextResponse.json({ success: false, error: { message: 'An unexpected error occurred.' } }, { status: 500 });
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }>}) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const validation = updateProductSchema.safeParse(body);
 
@@ -69,13 +70,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     const updatedProduct = await prisma.$transaction(async (tx) => {
       const product = await tx.product.update({
-        where: { id: params.id },
+        where: { id },
         data: productData,
       });
 
       if (variants) {
         const existingVariants = await tx.productVariant.findMany({
-          where: { productId: params.id },
+          where: { productId: id },
           select: { id: true },
         });
         const existingVariantIds = new Set(existingVariants.map(v => v.id));
@@ -90,7 +91,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         }
         if (variantsToCreate.length > 0) {
           await tx.productVariant.createMany({
-            data: variantsToCreate.map(({ size, price }) => ({ productId: params.id, size, price: price.toString() })),
+            data: variantsToCreate.map(({ size, price }) => ({ productId: id, size, price: price.toString() })),
           });
         }
         for (const variant of variantsToUpdate) {
@@ -105,13 +106,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     });
 
     const finalProduct = await prisma.product.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { variants: true, category: true }
     });
 
     return NextResponse.json({ success: true, data: finalProduct });
   } catch (error) {
-    console.error(`Error updating product ${params.id}:`, error);
     return NextResponse.json({ success: false, error: { message: 'An unexpected error occurred.' } }, { status: 500 });
   }
 }
