@@ -6,6 +6,7 @@ import { FacebookIcon, GooglePlusIcon, InstagramIcon, PinterestIcon, StarIcon, T
 import ImageLightbox from '../ImageLightBox';
 import { useCart } from '../CartContext';
 import { useRouter } from 'next/navigation';
+import { useWishlist } from '../WishlistContext';
 
 interface ProductQuickViewModalProps {
     isOpen: boolean;
@@ -26,6 +27,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     const [selectedVariant, setSelectedVariant] = useState<{ id: string; price: number; size: string } | null>(null);
 
     const { addToCart } = useCart();
+    const { toggleWishlist, isInWishlist } = useWishlist();
     const router = useRouter();
 
     useEffect(() => {
@@ -372,8 +374,24 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                 </form>
                                             </div>
                                             <div className="wishlist-compare-btn">
-                                                <a href="#" className="wishlist-btn mb-md-10 mb-sm-10">Add to Wishlist</a>
-                                                <a href="#" className="add-compare">Compare</a>
+                                                <a 
+                                                    href="" 
+                                                    className="wishlist-btn mb-md-10 mb-sm-10"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        if (!displayProduct) return;
+                                                        toggleWishlist({
+                                                            id: displayProduct.id,
+                                                            name: displayProduct.name,
+                                                            image: displayProduct.images[0] || '/assets/images/product/default.jpg',
+                                                            slug: product?.slug || ''
+                                                        });
+                                                    }}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    {displayProduct && isInWishlist(displayProduct.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                                                </a>
+                                                {/* <a href="#" className="add-compare">Compare</a> */}
                                             </div>
                                             <div className="product-meta">
                                                 <span className="posted-in">

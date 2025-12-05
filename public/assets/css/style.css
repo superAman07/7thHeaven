@@ -4513,7 +4513,7 @@ a.popup-img {
   border-radius: 5px;
 }
 .wishlist-compare-btn a.wishlist-btn:before {
-  content: "";
+  content: "";
   display: inline-block;
   font-family: FontAwesome;
   font-size: 16px;

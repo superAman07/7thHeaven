@@ -5,6 +5,7 @@ import Link from "next/link";
 import Slider from "react-slick";
 import { PublicProduct } from '../HeroPage';
 import { useCart } from '../CartContext';
+import { useWishlist } from '../WishlistContext';
 
 interface ProductDetailsClientProps {
     product: PublicProduct;
@@ -13,6 +14,7 @@ interface ProductDetailsClientProps {
 
 const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsClientProps) => {
     const { addToCart } = useCart();
+    const { toggleWishlist, isInWishlist } = useWishlist();
     const [isAdding, setIsAdding] = useState(false);
 
     const [selectedVariant, setSelectedVariant] = useState(
@@ -237,8 +239,23 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                 </div>
 
                                 <div className="wishlist-compare-btn">
-                                    <a href="#" className="wishlist-btn mb-md-10 mb-sm-10">Add to Wishlist</a>
-                                    <a href="#" className="add-compare">Compare</a>
+                                    <a 
+                                        href="#" 
+                                        className="wishlist-btn mb-md-10 mb-sm-10"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            toggleWishlist({
+                                                id: product.id,
+                                                name: product.name,
+                                                image: product.images[0] || '/assets/images/product/default.jpg',
+                                                slug: product.slug
+                                            });
+                                        }}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        {isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                                    </a>
+                                    {/* <a href="#" className="add-compare">Compare</a> */}
                                 </div>
 
                                 <div className="product-meta">
