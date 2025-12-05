@@ -8069,3 +8069,25 @@ h2.entry-title:before {
     aspect-ratio: auto;
   }
 }
+
+.product-variant-option {
+  min-width: 60px;
+  border-radius: 0;
+  margin-right: 10px;
+  border: 1px solid #ddd;
+  background-color: transparent;
+  color: #333;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  padding: 5px 10px;
+}
+
+.product-variant-option.active {
+  border-color: #000;
+  background-color: #000;
+  color: #fff;
+}
+
+.product-variant-option:hover {
+  border-color: #000;
+}

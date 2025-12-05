@@ -28,6 +28,12 @@ export type PublicProduct = {
     categoryId: string;
     isNewArrival: boolean;
     discountPercentage: number | null;
+    selectedVariant: {
+        id: string;
+        price: number;
+        size: string;
+    } | null;
+    price?: number;
     category: {
         name: string;
         slug: string;

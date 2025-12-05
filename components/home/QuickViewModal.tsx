@@ -23,6 +23,8 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
 
+    const [selectedVariant, setSelectedVariant] = useState<{ id: string; price: number; size: string } | null>(null);
+
     const { addToCart } = useCart();
     const router = useRouter();
 
@@ -112,7 +114,8 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     const displayProduct = useMemo(() => {
         if (!product) return null;
 
-        const regularPrice = parseFloat(product.variants?.[0]?.price as any) || 0;
+        // Use selectedVariant for price calculation
+        const regularPrice = selectedVariant ? selectedVariant.price : (parseFloat(product.variants?.[0]?.price as any) || 0);
         const discount = parseFloat(product.discountPercentage as any) || 0;
         const currentPrice = regularPrice * (1 - discount / 100);
 
@@ -131,14 +134,19 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
             },
             categories: [product.category.name],
         };
-    }, [product]);
+    }, [product, selectedVariant]);
 
     const handleAddToCart = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!product || isAdding) return;
+        if (!product || isAdding || !selectedVariant) return;
 
         setIsAdding(true);
-        addToCart(product, quantity);
+
+        addToCart({
+            ...product,
+            selectedVariant: selectedVariant,
+            price: selectedVariant.price
+        }, quantity);
 
         router.push('/cart');
     };
@@ -314,6 +322,23 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                     <span className="regular-price">Rs. {displayProduct.price.regular.toFixed(2)}</span>
                                                 )}
                                             </div>
+                                            {product && product.variants && product.variants.length > 0 && (
+                                                <div className="product-variants mt-3 mb-3">
+                                                    <h6 className="mb-2" style={{ fontSize: '13px', fontWeight: 600, textTransform: 'uppercase', color: '#333' }}>Select Size:</h6>
+                                                    <div className="d-flex flex-wrap gap-2">
+                                                        {product.variants.map((variant) => (
+                                                            <button
+                                                                key={variant.id}
+                                                                type="button"
+                                                                onClick={() => setSelectedVariant(variant)}
+                                                                className={`btn btn-sm product-variant-option ${selectedVariant?.id === variant.id ? 'active' : ''}`}
+                                                            >
+                                                                {variant.size}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
                                             <div className="product-description">
                                                 <p>{displayProduct.description || 'No description available.'}</p>
                                             </div>

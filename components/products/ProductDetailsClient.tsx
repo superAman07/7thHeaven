@@ -15,6 +15,10 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
     const { addToCart } = useCart();
     const [isAdding, setIsAdding] = useState(false);
 
+    const [selectedVariant, setSelectedVariant] = useState(
+        product.variants && product.variants.length > 0 ? product.variants[0] : null
+    );
+
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
 
@@ -22,14 +26,14 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
     const [imageLoading, setImageLoading] = useState(false);
 
     const displayPrice = useMemo(() => {
-        if (!product.variants || product.variants.length === 0) {
+        if (!selectedVariant) {
             return { current: 0, regular: 0 };
         }
-        const regularPrice = product.variants[0].price;
+        const regularPrice = selectedVariant.price;
         const discount = product.discountPercentage || 0;
-        const currentPrice = regularPrice * (1 - discount / 100);
-        return { current: currentPrice, regular: regularPrice };
-    }, [product]);
+        const current = regularPrice - (regularPrice * discount / 100);
+        return { current, regular: regularPrice };
+    }, [product, selectedVariant]);
 
     const handleImageChange = (index: number) => {
         if (index === activeImageIndex) return;
@@ -50,14 +54,17 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
 
     const handleAddToCart = (e: React.FormEvent) => {
         e.preventDefault();
-        if (isAdding) return;
+        if (!selectedVariant) return;
 
         setIsAdding(true);
-        addToCart(product, quantity);
-
-        setTimeout(() => {
-            setIsAdding(false);
-        }, 2500);
+        
+        addToCart({ 
+            ...product, 
+            selectedVariant: selectedVariant,
+            price: selectedVariant.price 
+        }, quantity);
+        
+        setTimeout(() => setIsAdding(false), 1000);
     };
 
     const sliderSettings = {
@@ -173,6 +180,24 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                         <span className="regular-price">Rs. {displayPrice.regular.toFixed(2)}</span>
                                     )}
                                 </div>
+
+                                {product.variants && product.variants.length > 0 && (
+                                    <div className="product-variants mt-4 mb-3">
+                                        <h6 className="mb-2" style={{ fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', color: '#333' }}>Select Size:</h6>
+                                        <div className="d-flex flex-wrap gap-2">
+                                            {product.variants.map((variant) => (
+                                                <button
+                                                    key={variant.id}
+                                                    type="button"
+                                                    onClick={() => setSelectedVariant(variant)}
+                                                    className={`btn btn-sm product-variant-option ${selectedVariant?.id === variant.id ? 'active' : ''}`}
+                                                >
+                                                    {variant.size}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div className="product-description">
                                     <p>{product.description}</p>
