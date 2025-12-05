@@ -182,19 +182,34 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                 </div>
 
                                 {product.variants && product.variants.length > 0 && (
-                                    <div className="product-variants mt-4 mb-3">
-                                        <h6 className="mb-2" style={{ fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', color: '#333' }}>Select Size:</h6>
+                                    <div className="product-size-selector mt-4 mb-3">
+                                        <h6 className="mb-2" style={{ fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', color: '#333', letterSpacing: '1px' }}>Select Size:</h6>
                                         <div className="d-flex flex-wrap gap-2">
-                                            {product.variants.map((variant) => (
-                                                <button
-                                                    key={variant.id}
-                                                    type="button"
-                                                    onClick={() => setSelectedVariant(variant)}
-                                                    className={`btn btn-sm product-variant-option ${selectedVariant?.id === variant.id ? 'active' : ''}`}
-                                                >
-                                                    {variant.size}
-                                                </button>
-                                            ))}
+                                            {product.variants.map((variant) => {
+                                                const displaySize = /[a-zA-Z]/.test(variant.size) 
+                                                    ? variant.size 
+                                                    : `${variant.size} ml`;
+
+                                                return (
+                                                    <button
+                                                        key={variant.id}
+                                                        type="button"
+                                                        onClick={() => setSelectedVariant(variant)}
+                                                        className={`btn btn-sm product-variant-option ${selectedVariant?.id === variant.id ? 'active' : ''}`}
+                                                        style={{
+                                                            minWidth: '80px', // Made wider for "ml" text
+                                                            height: '40px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontSize: '14px',
+                                                            fontWeight: 500
+                                                        }}
+                                                    >
+                                                        {displaySize}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )}

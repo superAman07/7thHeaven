@@ -323,19 +323,32 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                 )}
                                             </div>
                                             {product && product.variants && product.variants.length > 0 && (
-                                                <div className="product-variants mt-3 mb-3">
-                                                    <h6 className="mb-2" style={{ fontSize: '13px', fontWeight: 600, textTransform: 'uppercase', color: '#333' }}>Select Size:</h6>
+                                                <div className="product-size-selector mt-3 mb-3">
+                                                    <h6 className="mb-2" style={{ fontSize: '13px', fontWeight: 600, textTransform: 'uppercase', color: '#333', letterSpacing: '1px' }}>Select Size:</h6>
                                                     <div className="d-flex flex-wrap gap-2">
-                                                        {product.variants.map((variant) => (
-                                                            <button
-                                                                key={variant.id}
-                                                                type="button"
-                                                                onClick={() => setSelectedVariant(variant)}
-                                                                className={`btn btn-sm product-variant-option ${selectedVariant?.id === variant.id ? 'active' : ''}`}
-                                                            >
-                                                                {variant.size}
-                                                            </button>
-                                                        ))}
+                                                        {product.variants.map((variant) => {
+                                                            const displaySize = /[a-zA-Z]/.test(variant.size)
+                                                                ? variant.size
+                                                                : `${variant.size} ml`;
+
+                                                            return (
+                                                                <button
+                                                                    key={variant.id}
+                                                                    type="button"
+                                                                    onClick={() => setSelectedVariant(variant)}
+                                                                    className={`btn btn-sm product-variant-option ${selectedVariant?.id === variant.id ? 'active' : ''}`}
+                                                                    style={{
+                                                                        minWidth: '70px',
+                                                                        height: '35px',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center'
+                                                                    }}
+                                                                >
+                                                                    {displaySize}
+                                                                </button>
+                                                            );
+                                                        })}
                                                     </div>
                                                 </div>
                                             )}
