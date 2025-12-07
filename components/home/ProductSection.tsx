@@ -53,7 +53,7 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
     infinite: products.length > 4,
     speed: 500,
     slidesToShow: 4,
-    slidesToScroll: 1,
+    slidesToScroll: 2,
     arrows: false,
     autoplay: false,
     responsive: [
