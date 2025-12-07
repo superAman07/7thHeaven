@@ -2,8 +2,6 @@
 
 import React, { useMemo, useState } from "react";
 import Slider, { CustomArrowProps } from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import { PublicProduct } from "../HeroPage";
 import { NoProductsPlaceholder } from "./NoProductsPlaceholder";
 import ProductQuickViewModal from "./QuickViewModal";
@@ -231,24 +229,54 @@ export default function ProductSection2({
                   <button
                     className={activeTab === 'products' ? 'active' : ''}
                     onClick={() => setActiveTab('products')}
+                    style={{ 
+                        border: 'none', 
+                        background: 'transparent', 
+                        fontSize: '18px', 
+                        fontWeight: 600, 
+                        color: activeTab === 'products' ? '#ddb040' : '#555',
+                        borderBottom: activeTab === 'products' ? '2px solid #ddb040' : '2px solid transparent',
+                        padding: '10px 20px',
+                        transition: 'all 0.3s ease'
+                    }}
                   >
-                    New Products
+                    New Arrivals
                   </button>
                 </li>
                 <li>
                   <button
                     className={activeTab === 'onsale' ? 'active' : ''}
                     onClick={() => setActiveTab('onsale')}
+                    style={{ 
+                        border: 'none', 
+                        background: 'transparent', 
+                        fontSize: '18px', 
+                        fontWeight: 600, 
+                        color: activeTab === 'onsale' ? '#ddb040' : '#555',
+                        borderBottom: activeTab === 'onsale' ? '2px solid #ddb040' : '2px solid transparent',
+                        padding: '10px 20px',
+                        transition: 'all 0.3s ease'
+                    }}
                   >
-                    OnSale
+                    On Sale
                   </button>
                 </li>
                 <li>
                   <button
                     className={activeTab === 'feature' ? 'active' : ''}
                     onClick={() => setActiveTab('feature')}
+                    style={{ 
+                        border: 'none', 
+                        background: 'transparent', 
+                        fontSize: '18px', 
+                        fontWeight: 600, 
+                        color: activeTab === 'feature' ? '#ddb040' : '#555',
+                        borderBottom: activeTab === 'feature' ? '2px solid #ddb040' : '2px solid transparent',
+                        padding: '10px 20px',
+                        transition: 'all 0.3s ease'
+                    }}
                   >
-                    Feature Products
+                    Featured
                   </button>
                 </li>
               </ul>

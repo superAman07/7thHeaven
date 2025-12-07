@@ -14,7 +14,7 @@ async function getProductsForTabs(): Promise<{
     const [newArrivalsResult, onSaleProductsResult, featuredProductsResult] = await Promise.all([
         getProducts({ limit: 8, sort: 'newest' }),
         getProducts({ limit: 8, onSale: true }),
-        getProducts({ limit: 8, sort: 'name_asc' })
+        getProducts({ limit: 8, sort: 'price_desc' })
     ]);
 
     const newArrivals = newArrivalsResult.data as unknown as PublicProduct[];

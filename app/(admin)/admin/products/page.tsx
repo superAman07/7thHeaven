@@ -66,6 +66,7 @@ export default function ProductsPage() {
   const [categoryId, setCategoryId] = useState('');
   const [genderTags, setGenderTags] = useState<string[]>([]);
   const [inStock, setInStock] = useState(true);
+  const [discountPercentage, setDiscountPercentage] = useState('');
   const [variants, setVariants] = useState<{ id?: string; size: string; price: string }[]>([{ size: '', price: '' }]);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -132,6 +133,7 @@ export default function ProductsPage() {
     setCategoryId(categories[0]?.id || '');
     setGenderTags([]);
     setInStock(true);
+    setDiscountPercentage('');
     setVariants([{ size: '', price: '' }]);
   };
 
@@ -150,6 +152,7 @@ export default function ProductsPage() {
     setCategoryId(product.category.id);
     setGenderTags(product.genderTags);
     setInStock(product.inStock);
+    setDiscountPercentage(product.discountPercentage ? product.discountPercentage.toString() : '');
     setVariants(product.variants.map(({ id, size, price }) => ({ id, size, price })));
     setIsPanelOpen(true);
   };
@@ -173,6 +176,7 @@ export default function ProductsPage() {
       categoryId,
       genderTags,
       inStock,
+      discountPercentage: discountPercentage ? parseFloat(discountPercentage) : 0,
       variants: variants.map(v => ({ ...v, price: parseFloat(v.price) })).filter(v => v.size && !isNaN(v.price) && v.price > 0),
     };
 
@@ -407,6 +411,19 @@ export default function ProductsPage() {
                 <select id="category" value={categoryId} onChange={e => setCategoryId(e.target.value)} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm cursor-pointer transition-all">
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
+              </div>
+              <div>
+                <label htmlFor="discount" className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
+                <input 
+                  type="number" 
+                  id="discount" 
+                  value={discountPercentage} 
+                  onChange={e => setDiscountPercentage(e.target.value)} 
+                  min="0" 
+                  max="100" 
+                  placeholder="0" 
+                  className="w-full px-4 py-2.5 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" 
+                />
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-700">In Stock</span>
