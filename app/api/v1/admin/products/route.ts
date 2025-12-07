@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
     const searchTerm = searchParams.get('search') || '';
     const categoryId = searchParams.get('category') || '';
     const inStock = searchParams.get('status');
+    const gender = searchParams.get('gender');
     
     const skip = (page - 1) * limit;
 
@@ -41,6 +42,13 @@ export async function GET(request: NextRequest) {
     if (categoryId) {
       whereClause.categoryId = categoryId;
     }
+    
+    if (gender) {
+      whereClause.genderTags = {
+        has: gender 
+      };
+    }
+
     if (inStock === 'true' || inStock === 'false') {
       whereClause.inStock = inStock === 'true';
     }

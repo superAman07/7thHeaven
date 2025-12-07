@@ -70,7 +70,7 @@ export default function ProductsPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
-  const [filters, setFilters] = useState({ category: '', status: '' });
+  const [filters, setFilters] = useState({ category: '', status: '', gender: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
 
@@ -84,6 +84,7 @@ export default function ProductsPage() {
         search: debouncedSearchTerm,
         category: filters.category,
         status: filters.status,
+        gender: filters.gender,
       });
       const response = await axios.get(`/api/v1/admin/products?${params.toString()}`);
       setProducts(response.data.data);
@@ -254,7 +255,7 @@ export default function ProductsPage() {
   };
   const resetFilters = () => {
     setSearchTerm('');
-    setFilters({ category: '', status: '' });
+    setFilters({ category: '', status: '', gender: '' });
     setCurrentPage(1);
   };
 
@@ -295,6 +296,12 @@ export default function ProductsPage() {
               <option value="">Any Status</option>
               <option value="true">In Stock</option>
               <option value="false">Out of Stock</option>
+            </select>
+            <select name="gender" value={filters.gender} onChange={handleFilterChange} className="w-full px-3 py-2 border text-gray-600 cursor-pointer border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <option value="">All Genders</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Unisex">Unisex</option>
             </select>
           </div>
         </div>
