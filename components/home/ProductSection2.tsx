@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Slider, { CustomArrowProps } from "react-slick";
 import { PublicProduct } from "../HeroPage";
 import { NoProductsPlaceholder } from "./NoProductsPlaceholder";
@@ -8,6 +8,7 @@ import ProductQuickViewModal from "./QuickViewModal";
 import { useCart } from "../CartContext";
 import Link from "next/link";
 import { useWishlist } from "@/components/WishlistContext";
+import { ProductSection2Skeleton } from "./ProductSection2Skeleton";
 
 type TabsPayload = {
   products: PublicProduct[];
@@ -35,6 +36,17 @@ export default function ProductSection2({
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [addingProductId, setAddingProductId] = useState<string | null>(null);
+
+  const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize(); 
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleOpenModal = (product: PublicProduct) => {
     setSelectedProduct(product);
@@ -70,31 +82,51 @@ export default function ProductSection2({
           breakpoint: 1199,
           settings: { slidesToShow: 3, rows: 2, slidesToScroll: 3 },
         },
-        {
-          breakpoint: 992,
-          settings: { slidesToShow: 2, rows: 2, slidesToScroll: 3 },
-        },
-        {
-          breakpoint: 768,
-          settings: { slidesToShow: 1,slidesToScroll: 1, rows: 1, arrows: true, autoplay: true,dots: true },
-        },
-        {
-          breakpoint: 576,
-          settings: { slidesToShow: 1,slidesToScroll: 1, rows: 1, arrows: true, autoplay: true,dots: true },
-        },
+        // {
+        //   breakpoint: 992,
+        //   settings: { slidesToShow: 2, rows: 2, slidesToScroll: 3 },
+        // },
+        // {
+        //   breakpoint: 768,
+        //   settings: { slidesToShow: 1,slidesToScroll: 1, rows: 1, arrows: true, autoplay: true,dots: true },
+        // },
+        // {
+        //   breakpoint: 576,
+        //   settings: { slidesToShow: 1,slidesToScroll: 1, rows: 1, arrows: true, autoplay: true,dots: true },
+        // },
       ],
       accessibility: true,
       adaptiveHeight: false,
-      speed: 800,
+      speed: 1000,
     }),
     []
   );
+
+  const mobileSliderSettings = {
+    dots: false,
+    infinite: true,
+    speed: 1500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false,
+    autoplay: true,
+    rows: 1
+  };
 
   const activeProducts = useMemo<PublicProduct[]>(() => {
     if (activeTab === "products") return tabs.products;
     if (activeTab === "onsale") return tabs.onsale;
     return tabs.feature;
   }, [activeTab, tabs]);
+
+  const mobileRows = useMemo(() => {
+    if (!activeProducts.length) return [[], []];
+    const mid = Math.ceil(activeProducts.length / 2);
+    return [
+      activeProducts.slice(0, mid),
+      activeProducts.slice(mid)
+    ];
+  }, [activeProducts]);
 
   const shouldShowDots = activeProducts.length > 4;
 
@@ -203,6 +235,7 @@ export default function ProductSection2({
       </div>
     );
   };
+  if (!mounted) return <ProductSection2Skeleton />;
   return (
     <div className="product-section section pt-70 pt-lg-45 pt-md-40 pt-sm-30 pt-xs-15">
       <div className="container">
@@ -285,9 +318,26 @@ export default function ProductSection2({
                 {activeProducts.length === 0 ? (
                   <NoProductsPlaceholder message={`No ${activeTab} products available right now.`} />
                 ) : (
-                  <Slider {...finalSliderSettings}>
-                    {activeProducts.map(renderProduct)}
-                  </Slider>
+                  <>
+                    {isMobile ? (
+                      <div className="mobile-sliders">
+                        <div className="mb-4">
+                           <Slider {...mobileSliderSettings}>
+                              {mobileRows[0].map(renderProduct)}
+                           </Slider>
+                        </div>
+                        <div>
+                           <Slider {...mobileSliderSettings}>
+                              {mobileRows[1].map(renderProduct)}
+                           </Slider>
+                        </div>
+                      </div>
+                    ) : (
+                      <Slider {...finalSliderSettings}>
+                        {activeProducts.map(renderProduct)}
+                      </Slider>
+                    )}
+                  </>
                 )}
               </div>
             </div>

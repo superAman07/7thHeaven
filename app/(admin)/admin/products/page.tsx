@@ -27,6 +27,7 @@ interface Product {
   createdAt: string;
   category: Category;
   variants: ProductVariant[];
+  discountPercentage: number | null;
 }
 
 interface PaginationMeta {
