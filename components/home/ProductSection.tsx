@@ -72,7 +72,6 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
         }
       },
       {
-        // Increased to 768 to ensure all mobile devices are caught
         breakpoint: 768,
         settings: {
           slidesToShow: 1,

@@ -63,7 +63,7 @@ export default function ProductSection2({
   const sliderSettings = useMemo(
     () => ({
       slidesToShow: 4,
-      slidesToScroll: 1,
+      slidesToScroll: 2,
       infinite: true,
       rows: 2,
       arrows: false,
@@ -71,11 +71,11 @@ export default function ProductSection2({
       responsive: [
         {
           breakpoint: 1199,
-          settings: { slidesToShow: 3, rows: 2 },
+          settings: { slidesToShow: 3, rows: 2, slidesToScroll: 3 },
         },
         {
           breakpoint: 992,
-          settings: { slidesToShow: 2, rows: 2 },
+          settings: { slidesToShow: 2, rows: 2, slidesToScroll: 3 },
         },
         {
           breakpoint: 768,
