@@ -12,14 +12,14 @@ const defaultCategories = [
     id: "c2",
     title: "WOMEN",
     image: "assets/images/product/women.webp",
-    link: "/collections/perfumes?gender=Women",
+    link: "/collections/perfumes?gender=Female",
     height: "400px",
   },
   {
     id: "c3",
     title: "MEN",
     image: "assets/images/product/Sovaze_graphic_v3.webp",
-    link: "/collections/perfumes?gender=Men",
+    link: "/collections/perfumes?gender=Male",
     height: "400px",
   },
 ];

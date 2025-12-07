@@ -15,6 +15,25 @@ export async function getProducts(params: ProductFilterParams) {
     const { page = 1, limit = 10, search, category, gender, sort, onSale } = params;
     const skip = (page - 1) * limit;
 
+    const genderMap: Record<string, string> = {
+        'Men': 'Male',
+        'Women': 'Female',
+        'Unisex': 'Unisex',
+        'Male': 'Male',
+        'Female': 'Female'
+    };
+
+    let genderFilter: any = {};
+    if (gender) {
+        const genders = gender.split(',')
+            .map(g => genderMap[g.trim()] || g.trim())
+            .filter(Boolean);
+            
+        if (genders.length > 0) {
+             genderFilter = { genderTags: { hasSome: genders as any } };
+        }
+    }
+
     const where: Prisma.ProductWhereInput = {
         AND: [
             search ? {
@@ -24,7 +43,7 @@ export async function getProducts(params: ProductFilterParams) {
                 ],
             } : {},
             category ? { category: { slug: category } } : {},
-            gender ? { genderTags: { has: gender as any } } : {},
+            genderFilter,
             onSale ? { discountPercentage: { gt: 0 } } : {},
         ],
     };

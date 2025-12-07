@@ -252,14 +252,14 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                     <span style={{ fontSize: '20px', cursor: 'pointer', transform: !collapsedSections['gender'] ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }}>⌃</span>
                   </div>
                   <div className="section-content" style={{ maxHeight: collapsedSections['gender'] ? '0px' : '500px', overflow: 'hidden', transition: 'max-height 0.35s ease' }}>
-                    {['Men', 'Women', 'Unisex'].map(gender => (
+                    {['Male', 'Female', 'Unisex'].map(gender => (
                       <div className="category-item" key={gender}>
                         <div>
                           <input
                             type="checkbox"
                             checked={selectedGenders.includes(gender)}
                             onChange={() => handleGenderChange(gender)}
-                          /> {gender}
+                          /> {gender === 'Male' ? 'Men' : gender === 'Female' ? 'Women' : gender}
                         </div>
                       </div>
                     ))}
