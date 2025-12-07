@@ -1,55 +1,41 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import Slider from 'react-slick';
 import Image from 'next/image'; 
 
-const PrevArrow = (props: any) => {
-  const { className, style, onClick } = props;
-  return (
-    <button
-      className={`${className} custom-arrow prev-arrow`}
-      style={{ ...style }}
-      onClick={onClick}
-    >
-      Previous
-    </button>
-  );
-};
-
-const NextArrow = (props: any) => {
-  const { className, style, onClick } = props;
-  return (
-    <button
-      className={`${className} custom-arrow next-arrow`}
-      style={{ ...style }}
-      onClick={onClick}
-    >
-      Next
-    </button>
-  );
-};
-
+// Removed PrevArrow and NextArrow components as they are replaced by the Pause button
 
 const SliderSection = () => {
+  const sliderRef = useRef<Slider>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  const togglePlay = () => {
+    if (isPlaying) {
+      sliderRef.current?.slickPause();
+    } else {
+      sliderRef.current?.slickPlay();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
   const settings = {
     dots: true,
-    arrows: true,
+    arrows: false, // Disabled arrows completely
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 5000,
-    pauseOnHover: true,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
+    pauseOnHover: false, // Disable hover pause to let the button control state
     responsive: [
       {
         breakpoint: 768,
         settings: {
           slidesToShow: 1,
           autoplay: true,
+          arrows: false,
         },
       },
       {
@@ -65,37 +51,44 @@ const SliderSection = () => {
 
   return (
     <>
-      {/* This CSS is now more specific and will correctly align the custom arrows */}
       <style jsx global>{`
-        .hero-section .slick-arrow.custom-arrow {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          z-index: 1;
-          background: transparent;
-          border: none;
-          color: #333;
-          writing-mode: vertical-rl;
-          text-orientation: mixed;
-          font-size: 18px;
-          font-weight: 600;
-          text-transform: uppercase;
-          cursor: pointer;
-          padding: 24px 12px;
+        .hero-play-pause-btn {
+            position: absolute;
+            bottom: 40px;
+            left: 50px;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
         }
-        .hero-section .slick-arrow.custom-arrow:hover {
-            color: #ddb040;
+        .hero-play-pause-btn:hover {
+            background: #ddb040;
+            border-color: #ddb040;
+            color: #fff;
+            transform: scale(1.05);
         }
-        .hero-section .slick-arrow.prev-arrow {
-          left: 40px;
-        }
-        .hero-section .slick-arrow.next-arrow {
-          right: 20px;
+        @media (max-width: 767px) {
+            .hero-play-pause-btn {
+                bottom: 25px;
+                left: 20px;
+                width: 36px;
+                height: 36px;
+            }
         }
       `}</style>
       <div className="hero-section section position-relative">
-        <Slider {...settings} className="tf-element-carousel slider-nav">
-          {/* Hero Item 1 */}
+        <Slider ref={sliderRef} {...settings} className="tf-element-carousel slider-nav">
+          {/* ...existing code... */}
           <div className="hero-item">
             <Image
               src="/assets/images/product/o.webp"
@@ -111,14 +104,13 @@ const SliderSection = () => {
                     <h2>view our</h2>
                     <h1>New Cosmetics</h1>
                     <h3>Products now</h3>
-                    <a href="shop.html">shop now</a>
+                    <a href="/collections/perfumes">shop now</a>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Hero Item 2 */}
           <div className="hero-item">
             <Image
               src="/assets/images/product/b.jpg"
@@ -133,16 +125,27 @@ const SliderSection = () => {
                     <h2>view our</h2>
                     <h1>Women's hair</h1>
                     <h3>Products now</h3>
-                    <a href="shop.html">shop now</a>
+                    <a href="/collections/perfumes">shop now</a>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </Slider>
+
+        <button 
+            className="hero-play-pause-btn" 
+            onClick={togglePlay}
+            aria-label={isPlaying ? "Pause Slider" : "Play Slider"}
+        >
+            {isPlaying ? (
+                <i className="fa fa-pause" style={{ fontSize: '14px' }}></i>
+            ) : (
+                <i className="fa fa-play" style={{ fontSize: '14px', marginLeft: '3px' }}></i>
+            )}
+        </button>
       </div>
     </>
   );
-};
-
+}
 export default SliderSection;
