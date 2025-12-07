@@ -73,7 +73,6 @@ export default async function HeroPage() {
     return <>
         <div id="main-wrapper">
             <SliderSection />
-            <HowItWorksPage />
             <Suspense fallback={<ProductSectionSkeleton />}>
                 <BestSellersSection />
             </Suspense>
@@ -81,6 +80,7 @@ export default async function HeroPage() {
             <Suspense fallback={<ProductSection2Skeleton />}>
                 <TabbedProductsSection />
             </Suspense>
+            <HowItWorksPage />
             <AboutUsAreaSection />
             <BlogSectionArea />
             <FeatureSectionPage />
