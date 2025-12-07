@@ -3560,6 +3560,14 @@ ul.cart-items li {
   -webkit-transform: translateY(0);
           transform: translateY(0);
 }
+@media only screen and (max-width: 767px) {
+  .single-product .product-img .product-action {
+    opacity: 1;
+    visibility: visible;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+}
 .single-product .product-content {
   text-align: center;
 }
