@@ -53,7 +53,7 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
     infinite: products.length > 4,
     speed: 500,
     slidesToShow: 4,
-    slidesToScroll: 2,
+    slidesToScroll: 4,
     arrows: false,
     autoplay: false,
     responsive: [
@@ -67,7 +67,7 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
       {
         breakpoint: 991,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 1,
           slidesToScroll: 1,
         }
       },
@@ -82,12 +82,14 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
         }
       },
       {
-        breakpoint: 480,
+        breakpoint: 576,
         settings: {
+          infinite: true,
           slidesToShow: 1,
           slidesToScroll: 1,
-          arrows: true,
+          arrows: false,
           autoplay: true,
+          speed: 1500,
           dots: true
         }
       }
