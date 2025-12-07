@@ -9,6 +9,7 @@ import { useCart } from "../CartContext";
 import Link from "next/link";
 import { useWishlist } from "@/components/WishlistContext";
 import { ProductSection2Skeleton } from "./ProductSection2Skeleton";
+import { ProductCard } from "./ProductCard";
 
 type TabsPayload = {
   products: PublicProduct[];
@@ -82,18 +83,6 @@ export default function ProductSection2({
           breakpoint: 1199,
           settings: { slidesToShow: 3, rows: 2, slidesToScroll: 3 },
         },
-        // {
-        //   breakpoint: 992,
-        //   settings: { slidesToShow: 2, rows: 2, slidesToScroll: 3 },
-        // },
-        // {
-        //   breakpoint: 768,
-        //   settings: { slidesToShow: 1,slidesToScroll: 1, rows: 1, arrows: true, autoplay: true,dots: true },
-        // },
-        // {
-        //   breakpoint: 576,
-        //   settings: { slidesToShow: 1,slidesToScroll: 1, rows: 1, arrows: true, autoplay: true,dots: true },
-        // },
       ],
       accessibility: true,
       adaptiveHeight: false,
@@ -138,103 +127,14 @@ export default function ProductSection2({
     [sliderSettings, shouldShowDots]
   );
 
-  const renderProduct = (product: PublicProduct) => {
-    const originalPrice = getLowestPrice(product.variants);
-    const discount = product.discountPercentage || 0;
-    const discountedPrice = originalPrice * (1 - discount / 100);
+  const renderProduct = (product: PublicProduct) => (
+    <ProductCard 
+        key={product.id} 
+        product={product} 
+        onQuickView={handleOpenModal} 
+    />
+  );
 
-    const quickViewProduct = {
-      id: product.id,
-      name: product.name,
-      images: product.images,
-      reviews: { rating: product.ratingsAvg ?? 0, count: product.reviews.length },
-      price: { current: discountedPrice, regular: originalPrice },
-      description: product.description,
-      categories: [product.category.name],
-    };
-
-    return (
-      <div key={product.id} className="col-12" style={{ padding: 6 }}>
-        <div className="single-product mb-30">
-          <div className="product-img">
-            <a href={`/products/${product.slug}`}>
-              <img
-                src={product.images[0] || 'assets/images/product/shop.webp'}
-                alt={product.name}
-                style={{ aspectRatio: '1 / 1', objectFit: 'cover', width: "100%", display: "block" }}
-              />
-            </a>
-
-            {discount > 0 && <span className="descount-sticker">-{discount}%</span>}
-            {product.isNewArrival && <span className="sticker">New</span>}
-
-            <div className="product-action d-flex justify-content-between">
-              <a
-                className="product-btn"
-                onClick={(e) => handleAddToCart(e, product)}
-              >
-                {addingProductId === product.id ? 'Added!' : 'Add to Cart'}
-              </a>
-              <ul className="d-flex">
-                <li>
-                  <a
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleOpenModal(product);
-                    }}
-                    title="Quick View"
-                  >
-                    <i className="fa fa-eye"></i>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleWishlist({
-                        id: product.id,
-                        name: product.name,
-                        image: product.images[0] || 'assets/images/product/shop.webp',
-                        slug: product.slug
-                      });
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <i
-                      className={`fa ${isInWishlist(product.id) ? 'fa-heart' : 'fa-heart-o'}`}
-                      style={{ color: isInWishlist(product.id) ? '#dc3545' : 'inherit' }}
-                    ></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="product-content">
-            <h3>
-              <Link href={`/products/${product.slug}`}>{product.name}</Link>
-            </h3>
-
-            <div className="ratting">
-              <i className="fa fa-star" />
-              <i className="fa fa-star" />
-              <i className="fa fa-star" />
-              <i className="fa fa-star" />
-              <i className="fa fa-star" />
-            </div>
-
-            <h4 className="price">
-              <span className="new">Rs.{discountedPrice.toFixed(2)}</span>
-              {discount > 0 && (
-                <span className="old"> Rs.{originalPrice.toFixed(2)}</span>
-              )}
-            </h4>
-          </div>
-        </div>
-      </div>
-    );
-  };
   if (!mounted) return <ProductSection2Skeleton />;
   return (
     <div className="product-section section pt-70 pt-lg-45 pt-md-40 pt-sm-30 pt-xs-15">
