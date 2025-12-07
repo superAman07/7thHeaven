@@ -48,7 +48,6 @@ export default function ProductSection2({
     setSelectedProduct(null);
   };
 
-
   const handleAddToCart = (e: React.MouseEvent, product: PublicProduct) => {
     e.preventDefault();
     e.stopPropagation();
