@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Link from "next/link";
 import Slider from "react-slick";
 import { PublicProduct } from "../HeroPage";
@@ -21,6 +21,12 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleAddToCart = (e: React.MouseEvent, product: PublicProduct) => {
     e.preventDefault();
@@ -43,18 +49,53 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
     setSelectedProduct(null);
   };
   const sliderSettings = {
+    dots: true,
+    infinite: products.length > 4,
+    speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
-    infinite: products.length > 4,
     arrows: false,
-    dots: true,
+    autoplay: false,
     responsive: [
-      { breakpoint: 1199, settings: { slidesToShow: 3 } },
-      { breakpoint: 992, settings: { slidesToShow: 2 } },
-      { breakpoint: 768, settings: { slidesToShow: 2, arrows: false, autoplay: true } },
-      { breakpoint: 575, settings: { slidesToShow: 1, arrows: false, autoplay: true } },
-    ],
+      {
+        breakpoint: 1199,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        }
+      },
+      {
+        breakpoint: 991,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        }
+      },
+      {
+        // Increased to 768 to ensure all mobile devices are caught
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          arrows: true,
+          autoplay: true,
+          dots: true
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          arrows: true,
+          autoplay: true,
+          dots: true
+        }
+      }
+    ]
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="shop-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45 pb-70 pb-lg-50 pb-md-40 pb-sm-60 pb-xs-50">

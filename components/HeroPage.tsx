@@ -28,7 +28,7 @@ export type PublicProduct = {
     categoryId: string;
     isNewArrival: boolean;
     discountPercentage: number | null;
-    selectedVariant: {
+    selectedVariant?: {
         id: string;
         price: number;
         size: string;

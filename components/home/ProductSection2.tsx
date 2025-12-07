@@ -71,19 +71,19 @@ export default function ProductSection2({
       responsive: [
         {
           breakpoint: 1199,
-          settings: { slidesToShow: 3 },
+          settings: { slidesToShow: 3, rows: 2 },
         },
         {
           breakpoint: 992,
-          settings: { slidesToShow: 2 },
+          settings: { slidesToShow: 2, rows: 2 },
         },
         {
-          breakpoint: 767,
-          settings: { slidesToShow: 1, arrows: false, autoplay: true },
+          breakpoint: 768,
+          settings: { slidesToShow: 1,slidesToScroll: 1, rows: 1, arrows: true, autoplay: true,dots: true },
         },
         {
           breakpoint: 576,
-          settings: { slidesToShow: 1, arrows: false, autoplay: true },
+          settings: { slidesToShow: 1,slidesToScroll: 1, rows: 1, arrows: true, autoplay: true,dots: true },
         },
       ],
       accessibility: true,
