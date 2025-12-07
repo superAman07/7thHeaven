@@ -138,7 +138,6 @@ export default function ProductSection2({
 
             <div className="product-action d-flex justify-content-between">
               <a
-                href="#"
                 className="product-btn"
                 onClick={(e) => handleAddToCart(e, product)}
               >
@@ -147,7 +146,6 @@ export default function ProductSection2({
               <ul className="d-flex">
                 <li>
                   <a
-                    href="#"
                     onClick={(e) => {
                       e.preventDefault();
                       handleOpenModal(product);
@@ -177,11 +175,6 @@ export default function ProductSection2({
                     ></i>
                   </a>
                 </li>
-                <li>
-                  <a href="#">
-                    <i className="fa fa-exchange"></i>
-                  </a>
-                </li>
               </ul>
             </div>
           </div>
@@ -202,7 +195,7 @@ export default function ProductSection2({
             <h4 className="price">
               <span className="new">Rs.{discountedPrice.toFixed(2)}</span>
               {discount > 0 && (
-                <span className="old">Rs.{originalPrice.toFixed(2)}</span>
+                <span className="old"> Rs.{originalPrice.toFixed(2)}</span>
               )}
             </h4>
           </div>
