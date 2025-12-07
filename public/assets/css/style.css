@@ -8100,3 +8100,29 @@ h2.entry-title:before {
 .product-variant-option:hover {
   border-color: #000;
 }
+
+@media only screen and (max-width: 767px) {
+  .product-slider .slick-track,
+  .tf-element-carousel .slick-track {
+    display: flex !important;
+    width: 100% !important;
+  }
+
+  .product-slider .slick-slide,
+  .tf-element-carousel .slick-slide {
+    width: 100% !important;
+    flex-shrink: 0;
+  }
+
+  .product-slider .slick-slide > div,
+  .tf-element-carousel .slick-slide > div {
+    width: 100% !important;
+  }
+
+  /* Adjust arrows for mobile */
+  .product-slider .slick-arrow,
+  .tf-element-carousel .slick-arrow {
+    top: 50% !important;
+    margin-top: -20px !important;
+  }
+}
