@@ -49,7 +49,7 @@ export default async function TabbedProductsSection() {
             />
             {allProducts.length > 0 && (
                 <center className="mb-40">
-                    <Link href="/collections" className="btn">
+                    <Link href="/collections/perfumes" className="btn">
                         <span>Explore All Products</span>
                     </Link>
                 </center>
