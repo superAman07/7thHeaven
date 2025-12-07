@@ -171,7 +171,9 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                         {product.variants && product.variants.length > 1 ? (
                             <div className="product-size-select">
                                 <select 
-                                    value={selectedVariant?.id}
+                                    id={`size-select-${product.id}`}
+                                    name={`size-select-${product.id}`}
+                                    value={selectedVariant?.id || ""}
                                     onChange={(e) => {
                                         const variant = product.variants.find(v => v.id === e.target.value);
                                         if (variant) setSelectedVariant(variant);
