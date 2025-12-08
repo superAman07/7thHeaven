@@ -128,6 +128,7 @@ const CheckoutPageComponent: React.FC = () => {
             const orderPayload = {
                 items: cartItems.map(item => ({
                     productId: item.id,
+                    variantId: item.selectedVariant?.id,
                     quantity: item.quantity,
                 })),
                 shippingDetails: {
@@ -201,6 +202,14 @@ const CheckoutPageComponent: React.FC = () => {
                             <form action="#" className="checkout-form" onSubmit={handlePlaceOrder}>
                                 <div className="row row-40">
                                     <div className="col-lg-7">
+
+                                    {!isLoggedIn && (
+                                            <div className="alert alert-info mb-4">
+                                                <i className="fa fa-info-circle mr-2"></i>
+                                                You are checking out as a <strong>Guest</strong>. 
+                                                We will create a secure account for you to track your order.
+                                            </div>
+                                        )}
                                         {/* Billing Address */}
                                         <div id="billing-form" className="mb-10">
                                             <h4 className="checkout-title">Billing Address</h4>
@@ -208,19 +217,47 @@ const CheckoutPageComponent: React.FC = () => {
                                                 {/* NON-EDITABLE FIELDS */}
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>First Name*</label>
-                                                    <input type="text" value={billing.firstName} readOnly style={readOnlyInputStyle} />
+                                                    <input 
+                                                        type="text" 
+                                                        value={billing.firstName} 
+                                                        onChange={e => setBilling({...billing, firstName: e.target.value})}
+                                                        readOnly={isLoggedIn}
+                                                        style={isLoggedIn ? readOnlyInputStyle : {}} 
+                                                        required
+                                                    />         
                                                 </div>
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>Last Name*</label>
-                                                    <input type="text" value={billing.lastName} readOnly style={readOnlyInputStyle} />
+                                                    <input 
+                                                        type="text" 
+                                                        value={billing.lastName} 
+                                                        onChange={e => setBilling({...billing, lastName: e.target.value})}
+                                                        readOnly={isLoggedIn} 
+                                                        style={isLoggedIn ? readOnlyInputStyle : {}} 
+                                                        required
+                                                    />
                                                 </div>
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>Email Address*</label>
-                                                    <input type="email" value={billing.email} readOnly style={readOnlyInputStyle} />
+                                                    <input 
+                                                        type="email" 
+                                                        value={billing.email} 
+                                                        onChange={e => setBilling({...billing, email: e.target.value})}
+                                                        readOnly={isLoggedIn} 
+                                                        style={isLoggedIn ? readOnlyInputStyle : {}} 
+                                                        required
+                                                    />
                                                 </div>
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>Phone no*</label>
-                                                    <input type="text" value={billing.phone} readOnly style={readOnlyInputStyle} />
+                                                    <input 
+                                                        type="text" 
+                                                        value={billing.phone} 
+                                                        onChange={e => setBilling({...billing, phone: e.target.value})}
+                                                        readOnly={isLoggedIn} 
+                                                        style={isLoggedIn ? readOnlyInputStyle : {}} 
+                                                        required
+                                                    />
                                                 </div>
 
                                                 <div className="col-12 mb-20">

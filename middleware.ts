@@ -5,24 +5,24 @@ import * as jose from 'jose';
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  if (path.startsWith('/cart/checkout')) {
-    const userToken = request.cookies.get('session_token')?.value;
+  // if (path.startsWith('/cart/checkout')) {
+  //   const userToken = request.cookies.get('session_token')?.value;
 
-    if (!userToken) {
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
+  //   if (!userToken) {
+  //     return NextResponse.redirect(new URL('/login', request.url));
+  //   }
 
-    try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
-      await jose.jwtVerify(userToken, secret);
-      return NextResponse.next();
-    } catch (error) {
-      console.error('User session verification failed:', error);
-      const response = NextResponse.redirect(new URL('/login', request.url));
-      response.cookies.set('session_token', '', { maxAge: 0 });
-      return response;
-    }
-  }
+  //   try {
+  //     const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+  //     await jose.jwtVerify(userToken, secret);
+  //     return NextResponse.next();
+  //   } catch (error) {
+  //     console.error('User session verification failed:', error);
+  //     const response = NextResponse.redirect(new URL('/login', request.url));
+  //     response.cookies.set('session_token', '', { maxAge: 0 });
+  //     return response;
+  //   }
+  // }
 // admin protected routes
   if (path.startsWith('/api/v1/admin')) {
     const adminToken = request.cookies.get('admin_session')?.value;
@@ -67,7 +67,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/cart/checkout/:path*',
+    // '/cart/checkout/:path*',
     '/my-account/:path*',
     '/api/v1/admin/((?!login).*)',
   ],

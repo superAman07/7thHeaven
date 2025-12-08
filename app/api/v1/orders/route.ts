@@ -3,10 +3,10 @@ import { getUserIdFromToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
-// Define schema for incoming request body
 const orderSchema = z.object({
     items: z.array(z.object({
         productId: z.string(),
+        variantId: z.string().optional(),
         quantity: z.number().min(1),
     })).min(1),
     shippingDetails: z.object({
@@ -77,64 +77,102 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
-        // 1. Authenticate user
-        const userId = await getUserIdFromToken(req);
-        if (!userId) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        // 2. Validate and parse request body
         const body = await req.json();
         const validation = orderSchema.safeParse(body);
         if (!validation.success) {
             return NextResponse.json({ error: 'Invalid request body', details: validation.error }, { status: 400 });
         }
         const { items, shippingDetails, mlmOptIn } = validation.data;
-        
-        // 3. Fetch product prices from DB and calculate totalAmount securely
+        const userId = await getUserIdFromToken(req);
+
+        if (!userId) {
+            let user = await prisma.user.findUnique({
+                where: { phone: shippingDetails.phone }
+            });
+
+            if (!user && shippingDetails.email) {
+                user = await prisma.user.findUnique({
+                    where: { email: shippingDetails.email }
+                });
+            }
+
+            if (user) {
+                userId = user.id;
+            } else {
+                const newUser = await prisma.user.create({
+                    data: {
+                        fullName: shippingDetails.fullName,
+                        phone: shippingDetails.phone,
+                        email: shippingDetails.email,
+                        fullAddress: shippingDetails.fullAddress,
+                        city: shippingDetails.city,
+                        state: shippingDetails.state,
+                        pincode: shippingDetails.pincode,
+                        country: shippingDetails.country,
+                        passwordHash: null,
+                    }
+                });
+                userId = newUser.id;
+            }
+        }
+    
         const productIds = items.map(item => item.productId);
         const productsFromDb = await prisma.product.findMany({
             where: { id: { in: productIds } },
             include: { variants: true }
         });
 
-        let subtotal = 0; // FIX 1: Use `subtotal`
+        let subtotal = 0;
         const orderItemsData = items.map(item => {
             const product = productsFromDb.find(p => p.id === item.productId);
-            if (!product || !product.variants || product.variants.length === 0) {
-                throw new Error(`Product with ID ${item.productId} not found or has no variants.`);
+            
+            if (!product) {
+                throw new Error(`Product with ID ${item.productId} not found.`);
+            }
+            let selectedVariant;
+            if (item.variantId) {
+                selectedVariant = product.variants.find(v => v.id === item.variantId);
             }
 
-            const price = product.variants[0].price;
-            // FIX 2: Convert Decimal to number for calculation
-            subtotal += price.toNumber() * item.quantity;
+            if (!selectedVariant) {
+                if (product.variants.length > 0) {
+                    console.warn(`No variantId provided for product ${product.name}. Defaulting to first variant.`);
+                    selectedVariant = product.variants[0];
+                } else {
+                    throw new Error(`Product ${product.name} has no variants available.`);
+                }
+            }
+
+            const price = selectedVariant.price.toNumber();
+            subtotal += price * item.quantity;
 
             return {
                 productId: item.productId,
+                variantId: selectedVariant.id,
+                name: product.name,
+                size: selectedVariant.size, 
+                image: product.images[0] || '',
                 quantity: item.quantity,
-                priceAtPurchase: price.toNumber(),
+                priceAtPurchase: price,
             };
         });
 
-        // 4. Create Prisma transaction to create Order and OrderItems
         const newOrder = await prisma.order.create({
             data: {
-                userId,
-                subtotal: subtotal, // FIX 1: Use `subtotal`
-                discount: 0, // Initialize other financial fields
+                userId: userId!,
+                subtotal: subtotal,
+                discount: 0,
                 netAmountPaid: 0,
                 paymentStatus: 'PENDING',
                 shippingAddress: shippingDetails as any,
                 mlmOptInRequested: mlmOptIn || false,
-                items: orderItemsData, // FIX 3: Pass array directly to Json field
+                items: orderItemsData,
             },
         });
 
         await prisma.user.update({
             where: { id: userId },
             data: {
-                fullName: shippingDetails.fullName,
-                phone: shippingDetails.phone,
                 fullAddress: shippingDetails.fullAddress,
                 city: shippingDetails.city,
                 state: shippingDetails.state,
@@ -143,11 +181,10 @@ export async function POST(req: NextRequest) {
             }
         });
 
-        // 5. Return success response
         return NextResponse.json({
             success: true,
             orderId: newOrder.id,
-            totalAmount: newOrder.subtotal // FIX 1 & 3: Return `subtotal`
+            totalAmount: newOrder.subtotal 
         });
 
     } catch (error) {
