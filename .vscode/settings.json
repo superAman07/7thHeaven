@@ -1,86 +1,15 @@
 {
-  "workbench.iconTheme": "material-icon-theme",
-  "editor.fontFamily": "'Cascadia Code', Consolas, 'Courier New', monospace",
-  "editor.fontLigatures": true,
-  "window.title": "${dirty}${activeEditorShort}${separator}${rootName}${separator}${profileName}${separator}Code with superAman",
-  "files.autoSave": "afterDelay",
-  "javascript.updateImportsOnFileMove.enabled": "always",
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "editor.inlineSuggest.showToolbar": "onHover",
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit",
-    "source.fixAll": "explicit"
-  },
-  "editor.formatOnSave": true,
-  "editor.largeFileOptimizations": true,
-  "[typescript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
-  },
-  "[html]": {
-    "editor.defaultFormatter": "vscode.html-language-features"
-  },
-  "files.associations": {
-    "*.tsx": "typescriptreact"
-  },
-  "extensions.ignoreRecommendations": true,
-  /* --- Copilot / Chat safety / persistence --- */
-  "github.copilot.nextEditSuggestions.enabled": true,
-  "chat.extensionUnification.enabled": false,
-  "chat.instructionsFilesLocations": {},
-  /*
-    Prevent settings sync from reapplying chat instruction keys
-    (adds resilience if you use VS Code Settings Sync).
-  */
-  "settingsSync.ignoredSettings": [
-    "chat.instructionsFilesLocations",
-    "chat.extensionUnification.enabled"
-  ],
-  /* --- TypeScript / tsserver / performance --- */
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.tsserver.maxTsServerMemory": 6144,
-  "typescript.disableAutomaticTypeAcquisition": true,
-  "typescript.tsserver.web.projectWideIntellisense.enabled": false,
-  "typescript.tsserver.log": "off",
-  "typescript.tsserver.trace": "off",
-  /* --- Watcher / exclude rules to stop tsserver scanning virtual/temp/chat paths --- */
-  "files.watcherExclude": {
-    "**/.git/**": true,
-    "**/node_modules/**": true,
-    "**/.next/**": true,
-    "**/.turbo/**": true,
-    "**/dist/**": true,
-    "**/build/**": true,
-    "**/out/**": true,
-    "**/coverage/**": true,
-    "**/.vscode-chat-code-block/**": true,
-    "**/response_*": true,
-    "**/*vscode-chat-code-block*": true,
-    "**/AppData/Local/Temp/**": true,
-    "**/prisma/migrations/**": true
-  },
   "files.exclude": {
-    "**/.next": true,
-    "**/node_modules": true,
-    "**/dist": true,
-    "**/build": true,
-    "**/.turbo": true,
-    "**/.vscode-chat-code-block": true,
-    "prisma/dev.db": true
+    "amplify/.config": true,
+    "amplify/**/*-parameters.json": true,
+    "amplify/**/amplify.state": true,
+    "amplify/**/transform.conf.json": true,
+    "amplify/#current-cloud-backend": true,
+    "amplify/backend/amplify-meta.json": true,
+    "amplify/backend/awscloudformation": true
   },
-  "search.exclude": {
-    "**/.next": true,
-    "**/node_modules": true,
-    "**/dist": true,
-    "**/build": true,
-    "**/.turbo": true,
-    "**/.vscode-chat-code-block": true
-  },
-  "search.followSymlinks": false,
-  /* Helpful UX / safety extras */
-  "files.autoSaveDelay": 1000,
-  "files.trimTrailingWhitespace": true,
-  "files.insertFinalNewline": true
+  "CodeGPT.apiKey": "CodeGPT Plus Beta",
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "postman.settings.dotenv-detection-notification-visibility": false,
+  "prisma.pinToPrisma6": true
 }
