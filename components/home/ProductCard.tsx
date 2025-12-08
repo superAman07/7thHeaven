@@ -52,6 +52,14 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
         }, 2000);
     };
 
+    const handleQuickBuy = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!selectedVariant) return;
+        
+        console.log("Quick Buy clicked - Logic to be implemented next");
+    };
+
     return (
         <>
             <style jsx>{`
@@ -95,6 +103,45 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                     outline: none;
                     border-color: #ddb040;
                     box-shadow: 0 0 0 1px #ddb040; /* Subtle golden glow */
+                }
+                .price-box {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    margin: 5px 0 10px;
+                }
+                .price-new {
+                    color: #ddb040;
+                    font-weight: 700;
+                    font-size: 26px;
+                }
+                .price-old {
+                    color: #888;
+                    text-decoration: line-through; /* Adds the cut */
+                    font-size: 22px;
+                    font-weight: 400;
+                }
+
+                /* Quick Buy Button */
+                .quick-buy-btn {
+                    display: block;
+                    width: 100%;
+                    background-color: #333;
+                    color: #fff;
+                    text-align: center;
+                    padding: 10px 0;
+                    font-size: 13px;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    border: none;
+                    margin-top: 5px;
+                    transition: all 0.3s ease;
+                    letter-spacing: 1px;
+                }
+                .quick-buy-btn:hover {
+                    background-color: #ddb040;
+                    color: #fff;
                 }
             `}</style>
 
@@ -193,12 +240,15 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                             </div>
                         )}
 
-                        <h4 className="price">
-                            <span className="new">Rs. {priceData.current.toFixed(2)}</span>
+                        <h4 className="price-box">
+                            <span className="price-new">Rs. {priceData.current.toFixed(2)}</span>
                             {priceData.discount > 0 && (
-                                <span className="old">Rs. {priceData.old.toFixed(2)}</span>
+                                <span className="price-old">Rs. {priceData.old.toFixed(2)}</span>
                             )}
                         </h4>
+                        <button className="quick-buy-btn" onClick={handleQuickBuy}>
+                            Quick Buy
+                        </button>
                     </div>
                 </div>
             </div>
