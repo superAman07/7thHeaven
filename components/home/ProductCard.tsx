@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { PublicProduct } from '../HeroPage';
 import { useCart } from '../CartContext';
 import { useWishlist } from '@/components/WishlistContext';
+import { useRouter } from 'next/navigation';
 
 interface ProductCardProps {
     product: PublicProduct;
@@ -13,6 +14,7 @@ interface ProductCardProps {
 
 export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
     const { addToCart } = useCart();
+    const { router } = useRouter();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const [isAdding, setIsAdding] = useState(false);
 
@@ -55,9 +57,18 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
     const handleQuickBuy = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        
         if (!selectedVariant) return;
         
-        console.log("Quick Buy clicked - Logic to be implemented next");
+        addToCart({
+            ...product,
+            selectedVariant: selectedVariant,
+            price: selectedVariant.price
+        }, 1);
+
+        setTimeout(() => {
+            router.push('/cart/checkout');
+        }, 100);
     };
 
     return (
