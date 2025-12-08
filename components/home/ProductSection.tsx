@@ -63,8 +63,9 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
           <div className="col-lg-12 order-lg-2 order-1">
             <div className="row">
               <div className="col-12">
-                <div className="shop-banner-title text-center">
+                <div className="shop-banner-title text-center mb-10">
                   <h2>SELECT & TRY FROM <br /> OUR BEST SELLERS</h2>
+                  <div className="w-24 h-1 bg-[#ddb040] mx-auto mt-4"></div>
                 </div>
               </div>
             </div>

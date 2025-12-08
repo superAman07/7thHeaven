@@ -141,8 +141,9 @@ export default function ProductSection2({
       <div className="container">
         <div className="row">
           <div className="col-12">
-            <div className="shop-banner-title text-center">
+            <div className="shop-banner-title text-center mb-10">
               <h2> OUR New Arrival</h2>
+              <div className="w-24 h-1 bg-[#ddb040] mx-auto mt-4"></div>
             </div>
           </div>
         </div>
