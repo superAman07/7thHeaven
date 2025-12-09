@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       where: { phone },
     });
 
-    if (!user || !user.passwordHash) {
+    if (!user) {
       return NextResponse.json({
         success: false,
         error: {
