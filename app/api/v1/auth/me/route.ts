@@ -4,7 +4,6 @@ import { getUserIdFromToken } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
     try {
-        console.log("ME_GET_REQUEST_RECEIVED", req.headers);
         const userId = await getUserIdFromToken(req);
         console.log("userId:", userId);
 
