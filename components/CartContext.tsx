@@ -154,7 +154,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }, [cartItems, isLoaded, isLoggedIn, syncCartWithServer]);
 
     const addToCart = useCallback((product: PublicProduct, quantity: number) => {
-        let message = "Added to cart";
+        
         setCartItems(prevItems => {
             const uniqueCartId = product.selectedVariant 
                 ? `${product.id}-${product.selectedVariant.id}` 
@@ -165,7 +165,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             if (existingItemIndex > -1) {
                 const newItems = [...prevItems];
                 newItems[existingItemIndex].quantity += quantity;
-                message = "Cart updated";
                 return newItems;
             }
             return [...prevItems, { 
@@ -175,7 +174,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 quantity 
             }];
         });
-        toast.success(message);
     }, []);
 
    const removeFromCart = useCallback((cartItemId: string) => {
