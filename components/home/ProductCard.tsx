@@ -14,7 +14,7 @@ interface ProductCardProps {
 
 export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
     const { addToCart } = useCart();
-    const { router } = useRouter();
+    const router = useRouter();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const [isAdding, setIsAdding] = useState(false);
 

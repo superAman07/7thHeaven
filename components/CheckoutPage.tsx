@@ -379,12 +379,18 @@ const CheckoutPageComponent: React.FC = () => {
                                                 ) : (
                                                     cartTotal > 0 && (
                                                         cartTotal >= minPurchaseLimit ? (
-                                                            <div className="p-3" style={{ backgroundColor: '#ddb040', color: '#000', border: '1px solid #cca33b', borderRadius: '5px' }}>
-                                                                <div className="check-box">
-                                                                    <input type="checkbox" id="heavenOptIn" checked={is7thHeavenOptIn} onChange={(e) => setIs7thHeavenOptIn(e.target.checked)} />
+                                                            <div className="p-3 text-center" style={{ backgroundColor: '#ddb040', color: '#000', border: '1px solid #cca33b', borderRadius: '5px' }}>
+                                                                <div className="flex justify-center gap-x-2">
+                                                                    <input type="checkbox" id="heavenOptIn" className="mt-auto mb-auto" checked={is7thHeavenOptIn} onChange={(e) => setIs7thHeavenOptIn(e.target.checked)} disabled={!isLoggedIn} />
                                                                     <label htmlFor="heavenOptIn" style={{ fontSize: '16px', fontWeight: 700 }}>Join 7th Heaven Club?</label>
                                                                 </div>
-                                                                <p className="mt-1 mb-0" style={{ fontSize: '14px', marginLeft: '28px', fontWeight: 500 }}>Unlock exclusive benefits and referral rewards!</p>
+                                                                <p className="mt-1 mb-0" style={{ fontSize: '14px', marginLeft: '28px', fontWeight: 500 }}>
+                                                                    {!isLoggedIn ? (
+                                                                        <span><i className="fa fa-lock"></i> Login required to join.</span>
+                                                                    ) : (
+                                                                        "Unlock exclusive benefits and referral rewards!"
+                                                                    )}
+                                                                </p>
                                                             </div>
                                                         ) : (
                                                             <div className="p-3 text-center" style={{ backgroundColor: '#f8f9fa', border: '1px dashed #ddb040', borderRadius: '5px' }}>

@@ -5,17 +5,22 @@ import { getUserIdFromToken } from '@/lib/auth';
 export async function GET(req: NextRequest, { params }: { params: Promise<{ transactionId: string }> }) {
     try {
         const userId = await getUserIdFromToken(req);
-        if (!userId) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        // if (!userId) {
+        //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // }
 
         const { transactionId } = await params;
 
+        const query: any = {
+            gatewayOrderId: transactionId,
+        };
+
+        if (userId) {
+            query.userId = userId;
+        }
+
         const order = await prisma.order.findFirst({
-            where: {
-                gatewayOrderId: transactionId,
-                userId: userId, // Ensure the user can only check their own orders
-            },
+            where: query,
             select: {
                 id: true,
                 paymentStatus: true,

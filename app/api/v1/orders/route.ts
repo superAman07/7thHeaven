@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid request body', details: validation.error }, { status: 400 });
         }
         const { items, shippingDetails, mlmOptIn } = validation.data;
-        const userId = await getUserIdFromToken(req);
+        let userId = await getUserIdFromToken(req);
 
         if (!userId) {
             let user = await prisma.user.findUnique({
@@ -143,7 +143,10 @@ export async function POST(req: NextRequest) {
                 }
             }
 
-            const price = selectedVariant.price.toNumber();
+            const basePrice = selectedVariant.price.toNumber();
+            const discountPercentage = product.discountPercentage ? product.discountPercentage.toNumber() : 0;
+            
+            const price = basePrice * (1 - discountPercentage / 100);
             subtotal += price * item.quantity;
 
             return {

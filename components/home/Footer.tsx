@@ -21,6 +21,7 @@ type Props = {
 const defaultQuickLinks: LinkItem[] = [
   { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
+  { label: "Track Order", href: "/track-order" },
   { label: "My Account", href: "/my-account" },
   { label: "Privacy Policy", href: "#" },
   { label: "Terms & Conditions", href: "#" },
