@@ -38,13 +38,47 @@ async function sendReferralSMS(phone: string, code: string, name: string) {
 
 export async function POST(req: NextRequest) {
     try {
-        const body = await req.json();
-        const base64Response = body.response;
+        console.log("--- Payment Callback Received ---");
+        
+        // 1. Read raw text (Standard way)
+        const rawBody = await req.text();
+        
+        console.log("Content-Length Header:", req.headers.get('content-length'));
+        console.log("Actual Body Length:", rawBody.length);
 
-        // 1. Verify the checksum
+        if (!rawBody) {
+            console.error("Callback Error: Empty request body received.");
+            return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
+        }
+
+        let base64Response;
+
+        // 2. Try parsing as JSON first
+        try {
+            const body = JSON.parse(rawBody);
+            base64Response = body.response;
+            console.log("Parsed as JSON. Response field found:", !!base64Response);
+        } catch (e) {
+            console.log("JSON parse failed, trying URLSearchParams...");
+            const params = new URLSearchParams(rawBody);
+            base64Response = params.get('response');
+            console.log("Parsed as Form Data. Response field found:", !!base64Response);
+        }
+
+        if (!base64Response) {
+            console.error("Callback Error: Could not find 'response' in body.");
+            return NextResponse.json({ error: 'Invalid payload structure' }, { status: 400 });
+        }
+
+        // 3. Verify the checksum
         const saltKey = process.env.PHONEPE_SALT_KEY;
         const saltIndex = process.env.PHONEPE_SALT_INDEX;
         const receivedChecksum = req.headers.get('x-verify');
+
+        if (!saltKey || !saltIndex) {
+             console.error("Server Error: PhonePe credentials missing in .env");
+             return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+        }
 
         const calculatedChecksum = crypto.createHash('sha256').update(base64Response + saltKey).digest('hex') + '###' + saltIndex;
 
@@ -53,14 +87,15 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Checksum mismatch' }, { status: 400 });
         }
 
-        // 2. Decode the response payload
+        // 4. Decode and Process
         const decodedResponse = JSON.parse(Buffer.from(base64Response, 'base64').toString('utf-8'));
         const { code: paymentStatus } = decodedResponse;
         const { merchantTransactionId, amount } = decodedResponse.data;
 
-        // 3. Find the order
+        console.log(`Transaction: ${merchantTransactionId}, Status: ${paymentStatus}`);
+
         const order = await prisma.order.findFirst({
-            where: { gatewayOrderId: merchantTransactionId } ,
+            where: { gatewayOrderId: merchantTransactionId },
             include: { user: true }
         });
 
@@ -72,7 +107,6 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: true, message: 'Order already processed.' });
         }
 
-        // 4. Update the order status
         if (paymentStatus === 'PAYMENT_SUCCESS') {
             const amountPaid = amount / 100;
             await prisma.order.update({
@@ -83,46 +117,35 @@ export async function POST(req: NextRequest) {
                 }
             });
 
+            // Send SMS
             if (order.user.phone) {
                 await sendOrderConfirmationSMS(order.user.phone, order.id, amountPaid);
             }
 
+            // MLM Logic
             if (order.mlmOptInRequested) {
                 let newReferralCode = order.user.referralCode;
-                
-                if (!newReferralCode) {
-                    newReferralCode = generateReferralCode();
-                }
+                if (!newReferralCode) newReferralCode = generateReferralCode();
 
                 await prisma.user.update({
                     where: { id: order.userId },
-                    data: { 
-                        is7thHeaven: true,
-                        referralCode: newReferralCode 
-                    } 
+                    data: { is7thHeaven: true, referralCode: newReferralCode } 
                 });
                 if (order.user.phone && newReferralCode) {
                     await sendReferralSMS(order.user.phone, newReferralCode, order.user.fullName);
                 }
             }
 
-            // NEW: Clear the user's cart after successful payment
-            const cart = await prisma.cart.findUnique({
-                where: { userId: order.userId }
-            });
-            
+            // Clear Cart
+            const cart = await prisma.cart.findUnique({ where: { userId: order.userId } });
             if (cart) {
-                await prisma.cartItem.deleteMany({
-                    where: { cartId: cart.id }
-                });
+                await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
             }
 
         } else {
             await prisma.order.update({
                 where: { id: order.id },
-                data: {
-                    paymentStatus: 'FAILED',
-                }
+                data: { paymentStatus: 'FAILED' }
             });
         }
 

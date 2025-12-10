@@ -127,7 +127,7 @@ const CheckoutPageComponent: React.FC = () => {
 
             const orderPayload = {
                 items: cartItems.map(item => ({
-                    productId: item.id,
+                    productId: item.originalProductId || item.id,
                     variantId: item.selectedVariant?.id,
                     quantity: item.quantity,
                 })),

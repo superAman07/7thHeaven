@@ -24,6 +24,10 @@ export async function middleware(request: NextRequest) {
   //   }
   // }
 // admin protected routes
+
+if (path.startsWith('/api/v1/payment/callback')) {
+    return NextResponse.next();
+  }
   if (path.startsWith('/api/v1/admin')) {
     const adminToken = request.cookies.get('admin_session')?.value;
     const requestHeaders = new Headers(request.headers);
@@ -70,5 +74,6 @@ export const config = {
     // '/cart/checkout/:path*',
     '/my-account/:path*',
     '/api/v1/admin/((?!login).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/v1/payment/callback).*)',
   ],
 };

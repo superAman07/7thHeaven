@@ -12,7 +12,7 @@ export default function NavBar() {
     const [isSticky, setSticky] = useState(false);
     const [isSearchOpen, setSearchOpen] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    const { cartItems, removeFromCart, cartCount, cartTotal } = useCart();
+    const { cartItems, removeFromCart, updateQuantity, cartCount, cartTotal } = useCart();
 
     const [user, setUser] = useState(null);
     const router = useRouter();
@@ -170,7 +170,34 @@ export default function NavBar() {
                                                                                 Size: {item.selectedVariant.size}ml
                                                                             </span>
                                                                         )}
-                                                                        <span className="product-quantity">{item.quantity} x</span>
+                                                                        <div className="d-flex align-items-center mb-1" style={{ gap: '6px' }}>
+                                                                            <button 
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    if (item.quantity > 1) updateQuantity(item.id, item.quantity - 1);
+                                                                                }}
+                                                                                style={{ 
+                                                                                    width: '20px', height: '20px', lineHeight: '18px', textAlign: 'center', 
+                                                                                    border: '1px solid #ddd', background: '#fff', borderRadius: '50%', 
+                                                                                    fontSize: '12px', cursor: 'pointer', color: '#333', padding: 0
+                                                                                }}
+                                                                            >-</button>
+                                                                            
+                                                                            <span className="product-quantity" style={{ fontSize: '14px', fontWeight: '600' }}>{item.quantity}</span>
+                                                                            
+                                                                            <button 
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    updateQuantity(item.id, item.quantity + 1);
+                                                                                }}
+                                                                                style={{ 
+                                                                                    width: '20px', height: '20px', lineHeight: '18px', textAlign: 'center', 
+                                                                                    border: '1px solid #ddd', background: '#fff', borderRadius: '50%', 
+                                                                                    fontSize: '12px', cursor: 'pointer', color: '#333', padding: 0
+                                                                                }}
+                                                                            >+</button>
+                                                                            
+                                                                        </div>
                                                                         <span className="product-price"> Rs. {finalPrice.toFixed(2)}</span>
                                                                     </div>
                                                                     <div className="cart-item-remove">
