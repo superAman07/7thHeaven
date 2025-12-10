@@ -87,7 +87,7 @@ const CartPageComponent: React.FC = () => {
                                     </thead>
                                     <tbody>
                                         {cartItems.map((item) => {
-                                            const price = item.variants?.[0]?.price || 0;
+                                            const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
                                             const discount = item.discountPercentage || 0;
                                             const currentPrice = price * (1 - discount / 100);
 
@@ -100,6 +100,11 @@ const CartPageComponent: React.FC = () => {
                                                     </td>
                                                     <td className="pro-title">
                                                         <Link href={`/products/${item.slug}`}>{item.name}</Link>
+                                                        {item.selectedVariant && (
+                                                            <div style={{ fontSize: '13px', color: '#777', marginTop: '4px' }}>
+                                                                Size: {item.selectedVariant.size}ml
+                                                            </div>
+                                                        )}
                                                     </td>
                                                     <td className="pro-price"><span>Rs.{currentPrice.toFixed(2)}</span></td>
                                                     <td className="pro-quantity">

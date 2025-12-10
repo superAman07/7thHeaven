@@ -7,6 +7,23 @@ function generateReferralCode() {
     return '7H-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
+async function sendOrderConfirmationSMS(phone: string, orderId: string, amount: number) {
+    try {
+        // In the future, replace this console.log with an actual API call
+        // Example: await axios.post('https://api.textlocal.in/send/', { ... });
+        
+        const message = `Thank you for your order! Order ID: ${orderId}. Amount Paid: Rs. ${amount}. Track your status here: ${process.env.NEXT_PUBLIC_BASE_URL}/track-order`;
+
+        console.log(`\n================================================`);
+        console.log(`[SMS SERVICE MOCK] Sending Order Confirmation`);
+        console.log(`To Phone : ${phone}`);
+        console.log(`Message  : ${message}`);
+        console.log(`================================================\n`);
+    } catch (error) {
+        console.error("Failed to send Order SMS:", error);
+    }
+}
+
 async function sendReferralSMS(phone: string, code: string, name: string) {
     try {
         // Example: Fast2SMS or Twilio logic here
@@ -57,13 +74,18 @@ export async function POST(req: NextRequest) {
 
         // 4. Update the order status
         if (paymentStatus === 'PAYMENT_SUCCESS') {
+            const amountPaid = amount / 100;
             await prisma.order.update({
                 where: { id: order.id },
                 data: {
                     paymentStatus: 'PAID',
-                    netAmountPaid: amount / 100,
+                    netAmountPaid: amountPaid,
                 }
             });
+
+            if (order.user.phone) {
+                await sendOrderConfirmationSMS(order.user.phone, order.id, amountPaid);
+            }
 
             if (order.mlmOptInRequested) {
                 let newReferralCode = order.user.referralCode;

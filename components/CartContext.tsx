@@ -1,10 +1,22 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { PublicProduct } from './HeroPage';
+import { toast } from 'react-hot-toast';
+
+export interface PublicProduct {
+    id: string;
+    name: string;
+    slug: string;
+    images: string[];
+    variants?: { id: string; price: any; size: string }[];
+    selectedVariant?: { id: string; price: any; size: string };
+    discountPercentage?: number;
+    [key: string]: any;
+}
 
 interface CartItem extends PublicProduct {
     quantity: number;
+    originalProductId?: string;
 }
 
 interface CartContextType {
@@ -29,28 +41,26 @@ export const useCart = () => {
     return context;
 };
 
+const getLocalToken = () => {
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('token');
+        if (token === 'null' || token === 'undefined') return null;
+        return token; 
+    }
+    return null;
+};
 export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    // Helper to get token if it exists in localStorage (fallback)
-    const getLocalToken = () => {
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('token');
-            if (token === 'null' || token === 'undefined') return null;
-            return token; 
-        }
-        return null;
-    };
-
     const syncCartWithServer = useCallback(async (items: CartItem[]) => {
-        // Only sync if we know we are logged in
         if (!isLoggedIn) return;
 
         try {
             const payload = items.map(item => ({
-                productId: item.id,
+                productId: item.originalProductId || item.id,
+                variantId: item.selectedVariant?.id,
                 quantity: item.quantity
             }));
 
@@ -58,7 +68,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 'Content-Type': 'application/json',
             };
 
-            // If we have a local token, add it. Otherwise, rely on cookies.
             const token = getLocalToken();
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
@@ -89,7 +98,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 console.error("Failed to parse cart from localStorage", error);
             }
 
-            // 2. Attempt to fetch Server Cart (Probe for Login)
             try {
                 const headers: HeadersInit = {};
                 const token = getLocalToken();
@@ -105,7 +113,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                     const data = await res.json();
                     const serverItems: CartItem[] = data.cartItems || [];
 
-                    // Merge Logic
                     const mergedMap = new Map<string, CartItem>();
                     serverItems.forEach(item => mergedMap.set(item.id, item));
                     localItems.forEach(item => mergedMap.set(item.id, item)); // Local wins conflicts
@@ -135,7 +142,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         initializeCart();
     }, []);
 
-    // Persistence Effect
     useEffect(() => {
         if (!isLoaded) return;
         localStorage.setItem('CelciusCart', JSON.stringify(cartItems));
@@ -148,32 +154,45 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }, [cartItems, isLoaded, isLoggedIn, syncCartWithServer]);
 
     const addToCart = useCallback((product: PublicProduct, quantity: number) => {
+        let message = "Added to cart";
         setCartItems(prevItems => {
-            const existingItem = prevItems.find(item => item.id === product.id);
-            if (existingItem) {
-                return prevItems.map(item =>
-                    item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
-                );
+            const uniqueCartId = product.selectedVariant 
+                ? `${product.id}-${product.selectedVariant.id}` 
+                : product.id;
+
+            const existingItemIndex = prevItems.findIndex(item => item.id === uniqueCartId);
+
+            if (existingItemIndex > -1) {
+                const newItems = [...prevItems];
+                newItems[existingItemIndex].quantity += quantity;
+                message = "Cart updated";
+                return newItems;
             }
-            return [...prevItems, { ...product, quantity }];
+            return [...prevItems, { 
+                ...product, 
+                id: uniqueCartId,
+                originalProductId: product.id, 
+                quantity 
+            }];
         });
-    }, [cartItems]);
+        toast.success(message);
+    }, []);
 
-    const removeFromCart = useCallback((productId: string) => {
-        setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
-    }, [cartItems]);
+   const removeFromCart = useCallback((cartItemId: string) => {
+        setCartItems(prevItems => prevItems.filter(item => item.id !== cartItemId));
+    }, []);
 
-    const updateQuantity = useCallback((productId: string, quantity: number) => {
+    const updateQuantity = useCallback((cartItemId: string, quantity: number) => {
         if (quantity <= 0) {
-            removeFromCart(productId);
+            removeFromCart(cartItemId);
         } else {
             setCartItems(prevItems =>
                 prevItems.map(item =>
-                    item.id === productId ? { ...item, quantity } : item
+                    item.id === cartItemId ? { ...item, quantity } : item
                 )
             );
         }
-    }, [cartItems, removeFromCart]);
+    }, [removeFromCart]);
 
     const clearCart = useCallback(() => {
         setCartItems([]);
@@ -190,8 +209,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
-    const cartTotal = cartItems.reduce((total, item) => {
-        const price = item.variants?.[0]?.price || 0;
+    const cartTotal = cartItems.reduce((total, item) => { 
+        const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
         const discount = item.discountPercentage || 0;
         const currentPrice = price * (1 - discount / 100);
         return total + currentPrice * item.quantity;

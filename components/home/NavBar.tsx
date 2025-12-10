@@ -149,7 +149,7 @@ export default function NavBar() {
                                                     <ul className="cart-items">
                                                         {cartItems.map((item) => {
                                                             // Calculate price logic
-                                                            const price = item.variants?.[0]?.price || 0;
+                                                            const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
                                                             const discount = item.discountPercentage || 0;
                                                             const finalPrice = price * (1 - discount / 100);
 
@@ -165,6 +165,11 @@ export default function NavBar() {
                                                                     </div>
                                                                     <div className="cart-content">
                                                                         <h4 className="product-name"><a href={`/products/${item.slug}`}>{item.name}</a></h4>
+                                                                        {item.selectedVariant && (
+                                                                            <span style={{ display: 'block', fontSize: '12px', color: '#888', marginBottom: '3px' }}>
+                                                                                Size: {item.selectedVariant.size}ml
+                                                                            </span>
+                                                                        )}
                                                                         <span className="product-quantity">{item.quantity} x</span>
                                                                         <span className="product-price"> Rs. {finalPrice.toFixed(2)}</span>
                                                                     </div>
