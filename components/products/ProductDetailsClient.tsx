@@ -61,7 +61,8 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
         setIsAdding(true);
         
         addToCart({ 
-            ...product, 
+            ...product,
+            discountPercentage: product.discountPercentage ?? 0,
             selectedVariant: selectedVariant,
             price: selectedVariant.price 
         }, quantity);
