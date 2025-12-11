@@ -146,6 +146,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
 
         addToCart({
             ...product,
+            discountPercentage: product.discountPercentage ?? 0,
             selectedVariant: selectedVariant,
             price: selectedVariant.price
         }, quantity);
