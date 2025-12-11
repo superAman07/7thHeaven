@@ -25,6 +25,16 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                 id: true,
                 paymentStatus: true,
                 subtotal: true,
+                createdAt: true,       
+                items: true,           
+                shippingAddress: true, 
+                user: {                
+                    select: {
+                        fullName: true,
+                        email: true,
+                        phone: true
+                    }
+                }
             }
         });
 
