@@ -31,80 +31,132 @@ export interface InvoiceData {
 
 export const generateInvoice = (order: InvoiceData) => {
     const doc = new jsPDF();
-
-    // --- Header ---
-    doc.setFontSize(20);
-    doc.setTextColor(221, 176, 64); // Brand Color #ddb040
-    doc.text("7th Heaven", 14, 22);
     
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text("Premium Fragrances & Scents", 14, 28);
+    const brandColor: [number, number, number] = [221, 176, 64];
+    const secondaryColor: [number, number, number] = [60, 60, 60];
+    const lightGray: [number, number, number] = [240, 240, 240];
 
-    doc.setFontSize(16);
-    doc.setTextColor(0);
-    doc.text("INVOICE", 140, 22);
+    doc.setFillColor(...brandColor);
+    doc.rect(0, 0, 210, 5, 'F');
 
-    // --- Order Details ---
-    doc.setFontSize(10);
-    doc.text(`Order ID: ${order.id.toUpperCase()}`, 140, 30);
-    doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 140, 35);
-
-    // --- Line Separator ---
-    doc.setDrawColor(200);
-    doc.line(14, 45, 196, 45);
-
-    // --- Billing/Shipping Info ---
-    doc.setFontSize(12);
-    doc.text("Bill To:", 14, 55);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(24);
+    doc.setTextColor(...brandColor);
+    doc.text("7th Heaven", 14, 25);
     
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
+    doc.setTextColor(...secondaryColor);
+    doc.text("Premium Fragrances & Scents", 14, 31);
+    doc.text("contact@7thheaven.com", 14, 36);
+    doc.text("+91 98765 43210", 14, 41);
 
-    // FIX: Handle missing user object safely by falling back to shipping details
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(28);
+    doc.setTextColor(220, 220, 220);
+    doc.text("INVOICE", 196, 30, { align: "right" });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(...secondaryColor);
+    doc.text(`Invoice No: ${order.id.toUpperCase()}`, 196, 40, { align: "right" });
+    doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 196, 45, { align: "right" });
+
+    doc.setDrawColor(230, 230, 230);
+    doc.setLineWidth(0.5);
+    doc.line(14, 50, 196, 50);
+
     const customerName = order.user?.fullName || order.shippingAddress?.fullName || "Valued Customer";
     const customerPhone = order.user?.phone || order.shippingAddress?.phone || "N/A";
 
-    doc.text(customerName, 14, 62);
-    doc.text(order.shippingAddress?.fullAddress || "", 14, 67);
-    doc.text(`${order.shippingAddress?.city || ""}, ${order.shippingAddress?.state || ""} - ${order.shippingAddress?.pincode || ""}`, 14, 72);
-    doc.text(`Phone: ${customerPhone}`, 14, 77);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...brandColor);
+    doc.text("BILL TO", 14, 60);
 
-    // --- Items Table ---
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0, 0, 0);
+    doc.text(customerName, 14, 66);
+    
+    const addressLines = doc.splitTextToSize(order.shippingAddress?.fullAddress || "", 80);
+    doc.text(addressLines, 14, 71);
+    
+    let currentY = 71 + (addressLines.length * 4);
+    doc.text(`${order.shippingAddress?.city || ""}, ${order.shippingAddress?.state || ""} - ${order.shippingAddress?.pincode || ""}`, 14, currentY);
+    currentY += 5;
+    doc.text(`Phone: ${customerPhone}`, 14, currentY);
+
+    const tableStartY = Math.max(currentY + 10, 90);
+
     const tableBody = order.items.map(item => [
         item.product?.name || item.name || "Product",
-        item.size || "N/A",
+        item.size || "Standard",
         item.quantity,
-        `Rs. ${item.priceAtPurchase || 0}`,
-        `Rs. ${(item.priceAtPurchase || 0) * item.quantity}`
+        `Rs. ${item.priceAtPurchase?.toLocaleString() || '0'}`,
+        `Rs. ${((item.priceAtPurchase || 0) * item.quantity).toLocaleString()}`
     ]);
 
     autoTable(doc, {
-        startY: 85,
-        head: [['Item', 'Size', 'Qty', 'Price', 'Total']],
+        startY: tableStartY,
+        head: [['ITEM DESCRIPTION', 'SIZE', 'QTY', 'UNIT PRICE', 'AMOUNT']],
         body: tableBody,
         theme: 'grid',
-        headStyles: { fillColor: [221, 176, 64], textColor: 255 }, // Brand color header
-        styles: { fontSize: 9 },
+        headStyles: { 
+            fillColor: brandColor, 
+            textColor: 255, 
+            fontSize: 9, 
+            fontStyle: 'bold',
+            halign: 'left',
+            cellPadding: 3
+        },
+        columnStyles: {
+            0: { cellWidth: 80 },
+            1: { cellWidth: 30 },
+            2: { cellWidth: 20, halign: 'center' },
+            3: { cellWidth: 30, halign: 'right' },
+            4: { cellWidth: 30, halign: 'right' }
+        },
+        bodyStyles: {
+            fontSize: 9,
+            textColor: 60,
+            cellPadding: 3
+        },
+        alternateRowStyles: {
+            fillColor: lightGray
+        },
+        margin: { left: 14, right: 14 }
     });
 
-    // --- Totals ---
-    // @ts-ignore (lastAutoTable is added by the plugin)
-    const finalY = doc.lastAutoTable.finalY + 10;
+    const finalY = (doc as any).lastAutoTable.finalY + 10;
 
+    doc.setDrawColor(220, 220, 220);
+    doc.line(120, finalY - 5, 196, finalY - 5);
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
     doc.text(`Subtotal:`, 140, finalY);
-    doc.text(`Rs. ${order.subtotal}`, 170, finalY, { align: 'right' });
+    doc.text(`Rs. ${order.subtotal.toLocaleString()}`, 196, finalY, { align: 'right' });
+
+    doc.text(`Shipping:`, 140, finalY + 5);
+    doc.text(`Rs. 0`, 196, finalY + 5, { align: 'right' });
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    doc.text(`Grand Total:`, 140, finalY + 10);
-    doc.text(`Rs. ${order.subtotal}`, 170, finalY + 10, { align: 'right' });
+    doc.setTextColor(...brandColor);
+    doc.text(`Grand Total:`, 140, finalY + 12);
+    doc.text(`Rs. ${order.subtotal.toLocaleString()}`, 196, finalY + 12, { align: 'right' });
 
-    // --- Footer ---
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(100);
-    doc.text("Thank you for shopping with 7th Heaven!", 105, 280, { align: "center" });
+    doc.setFillColor(245, 245, 245);
+    doc.roundedRect(14, finalY + 20, 182, 20, 2, 2, 'F');
+    
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(60, 60, 60);
+    doc.text("Thank you for your business!", 105, finalY + 32, { align: "center" });
 
-    // Save File
+    const pageHeight = doc.internal.pageSize.height;
+    doc.setFillColor(...brandColor);
+    doc.rect(0, pageHeight - 5, 210, 5, 'F');
+
     doc.save(`Invoice_${order.id}.pdf`);
 };
