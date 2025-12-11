@@ -45,6 +45,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
         setIsAdding(true);
         addToCart({
             ...product,
+            discountPercentage: product.discountPercentage ?? 0,
             selectedVariant: selectedVariant,
             price: selectedVariant.price
         }, 1);
@@ -62,6 +63,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
         
         addToCart({
             ...product,
+            discountPercentage: product.discountPercentage ?? 0,
             selectedVariant: selectedVariant,
             price: selectedVariant.price
         }, 1);
