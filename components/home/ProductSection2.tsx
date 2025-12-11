@@ -63,8 +63,11 @@ export default function ProductSection2({
     e.preventDefault();
     e.stopPropagation();
     setAddingProductId(product.id);
-    addToCart(product, 1);
-
+    addToCart({
+        ...product,
+        selectedVariant: product.selectedVariant ?? undefined,
+        discountPercentage: product.discountPercentage ?? 0
+    }, 1);
     setTimeout(() => {
       setAddingProductId(null);
     }, 2000);
