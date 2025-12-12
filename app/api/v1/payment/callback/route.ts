@@ -29,7 +29,6 @@ async function sendReferralSMS(phone: string, code: string, name: string) {
         // Example: Fast2SMS or Twilio logic here
         // const message = `Welcome to 7th Heaven Club, ${name}! Your referral code is ${code}. Share it to start earning rewards.`;
         // await axios.post('YOUR_SMS_API_URL', { ... });
-        
         console.log(`[SMS MOCK] Sending to ${phone}: Welcome ${name}! Your code is ${code}`);
     } catch (error) {
         console.error("Failed to send SMS:", error);
