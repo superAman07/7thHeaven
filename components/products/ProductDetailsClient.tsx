@@ -21,6 +21,10 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
         product.variants && product.variants.length > 0 ? product.variants[0] : null
     );
 
+    const currentStock = selectedVariant?.stock ?? 0;
+    const isOutOfStock = currentStock === 0;
+    const isLowStock = currentStock > 0 && currentStock <= 5;
+
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
 
@@ -56,7 +60,7 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
 
     const handleAddToCart = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedVariant) return;
+        if (!selectedVariant || isOutOfStock) return;
 
         setIsAdding(true);
         
@@ -228,15 +232,45 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                 value={quantity}
                                                 type="number"
                                                 min="1"
-                                                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                                                max={isOutOfStock ? 1 : currentStock} // Prevent selecting more than stock
+                                                onChange={(e) => {
+                                                    const val = parseInt(e.target.value) || 1;
+                                                    // Ensure quantity doesn't exceed stock
+                                                    setQuantity(Math.min(currentStock, Math.max(1, val)));
+                                                }}
+                                                disabled={isOutOfStock}
                                             />
                                         </div>
                                         <div className="add-to-cart">
-                                            <button type="submit" className="btn" disabled={isAdding}>
-                                                {isAdding ? 'Added to Cart!' : 'Add to cart'}
+                                            <button 
+                                                type="submit" 
+                                                className="btn" 
+                                                disabled={isAdding || isOutOfStock}
+                                                style={{ 
+                                                    backgroundColor: isOutOfStock ? '#ccc' : undefined,
+                                                    cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                                                    borderColor: isOutOfStock ? '#ccc' : undefined
+                                                }}
+                                            >
+                                                {isOutOfStock ? 'Out of Stock' : (isAdding ? 'Added to Cart!' : 'Add to cart')}
                                             </button>
                                         </div>
                                     </form>
+                                    <div className="mt-3">
+                                        {isOutOfStock ? (
+                                            <span className="text-danger font-weight-bold">
+                                                <i className="fa fa-times-circle mr-1"></i> Currently Out of Stock
+                                            </span>
+                                        ) : isLowStock ? (
+                                            <span className="font-weight-bold" style={{ color: '#e53935' }}>
+                                                <i className="fa fa-exclamation-circle mr-1"></i> Hurry! Only {currentStock} left in stock.
+                                            </span>
+                                        ) : (
+                                            <span className="text-success font-weight-bold">
+                                                <i className="fa fa-check-circle mr-1"></i> In Stock
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="wishlist-compare-btn">

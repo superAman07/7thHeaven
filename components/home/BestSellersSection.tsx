@@ -26,7 +26,7 @@ async function getBestSellers(): Promise<PublicProduct[]> {
                 select: { name: true, slug: true }
             },
             variants: {
-                select: { id: true, price: true, size: true },
+                select: { id: true, price: true, size: true , stock: true },
                 orderBy: { price: 'asc' }
             },
             reviews: {

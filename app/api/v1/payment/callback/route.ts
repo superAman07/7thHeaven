@@ -116,31 +116,42 @@ export async function POST(req: NextRequest) {
                 }
             });
 
-            const orderItems = order.items as any[]; // Type assertion since it's Json
+            const orderItems = order.items as any[];
             
             for (const item of orderItems) {
                 const quantityToDeduct = item.quantity || 1;
-
                 try {
                     if (item.selectedVariant && item.selectedVariant.id) {
-                        // Case A: Product has variants (Size based)
-                        // Decrement the specific variant's stock
-                        await prisma.productVariant.update({
+                        const updatedVariant = await prisma.productVariant.update({
                             where: { id: item.selectedVariant.id },
                             data: { stock: { decrement: quantityToDeduct } }
                         });
+
+                        if (updatedVariant.stock < 0) {
+                            await prisma.productVariant.update({
+                                where: { id: item.selectedVariant.id },
+                                data: { stock: 0 }
+                            });
+                        }
                     } else {
-                        // Case B: Simple Product (No variants)
-                        // Decrement the main product's stock
-                        await prisma.product.update({
+                        const updatedProduct = await prisma.product.update({
                             where: { id: item.id }, 
                             data: { stock: { decrement: quantityToDeduct } }
                         });
+
+                        if (updatedProduct.stock <= 0) {
+                            await prisma.product.update({
+                                where: { id: item.id },
+                                data: { 
+                                    inStock: false,
+                                    stock: 0
+                                }
+                            });
+                            console.log(`Product ${item.name} is now OUT OF STOCK.`);
+                        }
                     }
                 } catch (err) {
                     console.error(`Inventory Error: Failed to decrement stock for item ${item.name}:`, err);
-                    // We continue processing (don't fail the order) because the money is already taken.
-                    // In a large system, this would log to an "Inventory Discrepancy" table for admin review.
                 }
             }
 

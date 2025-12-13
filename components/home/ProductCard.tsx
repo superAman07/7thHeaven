@@ -22,6 +22,10 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
         product.variants && product.variants.length > 0 ? product.variants[0] : null
     );
 
+    const currentStock = selectedVariant?.stock ?? 0;
+    const isOutOfStock = currentStock === 0;
+    const isLowStock = currentStock > 0 && currentStock <= 5;
+
     const priceData = useMemo(() => {
         if (!selectedVariant) return { current: 0, old: 0, discount: 0 };
         
@@ -40,7 +44,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
         e.preventDefault();
         e.stopPropagation();
         
-        if (!selectedVariant) return;
+        if (!selectedVariant || isOutOfStock) return;
 
         setIsAdding(true);
         addToCart({
@@ -59,7 +63,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
         e.preventDefault();
         e.stopPropagation();
         
-        if (!selectedVariant) return;
+        if (!selectedVariant || isOutOfStock) return;
         
         addToCart({
             ...product,
@@ -156,6 +160,34 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                     background-color: #ddb040;
                     color: #fff;
                 }
+                .stock-sticker {
+                    position: absolute;
+                    right: 10px;
+                    /* Top is handled inline to avoid collision with 'New' tag */
+                    color: #e53935;
+                    border: 2px solid #e53935;
+                    background: rgba(255, 255, 255, 0.9);
+                    font-weight: 700;
+                    text-align: center;
+                    line-height: 24px;
+                    padding: 0 10px;
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    z-index: 2;
+                    letter-spacing: 0.5px;
+                }
+                
+                .product-btn.disabled {
+                    // background-color: #f5f5f5;
+                    // color: #999;
+                    cursor: not-allowed;
+                    pointer-events: none;
+                }
+                .quick-buy-btn:disabled {
+                    background-color: #e0e0e0;
+                    color: #999;
+                    cursor: not-allowed;
+                }
             `}</style>
 
             <div className="col-12" style={{ padding: '0 15px' }}>
@@ -171,14 +203,22 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                         
                         {product.isNewArrival && <span className="sticker">New</span>}
                         {priceData.discount > 0 && <span className="descount-sticker">-{priceData.discount}%</span>}
+                        {isLowStock && (
+                            <span 
+                                className="stock-sticker" 
+                                style={{ top: product.isNewArrival ? '45px' : '10px' }}
+                            >
+                                Only {currentStock} Left
+                            </span>
+                        )}
                         
                         <div className="product-action d-flex justify-content-between">
                             <a
-                                className="product-btn"
+                                className={`product-btn ${isOutOfStock ? 'disabled' : ''}`}
                                 onClick={handleAddToCart}
-                                style={{ cursor: 'pointer' }}
+                                style={{ cursor: isOutOfStock ? 'not-allowed' : 'pointer' }}
                             >
-                                {isAdding ? 'Added!' : 'Add to Cart'}
+                                {isOutOfStock ? 'Out of Stock' : (isAdding ? 'Added!' : 'Add to Cart')}
                             </a>
                             <ul className="d-flex">
                                 <li>
@@ -252,15 +292,18 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                                 {selectedVariant?.size} {/[a-zA-Z]/.test(selectedVariant?.size || '') ? '' : 'ml'}
                             </div>
                         )}
-
                         <h4 className="price-box">
                             <span className="price-new">Rs. {priceData.current.toFixed(2)}</span>
                             {priceData.discount > 0 && (
                                 <span className="price-old">Rs. {priceData.old.toFixed(2)}</span>
                             )}
                         </h4>
-                        <button className="quick-buy-btn" onClick={handleQuickBuy}>
-                            Quick Buy
+                        <button 
+                            className="quick-buy-btn" 
+                            onClick={handleQuickBuy}
+                            disabled={isOutOfStock}
+                        >
+                            {isOutOfStock ? 'Out of Stock' : 'Quick Buy'}
                         </button>
                     </div>
                 </div>
