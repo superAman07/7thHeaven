@@ -6,6 +6,7 @@ const genderTagsEnum = z.enum(["Male", "Female", "Unisex"]);
 const variantSchema = z.object({
   size: z.string().min(1, 'Variant size is required'),
   price: z.number().positive('Price must be a positive number'),
+  stock: z.number().int().min(0, 'Stock cannot be negative').default(0),
 });
 const createProductSchema = z.object({
   name: z.string().min(1, 'Product name is required'),

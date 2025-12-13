@@ -8,6 +8,7 @@ const variantSchema = z.object({
   id: z.string().optional(),
   size: z.string().min(1, 'Variant size is required'),
   price: z.number().positive('Price must be a positive number'),
+  stock: z.number().int().min(0).default(0),
 });
 
 const updateProductSchema = z.object({
@@ -91,13 +92,22 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         }
         if (variantsToCreate.length > 0) {
           await tx.productVariant.createMany({
-            data: variantsToCreate.map(({ size, price }) => ({ productId: id, size, price: price.toString() })),
+            data: variantsToCreate.map(({ size, price, stock }) => ({ 
+                productId: id, 
+                size, 
+                price: price.toString(),
+                stock: stock ?? 0 
+            })),
           });
         }
         for (const variant of variantsToUpdate) {
           await tx.productVariant.update({
             where: { id: variant.id },
-            data: { size: variant.size, price: variant.price.toString() },
+            data: { 
+                size: variant.size, 
+                price: variant.price.toString(),
+                stock: variant.stock 
+            },
           });
         }
       }

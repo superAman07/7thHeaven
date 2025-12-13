@@ -25,10 +25,10 @@ export async function middleware(request: NextRequest) {
   // }
 // admin protected routes
 
-if (path.startsWith('/api/v1/payment/callback')) {
+  if (path.startsWith('/api/v1/payment/callback')) {
     return NextResponse.next();
   }
-  if (path.startsWith('/api/v1/admin')) {
+  if (path.startsWith('/api/v1/admin') && path !== '/api/v1/admin/login') {
     const adminToken = request.cookies.get('admin_session')?.value;
     const requestHeaders = new Headers(request.headers);
 

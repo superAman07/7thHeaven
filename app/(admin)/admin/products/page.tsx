@@ -9,6 +9,7 @@ interface ProductVariant {
   id: string;
   size: string;
   price: string;
+  stock: number;
 }
 
 interface Category {
@@ -68,7 +69,7 @@ export default function ProductsPage() {
   const [genderTags, setGenderTags] = useState<string[]>([]);
   const [inStock, setInStock] = useState(true);
   const [discountPercentage, setDiscountPercentage] = useState('');
-  const [variants, setVariants] = useState<{ id?: string; size: string; price: string }[]>([{ size: '', price: '' }]);
+  const [variants, setVariants] = useState<{ id?: string; size: string; price: string; stock: string }[]>([{ size: '', price: '', stock: '0' }]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -154,7 +155,12 @@ export default function ProductsPage() {
     setGenderTags(product.genderTags);
     setInStock(product.inStock);
     setDiscountPercentage(product.discountPercentage ? product.discountPercentage.toString() : '');
-    setVariants(product.variants.map(({ id, size, price }) => ({ id, size, price })));
+    setVariants(product.variants.map(({ id, size, price, stock }) => ({ 
+        id, 
+        size, 
+        price, 
+        stock: stock.toString() 
+    })));
     setIsPanelOpen(true);
   };
 
@@ -178,7 +184,11 @@ export default function ProductsPage() {
       genderTags,
       inStock,
       discountPercentage: discountPercentage ? parseFloat(discountPercentage) : 0,
-      variants: variants.map(v => ({ ...v, price: parseFloat(v.price) })).filter(v => v.size && !isNaN(v.price) && v.price > 0),
+      variants: variants.map(v => ({ 
+          ...v, 
+          price: parseFloat(v.price),
+          stock: parseInt(v.stock) || 0 
+      })).filter(v => v.size && !isNaN(v.price) && v.price > 0),
     };
 
     try {
@@ -241,13 +251,13 @@ export default function ProductsPage() {
     }
   };
 
-  const handleVariantChange = (index: number, field: 'size' | 'price', value: string) => {
+  const handleVariantChange = (index: number, field: 'size' | 'price' | 'stock', value: string) => {
     const newVariants = [...variants];
     newVariants[index][field] = value;
     setVariants(newVariants);
   };
 
-  const addVariant = () => setVariants([...variants, { size: '', price: '' }]);
+  const addVariant = () => setVariants([...variants, { size: '', price: '', stock: '0' }]);
   const removeVariant = (index: number) => setVariants(variants.filter((_, i) => i !== index));
   const handleGenderChange = (gender: string) => {
     setGenderTags(prev => prev.includes(gender) ? prev.filter(g => g !== gender) : [...prev, gender]);
@@ -454,6 +464,17 @@ export default function ProductsPage() {
                     <div className="flex-1">
                       <label className="block text-xs font-medium text-gray-600 mb-1">Price (₹)</label>
                       <input type="number" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} placeholder="e.g., 2500" className="w-full px-3 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Stock Qty</label>
+                      <input 
+                        type="number" 
+                        value={variant.stock} 
+                        onChange={e => handleVariantChange(index, 'stock', e.target.value)} 
+                        placeholder="0" 
+                        min="0"
+                        className="w-full px-3 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" 
+                      />
                     </div>
                     <button type="button" onClick={() => removeVariant(index)} className="p-2 text-red-500 rounded-lg hover:bg-red-100 cursor-pointer"><Trash2 className="w-4 h-4" /></button>
                   </div>
