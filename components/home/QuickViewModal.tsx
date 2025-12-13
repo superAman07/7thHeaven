@@ -24,11 +24,21 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
 
-    const [selectedVariant, setSelectedVariant] = useState<{ id: string; price: number; size: string } | null>(null);
+    const [selectedVariant, setSelectedVariant] = useState<{ id: string; price: number; size: string; stock?: number } | null>(null);
 
     const { addToCart } = useCart();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const router = useRouter();
+
+    useEffect(() => {
+        if (product && product.variants && product.variants.length > 0 && !selectedVariant) {
+            setSelectedVariant(product.variants[0]);
+        }
+    }, [product, selectedVariant]);
+
+    const currentStock = selectedVariant?.stock ?? 0;
+    const isOutOfStock = currentStock === 0;
+    const isLowStock = currentStock > 0 && currentStock <= 5;
 
     useEffect(() => {
         if (isOpen) {
@@ -36,6 +46,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
             setActiveImageIndex(0);
             setQuantity(1);
             setProduct(null);
+            setSelectedVariant(null);
             setError(null);
             setIsAdding(false);
 
@@ -140,7 +151,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
 
     const handleAddToCart = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!product || isAdding || !selectedVariant) return;
+        if (!product || isAdding || !selectedVariant || isOutOfStock) return;
 
         setIsAdding(true);
 
@@ -358,6 +369,21 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                             <div className="product-description">
                                                 <p>{displayProduct.description || 'No description available.'}</p>
                                             </div>
+                                            <div className="mb-3">
+                                                {isOutOfStock ? (
+                                                    <span className="text-danger font-weight-bold" style={{ color: '#dc3545', fontWeight: 'bold' }}>
+                                                        <i className="fa fa-times-circle mr-1"></i> Currently Out of Stock
+                                                    </span>
+                                                ) : isLowStock ? (
+                                                    <span className="font-weight-bold" style={{ color: '#e53935' }}>
+                                                        <i className="fa fa-exclamation-circle mr-1"></i> Hurry! Only {currentStock} left in stock.
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-success font-weight-bold" style={{ color: '#28a745', fontWeight: 'bold' }}>
+                                                        <i className="fa fa-check-circle mr-1"></i> In Stock
+                                                    </span>
+                                                )}
+                                            </div>
                                             <div className="single-product-quantity">
                                                 <form className="add-quantity" action="#" onSubmit={handleAddToCart}>
                                                     <div className="product-quantity">
@@ -365,13 +391,27 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                             value={quantity}
                                                             type="number"
                                                             min="1"
-                                                            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                                                            max={isOutOfStock ? 1 : currentStock}
+                                                            onChange={(e) => {
+                                                                const val = parseInt(e.target.value) || 1;
+                                                                setQuantity(Math.min(currentStock, Math.max(1, val)));
+                                                            }}
+                                                            disabled={isOutOfStock}
                                                         />
                                                     </div>
                                                     <div className="add-to-cart">
-                                                        <button type="submit" className="btn" disabled={isAdding}>
-                                                            {isAdding ? 'Redirecting...' : 'Add to cart'}
-                                                        </button>                                                    </div>
+                                                        <button 
+                                                            type="submit" 
+                                                            className="btn" 
+                                                            disabled={isAdding || isOutOfStock}
+                                                            style={{ 
+                                                                backgroundColor: isOutOfStock ? '#ccc' : undefined,
+                                                                cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                                                                borderColor: isOutOfStock ? '#ccc' : undefined
+                                                            }}
+                                                        >
+                                                            {isOutOfStock ? 'Out of Stock' : (isAdding ? 'Redirecting...' : 'Add to cart')}
+                                                        </button>                                                   </div>
                                                 </form>
                                             </div>
                                             <div className="wishlist-compare-btn">
