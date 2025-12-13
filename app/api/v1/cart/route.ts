@@ -23,7 +23,8 @@ function formatCartForClient(cart: any) {
         variants: item.product.variants.map((v: any) => ({
             price: v.price.toNumber(),
             size: v.size,
-            id: v.id
+            id: v.id,
+            stock: v.stock 
         })),
         category: item.product.category
     }));

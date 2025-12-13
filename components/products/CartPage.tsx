@@ -17,7 +17,21 @@ const CartPageComponent: React.FC = () => {
 
     const handleIncrement = (id: string) => {
         const item = cartItems.find(item => item.id === id);
-        if (item) updateQuantity(id, item.quantity + 1);
+        if (item) {
+            const variant = item.variants?.find(v => v.id === item.selectedVariant?.id);
+            const maxStock = variant?.stock ?? 0;
+
+            if (item.quantity >= maxStock) { 
+                if (maxStock === 0) {
+                    alert("Sorry, this item is currently out of stock.");
+                } else {
+                    alert(`Sorry, we only have ${maxStock} unit(s) available in stock.`);
+                }
+                return;
+            }
+            
+            updateQuantity(id, item.quantity + 1);
+        }
     };
 
     const handleDecrement = (id: string) => {

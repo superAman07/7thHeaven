@@ -143,6 +143,10 @@ export async function POST(req: NextRequest) {
                 }
             }
 
+            if (selectedVariant.stock < item.quantity) {
+                throw new Error(`Insufficient stock for ${product.name} (${selectedVariant.size}). Only ${selectedVariant.stock} left.`);
+            }
+
             const basePrice = selectedVariant.price.toNumber();
             const discountPercentage = product.discountPercentage ? product.discountPercentage.toNumber() : 0;
             
