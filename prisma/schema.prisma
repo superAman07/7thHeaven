@@ -55,6 +55,7 @@ model Product {
   genderTags         GenderTags[]
   variants           ProductVariant[]
   inStock            Boolean          @default(true)
+  stock              Int              @default(0)
   ratingsAvg         Float?
   cartItems          CartItem[]
   reviews            Review[]
@@ -86,7 +87,8 @@ model ProductVariant {
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   size      String
   price     Decimal
-  sku       String?
+  sku       String?   //Stock Keeping Unit
+  stock     Int      @default(0)
   createdAt DateTime @default(now())
 }
 

@@ -116,6 +116,34 @@ export async function POST(req: NextRequest) {
                 }
             });
 
+            const orderItems = order.items as any[]; // Type assertion since it's Json
+            
+            for (const item of orderItems) {
+                const quantityToDeduct = item.quantity || 1;
+
+                try {
+                    if (item.selectedVariant && item.selectedVariant.id) {
+                        // Case A: Product has variants (Size based)
+                        // Decrement the specific variant's stock
+                        await prisma.productVariant.update({
+                            where: { id: item.selectedVariant.id },
+                            data: { stock: { decrement: quantityToDeduct } }
+                        });
+                    } else {
+                        // Case B: Simple Product (No variants)
+                        // Decrement the main product's stock
+                        await prisma.product.update({
+                            where: { id: item.id }, 
+                            data: { stock: { decrement: quantityToDeduct } }
+                        });
+                    }
+                } catch (err) {
+                    console.error(`Inventory Error: Failed to decrement stock for item ${item.name}:`, err);
+                    // We continue processing (don't fail the order) because the money is already taken.
+                    // In a large system, this would log to an "Inventory Discrepancy" table for admin review.
+                }
+            }
+
             // Send SMS
             if (order.user.phone) {
                 await sendOrderConfirmationSMS(order.user.phone, order.id, amountPaid);
