@@ -50,6 +50,60 @@ const ToggleSwitch: React.FC<{ checked: boolean; onChange: (checked: boolean) =>
   </button>
 );
 
+const StockCell = ({ variants }: { variants: ProductVariant[] }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Calculate total stock dynamically
+  const totalStock = variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+
+  // Close popup when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={wrapperRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all border cursor-pointer ${
+          totalStock > 0
+            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+            : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'
+        }`}
+        title="Click to see breakdown"
+      >
+        <span className={`w-1.5 h-1.5 rounded-full ${totalStock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+        {totalStock} Units
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-gray-50/50 px-4 py-2 border-b border-gray-100">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Stock Breakdown</span>
+          </div>
+          <div className="max-h-[200px] overflow-y-auto p-1">
+            {variants.map((variant, idx) => (
+              <div key={idx} className="flex justify-between items-center px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors">
+                <span className="text-sm text-gray-600 font-medium">{variant.size} ml</span>
+                <span className={`text-sm font-bold ${variant.stock > 0 ? 'text-gray-900' : 'text-red-500'}`}>
+                  {variant.stock}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -345,7 +399,9 @@ export default function ProductsPage() {
                   </td>
                   <td className="px-6 py-4">{product.category.name}</td>
                   <td className="px-6 py-4">{formatPriceRange(product.variants)}</td>
-                  <td className="px-6 py-4"><StockBadge inStock={product.inStock} /></td>
+                  <td className="px-6 py-4">
+                    <StockCell variants={product.variants} />
+                  </td>
                   <td className="px-6 py-4">{new Date(product.createdAt).toLocaleDateString()}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end space-x-2">
