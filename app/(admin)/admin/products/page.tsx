@@ -190,7 +190,7 @@ export default function ProductsPage() {
     setGenderTags([]);
     setInStock(true);
     setDiscountPercentage('');
-    setVariants([{ size: '', price: '' }]);
+    setVariants([{ size: '', price: '', stock: '0'  }]);
   };
 
   const openPanelForNew = () => {
