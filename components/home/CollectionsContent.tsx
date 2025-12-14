@@ -5,8 +5,9 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 import ProductQuickViewModal from '@/components/home/QuickViewModal';
-import { ProductCard } from '@/components/home/ProductCard'; // <--- IMPORT THIS
-import { PublicProduct } from '@/components/HeroPage'; // <--- USE SHARED TYPE
+import { ProductCard } from '@/components/home/ProductCard';
+import { PublicProduct } from '@/components/HeroPage';
+import { ProductCardSkeleton } from '@/components/home/ProductCardSkeleton'; // <--- ADD THIS
 
 interface Category {
   id: string;
@@ -21,7 +22,7 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
   const [debouncedPriceRange, setDebouncedPriceRange] = useState([0, 57500]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
-  const [products, setProducts] = useState<PublicProduct[]>([]); // <--- UPDATED TYPE
+  const [products, setProducts] = useState<PublicProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -96,6 +97,9 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
       
       if (selectedGenders.length) params.append('gender', selectedGenders.join(','));
       
+      // Logic: If 'In Stock' is selected, we send status=true. 
+      // If 'Out of Stock' is selected, we send status=false.
+      // If BOTH or NEITHER are selected, we don't send the param (show all).
       if (selectedStatus.length === 1) {
           if (selectedStatus.includes('In Stock')) params.append('status', 'true');
           if (selectedStatus.includes('Out of Stock')) params.append('status', 'false');
@@ -314,10 +318,11 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                         <div className="product-grid-view">
                           <div className="row">
                             {loading ? (
-                              <div className="col-12 text-center py-5">Loading products...</div>
+                              Array.from({ length: 6 }).map((_, i) => (
+                                <ProductCardSkeleton key={i} />
+                              ))
                             ) : products.length > 0 ? (
                               products.map((product) => (
-                                // FIX: Use ProductCard Component
                                 <div className="col-lg-4 col-md-6 col-sm-6" key={product.id}>
                                     <ProductCard 
                                         product={product} 
