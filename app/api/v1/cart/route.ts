@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma';
 import { getUserIdFromToken, verifyToken } from '@/lib/auth';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const cartItemSyncSchema = z.array(
     z.object({
         productId: z.string().cuid(),
@@ -167,6 +169,36 @@ export async function PUT(req: NextRequest) {
 
         const { productId, quantity, variantId } = await req.json();
 
+        if (quantity < 1) {
+            return NextResponse.json({ error: 'Quantity cannot be less than 1' }, { status: 400 });
+        }
+
+        // 2. Check Real-time Stock Availability
+        let availableStock = 0;
+
+        if (variantId) {
+            const variant = await prisma.productVariant.findUnique({
+                where: { id: variantId }
+            });
+            if (!variant) return NextResponse.json({ error: 'Variant not found' }, { status: 404 });
+            availableStock = variant.stock;
+        } else {
+            // Check Product Stock (for products without variants)
+            const product = await prisma.product.findUnique({
+                where: { id: productId }
+            });
+            if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+            availableStock = product.stock;
+        }
+
+        // 3. Enforce Limit
+        if (quantity > availableStock) {
+            return NextResponse.json({ 
+                error: `Only ${availableStock} units available in stock.`,
+                maxStock: availableStock 
+            }, { status: 400 });
+        }
+
         const cart = await prisma.cart.findUnique({ where: { userId } });
         if (!cart) return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
 
@@ -180,14 +212,23 @@ export async function PUT(req: NextRequest) {
         });
 
         if (item) {
-            // Update to EXACT quantity
-            await prisma.cartItem.update({
+            const res = await prisma.cartItem.update({
                 where: { id: item.id },
                 data: { quantity: quantity }
             });
+            if (variantId) {
+                await prisma.cartItem.deleteMany({
+                    where: {
+                        cartId: cart.id,
+                        productId: productId,
+                        variantId: null
+                    }
+                });
+            }
+            return NextResponse.json({ success: true , message: 'Cart updated', item: res });
+        } else {
+            return NextResponse.json({ error: 'Item not found in cart' }, { status: 404 });
         }
-
-        return NextResponse.json({ success: true });
     } catch (error) {
         return NextResponse.json({ error: 'Update failed' }, { status: 500 });
     }
