@@ -89,6 +89,7 @@ model ProductVariant {
   price     Decimal
   sku       String?   //Stock Keeping Unit
   stock     Int      @default(0)
+  cartItems CartItem[]
   createdAt DateTime @default(now())
 }
 
@@ -131,8 +132,10 @@ model CartItem {
   cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   productId String
   product   Product @relation(fields: [productId], references: [id])
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
 
-  @@unique([cartId, productId]) // A product can only appear once per cart
+  @@unique([cartId, productId, variantId]) // A product can only appear once per cart
 }
 
 model Coupon {

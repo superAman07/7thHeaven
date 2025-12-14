@@ -13,7 +13,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
-    const { addToCart } = useCart();
+    const { addToCart, cartItems, removeFromCart } = useCart();
     const router = useRouter();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const [isAdding, setIsAdding] = useState(false);
@@ -26,6 +26,12 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
     const isOutOfStock = currentStock === 0;
     const isLowStock = currentStock > 0 && currentStock <= 5;
 
+    const cartItemId = selectedVariant ? `${product.id}-${selectedVariant.id}` : product.id;
+    const cartItem = cartItems.find(item => 
+        item.id === cartItemId || 
+        (item.originalProductId === product.id && (!item.selectedVariant || item.selectedVariant.id === selectedVariant?.id))
+    );
+    const isInCart = !!cartItem;
     const priceData = useMemo(() => {
         if (!selectedVariant) return { current: 0, old: 0, discount: 0 };
         
@@ -40,23 +46,27 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
         };
     }, [selectedVariant, product.discountPercentage]);
 
-    const handleAddToCart = (e: React.MouseEvent) => {
+    const handleCartAction = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         
         if (!selectedVariant || isOutOfStock) return;
 
-        setIsAdding(true);
-        addToCart({
-            ...product,
-            discountPercentage: product.discountPercentage ?? 0,
-            selectedVariant: selectedVariant,
-            price: selectedVariant.price
-        }, 1);
+        if (isInCart && cartItem) {
+            removeFromCart(cartItem.id);
+        } else {
+            setIsAdding(true);
+            addToCart({
+                ...product,
+                discountPercentage: product.discountPercentage ?? 0,
+                selectedVariant: selectedVariant,
+                price: selectedVariant.price
+            }, 1);
 
-        setTimeout(() => {
-            setIsAdding(false);
-        }, 2000);
+            setTimeout(() => {
+                setIsAdding(false);
+            }, 2000);
+        }
     };
 
     const handleQuickBuy = (e: React.MouseEvent) => {
@@ -215,10 +225,10 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                         <div className="product-action d-flex justify-content-between">
                             <a
                                 className={`product-btn ${isOutOfStock ? 'disabled' : ''}`}
-                                onClick={handleAddToCart}
-                                style={{ cursor: isOutOfStock ? 'not-allowed' : 'pointer' }}
+                                onClick={handleCartAction}
+                                style={{ cursor: isOutOfStock ? 'not-allowed' : 'pointer', color: isInCart ? '#ddb040' : undefined }}
                             >
-                                {isOutOfStock ? 'Out of Stock' : (isAdding ? 'Added!' : 'Add to Cart')}
+                                {isOutOfStock ? 'Out of Stock' : (isAdding ? 'Added!' : (isInCart ? 'Remove' : 'Add to Cart'))}
                             </a>
                             <ul className="d-flex">
                                 <li>

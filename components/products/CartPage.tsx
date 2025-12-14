@@ -1,12 +1,12 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '../CartContext';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 
 const CartPageComponent: React.FC = () => {
-    const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotal, saveCart } = useCart();
+    // FIX: Removed 'saveCart' as it is no longer needed (updates are real-time)
+    const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotal } = useCart();
     const router = useRouter();
     
     const [couponCode, setCouponCode] = useState('');
@@ -18,8 +18,8 @@ const CartPageComponent: React.FC = () => {
     const handleIncrement = (id: string) => {
         const item = cartItems.find(item => item.id === id);
         if (item) {
-            const variant = item.variants?.find(v => v.id === item.selectedVariant?.id);
-            const maxStock = variant?.stock ?? 0;
+            // FIX: Robust stock checking logic
+            const maxStock = item.selectedVariant?.stock ?? item.stock ?? 0;
 
             if (item.quantity >= maxStock) { 
                 if (maxStock === 0) {
@@ -39,26 +39,17 @@ const CartPageComponent: React.FC = () => {
         if (item && item.quantity > 1) updateQuantity(id, item.quantity - 1);
     };
 
-    const handleRemove = async (id: string) => {
-        try {
-            await axios.delete('/api/v1/cart', { 
-                data: { productId: id },
-                withCredentials: true 
-            });
-            removeFromCart(id);
-
-        } catch (error) {
-            console.error("Failed to remove item from cart", error);
-            alert("Error removing item. Please try again.");
-        }
+    const handleRemove = (id: string) => {
+        // FIX: Just call context function. It handles API calls internally now.
+        removeFromCart(id);
     };
 
-    const handleProceedToCheckout = async () => {
+    const handleProceedToCheckout = () => {
         if (cartItems.length === 0) {
             alert("Your cart is empty.");
             return;
         }
-        await saveCart();
+        // FIX: Removed await saveCart();
         router.push('/cart/checkout');
     };
 
