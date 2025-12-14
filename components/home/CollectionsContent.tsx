@@ -4,25 +4,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
-import { useCart } from '@/components/CartContext';
 import ProductQuickViewModal from '@/components/home/QuickViewModal';
-import toast from 'react-hot-toast';
-import { useWishlist } from '@/components/WishlistContext';
-
-interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  images: string[];
-  discountPercentage?: number;
-  rating?: number;
-  isNew?: boolean;
-  variants: { price: number; size?: string }[];
-  description?: string;
-  category?: { name: string };
-  reviews?: any[];
-  ratingsAvg?: number;
-}
+import { ProductCard } from '@/components/home/ProductCard'; // <--- IMPORT THIS
+import { PublicProduct } from '@/components/HeroPage'; // <--- USE SHARED TYPE
 
 interface Category {
   id: string;
@@ -32,25 +16,23 @@ interface Category {
 
 export default function CollectionsContent({ categorySlug }: { categorySlug: string }) {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const { addToCart } = useCart();
-  const { toggleWishlist, isInWishlist } = useWishlist();
   
   // State
   const [debouncedPriceRange, setDebouncedPriceRange] = useState([0, 57500]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
+  const [products, setProducts] = useState<PublicProduct[]>([]); // <--- UPDATED TYPE
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [priceRange, setPriceRange] = useState([0, 57500]);
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('newest');
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
 
-  // 1. Initialize filters from URL (Safe Version)
+  // 1. Initialize filters from URL
   useEffect(() => {
     const genderParam = searchParams.get('gender');
     if (genderParam) {
@@ -59,6 +41,12 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
         if (JSON.stringify(prev) !== JSON.stringify(newGenders)) return newGenders;
         return prev;
       });
+    }
+
+    const statusParam = searchParams.get('status');
+    if (statusParam) {
+        if (statusParam === 'true') setSelectedStatus(['In Stock']);
+        if (statusParam === 'false') setSelectedStatus(['Out of Stock']);
     }
 
     const sortParam = searchParams.get('sort');
@@ -108,9 +96,12 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
       
       if (selectedGenders.length) params.append('gender', selectedGenders.join(','));
       
-      // Force category slug
-      params.append('category', categorySlug);
+      if (selectedStatus.length === 1) {
+          if (selectedStatus.includes('In Stock')) params.append('status', 'true');
+          if (selectedStatus.includes('Out of Stock')) params.append('status', 'false');
+      }
       
+      params.append('category', categorySlug);
       params.append('sort', sortBy);
       params.append('page', currentPage.toString());
       params.append('limit', '12');
@@ -127,7 +118,7 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
     } finally {
       setLoading(false);
     }
-  }, [debouncedPriceRange, selectedGenders, sortBy, currentPage, categorySlug]);
+  }, [debouncedPriceRange, selectedGenders, selectedStatus, sortBy, currentPage, categorySlug]);
 
   // 5. Trigger Fetch
   useEffect(() => {
@@ -135,13 +126,7 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
   }, [fetchProducts]); 
 
   // Handlers
-  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-    e.preventDefault();
-    addToCart(product as any, 1);
-    toast.success(`${product.name} added to cart!`);
-  };
-
-  const handleOpenModal = (product: Product) => {
+  const handleOpenModal = (product: PublicProduct) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
@@ -158,6 +143,13 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
   const handleGenderChange = (gender: string) => {
     setSelectedGenders(prev =>
       prev.includes(gender) ? prev.filter(g => g !== gender) : [...prev, gender]
+    );
+    setCurrentPage(1);
+  };
+
+  const handleStatusChange = (status: string) => {
+    setSelectedStatus(prev =>
+      prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
     );
     setCurrentPage(1);
   };
@@ -245,6 +237,27 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                   </div>
                 </div>
 
+                {/* Availability Filter */}
+                <div className="mb-4">
+                  <div className={`section-header ${!collapsedSections['status'] ? 'active' : ''}`} onClick={() => toggleSection('status')}>
+                    <div className="filter-title">Availability</div>
+                    <span style={{ fontSize: '20px', cursor: 'pointer', transform: !collapsedSections['status'] ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }}>⌃</span>
+                  </div>
+                  <div className="section-content" style={{ maxHeight: collapsedSections['status'] ? '0px' : '500px', overflow: 'hidden', transition: 'max-height 0.35s ease' }}>
+                    {['In Stock', 'Out of Stock'].map(status => (
+                      <div className="category-item" key={status}>
+                        <div>
+                          <input
+                            type="checkbox"
+                            checked={selectedStatus.includes(status)}
+                            onChange={() => handleStatusChange(status)}
+                          /> {status}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Gender Filter */}
                 <div className="mb-4">
                   <div className={`section-header ${!collapsedSections['gender'] ? 'active' : ''}`} onClick={() => toggleSection('gender')}>
@@ -303,80 +316,15 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                             {loading ? (
                               <div className="col-12 text-center py-5">Loading products...</div>
                             ) : products.length > 0 ? (
-                              products.map((product) => {
-                                const basePrice = Number(product.variants?.[0]?.price) || 0;
-                                const discount = product.discountPercentage || 0;
-                                const finalPrice = basePrice - (basePrice * discount / 100);
-
-                                return (
-                                  <div className="col-lg-4 col-md-6 col-sm-6" key={product.id}>
-                                    <div className="single-product mb-30">
-                                      <div className="product-img">
-                                        <Link href={`/products/${product.slug}`}>
-                                          <img src={product.images[0] || '/assets/images/product/default.jpg'} alt={product.name} />
-                                        </Link>
-                                        {discount > 0 && (
-                                          <span className="descount-sticker">-{discount}%</span>
-                                        )}
-                                        {product.isNew && <span className="sticker">New</span>}
-                                        <div className="product-action d-flex justify-content-between">
-                                          <a
-                                            className="product-btn"
-                                            onClick={(e) => handleAddToCart(e, product)}
-                                          >
-                                            Add to Cart
-                                          </a>
-                                          <ul className="d-flex">
-                                            <li>
-                                              <a
-                                                title="Quick View"
-                                                onClick={(e) => {
-                                                  e.preventDefault();
-                                                  handleOpenModal(product);
-                                                }}
-                                              >
-                                                <i className="fa fa-eye"></i>
-                                              </a>
-                                            </li>
-                                            <li>
-                                              <a
-                                                title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
-                                                onClick={(e) => {
-                                                  e.preventDefault();
-                                                  toggleWishlist({
-                                                    id: product.id,
-                                                    name: product.name,
-                                                    image: product.images[0] || '/assets/images/product/default.jpg',
-                                                    slug: product.slug
-                                                  });
-                                                }}
-                                                style={{ cursor: 'pointer' }}
-                                              >
-                                                <i
-                                                  className={`fa ${isInWishlist(product.id) ? 'fa-heart' : 'fa-heart-o'}`}
-                                                  style={{ color: isInWishlist(product.id) ? '#dc3545' : 'inherit' }}
-                                                ></i>
-                                              </a>
-                                            </li>
-                                          </ul>
-                                        </div>
-                                      </div>
-                                      <div className="product-content">
-                                        <h3><Link href={`/products/${product.slug}`}>{product.name}</Link></h3>
-                                        <div className="ratting">
-                                          {[...Array(5)].map((_, i) => (
-                                            <i key={i} className={`fa fa-star${(product.rating || 0) > i ? '' : '-o'}`}></i>
-                                          ))}
-                                        </div>
-                                        <h4 className="price">
-                                          <span className="new">Rs.{finalPrice.toFixed(2)}</span>
-                                          {discount > 0 && <span className="old">Rs.{basePrice.toFixed(2)}</span>}
-                                        </h4>
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              })
+                              products.map((product) => (
+                                // FIX: Use ProductCard Component
+                                <div className="col-lg-4 col-md-6 col-sm-6" key={product.id}>
+                                    <ProductCard 
+                                        product={product} 
+                                        onQuickView={handleOpenModal} 
+                                    />
+                                </div>
+                              ))
                             ) : (
                               <div className="col-12 text-center py-5">No products found matching your filters.</div>
                             )}
