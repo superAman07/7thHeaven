@@ -120,38 +120,40 @@ export async function POST(req: NextRequest) {
             
             for (const item of orderItems) {
                 const quantityToDeduct = item.quantity || 1;
+                const variantId = item.variantId || item.selectedVariant?.id;
+                const productId = item.productId || item.id;
+
                 try {
-                    if (item.selectedVariant && item.selectedVariant.id) {
+                    if (variantId) {
                         const updatedVariant = await prisma.productVariant.update({
-                            where: { id: item.selectedVariant.id },
+                            where: { id: variantId },
                             data: { stock: { decrement: quantityToDeduct } }
                         });
 
-                        if (updatedVariant.stock < 0) {
+                        if (updatedVariant.stock <= 0) {
                             await prisma.productVariant.update({
-                                where: { id: item.selectedVariant.id },
+                                where: { id: variantId },
                                 data: { stock: 0 }
                             });
                         }
-                    } else {
+                    } else if (productId) {
                         const updatedProduct = await prisma.product.update({
-                            where: { id: item.id }, 
+                            where: { id: productId }, 
                             data: { stock: { decrement: quantityToDeduct } }
                         });
 
                         if (updatedProduct.stock <= 0) {
                             await prisma.product.update({
-                                where: { id: item.id },
+                                where: { id: productId },
                                 data: { 
                                     inStock: false,
                                     stock: 0
                                 }
                             });
-                            console.log(`Product ${item.name} is now OUT OF STOCK.`);
                         }
                     }
                 } catch (err) {
-                    console.error(`Inventory Error: Failed to decrement stock for item ${item.name}:`, err);
+                    console.error(`Inventory Error for item ${item.name}:`, err);
                 }
             }
 

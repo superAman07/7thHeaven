@@ -20,6 +20,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                 items: true,
                 shippingAddress: true,
                 gatewayOrderId: true,
+                userId: true,
                 user: {
                     select: {
                         fullName: true,
@@ -32,6 +33,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
 
         if (!order) {
             return NextResponse.json({ error: 'Order not found.' }, { status: 404 });
+        }
+
+        if (order.paymentStatus === 'PAID') {
+            const cart = await prisma.cart.findUnique({ where: { userId: order.userId } });
+            if (cart) {
+                await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+            }
+            return NextResponse.json({ success: true, order });
         }
 
         // 2. ACTIVE STATUS CHECK: If DB says PENDING, ask PhonePe directly
@@ -67,26 +76,29 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                     const orderItems = order.items as any[];
                     for (const item of orderItems) {
                         const quantityToDeduct = item.quantity || 1;
+                        const variantId = item.variantId || item.selectedVariant?.id;
+                        const productId = item.productId || item.id;
+
                         try {
-                            if (item.selectedVariant && item.selectedVariant.id) {
+                            if (variantId) {
                                 const updatedVariant = await prisma.productVariant.update({
-                                    where: { id: item.selectedVariant.id },
+                                    where: { id: variantId },
                                     data: { stock: { decrement: quantityToDeduct } }
                                 });
                                 if (updatedVariant.stock < 0) {
                                     await prisma.productVariant.update({
-                                        where: { id: item.selectedVariant.id },
+                                        where: { id: variantId },
                                         data: { stock: 0 }
                                     });
                                 }
-                            } else {
+                            } else if (productId) {
                                 const updatedProduct = await prisma.product.update({
-                                    where: { id: item.id }, 
+                                    where: { id: productId }, 
                                     data: { stock: { decrement: quantityToDeduct } }
                                 });
                                 if (updatedProduct.stock <= 0) {
                                     await prisma.product.update({
-                                        where: { id: item.id },
+                                        where: { id: productId },
                                         data: { inStock: false, stock: 0 }
                                     });
                                 }
@@ -95,7 +107,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                             console.error(`Inventory Error for item ${item.name}:`, err);
                         }
                     }
-                    // ------------------------------------------------
+                    // ------------------------------------------------/
 
                 } else if (ppStatus === 'PAYMENT_ERROR' || ppStatus === 'PAYMENT_DECLINED') {
                     await prisma.order.update({
@@ -115,6 +127,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                         items: true,
                         shippingAddress: true,
                         gatewayOrderId: true,
+                        userId: true,
                         user: { select: { fullName: true, email: true, phone: true } }
                     }
                 });
@@ -129,5 +142,5 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
     } catch (error) {
         console.error('Get Payment Status Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-}
+    }
 }

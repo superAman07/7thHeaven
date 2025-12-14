@@ -219,12 +219,20 @@ export async function DELETE(req: NextRequest) {
         const cart = await prisma.cart.findUnique({ where: { userId } });
         if (!cart) return NextResponse.json({ success: true });
 
+        const whereClause: any = {
+            cartId: cart.id,
+            productId: realProductId,
+        };
+
+        if (realVariantId) {
+            whereClause.OR = [
+                { variantId: realVariantId },
+                { variantId: null }
+            ];
+        } 
+
         await prisma.cartItem.deleteMany({
-            where: {
-                cartId: cart.id,
-                productId: realProductId,
-                variantId: realVariantId 
-            },
+            where: whereClause
         });
 
         return NextResponse.json({ success: true, message: 'Item removed from cart.' });
