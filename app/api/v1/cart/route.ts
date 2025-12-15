@@ -15,7 +15,6 @@ const cartItemSyncSchema = z.array(
 function formatCartForClient(cart: any) {
     if (!cart || !cart.items) return [];
     return cart.items.map((item: any) => {
-        // Use the specific variant saved in CartItem, OR fallback to first variant
         const activeVariant = item.variant || item.product.variants[0];
 
         return {
@@ -173,7 +172,6 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ error: 'Quantity cannot be less than 1' }, { status: 400 });
         }
 
-        // 2. Check Real-time Stock Availability
         let availableStock = 0;
 
         if (variantId) {
@@ -183,7 +181,6 @@ export async function PUT(req: NextRequest) {
             if (!variant) return NextResponse.json({ error: 'Variant not found' }, { status: 404 });
             availableStock = variant.stock;
         } else {
-            // Check Product Stock (for products without variants)
             const product = await prisma.product.findUnique({
                 where: { id: productId }
             });
@@ -191,7 +188,6 @@ export async function PUT(req: NextRequest) {
             availableStock = product.stock;
         }
 
-        // 3. Enforce Limit
         if (quantity > availableStock) {
             return NextResponse.json({ 
                 error: `Only ${availableStock} units available in stock.`,
@@ -202,7 +198,6 @@ export async function PUT(req: NextRequest) {
         const cart = await prisma.cart.findUnique({ where: { userId } });
         if (!cart) return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
 
-        // Find the specific item
         const item = await prisma.cartItem.findFirst({
             where: {
                 cartId: cart.id,
@@ -234,7 +229,6 @@ export async function PUT(req: NextRequest) {
     }
 }
 
-// --- FIX THIS FUNCTION ---
 export async function DELETE(req: NextRequest) {
     try {
         const userId = await getUserIdFromToken(req);
@@ -242,7 +236,6 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // FIX: Extract productId from body
         const body = await req.json();
         const { productId } = body; 
 
