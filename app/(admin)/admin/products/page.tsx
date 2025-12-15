@@ -1,7 +1,7 @@
 'use client'
 
 import axios from 'axios';
-import { ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Search, Trash2, X, AlertTriangle } from 'lucide-react';
 import React, { useState, useEffect, FormEvent, useCallback, useRef } from 'react';
 import { useDebounce } from 'use-debounce';
 
@@ -130,6 +130,13 @@ export default function ProductsPage() {
   const [filters, setFilters] = useState({ category: '', status: '', gender: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
+
+  const getStockStatus = (variants: ProductVariant[]) => {
+    const total = variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+    if (total === 0) return 'critical';
+    if (total < 10) return 'low';
+    return 'good';
+  };
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
@@ -349,6 +356,24 @@ export default function ProductsPage() {
           </button>
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div 
+                className="p-4 rounded-lg border border-red-100 bg-red-50 cursor-pointer hover:bg-red-100 transition-colors"
+                onClick={() => setFilters(prev => ({ ...prev, status: 'false' }))}
+            >
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-red-100 rounded-full text-red-600">
+                        <AlertTriangle className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-medium text-red-900">Out of Stock</p>
+                        <p className="text-xs text-red-600">Click to view items</p>
+                    </div>
+                </div>
+            </div>
+            {/* You can add more summary cards here for Low Stock or Total Value */}
+        </div>
+
         <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="lg:col-span-2">
@@ -389,12 +414,25 @@ export default function ProductsPage() {
             </thead>
             <tbody>
               {isLoading && <tr><td colSpan={6} className="text-center py-8 text-gray-500">Fetching data...</td></tr>}
-              {!isLoading && products.length > 0 ? products.map(product => (
-                <tr key={product.id} className="bg-white border-b hover:bg-gray-50">
+              {!isLoading && products.length > 0 ? products.map(product => {
+                // Determine row style based on stock
+              const status = getStockStatus(product.variants);
+                const rowClass = status === 'critical' 
+                    ? 'bg-red-50 border-l-4 border-l-red-500' 
+                    : status === 'low' 
+                        ? 'bg-yellow-50 border-l-4 border-l-yellow-400' 
+                        : 'bg-white border-b hover:bg-gray-50';
+
+                return (
+                <tr key={product.id} className={`${rowClass} transition-colors`}>
                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       <img src={product.images[0]} alt={product.name} className="w-10 h-10 object-cover rounded-md" />
-                      <span>{product.name}</span>
+                      <div className="flex flex-col">
+                        <span>{product.name}</span>
+                        {status === 'critical' && <span className="text-[10px] text-red-600 font-bold uppercase">Out of Stock</span>}
+                        {status === 'low' && <span className="text-[10px] text-yellow-700 font-bold uppercase">Low Stock</span>}
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">{product.category.name}</td>
@@ -410,7 +448,7 @@ export default function ProductsPage() {
                     </div>
                   </td>
                 </tr>
-              )) : !isLoading && (
+              )}) : !isLoading && (
                 <tr><td colSpan={6} className="text-center py-8 text-gray-500">No products found.</td></tr>
               )}
             </tbody>
