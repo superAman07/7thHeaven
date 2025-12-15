@@ -1,52 +1,20 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import Slider from 'react-slick';
-import Image from 'next/image'; 
-
-// Removed PrevArrow and NextArrow components as they are replaced by the Pause button
 
 const SliderSection = () => {
-  const sliderRef = useRef<Slider>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
 
   const togglePlay = () => {
-    if (isPlaying) {
-      sliderRef.current?.slickPause();
-    } else {
-      sliderRef.current?.slickPlay();
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
     }
-    setIsPlaying(!isPlaying);
-  };
-
-  const settings = {
-    dots: true,
-    arrows: false, // Disabled arrows completely
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    pauseOnHover: false, // Disable hover pause to let the button control state
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-          autoplay: true,
-          arrows: false,
-        },
-      },
-      {
-        breakpoint: 575,
-        settings: {
-          slidesToShow: 1,
-          arrows: false,
-          autoplay: true,
-        },
-      },
-    ],
   };
 
   return (
@@ -55,7 +23,7 @@ const SliderSection = () => {
         .hero-play-pause-btn {
             position: absolute;
             bottom: 40px;
-            left: 50px;
+            left: 50px; /* Moved to right for better balance */
             z-index: 20;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(4px);
@@ -80,72 +48,121 @@ const SliderSection = () => {
         @media (max-width: 767px) {
             .hero-play-pause-btn {
                 bottom: 25px;
-                left: 20px;
+                right: 20px;
                 width: 36px;
                 height: 36px;
             }
         }
+        .video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        
+        /* --- NEW TEXT STYLES --- */
+        .hero-text-overlay {
+            position: relative;
+            z-index: 10;
+            padding: 20px 0;
+        }
+        .hero-text-overlay h2 {
+            color: #ddb040 !important;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        .hero-text-overlay h1 {
+            color: #fff !important;
+            font-size: 65px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+        .hero-text-overlay h3 {
+            color: #f0f0f0 !important;
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 35px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        .hero-btn {
+            display: inline-block;
+            background-color: #ddb040;
+            color: #fff;
+            padding: 16px 40px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 0;
+            transition: all 0.3s ease;
+            border: 2px solid #ddb040;
+            text-decoration: none;
+        }
+        .hero-btn:hover {
+            background-color: transparent;
+            color: #ddb040;
+        }
+
+        @media (max-width: 991px) {
+            .hero-text-overlay h1 { font-size: 50px; }
+        }
+        @media (max-width: 767px) {
+            .hero-text-overlay h1 { font-size: 36px; }
+            .hero-text-overlay h3 { font-size: 18px; }
+            .hero-text-overlay { text-align: center; } /* Center on mobile */
+        }
       `}</style>
       <div className="hero-section section position-relative">
-        <Slider ref={sliderRef} {...settings} className="tf-element-carousel slider-nav">
-          {/* ...existing code... */}
-          <div className="hero-item">
-            <Image
-              src="/assets/images/product/o.webp"
-              alt="New Cosmetics"
-              layout="fill"
-              objectFit="cover"
-              priority={true}
+        {/* Added min-height and flex to center content vertically */}
+        <div className="hero-item" style={{ minHeight: '650px', display: 'flex', alignItems: 'center' }}>
+            <video 
+                ref={videoRef}
+                className="video-bg"
+                src="/celsius-vid.mp4"
+                loop
+                muted
+                playsInline
+                autoPlay
             />
+            
             <div className="container">
               <div className="row">
-                <div className="col-12">
-                  <div className="hero-content-2 color-1 center">
-                    <h2>view our</h2>
-                    <h1>New Cosmetics</h1>
-                    <h3>Products now</h3>
-                    <a href="/collections/perfumes">shop now</a>
+                {/* Left Aligned Column */}
+                <div className="col-lg-7 col-md-9 col-12">
+                  <div className="hero-text-overlay text-start">
+                    <h2>Exclusive Collection</h2>
+                    <h1>Luxury Fragrances <br/> For Everyone</h1>
+                    <h3>Discover your signature scent today.</h3>
+                    <a href="/collections/perfumes" className="hero-btn">Shop Now</a>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="hero-item">
-            <Image
-              src="/assets/images/product/b.jpg"
-              alt="Women's Hair Products"
-              layout="fill"
-              objectFit="cover"
-            />
-            <div className="container">
-              <div className="row">
-                <div className="col-12">
-                  <div className="hero-content-2 color-2">
-                    <h2>view our</h2>
-                    <h1>Women's hair</h1>
-                    <h3>Products now</h3>
-                    <a href="/collections/perfumes">shop now</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Slider>
-
-        <button 
-            className="hero-play-pause-btn" 
-            onClick={togglePlay}
-            aria-label={isPlaying ? "Pause Slider" : "Play Slider"}
-        >
-            {isPlaying ? (
-                <i className="fa fa-pause" style={{ fontSize: '14px' }}></i>
-            ) : (
-                <i className="fa fa-play" style={{ fontSize: '14px', marginLeft: '3px' }}></i>
-            )}
-        </button>
-      </div>
-    </>
-  );
-}
-export default SliderSection;
+            <button 
+                className="hero-play-pause-btn" 
+                onClick={togglePlay}
+                aria-label={isPlaying ? "Pause Video" : "Play Video"}
+            >
+                {isPlaying ? (
+                    <i className="fa fa-pause" style={{ fontSize: '14px' }}></i>
+                ) : (
+                    <i className="fa fa-play" style={{ fontSize: '14px', marginLeft: '3px' }}></i> 
+                  )
+                } 
+            </button> 
+          </div> 
+        </div> 
+      </> 
+    ); 
+  } 
+  export default SliderSection;
