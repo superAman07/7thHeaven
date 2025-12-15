@@ -124,45 +124,45 @@ const SliderSection = () => {
       <div className="hero-section section position-relative">
         {/* Added min-height and flex to center content vertically */}
         <div className="hero-item" style={{ minHeight: '650px', display: 'flex', alignItems: 'center' }}>
-            <video 
-                ref={videoRef}
-                className="video-bg"
-                src="/celsius-vid.mp4"
-                loop
-                muted
-                playsInline
-                autoPlay
-            />
-            
-            <div className="container">
-              <div className="row">
-                {/* Left Aligned Column */}
-                <div className="col-lg-7 col-md-9 col-12">
-                  <div className="hero-text-overlay text-start">
-                    <h2>Exclusive Collection</h2>
-                    <h1>Luxury Fragrances <br/> For Everyone</h1>
-                    <h3>Discover your signature scent today.</h3>
-                    <a href="/collections/perfumes" className="hero-btn">Shop Now</a>
-                  </div>
+          <video 
+              ref={videoRef}
+              className="video-bg"
+              src="/celsius-vid.mp4"
+              loop
+              muted
+              playsInline
+              autoPlay
+          />
+          
+          <div className="container">
+            <div className="row">
+              {/* Left Aligned Column */}
+              <div className="col-lg-7 col-md-9 col-12">
+                <div className="hero-text-overlay text-start">
+                  <h2>Exclusive Collection</h2>
+                  <h1>Luxury Fragrances <br/> For Everyone</h1>
+                  <h3>Discover your signature scent today.</h3>
+                  <a href="/collections/perfumes" className="hero-btn">Shop Now</a>
                 </div>
               </div>
             </div>
+          </div>
 
-            <button 
-                className="hero-play-pause-btn" 
-                onClick={togglePlay}
-                aria-label={isPlaying ? "Pause Video" : "Play Video"}
-            >
-                {isPlaying ? (
-                    <i className="fa fa-pause" style={{ fontSize: '14px' }}></i>
-                ) : (
-                    <i className="fa fa-play" style={{ fontSize: '14px', marginLeft: '3px' }}></i> 
-                  )
-                } 
-            </button> 
-          </div> 
+          <button 
+              className="hero-play-pause-btn" 
+              onClick={togglePlay}
+              aria-label={isPlaying ? "Pause Video" : "Play Video"}
+          >
+              {isPlaying ? (
+                  <i className="fa fa-pause" style={{ fontSize: '14px' }}></i>
+              ) : (
+                  <i className="fa fa-play" style={{ fontSize: '14px', marginLeft: '3px' }}></i> 
+                )
+              } 
+          </button> 
         </div> 
-      </> 
-    ); 
-  } 
-  export default SliderSection;
+      </div> 
+    </> 
+  ); 
+} 
+export default SliderSection;
