@@ -50,8 +50,22 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    if (inStock === 'true' || inStock === 'false') {
-      whereClause.inStock = inStock === 'true';
+    if (inStock === 'true') {
+      whereClause.inStock = true;
+    } else if (inStock === 'false') {
+      whereClause.OR = [
+        { inStock: false },
+        {
+          variants: { 
+            some: {}, 
+            every: { stock: 0 } 
+          } 
+        },
+        {
+          variants: { none: {} },
+          stock: 0
+        }
+      ];
     }
 
     const [products, totalProducts] = await prisma.$transaction([

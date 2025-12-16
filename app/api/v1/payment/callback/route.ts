@@ -136,6 +136,21 @@ export async function POST(req: NextRequest) {
                                 data: { stock: 0 }
                             });
                         }
+                        const hasStockLeft = await prisma.productVariant.findFirst({
+                            where: {
+                                productId: productId,
+                                stock: { gt: 0 }
+                            }
+                        });
+
+                        // If no variants have stock left, mark parent as Out of Stock
+                        if (!hasStockLeft) {
+                            await prisma.product.update({
+                                where: { id: productId },
+                                data: { inStock: false }
+                            });
+                            console.log(`Auto-updated Product ${productId} to Out of Stock`);
+                        }
                     } else if (productId) {
                         const updatedProduct = await prisma.product.update({
                             where: { id: productId }, 
