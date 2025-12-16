@@ -7,8 +7,8 @@ const genderTagsEnum = z.enum(["Male", "Female", "Unisex"]);
 const variantSchema = z.object({
   id: z.string().optional(),
   size: z.string().min(1, 'Variant size is required'),
-  price: z.number().positive('Price must be a positive number'),
-  stock: z.number().int().min(0).default(0),
+  price: z.union([z.string(), z.number()]).transform((val) => Number(val)),
+  stock: z.union([z.string(), z.number()]).transform((val) => parseInt(String(val), 10) || 0),
 });
 
 const updateProductSchema = z.object({
@@ -61,9 +61,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { id } = await params;
     const body = await request.json();
+    
     const validation = updateProductSchema.safeParse(body);
 
     if (!validation.success) {
+      console.error("Validation Error:", validation.error.flatten());
       return NextResponse.json({ success: false, error: validation.error.flatten() }, { status: 400 });
     }
 
@@ -84,31 +86,38 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
         const variantsToCreate = variants.filter(v => !v.id);
         const variantsToUpdate = variants.filter(v => v.id && existingVariantIds.has(v.id));
-        const updatedVariantIds = new Set(variantsToUpdate.map(v => v.id));
-        const variantIdsToDelete = [...existingVariantIds].filter(id => !updatedVariantIds.has(id));
+        
+        const incomingVariantIds = new Set(variants.filter(v => v.id).map(v => v.id));
+        const variantIdsToDelete = existingVariants
+            .map(v => v.id)
+            .filter(vid => !incomingVariantIds.has(vid));
 
         if (variantIdsToDelete.length > 0) {
           await tx.productVariant.deleteMany({ where: { id: { in: variantIdsToDelete } } });
         }
+
         if (variantsToCreate.length > 0) {
           await tx.productVariant.createMany({
             data: variantsToCreate.map(({ size, price, stock }) => ({ 
                 productId: id, 
                 size, 
-                price: price.toString(),
-                stock: stock ?? 0 
+                price: price,
+                stock: stock
             })),
           });
         }
+
         for (const variant of variantsToUpdate) {
-          await tx.productVariant.update({
-            where: { id: variant.id },
-            data: { 
-                size: variant.size, 
-                price: variant.price.toString(),
-                stock: variant.stock 
-            },
-          });
+          if (variant.id) {
+            await tx.productVariant.update({
+              where: { id: variant.id },
+              data: { 
+                  size: variant.size, 
+                  price: variant.price,
+                  stock: variant.stock 
+              },
+            });
+          }
         }
       }
 
