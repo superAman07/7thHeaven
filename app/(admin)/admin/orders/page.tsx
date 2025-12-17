@@ -274,20 +274,52 @@ export default function OrdersPage() {
               {/* Order Items */}
               <div>
                 <h3 className="text-sm font-medium text-gray-500 uppercase mb-3">Items</h3>
-                <div className="border rounded-lg divide-y">
+                <div className="border rounded-lg divide-y overflow-hidden bg-white">
                   {getOrderItems(currentOrder).map((item: any, idx: number) => (
-                    <div key={idx} className="p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        {/* Placeholder for image if not saved in JSON */}
-                        <div className="h-12 w-12 bg-gray-200 rounded-md flex items-center justify-center text-gray-400">
-                          <Package className="w-6 h-6" />
+                    <div key={idx} className="p-4 flex items-start justify-between hover:bg-gray-50 transition-colors">
+                      <div className="flex items-start gap-4">
+                        {/* Product Image */}
+                        <div className="h-16 w-16 shrink-0 rounded-md border border-gray-200 overflow-hidden bg-white">
+                          {item.image ? (
+                            <img 
+                              src={item.image} 
+                              alt={item.name || 'Product'} 
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center bg-gray-100 text-gray-400">
+                              <Package className="w-8 h-8" />
+                            </div>
+                          )}
                         </div>
+                        
+                        {/* Product Details */}
                         <div>
-                          <p className="font-medium text-gray-900">Product ID: {item.productId.slice(-6)}</p>
-                          <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                          <p className="font-semibold text-gray-900 text-sm">
+                              {item.name || <span className="text-gray-400 italic">Unknown Product ({item.productId?.slice(-6)})</span>}
+                          </p>
+                          
+                          <div className="mt-1 space-y-1">
+                              {item.size && (
+                                  <p className="text-xs text-gray-600 flex items-center">
+                                      <span className="font-medium mr-1 text-gray-500">Size:</span> 
+                                      <span className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">{item.size}ml</span>
+                                  </p>
+                              )}
+                              <p className="text-xs text-gray-600 flex items-center">
+                                  <span className="font-medium mr-1 text-gray-500">Qty:</span> {item.quantity}
+                              </p>
+                          </div>
                         </div>
                       </div>
-                      <p className="font-medium">₹{item.priceAtPurchase || 'N/A'}</p>
+
+                      {/* Price Column */}
+                      <div className="text-right">
+                          <p className="font-medium text-sm text-gray-900">₹{item.priceAtPurchase?.toLocaleString() || '0'}</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Total: <span className="font-medium">₹{((item.priceAtPurchase || 0) * (item.quantity || 1)).toLocaleString()}</span>
+                          </p>
+                      </div>
                     </div>
                   ))}
                 </div>
