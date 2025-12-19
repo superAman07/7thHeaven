@@ -70,7 +70,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen  p-4 md:p-8 font-sans">
-      {/* --- Page Header --- */}
       <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-gray-200 pb-8">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -88,7 +87,6 @@ export default function DashboardPage() {
         </div>
       </div>
       
-      {/* --- Luxury Stats Grid --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard 
           label="Total Orders" 
@@ -113,7 +111,6 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* --- Recent Activity Table --- */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center">
                 <div className="flex items-center gap-2">
@@ -162,7 +159,6 @@ export default function DashboardPage() {
             </div>
         </div>
 
-        {/* --- Settings Column --- */}
         <div className="space-y-6">
           <div className="bg-white p-8 rounded-2xl shadow-sm border-2 border-black relative overflow-hidden h-fit">
             <div className="absolute top-0 right-0 p-4 opacity-5">
