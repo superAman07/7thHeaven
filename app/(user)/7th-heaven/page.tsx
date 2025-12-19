@@ -125,6 +125,33 @@ export default function SeventhHeavenPage() {
                     </div>
                 </div>
 
+                <div className="mb-16 text-center max-w-4xl mx-auto">
+                    <h3 className="text-2xl font-bold text-gray-800 mb-3 font-serif">The Path to Prestige</h3>
+                    <p className="text-gray-600 mb-10 max-w-2xl mx-auto">
+                        Your influence has value. Build your network through 7 tiers of connections. 
+                        When your network fills <strong>Level 7</strong>, you unlock an exclusive luxury reward curated by our founders.
+                    </p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                            <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🤝</div>
+                            <h4 className="font-bold text-gray-800 mb-2">1. Invite</h4>
+                            <p className="text-sm text-gray-500">Share your code. When friends join, they fill your Level 1.</p>
+                        </div>
+                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                            <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🌱</div>
+                            <h4 className="font-bold text-gray-800 mb-2">2. Expand</h4>
+                            <p className="text-sm text-gray-500">As your friends invite others, your Levels 2-7 fill up automatically.</p>
+                        </div>
+                        <div className="bg-linear-to-br from-gray-900 to-black p-6 rounded-xl shadow-lg text-white relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-16 h-16 bg-[#ddb040] opacity-20 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-150"></div>
+                            <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl backdrop-blur-sm">🎁</div>
+                            <h4 className="font-bold text-[#ddb040]! mb-2">3. Claim Reward</h4>
+                            <p className="text-sm text-gray-300">Complete Level 7 to receive a surprise luxury gift package.</p>
+                        </div>
+                    </div>
+                </div>
+
                 {/* --- Levels Grid --- */}
                 <div className="mb-8">
                     <h3 className="text-xl font-bold text-gray-800 mb-6 pl-3 border-l-4 border-[#ddb040]">Your Progress</h3>
