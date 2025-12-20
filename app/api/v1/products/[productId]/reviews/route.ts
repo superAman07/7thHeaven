@@ -128,6 +128,58 @@ export async function POST(
   }
 }
 
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ productId: string }> }
+) {
+  try {
+    const { productId } = await params;
+    const token = request.cookies.get('session_token')?.value;
+
+    if (!token) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    const user = await verifyToken(token);
+    if (!user) return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+
+    const body = await request.json();
+    const validatedData = reviewSchema.parse(body);
+
+    // Check if review exists
+    const existingReview = await prisma.review.findUnique({
+      where: { userId_productId: { userId: user.id, productId } }
+    });
+
+    if (!existingReview) {
+      return NextResponse.json({ error: 'Review not found' }, { status: 404 });
+    }
+
+    // Update
+    const updatedReview = await prisma.review.update({
+      where: { id: existingReview.id },
+      data: {
+        rating: validatedData.rating,
+        text: validatedData.text || null,
+      },
+      include: { user: { select: { fullName: true } } }
+    });
+
+    // Recalculate Avg
+    const avgRating = await prisma.review.aggregate({
+      where: { productId },
+      _avg: { rating: true },
+    });
+    await prisma.product.update({
+      where: { id: productId },
+      data: { ratingsAvg: avgRating._avg.rating || 0 },
+    });
+
+    return NextResponse.json({ message: 'Review updated successfully', review: updatedReview });
+
+  } catch (error) {
+    console.error('Review update error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ productId: string }> }

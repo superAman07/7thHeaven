@@ -34,7 +34,7 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
     const [reviewHover, setReviewHover] = useState(0);
     const [reviewText, setReviewText] = useState('');
     const [isSubmittingReview, setIsSubmittingReview] = useState(false);
-
+    const [isEditingReview, setIsEditingReview] = useState(false);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [imageLoading, setImageLoading] = useState(false);
 
@@ -81,6 +81,35 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
         setTimeout(() => setIsAdding(false), 1000);
     };
 
+    React.useEffect(() => {
+        const checkUserReview = async () => {
+            try {
+                // 1. Get Current User
+                const authRes = await axios.get('/api/v1/auth/me');
+                if (authRes.data.success) {
+                    const userId = authRes.data.user.id;
+                    
+                    // 2. Check if this user has a review in the product's review list
+                    // Note: We assume product.reviews contains userId. If not, we might need to fetch reviews again.
+                    // For robustness, let's fetch reviews from API to be sure we have userIds
+                    const reviewsRes = await axios.get(`/api/v1/products/${product.id}/reviews`);
+                    const reviews = reviewsRes.data.reviews || [];
+                    
+                    const myReview = reviews.find((r: any) => r.userId === userId);
+                    
+                    if (myReview) {
+                        setIsEditingReview(true);
+                        setReviewRating(myReview.rating);
+                        setReviewText(myReview.text || '');
+                    }
+                }
+            } catch (error) {
+                // User not logged in or error, ignore
+            }
+        };
+        checkUserReview();
+    }, [product.id]);
+
     const handleReviewSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (reviewRating === 0) {
@@ -90,7 +119,8 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
 
         setIsSubmittingReview(true);
         try {
-            const res = await axios.post(`/api/v1/products/${product.id}/reviews`, {
+            const method = isEditingReview ? 'put' : 'post';
+            const res = await axios[method](`/api/v1/products/${product.id}/reviews`, {
                 rating: reviewRating,
                 text: reviewText
             });
@@ -435,7 +465,9 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                             </ul>
                                             <div className="review-form-wrapper">
                                                 <div className="review-form">
-                                                    <span className="comment-reply-title">Add a review </span>
+                                                    <span className="comment-reply-title">
+                                                        {isEditingReview ? 'Edit your review' : 'Add a review'} 
+                                                    </span>
                                                     <form onSubmit={handleReviewSubmit}>
                                                         <p className="comment-notes">
                                                             <span id="email-notes">Your email address will not be published.</span>
@@ -477,7 +509,7 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                                     className="form-button"
                                                                     disabled={isSubmittingReview}
                                                                 >
-                                                                    {isSubmittingReview ? 'Submitting...' : 'Submit'}
+                                                                    {isSubmittingReview ? 'Processing...' : (isEditingReview ? 'Update Review' : 'Submit Review')}
                                                                 </button>
                                                             </div>
                                                         </div>
