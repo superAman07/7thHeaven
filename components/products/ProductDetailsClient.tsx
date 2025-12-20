@@ -469,8 +469,23 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                 {product.reviews.map((review: any) => (
                                                     <li key={review.id}>
                                                         <div className="product-comment">
-                                                            <div className="w-[60px] h-[60px] bg-gray-100 rounded-full flex items-center justify-center text-xl font-bold text-gray-400 mr-4 shrink-0">
-                                                                {review.user?.fullName?.charAt(0) || 'U'}
+                                                            <div 
+                                                                style={{ 
+                                                                    width: '60px', 
+                                                                    height: '60px', 
+                                                                    backgroundColor: '#D4AF37', 
+                                                                    color: '#fff',
+                                                                    borderRadius: '50%', 
+                                                                    display: 'flex', 
+                                                                    alignItems: 'center', 
+                                                                    justifyContent: 'center',
+                                                                    fontSize: '24px',
+                                                                    fontWeight: 'bold',
+                                                                    marginRight: '20px',
+                                                                    float: 'left' // Keeps layout consistent with template
+                                                                }}
+                                                            >
+                                                                {review.user?.fullName?.charAt(0).toUpperCase() || 'U'}
                                                             </div>
                                                             <div className="product-comment-content">
                                                                 <div className="product-reviews">
@@ -491,19 +506,45 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                             </ul>
                                             <div className="review-form-wrapper">
                                                 <div className="review-form">
-                                                    <span className="comment-reply-title">
-                                                        {isEditingReview ? 'Edit your review' : 'Add a review'} 
-                                                    </span>
-                                                    {isEditingReview && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={handleDeleteReview}
-                                                            disabled={isSubmittingReview}
-                                                            className="text-red-500! text-sm! hover:text-red-700! underline!"
-                                                        >
-                                                            Delete my Review
-                                                        </button>
-                                                    )}
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '1px solid #eee', paddingBottom: '15px' }}>
+                                                        <h3 className="comment-reply-title" style={{ margin: 0, fontSize: '18px', textTransform: 'uppercase' }}>
+                                                            {isEditingReview ? 'Update Your Review' : 'Add a review'} 
+                                                        </h3>
+                                                        
+                                                        {/* PROFESSIONAL DELETE BUTTON */}
+                                                        {isEditingReview && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={handleDeleteReview}
+                                                                disabled={isSubmittingReview}
+                                                                style={{
+                                                                    backgroundColor: '#fff',
+                                                                    border: '1px solid #dc3545',
+                                                                    color: '#dc3545',
+                                                                    padding: '6px 15px',
+                                                                    borderRadius: '4px',
+                                                                    fontSize: '12px',
+                                                                    fontWeight: '600',
+                                                                    textTransform: 'uppercase',
+                                                                    cursor: 'pointer',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '5px',
+                                                                    transition: 'all 0.3s ease'
+                                                                }}
+                                                                onMouseOver={(e) => {
+                                                                    e.currentTarget.style.backgroundColor = '#dc3545';
+                                                                    e.currentTarget.style.color = '#fff';
+                                                                }}
+                                                                onMouseOut={(e) => {
+                                                                    e.currentTarget.style.backgroundColor = '#fff';
+                                                                    e.currentTarget.style.color = '#dc3545';
+                                                                }}
+                                                            >
+                                                                <i className="fa fa-trash-o"></i> Delete
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                     <form onSubmit={handleReviewSubmit}>
                                                         <p className="comment-notes">
                                                             <span id="email-notes">Your email address will not be published. </span>
