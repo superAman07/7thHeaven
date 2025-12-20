@@ -177,7 +177,7 @@ export default function NetworkLeadersPage() {
                                                 </div>
                                                 <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                                                     <div 
-                                                        className="bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] h-full rounded-full transition-all duration-500"
+                                                        className="bg-linear-to-r from-[#D4AF37] to-[#F3E5AB] h-full rounded-full transition-all duration-500"
                                                         style={{ width: `${Math.max(5, leader.stats.level7Progress)}%` }}
                                                     ></div>
                                                 </div>
