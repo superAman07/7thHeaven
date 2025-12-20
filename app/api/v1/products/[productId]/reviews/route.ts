@@ -9,35 +9,6 @@ const reviewSchema = z.object({
   text: z.string().min(10).max(1000).optional(),
 });
 
-interface AuthenticatedRequest extends NextRequest {
-  user?: {
-    id: string;
-    fullName: string;
-    phone: string;
-  };
-}
-
-// Middleware to verify authentication
-async function authenticateUser(request: NextRequest): Promise<{ user: any; error?: string }> {
-  try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return { user: null, error: 'No authorization header' };
-    }
-
-    const token = authHeader.substring(7);
-    const user = await verifyToken(token);
-    
-    if (!user) {
-      return { user: null, error: 'Invalid token' };
-    }
-
-    return { user };
-  } catch (error) {
-    return { user: null, error: 'Authentication failed' };
-  }
-}
-
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ productId: string }> }
@@ -45,14 +16,25 @@ export async function POST(
   try {
     const { productId } = await params;
 
-    // Authenticate user
-    const { user, error } = await authenticateUser(request);
-    if (error || !user) {
+    // --- FIX START: Read Session Token from Cookie ---
+    const token = request.cookies.get('session_token')?.value;
+
+    if (!token) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
+
+    const user = await verifyToken(token);
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Invalid session' },
+        { status: 401 }
+      );
+    }
+    // --- FIX END ---
 
     // Validate request body
     const body = await request.json();

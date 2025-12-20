@@ -14,10 +14,14 @@ const serializeProduct = (product: any): PublicProduct => {
     ...product,
     variants: product.variants.map((variant: any) => ({
       ...variant,
-      price: variant.price.toNumber(),
+      price: variant.price?.toNumber ? variant.price.toNumber() : Number(variant.price),
     })),
-    discountPercentage: product.discountPercentage ? product.discountPercentage.toNumber() : null,
-    ratingsAvg: product.ratingsAvg ? product.ratingsAvg.toNumber() : 0,
+    discountPercentage: product.discountPercentage 
+      ? (product.discountPercentage?.toNumber ? product.discountPercentage.toNumber() : Number(product.discountPercentage)) 
+      : null,
+    ratingsAvg: product.ratingsAvg 
+      ? (product.ratingsAvg?.toNumber ? product.ratingsAvg.toNumber() : Number(product.ratingsAvg)) 
+      : 0,
   };
 };
 

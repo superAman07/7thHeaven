@@ -6,6 +6,8 @@ import Slider from "react-slick";
 import { PublicProduct } from '../HeroPage';
 import { useCart } from '../CartContext';
 import { useWishlist } from '../WishlistContext';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 interface ProductDetailsClientProps {
     product: PublicProduct;
@@ -27,6 +29,11 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
 
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
+
+    const [reviewRating, setReviewRating] = useState(0);
+    const [reviewHover, setReviewHover] = useState(0);
+    const [reviewText, setReviewText] = useState('');
+    const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [imageLoading, setImageLoading] = useState(false);
@@ -72,6 +79,42 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
         }, quantity);
         
         setTimeout(() => setIsAdding(false), 1000);
+    };
+
+    const handleReviewSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (reviewRating === 0) {
+            toast.error("Please select a star rating");
+            return;
+        }
+
+        setIsSubmittingReview(true);
+        try {
+            const res = await axios.post(`/api/v1/products/${product.id}/reviews`, {
+                rating: reviewRating,
+                text: reviewText
+            });
+
+            if (res.status === 201) {
+                toast.success("Review submitted successfully!");
+                setReviewRating(0);
+                setReviewText('');
+                // Optional: Reload page to see new review
+                window.location.reload();
+            }
+        } catch (error: any) {
+            if (error.response?.status === 401) {
+                toast.error("Please login to write a review");
+                // Optional: Redirect to login
+                // window.location.href = '/login'; 
+            } else if (error.response?.data?.error) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error("Failed to submit review");
+            }
+        } finally {
+            setIsSubmittingReview(false);
+        }
     };
 
     const sliderSettings = {
@@ -370,7 +413,9 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                 {product.reviews.map((review: any) => (
                                                     <li key={review.id}>
                                                         <div className="product-comment">
-                                                            <img src="https://via.placeholder.com/60" alt="author" />
+                                                            <div className="w-[60px] h-[60px] bg-gray-100 rounded-full flex items-center justify-center text-xl font-bold text-gray-400 mr-4 shrink-0">
+                                                                {review.user?.fullName?.charAt(0) || 'U'}
+                                                            </div>
                                                             <div className="product-comment-content">
                                                                 <div className="product-reviews">
                                                                     {[...Array(5)].map((_, i) => (
@@ -378,10 +423,10 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                                     ))}
                                                                 </div>
                                                                 <p className="meta">
-                                                                    <strong>{review.author}</strong> - <span>{review.date}</span>
+                                                                    <strong>{review.user?.fullName || 'Anonymous'}</strong> - <span>{new Date(review.createdAt).toLocaleDateString()}</span>
                                                                 </p>
                                                                 <div className="description">
-                                                                    <p>{review.content}</p>
+                                                                    <p>{review.text}</p>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -391,7 +436,7 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                             <div className="review-form-wrapper">
                                                 <div className="review-form">
                                                     <span className="comment-reply-title">Add a review </span>
-                                                    <form action="#">
+                                                    <form onSubmit={handleReviewSubmit}>
                                                         <p className="comment-notes">
                                                             <span id="email-notes">Your email address will not be published.</span>
                                                             Required fields are marked
@@ -399,29 +444,41 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                         </p>
                                                         <div className="comment-form-rating">
                                                             <label>Your rating</label>
-                                                            <div className="rating">
-                                                                <i className="fa fa-star-o"></i>
-                                                                <i className="fa fa-star-o"></i>
-                                                                <i className="fa fa-star-o"></i>
-                                                                <i className="fa fa-star-o"></i>
-                                                                <i className="fa fa-star-o"></i>
+                                                            <div className="rating flex gap-1 cursor-pointer">
+                                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                                    <i 
+                                                                        key={star}
+                                                                        className={`fa ${star <= (reviewHover || reviewRating) ? 'fa-star' : 'fa-star-o'}`}
+                                                                        style={{ color: '#ffb400', fontSize: '18px' }}
+                                                                        onMouseEnter={() => setReviewHover(star)}
+                                                                        onMouseLeave={() => setReviewHover(0)}
+                                                                        onClick={() => setReviewRating(star)}
+                                                                    ></i>
+                                                                ))}
                                                             </div>
                                                         </div>
                                                         <div className="input-element">
                                                             <div className="comment-form-comment">
                                                                 <label>Comment</label>
-                                                                <textarea name="message" cols={40} rows={8}></textarea>
+                                                                <textarea 
+                                                                    name="message" 
+                                                                    cols={40} 
+                                                                    rows={8}
+                                                                    value={reviewText}
+                                                                    onChange={(e) => setReviewText(e.target.value)}
+                                                                    required
+                                                                ></textarea>
                                                             </div>
-                                                            <div className="review-comment-form-author">
-                                                                <label>Name </label>
-                                                                <input required type="text" />
-                                                            </div>
-                                                            <div className="review-comment-form-email">
-                                                                <label>Email </label>
-                                                                <input required type="text" />
-                                                            </div>
+                                                            {/* Removed Name/Email inputs as they are handled by Auth */}
+                                                            
                                                             <div className="comment-submit">
-                                                                <button type="submit" className="form-button">Submit</button>
+                                                                <button 
+                                                                    type="submit" 
+                                                                    className="form-button"
+                                                                    disabled={isSubmittingReview}
+                                                                >
+                                                                    {isSubmittingReview ? 'Submitting...' : 'Submit'}
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </form>
