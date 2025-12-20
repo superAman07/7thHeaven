@@ -38,6 +38,8 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [imageLoading, setImageLoading] = useState(false);
 
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
     const displayPrice = useMemo(() => {
         if (!selectedVariant) {
             return { current: 0, regular: 0 };
@@ -88,19 +90,26 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                 const authRes = await axios.get('/api/v1/auth/me');
                 if (authRes.data.success) {
                     const userId = authRes.data.user.id;
+                    setCurrentUserId(userId); // Save ID
                     
-                    // 2. Check if this user has a review in the product's review list
-                    // Note: We assume product.reviews contains userId. If not, we might need to fetch reviews again.
-                    // For robustness, let's fetch reviews from API to be sure we have userIds
+                    console.log("✅ Logged in as User:", userId);
+
+                    // 2. Fetch fresh reviews
                     const reviewsRes = await axios.get(`/api/v1/products/${product.id}/reviews`);
                     const reviews = reviewsRes.data.reviews || [];
                     
+                    console.log("📦 Fetched Reviews:", reviews);
+
+                    // 3. Find match
                     const myReview = reviews.find((r: any) => r.userId === userId);
                     
                     if (myReview) {
+                        console.log("🎯 Found User's Review:", myReview);
                         setIsEditingReview(true);
                         setReviewRating(myReview.rating);
                         setReviewText(myReview.text || '');
+                    } else {
+                        console.log("❌ No review found for this user on this product.");
                     }
                 }
             } catch (error) {
@@ -129,19 +138,36 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                 toast.success("Review submitted successfully!");
                 setReviewRating(0);
                 setReviewText('');
-                // Optional: Reload page to see new review
                 window.location.reload();
             }
         } catch (error: any) {
             if (error.response?.status === 401) {
                 toast.error("Please login to write a review");
-                // Optional: Redirect to login
-                // window.location.href = '/login'; 
             } else if (error.response?.data?.error) {
                 toast.error(error.response.data.error);
             } else {
                 toast.error("Failed to submit review");
             }
+        } finally {
+            setIsSubmittingReview(false);
+        }
+    };
+
+    const handleDeleteReview = async () => {
+        if (!window.confirm("Are you sure you want to delete your review?")) return;
+
+        setIsSubmittingReview(true);
+        try {
+            const res = await axios.delete(`/api/v1/products/${product.id}/reviews`);
+            if (res.status === 200) {
+                toast.success("Review deleted successfully");
+                setReviewRating(0);
+                setReviewText('');
+                setIsEditingReview(false);
+                window.location.reload();
+            }
+        } catch (error: any) {
+            toast.error("Failed to delete review");
         } finally {
             setIsSubmittingReview(false);
         }
@@ -468,9 +494,19 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                     <span className="comment-reply-title">
                                                         {isEditingReview ? 'Edit your review' : 'Add a review'} 
                                                     </span>
+                                                    {isEditingReview && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleDeleteReview}
+                                                            disabled={isSubmittingReview}
+                                                            className="text-red-500! text-sm! hover:text-red-700! underline!"
+                                                        >
+                                                            Delete my Review
+                                                        </button>
+                                                    )}
                                                     <form onSubmit={handleReviewSubmit}>
                                                         <p className="comment-notes">
-                                                            <span id="email-notes">Your email address will not be published.</span>
+                                                            <span id="email-notes">Your email address will not be published. </span>
                                                             Required fields are marked
                                                             <span className="required">*</span>
                                                         </p>
