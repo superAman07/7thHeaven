@@ -1,30 +1,27 @@
 import prisma from '@/lib/prisma';
+import * as admin from 'firebase-admin';
 
-// TODO: When ready for production, install firebase-admin:
-// npm install firebase-admin
-// import * as admin from 'firebase-admin';
+// Initialize Firebase Admin SDK
+if (!admin.apps.length) {
+  try {
+    // We use require here to load the JSON file you downloaded
+    // Make sure firebase-admin.json is in your ROOT folder (same level as package.json)
+    const serviceAccount = require(process.cwd() + '/firebase-admin.json');
 
-// Initialize Firebase (Singleton pattern)
-// if (!admin.apps.length) {
-//   admin.initializeApp({
-//     credential: admin.credential.cert({
-//       projectId: process.env.FIREBASE_PROJECT_ID,
-//       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-//       privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-//     }),
-//   });
-// }
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+    console.log("🔥 Firebase Admin Initialized Successfully");
+  } catch (error) {
+    console.error("⚠️ Firebase Init Failed (Check firebase-admin.json):", error);
+  }
+}
 
 export async function sendNotification(userId: string, title: string, body: string, type: string = 'GENERAL') {
   try {
     // 1. Save to Database (Persistent History)
     await prisma.notification.create({
-        data: {
-            userId,
-            title,
-            body,
-            type
-        }
+        data: { userId, title, body, type }
     });
 
     // 2. Get User's Device Tokens
@@ -33,23 +30,19 @@ export async function sendNotification(userId: string, title: string, body: stri
       select: { token: true }
     });
 
-    if (devices.length === 0) {
-      console.log(`[Notification] User ${userId} has no devices registered.`);
-      return;
-    }
+    if (devices.length === 0) return;
 
     const tokens = devices.map(d => d.token);
 
-    // 3. Send to Firebase (Production Logic)
-    /*
+    // 3. Send to Firebase
     const message = {
       notification: { title, body },
-      data: { type }, // Custom data for app routing
+      data: { type }, 
       tokens: tokens,
     };
 
     const response = await admin.messaging().sendMulticast(message);
-    console.log(`[FCM] Sent ${response.successCount} messages, failed ${response.failureCount}`);
+    console.log(`[FCM] Sent to ${userId}: Success ${response.successCount}, Failed ${response.failureCount}`);
     
     // Cleanup invalid tokens
     if (response.failureCount > 0) {
@@ -61,15 +54,6 @@ export async function sendNotification(userId: string, title: string, body: stri
             await prisma.deviceToken.deleteMany({ where: { token: { in: failedTokens } } });
         }
     }
-    */
-
-    // --- MOCK LOG FOR NOW ---
-    console.log(`\n🔔 [PUSH NOTIFICATION SENT] 🔔`);
-    console.log(`To User: ${userId}`);
-    console.log(`Title: ${title}`);
-    console.log(`Body: ${body}`);
-    console.log(`Target Tokens: ${tokens.length} devices`);
-    console.log(`-----------------------------\n`);
 
   } catch (error) {
     console.error('Failed to send notification:', error);

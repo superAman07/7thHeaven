@@ -45,3 +45,4 @@ next-env.d.ts
 tsconfig.seed.json
 
 /cloudflared.exe
+/firebase-admin.json
