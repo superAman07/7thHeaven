@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import crypto from 'crypto';
 import axios from 'axios';
+import { sendNotification } from '@/lib/notifications';
 
 function generateReferralCode() {
     return '7H-' + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -95,7 +96,10 @@ export async function POST(req: NextRequest) {
 
         const order = await prisma.order.findFirst({
             where: { gatewayOrderId: merchantTransactionId },
-            include: { user: true }
+            include: { 
+                user: true,
+                items: true
+            }
         });
 
         if (!order) {
@@ -112,7 +116,9 @@ export async function POST(req: NextRequest) {
                 where: { id: order.id },
                 data: {
                     paymentStatus: 'PAID',
+                    status: 'PROCESSING',
                     netAmountPaid: amountPaid,
+                    rawPayload: decodedResponse
                 }
             });
 
@@ -171,6 +177,13 @@ export async function POST(req: NextRequest) {
                     console.error(`Inventory Error for item ${item.name}:`, err);
                 }
             }
+
+            await sendNotification(
+                order.userId,
+                "Order Confirmed! 🎉",
+                `Your order #${order.id.slice(-6).toUpperCase()} has been placed successfully.`,
+                "ORDER_UPDATE"
+            );
 
             // Send SMS
             if (order.user.phone) {
