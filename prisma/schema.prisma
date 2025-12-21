@@ -37,6 +37,7 @@ model User {
   orders           Order[]
   reviews          Review[]
   wishlist         Wishlist?
+  notifications    Notification[]
 }
 
 model Category {
@@ -215,6 +216,7 @@ model Notification {
   title     String
   body      String
   userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   isRead    Boolean  @default(false)
   type      String   // ORDER_UPDATE, MLM_REWARD, PROMO
   createdAt DateTime @default(now())
