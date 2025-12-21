@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useSearchParams } from 'next/navigation';
 
 interface UserProfile {
     id: string;
@@ -31,9 +32,19 @@ interface Order {
     shippingAddress: any;
 }
 
+interface Notification {
+    id: string;
+    title: string;
+    body: string;
+    isRead: boolean;
+    createdAt: string;
+}
+
 export default function ProfilePage() {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState('dashboard');
+    const searchParams = useSearchParams();
+    const initialTab = searchParams.get('tab') === 'notifications' ? 'notifications' : 'dashboard';
+    const [activeTab, setActiveTab] = useState(initialTab);
     const [loading, setLoading] = useState(true);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [isUpdatingAddress, setIsUpdatingAddress] = useState(false);
@@ -51,6 +62,7 @@ export default function ProfilePage() {
     const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
     const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
     const totalPages = Math.ceil(orders.length / itemsPerPage);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -75,12 +87,24 @@ export default function ProfilePage() {
     const [pendingUpdate, setPendingUpdate] = useState<any>(null);
 
     useEffect(() => {
+        if (activeTab === 'notifications') {
+            const hasUnread = notifications.some(n => !n.isRead);
+            
+            if (hasUnread) {
+                axios.put('/api/v1/notifications/fetch').catch(console.error);
+                setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+            }
+        }
+    }, [activeTab, notifications]);
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const [profileRes, ordersRes] = await Promise.all([
+                const [profileRes, ordersRes, notifRes] = await Promise.all([
                     axios.get('/api/v1/profile'),
-                    axios.get('/api/v1/orders')
+                    axios.get('/api/v1/orders'),
+                    axios.get('/api/v1/notifications/fetch') 
                 ]);
 
                 if (profileRes.data.success) {
@@ -99,6 +123,10 @@ export default function ProfilePage() {
                         pincode: u.pincode || '',
                         country: u.country || ''
                     });
+                }
+
+                if (notifRes.data.success) {
+                    setNotifications(notifRes.data.notifications);
                 }
 
                 if (ordersRes.data.success) {
@@ -322,6 +350,10 @@ export default function ProfilePage() {
                                             <a href="" className={activeTab === 'orders' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('orders'); }}>
                                                 <i className="fa fa-cart-arrow-down"></i> Orders
                                             </a>
+                                            <a href="#notifications" className={activeTab === 'notifications' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('notifications'); }}>
+                                                <i className="fa fa-bell"></i> Notifications 
+                                                {notifications.some(n => !n.isRead) && <span className="badge badge-danger ml-2" style={{backgroundColor: 'red', color: 'white', padding: '2px 6px', borderRadius: '50%', fontSize: '10px'}}>!</span>}
+                                            </a>
                                             <a href="" className={activeTab === 'address' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('address'); }}>
                                                 <i className="fa fa-map-marker"></i> Address
                                             </a>
@@ -438,6 +470,29 @@ export default function ProfilePage() {
                                                             </button>
                                                         </div>
                                                     )}
+                                                </div>
+                                            </div>
+
+                                            <div className={`tab-pane fade ${activeTab === 'notifications' ? 'show active' : ''}`} id="notifications">
+                                                <div className="myaccount-content">
+                                                    <h3>Notifications</h3>
+                                                    <div className="myaccount-table table-responsive text-center">
+                                                        {notifications.length > 0 ? (
+                                                            <div className="text-left">
+                                                                {notifications.map((notif) => (
+                                                                    <div key={notif.id} className={`p-3 mb-3 rounded border ${notif.isRead ? 'bg-white' : 'bg-yellow-50 border-yellow-200'}`}>
+                                                                        <div className="d-flex justify-content-between align-items-start">
+                                                                            <h5 className="font-bold mb-1" style={{color: '#333'}}>{notif.title}</h5>
+                                                                            <small className="text-muted">{new Date(notif.createdAt).toLocaleDateString()}</small>
+                                                                        </div>
+                                                                        <p className="mb-0 text-sm text-gray-600">{notif.body}</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-center py-4">No notifications yet.</p>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
 

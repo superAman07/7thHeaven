@@ -244,6 +244,7 @@ export default function NavBar() {
                                             <ul className="ht-dropdown right">
                                                 <li><a href="/my-account">My Account</a></li>
                                                 <li><a href="/wishlist">My Wish List</a></li>
+                                                {user && <li><a href="/my-account?tab=notifications">Notifications</a></li>}
                                                 {user ? (
                                                     <li><a href="/" onClick={handleLogout}>Logout</a></li>
                                                 ) : ( 

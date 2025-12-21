@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Sitemap, X } from '../icons';
+import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Sitemap, X , Bell} from '../icons';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -12,6 +12,7 @@ const navItems = [
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
   { href: '/admin/customers', label: 'Customers', icon: Users },
   { href: '/admin/network', label: 'Network Settings', icon: Sitemap },
+  { href: '/admin/notifications', label: 'Notifications', icon: Bell },
 ];
 
 interface NavLinkProps {
