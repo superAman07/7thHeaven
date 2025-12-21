@@ -476,21 +476,43 @@ export default function ProfilePage() {
                                             <div className={`tab-pane fade ${activeTab === 'notifications' ? 'show active' : ''}`} id="notifications">
                                                 <div className="myaccount-content">
                                                     <h3>Notifications</h3>
-                                                    <div className="myaccount-table table-responsive text-center">
+                                                    <div className="myaccount-table table-responsive">
                                                         {notifications.length > 0 ? (
                                                             <div className="text-left">
                                                                 {notifications.map((notif) => (
-                                                                    <div key={notif.id} className={`p-3 mb-3 rounded border ${notif.isRead ? 'bg-white' : 'bg-yellow-50 border-yellow-200'}`}>
-                                                                        <div className="d-flex justify-content-between align-items-start">
-                                                                            <h5 className="font-bold mb-1" style={{color: '#333'}}>{notif.title}</h5>
-                                                                            <small className="text-muted">{new Date(notif.createdAt).toLocaleDateString()}</small>
+                                                                    <div 
+                                                                        key={notif.id} 
+                                                                        className={`p-4 mb-3 rounded-lg border transition-all duration-200 ${notif.isRead ? 'bg-white border-gray-100' : 'bg-[#fff9e6] border-[#D4AF37]/30'}`}
+                                                                        style={{ position: 'relative' }}
+                                                                    >
+                                                                        <div className="d-flex justify-content-between align-items-start mb-2">
+                                                                            <h5 className="font-bold m-0" style={{color: '#333', fontSize: '16px'}}>
+                                                                                {/* Add Icons based on context */}
+                                                                                {notif.title.includes('Order') ? '📦 ' : notif.title.includes('Welcome') ? '✨ ' : '🔔 '}
+                                                                                {notif.title}
+                                                                            </h5>
+                                                                            <small className="text-muted" style={{fontSize: '12px'}}>{new Date(notif.createdAt).toLocaleDateString()}</small>
                                                                         </div>
-                                                                        <p className="mb-0 text-sm text-gray-600">{notif.body}</p>
+                                                                        <p className="mb-0 text-sm text-gray-600" style={{ lineHeight: '1.5' }}>{notif.body}</p>
+                                                                        
+                                                                        {/* Optional: Add "View" button if it's an order */}
+                                                                        {notif.title.includes('Order') && (
+                                                                            <button 
+                                                                                className="btn btn-sm btn-link p-0 mt-2" 
+                                                                                style={{ color: '#D4AF37', textDecoration: 'none', fontSize: '13px', fontWeight: '600' }}
+                                                                                onClick={() => setActiveTab('orders')}
+                                                                            >
+                                                                                View Order Details →
+                                                                            </button>
+                                                                        )}
                                                                     </div>
                                                                 ))}
                                                             </div>
                                                         ) : (
-                                                            <p className="text-center py-4">No notifications yet.</p>
+                                                            <div className="text-center py-5">
+                                                                <i className="fa fa-bell-slash-o text-muted mb-3" style={{ fontSize: '40px', opacity: 0.3 }}></i>
+                                                                <p className="text-muted">No notifications yet.</p>
+                                                            </div>
                                                         )}
                                                     </div>
                                                 </div>
