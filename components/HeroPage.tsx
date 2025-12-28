@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 import AboutUsAreaSection from "./home/AboutUsArea";
-import BlogSectionArea from "./home/BlogSectionArea";
 import CategoryGender from "./home/CategoryGender";
 import FeatureSectionPage from "./home/FeatureSection";
 import FooterPage from "./home/Footer";
@@ -83,7 +82,6 @@ export default async function HeroPage() {
             </Suspense>
             <HowItWorksPage />
             <AboutUsAreaSection />
-            <BlogSectionArea />
             <FeatureSectionPage />
         </div>
     </>

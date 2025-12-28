@@ -29,6 +29,7 @@ interface NetworkData {
 export default function SeventhHeavenPage() {
     const [data, setData] = useState<NetworkData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isGuest, setIsGuest] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
     const router = useRouter();
 
@@ -40,8 +41,11 @@ export default function SeventhHeavenPage() {
                     setData(res.data.data);
                 }
             } catch (error) {
-                console.error("Failed to fetch network", error);
-                toast.error("Failed to load network data");
+                if (axios.isAxiosError(error) && error.response?.status === 401) {
+                    setIsGuest(true);
+                } else {
+                    console.error("Failed to fetch network", error);
+                }
             } finally {
                 setLoading(false);
             }
@@ -67,6 +71,10 @@ export default function SeventhHeavenPage() {
                 </div>
             </div>
         );
+    }
+
+    if (isGuest || (data && !data.isMember)) {
+        return <MarketingView />;
     }
 
     if (!data) return null;
@@ -240,6 +248,54 @@ export default function SeventhHeavenPage() {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function MarketingView() {
+    return (
+        <div className="bg-[#252525] min-h-screen text-white">
+            {/* Hero */}
+            <div className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+                <div className="absolute inset-0 bg-[url('/assets/images/hero/slider-1.jpg')] bg-cover bg-center opacity-40"></div>
+                <div className="relative z-10 text-center px-4">
+                    <h1 className="text-5xl md:text-7xl font-serif mb-6 text-[#D4AF37]! font-bold!" style={{ fontFamily: '"Cormorant Garamond", serif' }}>7th Heaven Club</h1>
+                    <p className="text-xl md:text-2xl text-[#D4AF37]! tracking-widest uppercase mb-8">The Path to Prestige</p>
+                    <p className="max-w-2xl mx-auto text-gray-300 mb-10 text-lg">
+                        Unlock exclusive luxury rewards, build your influence, and ascend through 7 levels of prestige. 
+                        Join the elite circle of fragrance connoisseurs.
+                    </p>
+                    <div className="flex gap-4 justify-center">
+                        <Link href="/login" className="px-8 py-4 bg-[#D4AF37] text-black font-bold uppercase tracking-wider hover:bg-white transition-colors">
+                            Join The Club
+                        </Link>
+                        <Link href="/collections/perfumes" className="px-8 py-4 border border-white text-white font-bold uppercase tracking-wider hover:bg-white hover:text-black! transition-colors">
+                            Shop Collection
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            {/* Features */}
+            <div className="py-20 container mx-auto px-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+                    <div className="p-8 border border-white/10 rounded-xl hover:border-[#D4AF37]/50 transition-colors">
+                        <div className="text-4xl mb-4">💎</div>
+                        <h3 className="text-xl font-bold mb-2 text-[#D4AF37]!">Exclusive Rewards</h3>
+                        <p className="text-gray-400">Access limited edition fragrances reserved only for club members.</p>
+                    </div>
+                    <div className="p-8 border border-white/10 rounded-xl hover:border-[#D4AF37]/50 transition-colors">
+                        <div className="text-4xl mb-4">🤝</div>
+                        <h3 className="text-xl font-bold mb-2 text-[#D4AF37]!">Build Your Network</h3>
+                        <p className="text-gray-400">Invite friends and grow your influence. Watch your empire expand in real-time.</p>
+                    </div>
+                    <div className="p-8 border border-white/10 rounded-xl hover:border-[#D4AF37]/50 transition-colors">
+                        <div className="text-4xl mb-4">🎁</div>
+                        <h3 className="text-xl font-bold mb-2 text-[#D4AF37]!">Luxury Gifts</h3>
+                        <p className="text-gray-400">Complete Level 7 to unlock a curated luxury gift package from our founders.</p>
                     </div>
                 </div>
             </div>

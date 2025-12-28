@@ -104,6 +104,7 @@ export default function NavBar() {
         { href: '/collections/perfumes?sort=newest', label: 'NEW ARRIVALS' },
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact Us' },
+        { href: '/7th-heaven', label: '7th Heaven Club' },
     ];
 
     return (
@@ -266,7 +267,14 @@ export default function NavBar() {
                                 <nav className="main-menu color-black">
                                     <ul>
                                         {links.map((l) => (
-                                            <li key={l.label}><Link href={l.href}>{l.label}</Link></li>
+                                            <li key={l.label}>
+                                                <Link 
+                                                    href={l.href}
+                                                    style={l.label === '7th Heaven Club' ? { color: '#D4AF37', fontWeight: 'bold' } : undefined}
+                                                >
+                                                    {l.label}
+                                                </Link>
+                                            </li>
                                         ))}
                                     </ul>
                                 </nav>
@@ -312,7 +320,11 @@ export default function NavBar() {
                                             <ul style={{ display: isMobileOpen ? 'block' : 'none' }}>
                                                 {links.map((l) => (
                                                     <li key={l.label}>
-                                                        <Link href={l.href} onClick={() => setIsMobileOpen(false)}>
+                                                        <Link 
+                                                            href={l.href} 
+                                                            onClick={() => setIsMobileOpen(false)}
+                                                            style={l.label === '7th Heaven Club' ? { color: '#D4AF37', fontWeight: 'bold' } : undefined}
+                                                        >
                                                             {l.label}
                                                         </Link>
                                                     </li>
