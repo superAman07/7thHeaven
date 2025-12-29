@@ -188,53 +188,90 @@ export default function NavBar() {
                                             <i className={`fa ${isSearchOpen ? 'fa-times' : 'fa-search'}`} />
                                         </button>
                                         
-                                        <div className={`absolute right-0 top-full mt-5 w-[300px] md:w-[400px] bg-white shadow-2xl rounded-xl p-4 z-50 border border-gray-100 transition-all duration-200 origin-top-right ${isSearchOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
-                                            <form onSubmit={handleSearch} className="relative">
-                                                <input 
-                                                    type="text" 
-                                                    placeholder="Search for perfumes..." 
-                                                    className="w-full pl-5 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:bg-white transition-all text-gray-800 placeholder-gray-400 font-medium"
-                                                    value={searchTerm}
-                                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                                    autoFocus={isSearchOpen}
-                                                />
-                                                <button 
-                                                    type="submit" 
-                                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-[#D4AF37] transition-colors"
-                                                >
-                                                    <i className="fa fa-arrow-right text-lg" />
-                                                </button>
-                                            </form>
+                                        {/* UPDATED DROPDOWN CONTAINER */}
+                                        <div className={`absolute right-0 top-full mt-5 w-[300px] md:w-[400px] bg-white shadow-2xl rounded-xl z-50 border border-gray-100 transition-all duration-200 origin-top-right overflow-hidden ${isSearchOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
+                                            
+                                            {/* Search Input Area */}
+                                            <div className="p-4 border-b border-gray-100">
+                                                <form onSubmit={handleSearch} className="relative">
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="Search for perfumes..." 
+                                                        className="w-full pl-5 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:bg-white transition-all text-gray-800 placeholder-gray-400 font-medium"
+                                                        value={searchTerm}
+                                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                                        autoFocus={isSearchOpen}
+                                                    />
+                                                    <button 
+                                                        type="submit" 
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-[#D4AF37] transition-colors"
+                                                    >
+                                                        <i className="fa fa-arrow-right text-lg" />
+                                                    </button>
+                                                </form>
+                                                
+                                                {!showSuggestions && searchTerm.length < 2 && (
+                                                    <div className="mt-2 text-xs text-gray-400 px-1">
+                                                        Press Enter to search
+                                                    </div>
+                                                )}
+                                            </div>
 
-                                            {/* LIVE SUGGESTIONS LIST */}
+                                            {/* LIVE SUGGESTIONS LIST - Forced List View */}
                                             {showSuggestions && suggestions.length > 0 && (
-                                                <div className="mt-3 border-t border-gray-100 pt-3 max-h-[300px] overflow-y-auto custom-scrollbar">
-                                                    <p className="text-xs text-gray-400 mb-2 uppercase font-bold tracking-wider">Top Results</p>
-                                                    {suggestions.map(product => (
-                                                        <Link 
-                                                            key={product.id} 
-                                                            href={`/products/${product.slug}`}
-                                                            onClick={() => setSearchOpen(false)}
-                                                            className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
-                                                        >
-                                                            <img 
-                                                                src={product.images[0] || '/assets/images/product/default.jpg'} 
-                                                                alt={product.name} 
-                                                                className="w-10 h-10 object-cover rounded-md border border-gray-100"
-                                                            />
-                                                            <div className="flex-1 min-w-0">
-                                                                <h4 className="text-sm font-medium text-gray-800 truncate group-hover:text-[#D4AF37] transition-colors">{product.name}</h4>
-                                                                <p className="text-xs text-gray-500 font-semibold">
-                                                                    {product.variants && product.variants.length > 0 
-                                                                        ? `Rs. ${product.variants[0].price}` 
-                                                                        : 'Out of Stock'}
-                                                                </p>
-                                                            </div>
-                                                        </Link>
-                                                    ))}
+                                                <div className="max-h-[350px] overflow-y-auto custom-scrollbar bg-white">
+                                                    <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
+                                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider m-0">
+                                                            Top Results
+                                                        </p>
+                                                    </div>
+                                                    
+                                                    <div className="flex flex-col">
+                                                        {suggestions.map(product => (
+                                                            <Link 
+                                                                key={product.id} 
+                                                                href={`/products/${product.slug}`}
+                                                                onClick={() => setSearchOpen(false)}
+                                                                className="group flex items-center gap-4 px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                                                                style={{ display: 'flex', width: '100%', textDecoration: 'none' }}
+                                                            >
+                                                                {/* Thumbnail */}
+                                                                <div 
+                                                                    className="shrink-0 bg-gray-100 rounded-md overflow-hidden border border-gray-200"
+                                                                    style={{ width: '48px', height: '48px' }}
+                                                                >
+                                                                    <img 
+                                                                        src={product.images[0] || '/assets/images/product/default.jpg'} 
+                                                                        alt={product.name} 
+                                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                                    />
+                                                                </div>
+                                                                
+                                                                {/* Details */}
+                                                                <div className="flex-1 min-w-0 text-left">
+                                                                    <h4 
+                                                                        className="text-sm font-medium text-gray-900 truncate group-hover:text-[#D4AF37] transition-colors mb-1"
+                                                                        style={{ margin: '0 0 4px 0', fontSize: '14px', lineHeight: '1.2' }}
+                                                                    >
+                                                                        {product.name}
+                                                                    </h4>
+                                                                    <p 
+                                                                        className="text-xs text-gray-500 font-medium m-0"
+                                                                        style={{ margin: 0, fontSize: '12px' }}
+                                                                    >
+                                                                        {product.variants && product.variants.length > 0 
+                                                                            ? `Rs. ${product.variants[0].price}` 
+                                                                            : 'Out of Stock'}
+                                                                    </p>
+                                                                </div>
+                                                            </Link>
+                                                        ))}
+                                                    </div>
+
                                                     <button 
                                                         onClick={handleSearch}
-                                                        className="w-full text-center text-xs text-[#D4AF37] font-bold mt-2 hover:underline uppercase tracking-wide"
+                                                        className="w-full text-center py-3 text-xs text-[#D4AF37] font-bold hover:bg-gray-50 transition-colors uppercase tracking-wide"
                                                     >
                                                         View all results
                                                     </button>
