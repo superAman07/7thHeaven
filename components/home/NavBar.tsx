@@ -189,7 +189,7 @@ export default function NavBar() {
                                         </button>
                                         
                                         {/* UPDATED DROPDOWN CONTAINER */}
-                                        <div className={`absolute right-0 top-full mt-5 w-[300px] md:w-[400px] bg-white shadow-2xl rounded-xl z-50 border border-gray-100 transition-all duration-200 origin-top-right overflow-hidden ${isSearchOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
+                                        <div className={`absolute right-0 top-full mt-5 w-[300px] md:w-[400px] bg-white shadow-2xl rounded z-50 border border-gray-100 transition-all duration-200 origin-top-right overflow-hidden ${isSearchOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
                                             
                                             {/* Search Input Area */}
                                             <div className="p-4 border-b border-gray-100">
