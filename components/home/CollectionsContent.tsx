@@ -92,6 +92,10 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
     setLoading(true);
     try {
       const params = new URLSearchParams();
+      const searchQuery = searchParams.get('search');
+      if (searchQuery) {
+          params.append('search', searchQuery);
+      }
       params.append('minPrice', debouncedPriceRange[0].toString());
       params.append('maxPrice', debouncedPriceRange[1].toString());
       

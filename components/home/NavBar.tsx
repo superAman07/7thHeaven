@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useCart } from '../CartContext';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { PublicProduct } from '../HeroPage';
 
 const MOBILE_BREAKPOINT = 991;
 
@@ -18,6 +20,61 @@ export default function NavBar() {
     const router = useRouter();
 
     const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+    const searchRef = useRef<HTMLDivElement>(null);
+
+    const searchParams = useSearchParams();
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [suggestions, setSuggestions] = useState<PublicProduct[]>([]); 
+    const [showSuggestions, setShowSuggestions] = useState(false); 
+
+    useEffect(() => {
+        const query = searchParams.get('search');
+        if (query) setSearchTerm(query);
+    }, [searchParams]);
+
+    // 1. Click Outside Logic
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setSearchOpen(false);
+                setShowSuggestions(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // 2. Live Search / Autocomplete Logic
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(async () => {
+            if (searchTerm.length >= 2) {
+                try {
+                    const res = await axios.get(`/api/v1/products?search=${encodeURIComponent(searchTerm)}&limit=5`);
+                    if (res.data.success) {
+                        setSuggestions(res.data.data);
+                        setShowSuggestions(true);
+                    }
+                } catch (error) {
+                    console.error("Search error", error);
+                }
+            } else {
+                setSuggestions([]);
+                setShowSuggestions(false);
+            }
+        }, 300); // Wait 300ms after typing stops
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchTerm]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!searchTerm.trim()) return;
+        
+        setSearchOpen(false);
+        setShowSuggestions(false);
+        router.push(`/collections/perfumes?search=${encodeURIComponent(searchTerm)}`);
+    };
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -123,17 +180,72 @@ export default function NavBar() {
 
                             <div className="col-xl-6 col-lg-8">
                                 <div className="ht-right d-flex justify-content-lg-end justify-content-center align-items-center">
-
-
-                                    <div className="header-search">
-                                        <button onClick={toggleSearch} className={`header-search-toggle color-white ${isSearchOpen ? 'open' : ''}`}>
+                                    <div className="header-search relative" ref={searchRef}>
+                                        <button 
+                                            onClick={toggleSearch} 
+                                            className={`header-search-toggle color-white ${isSearchOpen ? 'open' : ''} flex items-center justify-center`}
+                                        >
                                             <i className={`fa ${isSearchOpen ? 'fa-times' : 'fa-search'}`} />
                                         </button>
-                                        <div className="header-search-form" style={{ display: isSearchOpen ? 'block' : 'none' }}>
-                                            <form action="#">
-                                                <input type="text" placeholder="Type and hit enter" />
-                                                <button><i className="fa fa-search" /></button>
+                                        
+                                        <div className={`absolute right-0 top-full mt-5 w-[300px] md:w-[400px] bg-white shadow-2xl rounded-xl p-4 z-50 border border-gray-100 transition-all duration-200 origin-top-right ${isSearchOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
+                                            <form onSubmit={handleSearch} className="relative">
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Search for perfumes..." 
+                                                    className="w-full pl-5 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:bg-white transition-all text-gray-800 placeholder-gray-400 font-medium"
+                                                    value={searchTerm}
+                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                    autoFocus={isSearchOpen}
+                                                />
+                                                <button 
+                                                    type="submit" 
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-[#D4AF37] transition-colors"
+                                                >
+                                                    <i className="fa fa-arrow-right text-lg" />
+                                                </button>
                                             </form>
+
+                                            {/* LIVE SUGGESTIONS LIST */}
+                                            {showSuggestions && suggestions.length > 0 && (
+                                                <div className="mt-3 border-t border-gray-100 pt-3 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                                    <p className="text-xs text-gray-400 mb-2 uppercase font-bold tracking-wider">Top Results</p>
+                                                    {suggestions.map(product => (
+                                                        <Link 
+                                                            key={product.id} 
+                                                            href={`/products/${product.slug}`}
+                                                            onClick={() => setSearchOpen(false)}
+                                                            className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
+                                                        >
+                                                            <img 
+                                                                src={product.images[0] || '/assets/images/product/default.jpg'} 
+                                                                alt={product.name} 
+                                                                className="w-10 h-10 object-cover rounded-md border border-gray-100"
+                                                            />
+                                                            <div className="flex-1 min-w-0">
+                                                                <h4 className="text-sm font-medium text-gray-800 truncate group-hover:text-[#D4AF37] transition-colors">{product.name}</h4>
+                                                                <p className="text-xs text-gray-500 font-semibold">
+                                                                    {product.variants && product.variants.length > 0 
+                                                                        ? `Rs. ${product.variants[0].price}` 
+                                                                        : 'Out of Stock'}
+                                                                </p>
+                                                            </div>
+                                                        </Link>
+                                                    ))}
+                                                    <button 
+                                                        onClick={handleSearch}
+                                                        className="w-full text-center text-xs text-[#D4AF37] font-bold mt-2 hover:underline uppercase tracking-wide"
+                                                    >
+                                                        View all results
+                                                    </button>
+                                                </div>
+                                            )}
+                                            
+                                            {!showSuggestions && searchTerm.length < 2 && (
+                                                <div className="mt-2 text-xs text-gray-400 px-1">
+                                                    Press Enter to search
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
