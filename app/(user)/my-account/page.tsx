@@ -316,6 +316,54 @@ export default function ProfilePage() {
         )
     }
 
+    if (!user) {
+        return (
+            <div id="main-wrapper">
+                <div className="page-banner-section section" style={{ backgroundColor: '#ddb040' }}>
+                    <div className="container">
+                        <div className="row">
+                            <div className="col">
+                                <div className="page-banner text-center">
+                                    <h1>My Account</h1>
+                                    <ul className="page-breadcrumb">
+                                        <li><Link href="/">Home</Link></li>
+                                        <li>Login</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="section pt-20 pb-20 bg-gray-50">
+                    <div className="container">
+                        <div className="max-w-lg mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                            <div className="p-8 text-center">
+                                <div className="w-20 h-20 bg-[#D4AF37]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <i className="fa fa-lock text-3xl text-[#D4AF37]"></i>
+                                </div>
+                                <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Access</h2>
+                                <p className="text-gray-500 mb-8">
+                                    Please sign in to manage your orders, view your 7th Heaven network, and update your profile.
+                                </p>
+                                <div className="space-y-4">
+                                    <Link 
+                                        href="/login" 
+                                        className="block w-full py-3 px-4 bg-[#D4AF37] text-white font-bold rounded-lg hover:bg-[#b8952b] transition-colors shadow-md shadow-[#D4AF37]/20"
+                                    >
+                                        Sign In Now
+                                    </Link>
+                                    <p className="text-sm text-gray-400 mt-4">
+                                        Don't have an account? <Link href="/login" className="text-[#D4AF37] font-semibold hover:underline">Register here</Link>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div id="main-wrapper">
             {/* Page Banner */}
@@ -360,9 +408,27 @@ export default function ProfilePage() {
                                             <a href="" className={activeTab === 'account-info' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('account-info'); }}>
                                                 <i className="fa fa-user"></i> Account Details
                                             </a>
-                                            <a href="" onClick={handleLogout} style={{ pointerEvents: isLoggingOut ? 'none' : 'auto', opacity: isLoggingOut ? 0.6 : 1 }}>
+                                            <button 
+                                                onClick={handleLogout} 
+                                                className="text-left w-full"
+                                                style={{ 
+                                                    border: '1px solid #eeeeee',
+                                                    borderBottom: '1px solid #eeeeee',
+                                                    color: '#333333',
+                                                    fontWeight: 500,
+                                                    fontSize: '18px',
+                                                    display: 'block',
+                                                    padding: '15px 15px 13px',
+                                                    textTransform: 'uppercase',
+                                                    background: 'white',
+                                                    cursor: 'pointer',
+                                                    textAlign: 'left',
+                                                    opacity: isLoggingOut ? 0.6 : 1
+                                                }}
+                                                disabled={isLoggingOut}
+                                            >
                                                 <i className="fa fa-sign-out"></i> {isLoggingOut ? 'Logging out...' : 'Logout'}
-                                            </a>
+                                            </button>
                                         </div>
                                     </div>
 
