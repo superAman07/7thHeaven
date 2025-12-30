@@ -3,10 +3,8 @@ import * as admin from 'firebase-admin';
 import path from 'path';
 import fs from 'fs';
 
-// Initialize Firebase Admin SDK
 if (!admin.apps.length) {
   try {
-    // FIX: Use path.join and fs.readFileSync to avoid Webpack bundling errors
     const filePath = path.join(process.cwd(), 'firebase-admin.json');
     
     if (fs.existsSync(filePath)) {
@@ -19,7 +17,6 @@ if (!admin.apps.length) {
         console.log("🔥 Firebase Admin Initialized Successfully");
     } else {
         console.warn("⚠️ firebase-admin.json not found at:", filePath);
-        // This is expected in production if you haven't set up ENV vars yet
     }
   } catch (error) {
     console.error("⚠️ Firebase Init Failed:", error);
@@ -28,12 +25,10 @@ if (!admin.apps.length) {
 
 export async function sendNotification(userId: string, title: string, body: string, type: string = 'GENERAL') {
   try {
-    // 1. Save to Database (Persistent History)
     await prisma.notification.create({
         data: { userId, title, body, type }
     });
 
-    // 2. Get User's Device Tokens
     const devices = await prisma.deviceToken.findMany({
       where: { userId },
       select: { token: true }
@@ -43,7 +38,6 @@ export async function sendNotification(userId: string, title: string, body: stri
 
     const tokens = devices.map(d => d.token);
 
-    // 3. Send to Firebase (Only if initialized)
     if (admin.apps.length) {
         const message = {
             notification: { title, body },
@@ -51,10 +45,9 @@ export async function sendNotification(userId: string, title: string, body: stri
             tokens: tokens,
         };
 
-        const response = await admin.messaging().sendMulticast(message);
+        const response = await admin.messaging().sendEachForMulticast(message);
         console.log(`[FCM] Sent to ${userId}: Success ${response.successCount}, Failed ${response.failureCount}`);
         
-        // Cleanup invalid tokens
         if (response.failureCount > 0) {
             const failedTokens: string[] = [];
             response.responses.forEach((resp, idx) => {
