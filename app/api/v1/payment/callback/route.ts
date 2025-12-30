@@ -98,7 +98,6 @@ export async function POST(req: NextRequest) {
             where: { gatewayOrderId: merchantTransactionId },
             include: { 
                 user: true,
-                items: true
             }
         });
 
