@@ -86,8 +86,7 @@ export async function POST(req: NextRequest) {
             console.error("Webhook checksum mismatch!");
             return NextResponse.json({ error: 'Checksum mismatch' }, { status: 400 });
         }
-
-        // 4. Decode and Process
+ 
         const decodedResponse = JSON.parse(Buffer.from(base64Response, 'base64').toString('utf-8'));
         const { code: paymentStatus } = decodedResponse;
         const { merchantTransactionId, amount } = decodedResponse.data;
@@ -117,7 +116,7 @@ export async function POST(req: NextRequest) {
                     paymentStatus: 'PAID',
                     status: 'PROCESSING',
                     netAmountPaid: amountPaid,
-                    rawPayload: decodedResponse
+                    // rawPayload: decodedResponse
                 }
             });
 
