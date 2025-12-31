@@ -2,6 +2,7 @@ import FooterPage from "@/components/home/Footer";
 import NavBar from "@/components/home/NavBar";
 import { WishlistProvider } from "@/components/WishlistContext";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "7th Heaven - Perfumes & Fragrances",
@@ -15,7 +16,9 @@ export default function UserPagesLayout({
 }>) {
   return (
     <div id="main-wrapper">
-      <NavBar />
+      <Suspense fallback={<div style={{ height: '90px', backgroundColor: '#000' }}></div>}>
+        <NavBar />
+      </Suspense>
       <main>
         <WishlistProvider>
           {children}
