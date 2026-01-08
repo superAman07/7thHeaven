@@ -30,13 +30,13 @@ const NavLink: React.FC<NavLinkProps> = ({ href, label, icon: Icon }) => {
       href={href}
       className={`relative flex items-center px-4 py-3.5 text-sm font-bold rounded-xl transition-all duration-300 group overflow-hidden mb-1 ${
         isActive
-          ? 'bg-linear-to-r from-[#D4AF37] to-[#F4D03F] text-white shadow-lg shadow-[#D4AF37]/30'
+          ? 'bg-linear-to-r from-[#D4AF37] to-[#F4D03F] text-white'
           : 'text-gray-500 hover:text-[#D4AF37] hover:bg-[#D4AF37]/5'
       }`}
     >
       {/* Active Indicator */}
       {isActive && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 h-full w-1 bg-white/20 rounded-r-lg"></div>
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 h-full w-1 rounded-r-lg"></div>
       )}
       
       <Icon className={`w-5 h-5 mr-3 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
