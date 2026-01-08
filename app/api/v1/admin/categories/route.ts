@@ -6,6 +6,7 @@ import { z } from "zod";
 const createCategorySchema = z.object({
   name: z.string().min(1, "Name is required"),
   slug: z.string().min(1, "Slug is required").regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be a valid URL slug (e.g., 'perfume-for-men')"),
+  image: z.string().optional(),
 });
 
 /**
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    const { name, slug } = validation.data;
+    const { name, slug, image } = validation.data;
 
     // Check if category with the same name or slug already exists
     const existingCategory = await prisma.category.findFirst({
@@ -61,6 +62,7 @@ export async function POST(request: Request) {
       data: {
         name,
         slug,
+        image,
       },
     });
 

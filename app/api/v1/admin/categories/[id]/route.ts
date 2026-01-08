@@ -5,6 +5,7 @@ import { z } from "zod";
 const updateCategorySchema = z.object({
     name: z.string().min(1, "Name is required").optional(),
     slug: z.string().min(1, "Slug is required").regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).optional(),
+    image: z.string().optional(),
 });
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
