@@ -70,12 +70,11 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-8 relative overflow-hidden" style={{ fontFamily: 'Inter, system-ui, sans-serif', background: 'linear-gradient(135deg, #FAFAF8 0%, #F5F3EF 100%)' }}>
-      
+    <div className="min-h-screen p-4 md:p-8 relative overflow-hidden" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Floating Background Decorations */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-5">
-        <div className="absolute top-20 right-20 w-64 h-64 bg-[#D4AF37] rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
-        <div className="absolute bottom-20 left-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
+        <div className="absolute top-20 right-20 w-64 h-64 bg-[#D4AF37] rounded-full blur-3xl " style={{ animationDuration: '4s' }}></div>
+        <div className="absolute bottom-20 left-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl " style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-400 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s', animationDelay: '2s' }}></div>
       </div>
 
@@ -83,7 +82,7 @@ export default function DashboardPage() {
       <div className="relative mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-8" style={{ borderBottom: '2px solid rgba(212, 175, 55, 0.2)' }}>
         <div className="animate-fade-in">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 rounded-xl bg-linear-to-br from-[#D4AF37] to-[#F4D03F] shadow-lg shadow-[#D4AF37]/20 animate-bounce" style={{ animationDuration: '2s' }}>
+            <div className="p-2 rounded-xl bg-linear-to-br from-[#D4AF37] to-[#F4D03F] shadow-lg shadow-[#D4AF37]/20">
               <Crown className="w-6 h-6 text-white" />
             </div>
             <span className="text-xs font-black uppercase tracking-[0.3em] bg-linear-to-r from-[#D4AF37] to-[#F4D03F] bg-clip-text text-transparent">Premium Admin Panel</span>
@@ -139,7 +138,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Transactions Table */}
-        <div className="lg:col-span-2 bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden animate-fade-in" style={{ animationDelay: '0.4s' }}>
+        <div className="lg:col-span-2 bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <div className="p-6 border-b border-gray-100/50 flex justify-between items-center bg-linear-to-r from-gray-50/50 to-white/30">
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-8 bg-linear-to-b from-[#D4AF37] to-[#F4D03F] rounded-full shadow-lg shadow-[#D4AF37]/30"></div>
