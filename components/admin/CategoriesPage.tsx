@@ -1,6 +1,6 @@
 'use client';
 
-import { Pencil, Plus, Trash2, X } from 'lucide-react';
+import { Pencil, Plus, Trash2, X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import React, { useState, useEffect, FormEvent } from 'react';
 
 // Define the type for a category
@@ -8,6 +8,7 @@ interface Category {
   id: string;
   name: string;
   slug: string;
+  image?: string;
   createdAt: string;
 }
 
@@ -21,6 +22,8 @@ const CategoriesPage: React.FC = () => {
   const [currentCategory, setCurrentCategory] = useState<Partial<Category> | null>(null);
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
+  const [image, setImage] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   // Fetch categories from the API
   const fetchCategories = async () => {
@@ -64,6 +67,7 @@ const CategoriesPage: React.FC = () => {
     setCurrentCategory(null);
     setName('');
     setSlug('');
+    setImage('');
     setIsPanelOpen(true);
   };
 
@@ -71,12 +75,39 @@ const CategoriesPage: React.FC = () => {
     setCurrentCategory(category);
     setName(category.name);
     setSlug(category.slug);
+    setImage(category.image || '');
     setIsPanelOpen(true);
   };
 
   const closePanel = () => {
     setIsPanelOpen(false);
     setCurrentCategory(null);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/v1/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setImage(data.data.url);
+      } else {
+        alert('Upload failed');
+      }
+    } catch (err) {
+      alert('Error uploading image');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleFormSubmit = async (e: FormEvent) => {
@@ -89,7 +120,7 @@ const CategoriesPage: React.FC = () => {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, slug }),
+        body: JSON.stringify({ name, slug, image }),
       });
 
       const data = await response.json();
@@ -142,6 +173,7 @@ const CategoriesPage: React.FC = () => {
           <table className="w-full text-sm text-left text-gray-500">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
               <tr>
+                <th scope="col" className="px-6 py-3">Image</th>
                 <th scope="col" className="px-6 py-3">Name</th>
                 <th scope="col" className="px-6 py-3">Slug</th>
                 <th scope="col" className="px-6 py-3">Date Created</th>
@@ -158,6 +190,15 @@ const CategoriesPage: React.FC = () => {
               ) : (
                 categories.map((category) => (
                   <tr key={category.id} className="bg-white border-b hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      {category.image ? (
+                          <img src={category.image} alt={category.name} className="w-10 h-10 object-cover rounded-md" />
+                      ) : (
+                          <div className="w-10 h-10 bg-gray-100 rounded-md flex items-center justify-center text-gray-400">
+                              <ImageIcon className="w-5 h-5" />
+                          </div>
+                      )}
+                    </td>
                     <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{category.name}</td>
                     <td className="px-6 py-4">{category.slug}</td>
                     <td className="px-6 py-4">{new Date(category.createdAt).toLocaleDateString()}</td>
@@ -209,6 +250,29 @@ const CategoriesPage: React.FC = () => {
           <form className="flex-1 overflow-y-auto" onSubmit={handleFormSubmit}>
             <div className="p-6 space-y-4">
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Category Image</label>
+                <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden relative bg-gray-50">
+                        {isUploading ? (
+                            <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                        ) : image ? (
+                            <img src={image} alt="Preview" className="w-full h-full object-cover" />
+                        ) : (
+                            <ImageIcon className="w-6 h-6 text-gray-300" />
+                        )}
+                    </div>
+                    <div className="flex-1">
+                        <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={handleImageUpload}
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-800 file:text-white hover:file:bg-gray-700 cursor-pointer"
+                        />
+                        <p className="mt-1 text-xs text-gray-500">Optional. Recommended size: 500x500px.</p>
+                    </div>
+                </div>
+              </div>
+              <div>
                 <label htmlFor="category-name" className="block text-sm font-medium text-gray-700 mb-1">
                   Category Name
                 </label>
@@ -247,9 +311,10 @@ const CategoriesPage: React.FC = () => {
               </button>
               <button 
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-gray-800 border border-transparent rounded-lg shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 cursor-pointer"
+                disabled={isUploading}
+                className="px-4 py-2 text-sm font-medium text-white bg-gray-800 border border-transparent rounded-lg shadow-sm hover:bg-gray-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Save Category
+                {isUploading ? 'Uploading...' : 'Save Category'}
               </button>
             </div>
           </form>
