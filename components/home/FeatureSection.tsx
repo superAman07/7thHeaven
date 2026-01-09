@@ -6,33 +6,32 @@ type Feature = {
   id: string;
   title: string;
   subtitle?: string;
-  iconClass?: string; // e.g. "fa-truck fa" or "fa fa-undo"
-  extraClass?: string; // for cases like "br-0"
+  iconClass?: string;
+  extraClass?: string;
 };
 
 type Props = {
   features?: Feature[];
 };
 
-// FIX: Updated features according to client requirements (Removed Returns, Added Luxury & Quality)
 const defaultFeatures: Feature[] = [
   {
     id: "f1",
     title: "Long Lasting & Effective",
     subtitle: "Premium fragrance longevity",
-    iconClass: "fa fa-clock-o", // Represents time/duration
+    iconClass: "fa fa-clock-o",
   },
   {
     id: "f2",
     title: "Luxury at Exclusive Price",
     subtitle: "Direct-to-consumer value",
-    iconClass: "fa fa-diamond", // Represents luxury
+    iconClass: "fa fa-diamond",
   },
   {
     id: "f3",
     title: "Best Fragrance Oils",
     subtitle: "Made in Bharat excellence",
-    iconClass: "fa fa-flask", // Represents oils/ingredients
+    iconClass: "fa fa-flask",
     extraClass: "br-0",
   },
 ];
@@ -44,7 +43,6 @@ export default function FeatureSectionPage({ features = defaultFeatures }: Props
         <div className="row">
           {features.map((feat) => (
             <div key={feat.id} className="col-lg-4 col-md-6 col-sm-6">
-              {/* Single Feature Start */}
               <div className={`single-feature feature-style-2 mb-30 ${feat.extraClass ?? ""}`}>
                 <div className="icon">
                   <i className={feat.iconClass ?? ""} />
@@ -54,7 +52,6 @@ export default function FeatureSectionPage({ features = defaultFeatures }: Props
                   {feat.subtitle && <p>{feat.subtitle}</p>}
                 </div>
               </div>
-              {/* Single Feature End */}
             </div>
           ))}
         </div>
