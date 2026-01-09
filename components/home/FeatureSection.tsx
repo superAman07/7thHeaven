@@ -14,24 +14,25 @@ type Props = {
   features?: Feature[];
 };
 
+// FIX: Updated features according to client requirements (Removed Returns, Added Luxury & Quality)
 const defaultFeatures: Feature[] = [
   {
     id: "f1",
-    title: "Free shipping worldwide",
-    subtitle: "On order over $200",
-    iconClass: "fa-truck fa",
+    title: "Long Lasting & Effective",
+    subtitle: "Premium fragrance longevity",
+    iconClass: "fa fa-clock-o", // Represents time/duration
   },
   {
     id: "f2",
-    title: "30 days free return",
-    subtitle: "Money back guarantee",
-    iconClass: "fa fa-undo",
+    title: "Luxury at Exclusive Price",
+    subtitle: "Direct-to-consumer value",
+    iconClass: "fa fa-diamond", // Represents luxury
   },
   {
     id: "f3",
-    title: "Member safe shopping",
-    subtitle: "Safe shopping guarantee",
-    iconClass: "fa fa-thumbs-o-up",
+    title: "Best Fragrance Oils",
+    subtitle: "Made in Bharat excellence",
+    iconClass: "fa fa-flask", // Represents oils/ingredients
     extraClass: "br-0",
   },
 ];

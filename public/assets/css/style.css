@@ -3369,7 +3369,6 @@ ul.cart-items li {
   display: block;
   font-size: 14px;
   font-weight: 400;
-  text-transform: lowercase;
   color: #333333;
 }
 @media only screen and (max-width: 767px) {
