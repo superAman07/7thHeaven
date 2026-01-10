@@ -10,9 +10,9 @@ type Props = {
 };
 
 const defaultParagraphs = [
-  `Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?`,
-  `Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo volup.`,
-  `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eu nisi ac mi malesuada vestibulum. Phasellus tempor nunc eleifend cursus molestie. Mauris lectus arcu, pellentesque at sodales sit amet, condimentum id nunc. Donec ornare mattis suscipit. Praesent fermentum accumsan vulputate.`,
+  `Celsius is not just a perfume; it’s a statement of Indian luxury. Proudly crafted under the "Make in Bharat" initiative, we challenge the global narrative by proving that world-class luxury doesn't have to come from abroad.`,
+  `Our perfumers source the finest essential oils from across the globe—the same oils used by expensive designer labels—but we blend and bottle them right here. The result? A fragrance that contains 2-3x more perfume oil than standard brands, ensuring a scent that lasts through your longest days.`,
+  `Why pay for a celebrity endorsement or a fancy Italian bottle when you can pay for the product itself? With Celsius by 7th Heaven, you are buying direct luxury. Earn rewards, build your collection, and experience the scent of success.`,
 ];
 
 export default function AboutUsAreaSection({
