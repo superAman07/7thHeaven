@@ -17,9 +17,9 @@ const defaultParagraphs = [
 
 export default function AboutUsAreaSection({
   image = "/assets/images/product/bwebp.webp",
-  imageAlt = "",
+  imageAlt = "Celsius Luxury Perfume",
   paragraphs = defaultParagraphs,
-  imageLink = "#",
+  imageLink = "/",
 }: Props) {
   return (
     <>
