@@ -197,14 +197,14 @@ export default function NavBar() {
                                                     <input 
                                                         type="text" 
                                                         placeholder="Search for perfumes..." 
-                                                        className="w-full pl-5 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:bg-white transition-all text-gray-800 placeholder-gray-400 font-medium"
+                                                        className="w-full pl-5 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E6B422] focus:bg-white transition-all text-gray-800 placeholder-gray-400 font-medium"
                                                         value={searchTerm}
                                                         onChange={(e) => setSearchTerm(e.target.value)}
                                                         autoFocus={isSearchOpen}
                                                     />
                                                     <button 
                                                         type="submit" 
-                                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-[#D4AF37] transition-colors"
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-[#E6B422] transition-colors"
                                                     >
                                                         <i className="fa fa-arrow-right text-lg" />
                                                     </button>
@@ -251,7 +251,7 @@ export default function NavBar() {
                                                                 {/* Details */}
                                                                 <div className="flex-1 min-w-0 text-left">
                                                                     <h4 
-                                                                        className="text-sm font-medium text-gray-900 truncate group-hover:text-[#D4AF37] transition-colors mb-1"
+                                                                        className="text-sm font-medium text-gray-900 truncate group-hover:text-[#E6B422] transition-colors mb-1"
                                                                         style={{ margin: '0 0 4px 0', fontSize: '14px', lineHeight: '1.2' }}
                                                                     >
                                                                         {product.name}
@@ -271,7 +271,7 @@ export default function NavBar() {
 
                                                     <button 
                                                         onClick={handleSearch}
-                                                        className="w-full text-center py-3 text-xs text-[#D4AF37] font-bold hover:bg-gray-50 transition-colors uppercase tracking-wide"
+                                                        className="w-full text-center py-3 text-xs text-[#E6B422] font-bold hover:bg-gray-50 transition-colors uppercase tracking-wide"
                                                     >
                                                         View all results
                                                     </button>
@@ -419,7 +419,7 @@ export default function NavBar() {
                                             <li key={l.label}>
                                                 <Link 
                                                     href={l.href}
-                                                    style={l.label === '7th Heaven Club' ? { color: '#D4AF37', fontWeight: 'bold' } : undefined}
+                                                    style={l.label === '7th Heaven Club' ? { color: '#E6B422', fontWeight: 'bold' } : undefined}
                                                 >
                                                     {l.label}
                                                 </Link>
@@ -472,7 +472,7 @@ export default function NavBar() {
                                                         <Link 
                                                             href={l.href} 
                                                             onClick={() => setIsMobileOpen(false)}
-                                                            style={l.label === '7th Heaven Club' ? { color: '#D4AF37', fontWeight: 'bold' } : undefined}
+                                                            style={l.label === '7th Heaven Club' ? { color: '#E6B422', fontWeight: 'bold' } : undefined}
                                                         >
                                                             {l.label}
                                                         </Link>

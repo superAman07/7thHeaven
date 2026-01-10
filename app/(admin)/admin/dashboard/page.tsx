@@ -73,7 +73,7 @@ export default function DashboardPage() {
     <div className="min-h-screen p-4 md:p-8 relative overflow-hidden" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Floating Background Decorations */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-5">
-        <div className="absolute top-20 right-20 w-64 h-64 bg-[#D4AF37] rounded-full blur-3xl " style={{ animationDuration: '4s' }}></div>
+        <div className="absolute top-20 right-20 w-64 h-64 bg-[#E6B422] rounded-full blur-3xl " style={{ animationDuration: '4s' }}></div>
         <div className="absolute bottom-20 left-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl " style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-400 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s', animationDelay: '2s' }}></div>
       </div>
@@ -82,14 +82,14 @@ export default function DashboardPage() {
       <div className="relative mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-8" style={{ borderBottom: '2px solid rgba(212, 175, 55, 0.2)' }}>
         <div className="animate-fade-in">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 rounded-xl bg-linear-to-br from-[#D4AF37] to-[#F4D03F] shadow-lg shadow-[#D4AF37]/20">
+            <div className="p-2 rounded-xl bg-linear-to-br from-[#E6B422] to-[#F4D03F] shadow-lg shadow-[#E6B422]/20">
               <Crown className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xs font-black uppercase tracking-[0.3em] bg-linear-to-r from-[#D4AF37] to-[#F4D03F] bg-clip-text text-transparent">Premium Admin Panel</span>
+            <span className="text-xs font-black uppercase tracking-[0.3em] bg-linear-to-r from-[#E6B422] to-[#F4D03F] bg-clip-text text-transparent">Premium Admin Panel</span>
           </div>
           <h1 className="text-5xl font-black text-gray-900 tracking-tight mb-2" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>Dashboard</h1>
           <p className="text-gray-500 font-medium flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+            <Sparkles className="w-4 h-4 text-[#E6B422]" />
             Strategic overview of your luxury marketplace
           </p>
         </div>
@@ -97,7 +97,7 @@ export default function DashboardPage() {
           <div className="relative px-5 py-3 rounded-xl overflow-hidden group cursor-pointer">
             <div className="absolute inset-0 bg-linear-to-r from-black via-gray-800 to-black group-hover:scale-105 transition-transform duration-500"></div>
             <div className="relative flex items-center gap-3 text-white">
-              <div className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse shadow-lg shadow-[#D4AF37]/50"></div>
+              <div className="w-2 h-2 rounded-full bg-[#E6B422] animate-pulse shadow-lg shadow-[#E6B422]/50"></div>
               <span className="text-xs font-black uppercase tracking-[0.2em]">System Live</span>
             </div>
           </div>
@@ -110,7 +110,7 @@ export default function DashboardPage() {
           label="Total Orders" 
           value={stats.totalOrders} 
           icon={<ShoppingBag className="w-7 h-7" />}
-          gradient="from-[#D4AF37] to-[#F4D03F]"
+          gradient="from-[#E6B422] to-[#F4D03F]"
           delay="0s"
         />
         <StatCard 
@@ -141,10 +141,10 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <div className="p-6 border-b border-gray-100/50 flex justify-between items-center bg-linear-to-r from-gray-50/50 to-white/30">
                 <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-8 bg-linear-to-b from-[#D4AF37] to-[#F4D03F] rounded-full shadow-lg shadow-[#D4AF37]/30"></div>
+                  <div className="w-1.5 h-8 bg-linear-to-b from-[#E6B422] to-[#F4D03F] rounded-full shadow-lg shadow-[#E6B422]/30"></div>
                   <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Recent Transactions</h2>
                 </div>
-                <Link href="/admin/orders" className="text-xs font-black text-[#D4AF37] hover:text-purple-600 transition-colors flex items-center gap-2 uppercase tracking-widest group px-4 py-2 rounded-lg hover:bg-[#D4AF37]/10">
+                <Link href="/admin/orders" className="text-xs font-black text-[#E6B422] hover:text-purple-600 transition-colors flex items-center gap-2 uppercase tracking-widest group px-4 py-2 rounded-lg hover:bg-[#E6B422]/10">
                     View All <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
             </div>
@@ -160,9 +160,9 @@ export default function DashboardPage() {
                     </thead>
                     <tbody className="divide-y divide-gray-100/50">
                         {recentOrders.length > 0 ? recentOrders.map((order, idx) => (
-                            <tr key={order.id} className="hover:bg-linear-to-r hover:from-[#D4AF37]/5 hover:to-transparent transition-all group animate-fade-in" style={{ animationDelay: `${0.5 + idx * 0.05}s` }}>
+                            <tr key={order.id} className="hover:bg-linear-to-r hover:from-[#E6B422]/5 hover:to-transparent transition-all group animate-fade-in" style={{ animationDelay: `${0.5 + idx * 0.05}s` }}>
                                 <td className="px-6 py-5 font-black text-gray-900 text-sm">
-                                  <span className="px-3 py-1 bg-gray-100 rounded-lg group-hover:bg-[#D4AF37]/10 transition-colors">
+                                  <span className="px-3 py-1 bg-gray-100 rounded-lg group-hover:bg-[#E6B422]/10 transition-colors">
                                     #{order.id.slice(-6).toUpperCase()}
                                   </span>
                                 </td>
@@ -197,13 +197,13 @@ export default function DashboardPage() {
           <div className="relative bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/20 overflow-hidden group">
             {/* Animated Background Pattern */}
             <div className="absolute inset-0 opacity-5 pointer-events-none">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37] rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#E6B422] rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
               <Settings2 className="absolute bottom-4 left-4 w-32 h-32 text-gray-900 opacity-10 group-hover:rotate-45 transition-transform duration-700" />
             </div>
             
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 rounded-xl bg-linear-to-br from-[#D4AF37] to-[#F4D03F] shadow-lg shadow-[#D4AF37]/30 group-hover:scale-110 transition-transform">
+                <div className="p-3 rounded-xl bg-linear-to-br from-[#E6B422] to-[#F4D03F] shadow-lg shadow-[#E6B422]/30 group-hover:scale-110 transition-transform">
                     <TrendingUp className="w-5 h-5 text-white" />
                 </div>
                 <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Vault Controls</h2>
@@ -216,12 +216,12 @@ export default function DashboardPage() {
                   </label>
                   <div className="flex flex-col gap-4">
                     <div className="relative group/input">
-                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[#D4AF37] font-black text-2xl group-hover/input:scale-110 transition-transform">₹</span>
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[#E6B422] font-black text-2xl group-hover/input:scale-110 transition-transform">₹</span>
                       <input 
                           type="number" 
                           value={minPurchase}
                           onChange={(e) => setMinPurchase(e.target.value)}
-                          className="w-full pl-14 pr-5 py-5 bg-linear-to-r from-gray-50 to-white border-2 border-gray-200 rounded-2xl font-black text-2xl text-gray-900 focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all placeholder:text-gray-300 shadow-inner"
+                          className="w-full pl-14 pr-5 py-5 bg-linear-to-r from-gray-50 to-white border-2 border-gray-200 rounded-2xl font-black text-2xl text-gray-900 focus:border-[#E6B422] focus:ring-4 focus:ring-[#E6B422]/10 outline-none transition-all placeholder:text-gray-300 shadow-inner"
                           placeholder="2000"
                           style={{ letterSpacing: '0.05em' }}
                       />
@@ -232,7 +232,7 @@ export default function DashboardPage() {
                       className="relative w-full px-6 py-4 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
                     >
                       <div className="absolute inset-0 bg-linear-to-r from-black via-gray-800 to-black group-hover/btn:scale-105 transition-transform duration-500"></div>
-                      <div className="absolute inset-0 bg-linear-to-r from-[#D4AF37] via-[#F4D03F] to-[#D4AF37] opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
+                      <div className="absolute inset-0 bg-linear-to-r from-[#E6B422] via-[#F4D03F] to-[#E6B422] opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
                       <span className="relative z-10 text-white text-sm flex items-center justify-center gap-2">
                         {loading ? (
                           <>
@@ -258,7 +258,7 @@ export default function DashboardPage() {
 
           {/* Concierge Help Card */}
           <div className="relative p-6 rounded-3xl overflow-hidden group cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
-            <div className="absolute inset-0 bg-linear-to-br from-[#D4AF37] via-[#F4D03F] to-[#D4AF37] group-hover:scale-110 transition-transform duration-700"></div>
+            <div className="absolute inset-0 bg-linear-to-br from-[#E6B422] via-[#F4D03F] to-[#E6B422] group-hover:scale-110 transition-transform duration-700"></div>
             <div className="absolute inset-0 bg-linear-to-br from-purple-600 via-purple-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div className="relative z-10 flex items-center justify-between text-white">
               <div>
@@ -319,7 +319,7 @@ const StatusPill = ({ status }: { status: string }) => {
         isPaid 
           ? 'bg-linear-to-r from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30' 
           : isPending 
-            ? 'bg-linear-to-r from-[#D4AF37] to-[#F4D03F] text-white shadow-lg shadow-[#D4AF37]/30' 
+            ? 'bg-linear-to-r from-[#E6B422] to-[#F4D03F] text-white shadow-lg shadow-[#E6B422]/30' 
             : 'bg-linear-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-500/30'
     }`}>
         <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>

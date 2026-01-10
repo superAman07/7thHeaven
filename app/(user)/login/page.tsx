@@ -79,14 +79,14 @@ const AuthInput: React.FC<AuthInputProps> = ({ id, label, icon, endIcon, ...prop
             <label htmlFor={id} className="absolute -top-2.5 left-3 text-xs text-gray-500 bg-white px-1 z-10">
                 {label}
             </label>
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#D4AF37] pointer-events-none">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#E6B422] pointer-events-none">
                 {icon}
             </div>
             <input
                 id={id}
                 name={id}
                 {...props}
-                className={`w-full h-14 pl-12 ${endIcon ? 'pr-12' : 'pr-4'} py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] transition-all duration-300`}
+                className={`w-full h-14 pl-12 ${endIcon ? 'pr-12' : 'pr-4'} py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E6B422]/50 focus:border-[#E6B422] transition-all duration-300`}
             />
             {endIcon && (
                 <div className="absolute inset-y-0 right-0 flex items-center pr-4">
@@ -156,7 +156,7 @@ const OtpInput: React.FC<OtpInputProps> = ({ otp, setOtp }) => {
                     onChange={(e) => handleOtpChange(e.target.value, index)}
                     onKeyDown={(e) => handleOtpKeyDown(e, index)}
                     value={otp[index] || ''}
-                    className="w-12 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-bold bg-white border-2 border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] transition-all duration-300"
+                    className="w-12 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-bold bg-white border-2 border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#E6B422]/50 focus:border-[#E6B422] transition-all duration-300"
                     aria-label={`OTP digit ${index + 1}`}
                 />
             ))}
@@ -292,13 +292,13 @@ export default function AuthPage() {
     };
 
     const renderContent = () => {
-        const commonButtonClasses = "w-full text-white font-semibold h-12 text-lg rounded-lg flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-[#D4AF37] hover:bg-[#B8941F]";
+        const commonButtonClasses = "w-full text-white font-semibold h-12 text-lg rounded-lg flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-[#E6B422] hover:bg-[#B8941F]";
 
         const passwordToggleIcon = (
             <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-gray-500 hover:text-[#D4AF37] transition-colors"
+                className="text-gray-500 hover:text-[#E6B422] transition-colors"
                 aria-label={showPassword ? "Hide password" : "Show password"}
             >
                 {showPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
@@ -310,8 +310,8 @@ export default function AuthPage() {
                 return (
                     <>
                         <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#D4AF37]/10 rounded-full mb-4 border-2 border-[#D4AF37]/20">
-                                <LockIcon className="w-8 h-8 text-[#D4AF37]" />
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-4 border-2 border-[#E6B422]/20">
+                                <LockIcon className="w-8 h-8 text-[#E6B422]" />
                             </div>
                             <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
                             <p className="text-gray-500 mt-1">Sign in to your account</p>
@@ -333,8 +333,8 @@ export default function AuthPage() {
                             </button>
                         </form>
                         <div className="mt-6 space-y-4 text-center text-sm">
-                            <button type="button" onClick={() => switchView(View.LOGIN_OTP)} className="text-[#D4AF37] font-semibold hover:text-[#B8941F] transition-colors">Login with OTP instead</button>
-                            <p className="text-gray-500">Don't have an account? <button type="button" onClick={() => switchView(View.SIGNUP_STEP_1_PHONE)} className="text-[#D4AF37] font-semibold hover:text-[#B8941F] transition-colors">Sign Up</button></p>
+                            <button type="button" onClick={() => switchView(View.LOGIN_OTP)} className="text-[#E6B422] font-semibold hover:text-[#B8941F] transition-colors">Login with OTP instead</button>
+                            <p className="text-gray-500">Don't have an account? <button type="button" onClick={() => switchView(View.SIGNUP_STEP_1_PHONE)} className="text-[#E6B422] font-semibold hover:text-[#B8941F] transition-colors">Sign Up</button></p>
                         </div>
                     </>
                 );
@@ -342,8 +342,8 @@ export default function AuthPage() {
                 return (
                     <>
                         <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#D4AF37]/10 rounded-full mb-4 border-2 border-[#D4AF37]/20">
-                                <UserIcon className="w-8 h-8 text-[#D4AF37]" />
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-4 border-2 border-[#E6B422]/20">
+                                <UserIcon className="w-8 h-8 text-[#E6B422]" />
                             </div>
                             <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
                             <p className="text-gray-500 mt-1">Step 1 of 3: Your Information</p>
@@ -383,8 +383,8 @@ export default function AuthPage() {
                 return (
                     <>
                         <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#D4AF37]/10 rounded-full mb-4 border-2 border-[#D4AF37]/20">
-                                <PhoneIcon className="w-8 h-8 text-[#D4AF37]" />
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-4 border-2 border-[#E6B422]/20">
+                                <PhoneIcon className="w-8 h-8 text-[#E6B422]" />
                             </div>
                             <h1 className="text-3xl font-bold text-gray-900">Verify Your Phone</h1>
                             <p className="text-gray-500 mt-1">Enter the 6-digit code sent to {phone}</p>
@@ -396,7 +396,7 @@ export default function AuthPage() {
                             </button>
                         </form>
                         <div className="mt-6 text-center text-sm text-gray-500">
-                            Entered the wrong number? <button type="button" onClick={() => switchView(View.SIGNUP_STEP_1_PHONE)} className="text-[#D4AF37] font-semibold hover:text-[#B8941F] transition-colors">Go Back</button>
+                            Entered the wrong number? <button type="button" onClick={() => switchView(View.SIGNUP_STEP_1_PHONE)} className="text-[#E6B422] font-semibold hover:text-[#B8941F] transition-colors">Go Back</button>
                         </div>
                     </>
                 );
@@ -404,8 +404,8 @@ export default function AuthPage() {
                 return (
                     <>
                         <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#D4AF37]/10 rounded-full mb-4 border-2 border-[#D4AF37]/20">
-                                <LockIcon className="w-8 h-8 text-[#D4AF37]" />
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-4 border-2 border-[#E6B422]/20">
+                                <LockIcon className="w-8 h-8 text-[#E6B422]" />
                             </div>
                             <h1 className="text-3xl font-bold text-gray-900">Set Your Password</h1>
                             <p className="text-gray-500 mt-1">Step 3 of 3: Secure your new account</p>
@@ -433,8 +433,8 @@ export default function AuthPage() {
                 return (
                     <>
                         <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#D4AF37]/10 rounded-full mb-4 border-2 border-[#D4AF37]/20">
-                                <PhoneIcon className="w-8 h-8 text-[#D4AF37]" />
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-4 border-2 border-[#E6B422]/20">
+                                <PhoneIcon className="w-8 h-8 text-[#E6B422]" />
                             </div>
                             <h1 className="text-3xl font-bold text-gray-900">Login with OTP</h1>
                             <p className="text-gray-500 mt-1">We'll send a verification code to your phone</p>
@@ -446,7 +446,7 @@ export default function AuthPage() {
                             </button>
                         </form>
                         <div className="mt-6 text-center text-sm">
-                            <button type="button" onClick={() => switchView(View.LOGIN)} className="text-[#D4AF37] font-semibold hover:text-[#B8941F] transition-colors">Back to Password Login</button>
+                            <button type="button" onClick={() => switchView(View.LOGIN)} className="text-[#E6B422] font-semibold hover:text-[#B8941F] transition-colors">Back to Password Login</button>
                         </div>
                     </>
                 );

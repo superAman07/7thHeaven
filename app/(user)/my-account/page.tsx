@@ -338,8 +338,8 @@ function ProfileContent() {
                     <div className="container">
                         <div className="max-w-lg mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
                             <div className="p-8 text-center">
-                                <div className="w-20 h-20 bg-[#D4AF37]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <i className="fa fa-lock text-3xl text-[#D4AF37]"></i>
+                                <div className="w-20 h-20 bg-[#E6B422]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <i className="fa fa-lock text-3xl text-[#E6B422]"></i>
                                 </div>
                                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Access</h2>
                                 <p className="text-gray-500 mb-8">
@@ -348,12 +348,12 @@ function ProfileContent() {
                                 <div className="space-y-4">
                                     <Link 
                                         href="/login" 
-                                        className="block w-full py-3 px-4 bg-[#D4AF37] text-white font-bold rounded-lg hover:bg-[#b8952b] transition-colors shadow-md shadow-[#D4AF37]/20"
+                                        className="block w-full py-3 px-4 bg-[#E6B422] text-white font-bold rounded-lg hover:bg-[#b8952b] transition-colors shadow-md shadow-[#E6B422]/20"
                                     >
                                         Sign In Now
                                     </Link>
                                     <p className="text-sm text-gray-400 mt-4">
-                                        Don't have an account? <Link href="/login" className="text-[#D4AF37] font-semibold hover:underline">Register here</Link>
+                                        Don't have an account? <Link href="/login" className="text-[#E6B422] font-semibold hover:underline">Register here</Link>
                                     </p>
                                 </div>
                             </div>
@@ -548,7 +548,7 @@ function ProfileContent() {
                                                                 {notifications.map((notif) => (
                                                                     <div 
                                                                         key={notif.id} 
-                                                                        className={`p-4 mb-3 rounded-lg border transition-all duration-200 ${notif.isRead ? 'bg-white border-gray-100' : 'bg-[#fff9e6] border-[#D4AF37]/30'}`}
+                                                                        className={`p-4 mb-3 rounded-lg border transition-all duration-200 ${notif.isRead ? 'bg-white border-gray-100' : 'bg-[#fff9e6] border-[#E6B422]/30'}`}
                                                                         style={{ position: 'relative' }}
                                                                     >
                                                                         <div className="d-flex justify-content-between align-items-start mb-2">
@@ -565,7 +565,7 @@ function ProfileContent() {
                                                                         {notif.title.includes('Order') && (
                                                                             <button 
                                                                                 className="btn btn-sm btn-link p-0 mt-2" 
-                                                                                style={{ color: '#D4AF37', textDecoration: 'none', fontSize: '13px', fontWeight: '600' }}
+                                                                                style={{ color: '#E6B422', textDecoration: 'none', fontSize: '13px', fontWeight: '600' }}
                                                                                 onClick={() => setActiveTab('orders')}
                                                                             >
                                                                                 View Order Details →

@@ -68,7 +68,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       >
         {/* Floating Background Decorations */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-5">
-          <div className="absolute top-20 right-20 w-64 h-64 bg-[#D4AF37] rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
+          <div className="absolute top-20 right-20 w-64 h-64 bg-[#E6B422] rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
           <div className="absolute bottom-20 left-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
         </div>
 
@@ -76,14 +76,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="relative z-10 text-center">
           <div className="inline-flex items-center justify-center mb-6">
             <div className="relative">
-              <div className="w-20 h-20 rounded-full bg-linear-to-br from-[#D4AF37] to-[#F4D03F] flex items-center justify-center shadow-2xl shadow-[#D4AF37]/30 animate-pulse">
+              <div className="w-20 h-20 rounded-full bg-linear-to-br from-[#E6B422] to-[#F4D03F] flex items-center justify-center shadow-2xl shadow-[#E6B422]/30 animate-pulse">
                 <Crown className="w-10 h-10 text-white" />
               </div>
-              <div className="absolute inset-0 rounded-full border-4 border-[#D4AF37]/30 animate-ping"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-[#E6B422]/30 animate-ping"></div>
             </div>
           </div>
           <div className="flex items-center justify-center gap-3 mb-3">
-            <Loader2 className="w-6 h-6 text-[#D4AF37] animate-spin" />
+            <Loader2 className="w-6 h-6 text-[#E6B422] animate-spin" />
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">Loading Admin Panel</h2>
           </div>
           <p className="text-gray-500 font-medium">Authenticating your session...</p>
@@ -102,7 +102,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     >
       {/* Floating Background Decorations */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-5 z-0">
-        <div className="absolute top-20 right-20 w-64 h-64 bg-[#D4AF37] rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
+        <div className="absolute top-20 right-20 w-64 h-64 bg-[#E6B422] rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
         <div className="absolute bottom-20 left-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-400 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s', animationDelay: '2s' }}></div>
       </div>

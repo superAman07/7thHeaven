@@ -89,8 +89,8 @@ export default function AdminNotificationsPage() {
     return (
         <div className="max-w-6xl mx-auto">
             <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 bg-[#D4AF37]/10 rounded-xl">
-                    <Bell className="w-8 h-8 text-[#D4AF37]" />
+                <div className="p-3 bg-[#E6B422]/10 rounded-xl">
+                    <Bell className="w-8 h-8 text-[#E6B422]" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Notification Center</h1>
@@ -109,10 +109,10 @@ export default function AdminNotificationsPage() {
                         
                         <form onSubmit={handleSend} className="space-y-4">
                             <div 
-                                className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${isBroadcast ? 'bg-[#D4AF37]/10 border-[#D4AF37]' : 'bg-gray-50 border-gray-200'}`} 
+                                className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${isBroadcast ? 'bg-[#E6B422]/10 border-[#E6B422]' : 'bg-gray-50 border-gray-200'}`} 
                                 onClick={() => setIsBroadcast(!isBroadcast)}
                             >
-                                <div className={`w-5 h-5 rounded border flex items-center justify-center ${isBroadcast ? 'bg-[#D4AF37] border-[#D4AF37]' : 'bg-white border-gray-400'}`}>
+                                <div className={`w-5 h-5 rounded border flex items-center justify-center ${isBroadcast ? 'bg-[#E6B422] border-[#E6B422]' : 'bg-white border-gray-400'}`}>
                                     {isBroadcast && <Users className="w-3 h-3 text-white" />}
                                 </div>
                                 <span className="text-sm font-medium text-gray-700 select-none">Broadcast to All</span>
@@ -124,7 +124,7 @@ export default function AdminNotificationsPage() {
                                     <input 
                                         type="email" 
                                         required={!isBroadcast}
-                                        className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none"
+                                        className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-[#E6B422] outline-none"
                                         placeholder="customer@example.com"
                                         value={email}
                                         onChange={e => setEmail(e.target.value)}
@@ -137,7 +137,7 @@ export default function AdminNotificationsPage() {
                                 <input 
                                     type="text" 
                                     required
-                                    className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none"
+                                    className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-[#E6B422] outline-none"
                                     placeholder="e.g., Flash Sale!"
                                     value={title}
                                     onChange={e => setTitle(e.target.value)}
@@ -148,7 +148,7 @@ export default function AdminNotificationsPage() {
                                 <textarea 
                                     required
                                     rows={4}
-                                    className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none"
+                                    className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-[#E6B422] outline-none"
                                     placeholder="Type your alert here..."
                                     value={body}
                                     onChange={e => setBody(e.target.value)}
@@ -159,7 +159,7 @@ export default function AdminNotificationsPage() {
                             <button 
                                 type="submit" 
                                 disabled={sending}
-                                className="w-full bg-[#D4AF37] text-white py-3 rounded-lg font-bold hover:bg-[#b8952b] transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#D4AF37]/20 before:content-none after:content-none"
+                                className="w-full bg-[#E6B422] text-white py-3 rounded-lg font-bold hover:bg-[#b8952b] transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#E6B422]/20 before:content-none after:content-none"
                             >
                                 {sending ? 'Sending...' : <><Send className="w-4 h-4" /> Send Now</>}
                             </button>
@@ -181,7 +181,7 @@ export default function AdminNotificationsPage() {
                                     <input 
                                         type="text" 
                                         placeholder="Filter by email..." 
-                                        className="pl-9 pr-3 py-2 text-sm border rounded-lg w-full focus:outline-none focus:border-[#D4AF37]"
+                                        className="pl-9 pr-3 py-2 text-sm border rounded-lg w-full focus:outline-none focus:border-[#E6B422]"
                                         value={filterEmail}
                                         onChange={(e) => setFilterEmail(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && fetchHistory(filterEmail)}

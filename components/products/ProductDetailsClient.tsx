@@ -473,7 +473,7 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                                 style={{ 
                                                                     width: '60px', 
                                                                     height: '60px', 
-                                                                    backgroundColor: '#D4AF37', 
+                                                                    backgroundColor: '#E6B422', 
                                                                     color: '#fff',
                                                                     borderRadius: '50%', 
                                                                     display: 'flex', 

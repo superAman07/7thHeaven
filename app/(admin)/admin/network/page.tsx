@@ -81,8 +81,8 @@ export default function NetworkLeadersPage() {
             <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
-                        <Crown className="w-5 h-5 text-[#D4AF37]" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37]">7th Heaven Club</span>
+                        <Crown className="w-5 h-5 text-[#E6B422]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#E6B422]">7th Heaven Club</span>
                     </div>
                     <h1 className="text-3xl font-black text-gray-900 tracking-tight">Network Leaders</h1>
                     <p className="text-gray-500 mt-1">Monitor top performers and manage reward eligibility.</p>
@@ -99,7 +99,7 @@ export default function NetworkLeadersPage() {
                         </div>
                     </div>
                     <div className="bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm flex items-center gap-3">
-                        <div className="p-2 bg-[#D4AF37] text-white rounded-full">
+                        <div className="p-2 bg-[#E6B422] text-white rounded-full">
                             <Trophy className="w-4 h-4" />
                         </div>
                         <div>
@@ -119,7 +119,7 @@ export default function NetworkLeadersPage() {
                         placeholder="Search by name, email or referral code..." 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition-all"
+                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E6B422] transition-all"
                     />
                 </div>
                 <button onClick={fetchLeaders} className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-medium text-sm transition-colors">
@@ -148,7 +148,7 @@ export default function NetworkLeadersPage() {
                                     <tr key={leader.id} className="hover:bg-gray-50 transition-colors group">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] flex items-center justify-center font-bold text-lg border border-[#D4AF37]/20">
+                                                <div className="w-10 h-10 rounded-full bg-[#E6B422]/10 text-[#E6B422] flex items-center justify-center font-bold text-lg border border-[#E6B422]/20">
                                                     {leader.fullName.charAt(0)}
                                                 </div>
                                                 <div>
@@ -173,11 +173,11 @@ export default function NetworkLeadersPage() {
                                             <div className="w-full max-w-[140px]">
                                                 <div className="flex justify-between text-xs mb-1">
                                                     <span className="font-bold text-gray-600">Level 7</span>
-                                                    <span className="text-[#D4AF37] font-bold">{leader.stats.level7Progress.toFixed(1)}%</span>
+                                                    <span className="text-[#E6B422] font-bold">{leader.stats.level7Progress.toFixed(1)}%</span>
                                                 </div>
                                                 <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                                                     <div 
-                                                        className="bg-linear-to-r from-[#D4AF37] to-[#F3E5AB] h-full rounded-full transition-all duration-500"
+                                                        className="bg-linear-to-r from-[#E6B422] to-[#F3E5AB] h-full rounded-full transition-all duration-500"
                                                         style={{ width: `${Math.max(5, leader.stats.level7Progress)}%` }}
                                                     ></div>
                                                 </div>
@@ -192,7 +192,7 @@ export default function NetworkLeadersPage() {
                                             <button 
                                                 className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
                                                     leader.stats.level7Progress >= 100 
-                                                    ? 'bg-[#D4AF37] text-white hover:bg-black shadow-md cursor-pointer' 
+                                                    ? 'bg-[#E6B422] text-white hover:bg-black shadow-md cursor-pointer' 
                                                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                                 }`}
                                                 disabled={leader.stats.level7Progress < 100}
@@ -220,7 +220,7 @@ export default function NetworkLeadersPage() {
             </div>
             {isModalOpen && selectedLeader && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-[#D4AF37]">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-[#E6B422]">
                         {/* Modal Header */}
                         <div className="bg-black p-6 text-center relative">
                             <button 
@@ -229,11 +229,11 @@ export default function NetworkLeadersPage() {
                             >
                                 <X className="w-5 h-5" />
                             </button>
-                            <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-[#D4AF37]/30">
+                            <div className="w-16 h-16 bg-[#E6B422] rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-[#E6B422]/30">
                                 <Trophy className="w-8 h-8 text-white" />
                             </div>
                             <h3 className="text-xl font-black text-white uppercase tracking-widest">Reward Concierge</h3>
-                            <p className="text-[#D4AF37] text-xs font-bold mt-1">LEVEL 7 COMPLETED</p>
+                            <p className="text-[#E6B422] text-xs font-bold mt-1">LEVEL 7 COMPLETED</p>
                         </div>
 
                         {/* Modal Body */}
@@ -274,7 +274,7 @@ export default function NetworkLeadersPage() {
                                     <button 
                                         onClick={handleSendCongratulation}
                                         disabled={processingStep === 'sending'}
-                                        className="w-full bg-[#D4AF37] text-white py-3 rounded-xl font-bold uppercase tracking-wider hover:bg-[#b5952f] transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#D4AF37]/20"
+                                        className="w-full bg-[#E6B422] text-white py-3 rounded-xl font-bold uppercase tracking-wider hover:bg-[#b5952f] transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#E6B422]/20"
                                     >
                                         {processingStep === 'sending' ? (
                                             'Sending...'

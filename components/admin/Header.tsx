@@ -60,11 +60,11 @@ const Header: React.FC<HeaderProps> = ({ setSideNavOpen, user, onLogout }) => {
             aria-expanded={dropdownOpen}
           >
             <div className="relative">
-              <UserCircle className="w-10 h-10 text-gray-400 group-hover:text-[#D4AF37] transition-colors" />
+              <UserCircle className="w-10 h-10 text-gray-400 group-hover:text-[#E6B422] transition-colors" />
               <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-sm font-bold text-gray-900 group-hover:text-[#D4AF37] transition-colors">{user?.fullName || 'Admin'}</p>
+              <p className="text-sm font-bold text-gray-900 group-hover:text-[#E6B422] transition-colors">{user?.fullName || 'Admin'}</p>
               <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Administrator</p>
             </div>
             <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : ''}`} />
@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({ setSideNavOpen, user, onLogout }) => {
               <div className="p-2 space-y-1">
                 <button 
                   onClick={() => setDropdownOpen(false)} 
-                  className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] transition-colors"
+                  className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-[#E6B422]/5 hover:text-[#E6B422] transition-colors"
                 >
                   <User className="w-4 h-4" />
                   Profile
@@ -91,7 +91,7 @@ const Header: React.FC<HeaderProps> = ({ setSideNavOpen, user, onLogout }) => {
 
                 <button 
                   onClick={() => setDropdownOpen(false)} 
-                  className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] transition-colors"
+                  className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-[#E6B422]/5 hover:text-[#E6B422] transition-colors"
                 >
                   <Settings className="w-4 h-4" />
                   Settings
