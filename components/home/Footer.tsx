@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import ScrollToTopButton from "./ScrollToTopButton";
 import Link from "next/link";
 
@@ -35,38 +35,47 @@ const defaultCollectionLinks: LinkItem[] = [
 ];
 
 export default function FooterPage({
-  aboutText = "7th Heaven brings you premium fragrances from top global brands. Discover long-lasting perfumes, luxury collections, and exclusive signature scents designed for every personality.",
+  aboutText = "Experience the essence of 'Make in Bharat' luxury. The Celsius Collection offers premium, long-lasting fragrances crafted with the world's best oils—luxury within reach.",
   quickLinks = defaultQuickLinks,
   collectionLinks = defaultCollectionLinks,
   contact = {
-    address: "123 Luxury Lane, Fragrance City, FC 45678",
+    address: "Celsius HQ, Business Bay, India",
     phone: "+91 98765 43210",
-    email: "support@7thheaven.com",
+    email: "support@celsius.com",
   },
-  copyrightOwner = "7th Heaven",
+  copyrightOwner = "Celsius",
   logoSrc = "/assets/images/logo.png",
 }: Props) {
+
+  const [openSection, setOpenSection] = useState<string | null>(null);
+
+  const toggleSection = (section: string) => {
+    setOpenSection(openSection === section ? null : section);
+  };
+
   return (
     <>
       <footer className="footer-section section bg-dark">
-        {/* Footer Top start */}
         <div className="footer-top section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-45 pb-lg-25 pb-md-15 pb-sm-5 pb-xs-0">
           <div className="container">
-            <div className="row row-25">
-              {/* Widget 1: About */}
+            <div className="row row-25">            
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 className="title">
-                  <span className="text">About 7th Heaven</span>
+                  <span className="text">The Celsius Story</span>
                 </h4>
                 <p>{aboutText}</p>
               </div>
 
-              {/* Widget 2: Quick Links */}
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
-                <h4 className="title">
+                <h4 
+                  className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default" 
+                  onClick={() => toggleSection('quick')}
+                  style={{ cursor: 'pointer' }}
+                >
                   <span className="text">Quick Links</span>
+                  <span className="d-md-none text-[#E6B422]">{openSection === 'quick' ? '−' : '+'}</span>
                 </h4>
-                <ul className="ft-menu">
+                <ul className={`ft-menu ${openSection === 'quick' ? '' : 'd-none d-md-block'}`}>
                   {quickLinks.map((l, i) => (
                     <li key={i}>
                       <Link href={l.href}>{l.label}</Link>
@@ -75,12 +84,16 @@ export default function FooterPage({
                 </ul>
               </div>
 
-              {/* Widget 3: Collections */}
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
-                <h4 className="title">
+                <h4 
+                  className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
+                  onClick={() => toggleSection('collections')}
+                  style={{ cursor: 'pointer' }}
+                >
                   <span className="text">Collections</span>
+                  <span className="d-md-none text-[#E6B422]">{openSection === 'collections' ? '−' : '+'}</span>
                 </h4>
-                <ul className="ft-menu">
+                <ul className={`ft-menu ${openSection === 'collections' ? '' : 'd-none d-md-block'}`}>
                   {collectionLinks.map((l, i) => (
                     <li key={i}>
                       <Link href={l.href}>{l.label}</Link>
@@ -89,12 +102,16 @@ export default function FooterPage({
                 </ul>
               </div>
 
-              {/* Widget 4: Contact */}
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
-                <h4 className="title">
+                 <h4 
+                  className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
+                  onClick={() => toggleSection('contact')}
+                  style={{ cursor: 'pointer' }}
+                >
                   <span className="text">Contact Us</span>
+                  <span className="d-md-none text-[#E6B422]">{openSection === 'contact' ? '−' : '+'}</span>
                 </h4>
-                <ul className="address">
+                <ul className={`address ${openSection === 'contact' ? '' : 'd-none d-md-block'}`}>
                   <li>
                     <i className="fa fa-home" />
                     <span>{contact.address}</span>
@@ -116,9 +133,6 @@ export default function FooterPage({
             </div>
           </div>
         </div>
-        {/* Footer Top end */}
-
-        {/* Footer Bottom start */}
         <div className="footer-bottom section">
           <div className="container ft-border pt-40 pb-40 pt-xs-20 pb-xs-20">
             <div className="row justify-content-between align-items-center">
@@ -126,7 +140,7 @@ export default function FooterPage({
                 <div className="copyright text-start">
                   <p>
                     Copyright &copy; {new Date().getFullYear()}{" "}
-                    <a href="#">{copyrightOwner}</a>. All rights reserved.
+                    <a href="#">{copyrightOwner}</a>. <span className="d-none d-sm-inline">All rights reserved.</span>
                   </p>
                 </div>
               </div>
