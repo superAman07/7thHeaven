@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import { Crown } from 'lucide-react'; 
 
 const SliderSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -23,7 +24,7 @@ const SliderSection = () => {
         .hero-play-pause-btn {
             position: absolute;
             bottom: 40px;
-            left: 50px; /* Moved to right for better balance */
+            left: 50px;
             z-index: 20;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(4px);
@@ -40,8 +41,8 @@ const SliderSection = () => {
             outline: none;
         }
         .hero-play-pause-btn:hover {
-            background: #ddb040;
-            border-color: #ddb040;
+            background: #E6B422; 
+            border-color: #E6B422;
             color: #fff;
             transform: scale(1.05);
         }
@@ -63,66 +64,82 @@ const SliderSection = () => {
             z-index: -1;
         }
         
-        /* --- NEW TEXT STYLES --- */
+        /* --- NEW PROFESSIONAL FONT STYLES --- */
         .hero-text-overlay {
             position: relative;
             z-index: 10;
             padding: 20px 0;
         }
+        
+        /* Brand Tag: Regal & Engraved */
         .hero-text-overlay h2 {
-            color: #ddb040 !important;
-            font-size: 18px;
+            font-family: 'Cinzel', serif; /* Update: Luxury Brand Font */
+            color: #E6B422 !important;
+            font-size: 15px; 
             font-weight: 700;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             text-transform: uppercase;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-        }
-        .hero-text-overlay h1 {
-            color: #fff !important;
-            font-size: 65px;
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
-        }
-        .hero-text-overlay h3 {
-            color: #f0f0f0 !important;
-            font-size: 24px;
-            font-weight: 400;
-            margin-bottom: 35px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-        }
-        .hero-btn {
+            margin-bottom: 0;
+            text-shadow: none; /* Removed muddy shadow for crisp look */
             display: inline-block;
-            background-color: #ddb040;
-            color: #fff;
-            padding: 16px 40px;
+        }
+
+        /* Main Headline: Editorial & Elegant */
+        .hero-text-overlay h1 {
+            font-family: 'Cormorant Garamond', serif; /* Update: Classic Serif */
+            font-style: italic;
+            color: #fff !important;
+            font-size: 70px;
+            font-weight: 600;
+            line-height: 1.1;
+            margin-top: 15px;
+            margin-bottom: 25px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Softer, premium shadow */
+        }
+
+        /* Subtitle: Modern & Clean */
+        .hero-text-overlay h3 {
+            font-family: 'Montserrat', sans-serif; /* Update: Clean Sans Serif */
+            color: #e0e0e0 !important;
             font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 45px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .hero-btn {
+            font-family: 'Montserrat', sans-serif; /* Consistent UI font */
+            display: inline-block;
+            background-color: #E6B422;
+            color: #fff;
+            padding: 18px 45px;
+            font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             border-radius: 0;
             transition: all 0.3s ease;
-            border: 2px solid #ddb040;
+            border: 1px solid #E6B422;
             text-decoration: none;
         }
         .hero-btn:hover {
             background-color: transparent;
-            color: #ddb040;
+            color: #E6B422;
         }
 
         @media (max-width: 991px) {
-            .hero-text-overlay h1 { font-size: 50px; }
+            .hero-text-overlay h1 { font-size: 55px; }
         }
         @media (max-width: 767px) {
-            .hero-text-overlay h1 { font-size: 36px; }
-            .hero-text-overlay h3 { font-size: 18px; }
-            .hero-text-overlay { text-align: center; } /* Center on mobile */
+            .hero-text-overlay h1 { font-size: 40px; }
+            .hero-text-overlay h3 { font-size: 12px; }
+            .hero-text-overlay { text-align: center; }
+            .crown-header { justify-content: center; }
         }
       `}</style>
-      <div className="hero-section section position-relative">
-        {/* Added min-height and flex to center content vertically */}
+      <div className="hero-section section position-relative mb-10">
         <div className="hero-item" style={{ minHeight: '650px', display: 'flex', alignItems: 'center' }}>
           <video 
               ref={videoRef}
@@ -136,13 +153,20 @@ const SliderSection = () => {
           
           <div className="container">
             <div className="row">
-              {/* Left Aligned Column */}
-              <div className="col-lg-7 col-md-9 col-12">
+              <div className="col-lg-8 col-md-10 col-12">
                 <div className="hero-text-overlay text-start">
-                  <h2>Exclusive Collection</h2>
-                  <h1>Luxury Fragrances <br/> For Everyone</h1>
-                  <h3>Discover your signature scent today.</h3>
-                  <a href="/collections/perfumes" className="hero-btn">Shop Now</a>
+                  
+                  {/* CROWN HEADER */}
+                  <div className="crown-header d-flex align-items-center gap-3 mb-3">
+                    <Crown size={20} color="#E6B422" fill="#E6B422" />
+                    <h2>CELSIUS Exclusive</h2>
+                  </div>
+                  
+                  {/* NEW BRAND MESSAGING */}
+                  <h1>Earn While You Shop... <br/> The Celsius Experience</h1>
+                  <h3>Luxury. Longevity. Made in Bharat.</h3>
+                  
+                  <a href="/collections/perfumes" className="hero-btn">Shop Collection</a>
                 </div>
               </div>
             </div>
