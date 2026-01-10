@@ -73,7 +73,7 @@ const SliderSection = () => {
         
         /* Brand Tag: Regal & Engraved */
         .hero-text-overlay h2 {
-            font-family: 'Cinzel', serif; /* Update: Luxury Brand Font */
+            font-family: 'Cinzel', serif !important; /* Update: Luxury Brand Font */
             color: #E6B422 !important;
             font-size: 15px; 
             font-weight: 700;
@@ -86,7 +86,7 @@ const SliderSection = () => {
 
         /* Main Headline: Editorial & Elegant */
         .hero-text-overlay h1 {
-            font-family: 'Cormorant Garamond', serif; /* Update: Classic Serif */
+            font-family: 'Cormorant Garamond', serif !important; /* Update: Classic Serif */
             font-style: italic;
             color: #fff !important;
             font-size: 70px;
@@ -99,7 +99,7 @@ const SliderSection = () => {
 
         /* Subtitle: Modern & Clean */
         .hero-text-overlay h3 {
-            font-family: 'Montserrat', sans-serif; /* Update: Clean Sans Serif */
+            font-family: 'Montserrat', sans-serif !important; /* Update: Clean Sans Serif */
             color: #e0e0e0 !important;
             font-size: 14px;
             font-weight: 500;
@@ -110,7 +110,7 @@ const SliderSection = () => {
         }
 
         .hero-btn {
-            font-family: 'Montserrat', sans-serif; /* Consistent UI font */
+            font-family: 'Montserrat', sans-serif !important; /* Consistent UI font */
             display: inline-block;
             background-color: #E6B422;
             color: #fff;
