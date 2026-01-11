@@ -434,7 +434,7 @@ export default function NavBar() {
                         <div className="row">
                             <div 
                                 className="col-12 d-flex d-lg-none align-items-center justify-content-end"
-                                ref={mobileMenuRef} // FIX 3: Added ref for Outside Click logic
+                                ref={mobileMenuRef}
                             >
                                 <div className={`mobile-menu ${isMobileOpen ? 'open' : ''}`} style={{ width: '100%' }}>
                                     <div className="mean-bar" style={{ position: 'relative' }}>
@@ -450,7 +450,7 @@ export default function NavBar() {
                                                 background: 'transparent',
                                                 border: 0,
                                                 padding: 6,
-                                                zIndex: 10005, // FIX 1: High z-index to stay above menu content
+                                                zIndex: 10005,
                                                 display: 'inline-flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
@@ -478,14 +478,14 @@ export default function NavBar() {
                                             zIndex: 9999,
                                             boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
                                             borderTop: '1px solid #eee',
-                                            maxHeight: '80vh',   // FIX 2: Allow full height usage
-                                            overflowY: 'auto'    // Scroll naturally if list is huge
+                                            maxHeight: '80vh',
+                                            overflowY: 'auto'
                                         }}>
                                             <ul style={{ 
                                                 display: isMobileOpen ? 'block' : 'none', 
                                                 margin: 0, 
                                                 padding: 0,
-                                                maxHeight: 'none' // FIX 2: Override CSS restriction
+                                                maxHeight: 'none'
                                             }}>
                                                 {links.map((l) => (
                                                     <li key={l.label} style={{ listStyle: 'none' }}>
@@ -494,7 +494,7 @@ export default function NavBar() {
                                                             onClick={() => setIsMobileOpen(false)}
                                                             style={{
                                                                 display: 'block',
-                                                                padding: '16px 20px', // Bigger touch targets
+                                                                padding: '16px 20px',
                                                                 borderBottom: '1px solid #f1f1f1',
                                                                 color: l.label === '7th Heaven Club' ? '#D4AF37' : '#333',
                                                                 fontWeight: l.label === '7th Heaven Club' ? 'bold' : 'normal',
