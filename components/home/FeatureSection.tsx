@@ -92,7 +92,7 @@ export default function FeatureSectionPage({ features = defaultFeatures }: Props
               </div>
 
               {/* Mobile Decorative Divider (Visible only on mobile/tablet) */}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-px bg-gradient-to-r from-transparent via-zinc-100 to-transparent lg:hidden"></div>
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-px bg-linear-to-r from-transparent via-zinc-100 to-transparent lg:hidden"></div>
             </div>
           ))}
         </div>
