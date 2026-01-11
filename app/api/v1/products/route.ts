@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     
     const params = {
       page: parseInt(searchParams.get('page') || '1'),
-      limit: parseInt(searchParams.get('limit') || '20'),
+      limit: parseInt(searchParams.get('limit') || '3'),
       search: searchParams.get('search') || undefined,
       category: searchParams.get('category') || undefined,
       gender: searchParams.get('gender') || undefined,
