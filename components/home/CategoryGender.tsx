@@ -40,7 +40,7 @@ export default function CategoryGender({ categories = defaultCategories }) {
             >
                 Find Your Scent By Gender
             </h2>
-            <div className="w-24 h-1 bg-[#ddb040] mx-auto mt-4"></div>
+            <div className="gold-separator"></div>
         </div>
           <div className="row g-0">
             {categories.map((cat) => (
