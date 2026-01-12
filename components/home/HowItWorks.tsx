@@ -13,7 +13,7 @@ export default function HowItWorksPage() {
                     >
                         Here's How It Works
                     </h2>
-                    <div className="w-24 h-1 bg-[#E6B422] mx-auto mt-4"></div> {/* Updated Gold */}
+                    <div className="gold-separator"></div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
