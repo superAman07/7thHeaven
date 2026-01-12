@@ -1,5 +1,9 @@
 ﻿@charset "UTF-8";
-
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@100..900&display=swap');
+.font-serif { font-family: 'Playfair Display', serif; }
+.font-sans { font-family: 'Montserrat', sans-serif; }
+.gold-text { color: #BF953F; }
+.gold-border { border-color: #BF953F; }
 /*-- Google Font --*/
 @import url("../../../../css");
 /*-- Common Style --*/
@@ -8171,4 +8175,30 @@ h2.entry-title:before {
     top: 50% !important;
     margin-top: -20px !important;
   }
+}
+.fancy-amp {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-weight: 400; /* This is the selection to be replaced */
+  color: #B6902E; /* Deep Gold - This is below the selection */
+  font-size: 1.2em; /* Slightly larger - This is below the selection */
+  margin: 0 0.1em;
+}
+
+/* 5. Gold Separator Line */
+.gold-separator {
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #D6B869, transparent);
+  margin: 15px auto;
+  border-radius: 2px;
+}
+
+/* 6. Section Headers (Standardized) */
+.section-header-gold h2 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
 }

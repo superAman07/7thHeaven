@@ -63,9 +63,14 @@ export default function ProductSectionPage({ products }: { products: PublicProdu
           <div className="col-lg-12 order-lg-2 order-1">
             <div className="row">
               <div className="col-12">
-                <div className="shop-banner-title text-center mb-10">
-                  <h2>SELECT & TRY FROM <br /> OUR BEST SELLERS</h2>
-                  <div className="w-24 h-1 bg-[#ddb040] mx-auto mt-4"></div>
+                <div className="shop-banner-title text-center mb-10 section-header-gold">
+                  <h2>
+                    Select <span className="font-serif font-medium tracking-tight text-[#1A1A1A] group-hover:text-[#BF953F] transition-colors duration-300">&</span> Try From <br /> 
+                    <span className="text-gradient-gold" style={{ fontSize: '1.2em' }}>
+                      Our Best Sellers
+                    </span>
+                  </h2>
+                  <div className="gold-separator"></div>
                 </div>
               </div>
             </div>
