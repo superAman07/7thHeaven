@@ -144,9 +144,11 @@ export default function ProductSection2({
       <div className="container">
         <div className="row">
           <div className="col-12">
-            <div className="shop-banner-title text-center mb-10">
-              <h2> OUR New Arrival</h2>
-              <div className="w-24 h-1 bg-[#ddb040] mx-auto mt-4"></div>
+            <div className="shop-banner-title text-center mb-10 section-header-gold">
+              <h2>
+                Our New Arrival<br />
+              </h2>
+              <div className="gold-separator"></div>
             </div>
           </div>
         </div>
