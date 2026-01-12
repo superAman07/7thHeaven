@@ -110,23 +110,73 @@ const SliderSection = () => {
         }
 
         .hero-btn {
-            font-family: 'Montserrat', sans-serif !important; /* Consistent UI font */
+            font-family: 'Montserrat', sans-serif !important;
             display: inline-block;
-            background-color: #E6B422;
+            
+            background: linear-gradient(90deg, #B6902E, #D6B869, #B6902E);
+            background-size: 200% auto;
             color: #fff;
+            
             padding: 18px 45px;
             font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
             border-radius: 0;
-            transition: all 0.3s ease;
-            border: 1px solid #E6B422;
             text-decoration: none;
+            
+            border: 2px solid #B6902E; 
+            transition: all 0.3s ease;
         }
+
         .hero-btn:hover {
             background-color: transparent;
-            color: #E6B422;
+            background-image: linear-gradient(90deg, #B6902E, #D6B869, #B6902E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            
+            border-image-source: linear-gradient(90deg, #B6902E, #D6B869, #B6902E);
+            border-image-slice: 1;
+            
+            animation: shineGold 3s linear infinite;
+            box-shadow: 0 5px 15px rgba(182, 144, 46, 0.2); 
+        }
+
+        @keyframes shineGold {
+            to { background-position: 200% center; }
+        }
+        .text-gradient-gold {
+          background: linear-gradient(
+            to right, 
+            #B6902E 0%, 
+            #D6B869 25%, 
+            #E9DDBC 50%, 
+            #D6B869 75%, 
+            #B6902E 100%
+          );
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          background-size: 200% auto;
+          animation: shineGold 5s linear infinite;
+          display: inline-block; /* Required for gradient to show nicely */
+        }
+        .hero-btn:hover {
+          background-color: transparent;
+        }
+
+        .hero-btn:hover span {
+          background: linear-gradient(
+            to right,
+            #B6902E 0%,
+            #D6B869 25%,
+            #E9DDBC 50%,
+            #D6B869 75%,
+            #B6902E 100%
+          );
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
 
         @media (max-width: 991px) {
@@ -159,7 +209,7 @@ const SliderSection = () => {
                   {/* CROWN HEADER */}
                   <div className="crown-header d-flex align-items-center gap-3 mb-3">
                     <Crown size={20} color="#E6B422" fill="#E6B422" />
-                    <h2>CELSIUS Exclusive</h2>
+                    <h2 className="text-gradient-gold">CELSIUS Exclusive</h2>
                   </div>
                   
                   {/* NEW BRAND MESSAGING */}
