@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse,NextRequest } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
@@ -10,7 +10,7 @@ const verifyOtpSchema = z.object({
   otp: z.string().length(6, { message: 'OTP must be 6 digits' }),
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const validation = verifyOtpSchema.safeParse(body);
