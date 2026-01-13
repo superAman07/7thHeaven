@@ -3,16 +3,12 @@
 import React, { useState } from "react";
 import ScrollToTopButton from "./ScrollToTopButton";
 import Link from "next/link";
-// Import the type for type-safety
 import type { GlobalSettings } from "@/lib/site-content";
 
 type LinkItem = { label: string; href: string };
 
 type Props = {
-  // New Dynamic Prop
-  settings?: GlobalSettings;
-  
-  // Existing props kept as fallbacks/defaults
+  settings?: GlobalSettings;  
   aboutText?: string;
   quickLinks?: LinkItem[];
   collectionLinks?: LinkItem[];
@@ -61,8 +57,6 @@ export default function FooterPage({
     setOpenSection(openSection === section ? null : section);
   };
 
-  // 1. DYNAMIC DATA MAPPING
-  // If 'settings' come from DB, use them. Otherwise use your hardcoded defaults.
   const displayAddress = settings?.supportAddress || contact.address;
   const displayPhone = settings?.supportPhone || contact.phone;
   const displayEmail = settings?.supportEmail || contact.email;
@@ -71,13 +65,11 @@ export default function FooterPage({
 
   return (
     <>
-      {/* Kept your original 'bg-dark' class to preserve UI */}
       <footer className="footer-section section bg-dark">
         <div className="footer-top section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-45 pb-lg-25 pb-md-15 pb-sm-5 pb-xs-0">
           <div className="container">
             <div className="row row-25">            
               
-              {/* Widget 1: Story */}
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 className="title">
                   <span className="text">The Celsius Story</span>
@@ -85,7 +77,6 @@ export default function FooterPage({
                 <p>{aboutText}</p>
               </div>
 
-              {/* Widget 2: Quick Links */}
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default" 
@@ -104,7 +95,6 @@ export default function FooterPage({
                 </ul>
               </div>
 
-              {/* Widget 3: Collections */}
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
@@ -123,7 +113,6 @@ export default function FooterPage({
                 </ul>
               </div>
 
-              {/* Widget 4: Contact (DYNAMIC) */}
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                  <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
@@ -136,20 +125,17 @@ export default function FooterPage({
                 <ul className={`address ${openSection === 'contact' ? '' : 'd-none d-md-block'}`}>
                   <li>
                     <i className="fa fa-home" />
-                    {/* Dynamic Address */}
                     <span>{displayAddress}</span>
                   </li>
                   <li>
                     <i className="fa fa-phone" />
                     <span>
-                      {/* Dynamic Phone */}
                       <a href={`tel:${displayPhone}`}>{displayPhone}</a>
                     </span>
                   </li>
                   <li>
                     <i className="fa fa-envelope-o" />
                     <span>
-                      {/* Dynamic Email */}
                       <a href={`mailto:${displayEmail}`}>{displayEmail}</a>
                     </span>
                   </li>
@@ -159,14 +145,12 @@ export default function FooterPage({
           </div>
         </div>
 
-        {/* Footer Bottom */}
         <div className="footer-bottom section">
           <div className="container ft-border pt-40 pb-40 pt-xs-20 pb-xs-20">
             <div className="row justify-content-between align-items-center">
               <div className="col-lg-6 col-md-6 col-sm-8">
                 <div className="copyright text-start">
                   <p>
-                    {/* Dynamic Copyright Name */}
                     Copyright &copy; {new Date().getFullYear()}{" "}
                     <a href="#">{displaySiteName}</a>. <span className="d-none d-sm-inline">All rights reserved.</span>
                   </p>
@@ -175,7 +159,6 @@ export default function FooterPage({
               <div className="col-lg-6 col-md-6 col-sm-4">
                 <div className="footer-logo text-end">
                   <Link href="/">
-                    {/* Dynamic Logo */}
                     <img src={displayLogo} alt="logo" style={{ height: 30 }} />
                   </Link>
                 </div>
