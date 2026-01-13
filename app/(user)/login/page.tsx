@@ -223,7 +223,7 @@ export default function AuthPage() {
         setError(null);
         setIsLoading(true);
         try {
-            await axios.post('/api/v1/auth/request-otp', { fullName, email, phone });
+            await axios.post('/api/v1/auth/request-otp', { fullName, email, phone, referralCode: referralCode || undefined  });
             toast.success('OTP sent to your phone.');
             switchView(View.SIGNUP_STEP_2_OTP);
         } catch (err) {
