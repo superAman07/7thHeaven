@@ -39,6 +39,32 @@
   display: inline-block; /* Required for gradient to show nicely */
 }
 
+.bg-gradient-gold {
+  background: linear-gradient(90deg, #B6902E 0%, #D6B869 50%, #B6902E 100%);
+  background-size: 200% auto;
+  transition: background-position 0.3s ease;
+}
+
+.bg-gradient-gold:hover {
+  background-position: right center;
+}
+
+/* 2C. Border Gradient (For Borders, Dividers) */
+.border-gradient-gold {
+  border-image: linear-gradient(90deg, #B6902E, #D6B869, #B6902E) 1;
+}
+
+/* 2D. Loading Spinner Gradient */
+.spinner-gradient-gold {
+  border: 3px solid rgba(182, 144, 46, 0.1);
+  border-top-color: #B6902E;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* 3. Gradient Buttons (Optional Luxury Button) */
 .btn-gradient-gold {
   background: linear-gradient(to right, #B6902E, #D6B869);

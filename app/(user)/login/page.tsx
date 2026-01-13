@@ -292,7 +292,7 @@ export default function AuthPage() {
     };
 
     const renderContent = () => {
-        const commonButtonClasses = "w-full text-white font-semibold h-12 text-lg rounded-lg flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-[#E6B422] hover:bg-[#B8941F]";
+        const commonButtonClasses = "w-full text-white font-semibold h-12 text-lg rounded-lg flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-gold shadow-md";
 
         const passwordToggleIcon = (
             <button
@@ -329,7 +329,12 @@ export default function AuthPage() {
                                 endIcon={passwordToggleIcon}
                             />
                             <button type="submit" disabled={isLoading} className={commonButtonClasses}>
-                                {isLoading ? <><LoaderIcon className="w-5 h-5 animate-spin" /> Signing In...</> : 'Sign In'}
+                                {isLoading ? (
+                                    <>
+                                        <div className="w-5 h-5 rounded-full spinner-gradient-gold"></div>
+                                        <span>Signing In...</span>
+                                    </>
+                                ) : 'Sign In'}
                             </button>
                         </form>
                         <div className="mt-6 space-y-4 text-center text-sm">
@@ -367,7 +372,7 @@ export default function AuthPage() {
                             />
                             <AuthInput id="phone" label="Phone Number" type="tel" icon={<PhoneIcon className="w-5 h-5" />} value={phone} onChange={(e) => setPhone(e.target.value)} required />
                             <button type="submit" disabled={isLoading} className={commonButtonClasses}>
-                                {isLoading ? <><LoaderIcon className="w-5 h-5 animate-spin" /> Sending OTP...</> : 'Send OTP'}
+                                {isLoading ? <><div className="w-5 h-5 rounded-full spinner-gradient-gold"></div> Sending OTP...</> : 'Send OTP'}
                             </button>
                             {error && <p className="mt-4 text-center text-red-400">{error}</p>}
                             <p className="text-center text-gray-400">
@@ -392,7 +397,7 @@ export default function AuthPage() {
                         <form onSubmit={handleVerifyOtp} className="space-y-8">
                             <OtpInput otp={otp} setOtp={setOtp} />
                             <button type="submit" disabled={isLoading || otp.length !== 6} className={commonButtonClasses}>
-                                {isLoading ? <><LoaderIcon className="w-5 h-5 animate-spin" /> Verifying...</> : 'Verify OTP'}
+                                {isLoading ? <><div className="w-5 h-5 rounded-full spinner-gradient-gold"></div> Verifying...</> : 'Verify OTP'}
                             </button>
                         </form>
                         <div className="mt-6 text-center text-sm text-gray-500">
@@ -424,7 +429,7 @@ export default function AuthPage() {
                             />
                             <p className="text-xs text-gray-500 -mt-4 pl-2">Minimum 8 characters.</p>
                             <button type="submit" disabled={isLoading} className={commonButtonClasses}>
-                                {isLoading ? <><LoaderIcon className="w-5 h-5 animate-spin" /> Creating Account...</> : 'Complete Signup'}
+                                {isLoading ? <><div className="w-5 h-5 rounded-full spinner-gradient-gold"></div> Creating Account...</> : 'Complete Signup'}
                             </button>
                         </form>
                     </>
@@ -442,7 +447,7 @@ export default function AuthPage() {
                         <form onSubmit={handleRequestLoginOtp} className="space-y-6">
                             <AuthInput id="loginPhone" label="Phone Number" type="tel" icon={<PhoneIcon className="w-5 h-5" />} value={phone} onChange={(e) => setPhone(e.target.value)} required />
                             <button type="submit" disabled={isLoading} className={commonButtonClasses}>
-                                {isLoading ? <><LoaderIcon className="w-5 h-5 animate-spin" /> Sending OTP...</> : 'Send OTP'}
+                                {isLoading ? <><div className="w-5 h-5 rounded-full spinner-gradient-gold"></div> Sending OTP...</> : 'Send OTP'}
                             </button>
                         </form>
                         <div className="mt-6 text-center text-sm">
