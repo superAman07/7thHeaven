@@ -304,7 +304,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                                 </select>
                             </div>
                         ) : (
-                            <div style={{ height: '39px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', color: '#777', margin: '10px 0' }}>
+                            <div style={{ height: '45.78px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', color: '#777', margin: '10px 0' }}>
                                 {selectedVariant?.size} {/[a-zA-Z]/.test(selectedVariant?.size || '') ? '' : 'ml'}
                             </div>
                         )}
