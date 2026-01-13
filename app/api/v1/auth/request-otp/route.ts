@@ -71,7 +71,7 @@ export async function POST(request: Request) {
 
     console.log(`--- OTP for ${phone}: ${otp} ---`);
 
-    return NextResponse.json({ success: true, message: 'OTP has been sent to your phone number.' });
+    return NextResponse.json({ success: true, message: 'OTP has been sent to your phone number.', debugOtp: otp });
 
   } catch (error: any) {
     if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
