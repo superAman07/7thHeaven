@@ -3,9 +3,16 @@
 import React, { useState } from "react";
 import ScrollToTopButton from "./ScrollToTopButton";
 import Link from "next/link";
+// Import the type for type-safety
+import type { GlobalSettings } from "@/lib/site-content";
 
 type LinkItem = { label: string; href: string };
+
 type Props = {
+  // New Dynamic Prop
+  settings?: GlobalSettings;
+  
+  // Existing props kept as fallbacks/defaults
   aboutText?: string;
   quickLinks?: LinkItem[];
   collectionLinks?: LinkItem[];
@@ -35,6 +42,7 @@ const defaultCollectionLinks: LinkItem[] = [
 ];
 
 export default function FooterPage({
+  settings,
   aboutText = "Experience the essence of 'Make in Bharat' luxury. The Celsius Collection offers premium, long-lasting fragrances crafted with the world's best oils—luxury within reach.",
   quickLinks = defaultQuickLinks,
   collectionLinks = defaultCollectionLinks,
@@ -53,12 +61,23 @@ export default function FooterPage({
     setOpenSection(openSection === section ? null : section);
   };
 
+  // 1. DYNAMIC DATA MAPPING
+  // If 'settings' come from DB, use them. Otherwise use your hardcoded defaults.
+  const displayAddress = settings?.supportAddress || contact.address;
+  const displayPhone = settings?.supportPhone || contact.phone;
+  const displayEmail = settings?.supportEmail || contact.email;
+  const displaySiteName = settings?.siteName || copyrightOwner;
+  const displayLogo = settings?.logoUrl || logoSrc;
+
   return (
     <>
+      {/* Kept your original 'bg-dark' class to preserve UI */}
       <footer className="footer-section section bg-dark">
         <div className="footer-top section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-45 pb-lg-25 pb-md-15 pb-sm-5 pb-xs-0">
           <div className="container">
             <div className="row row-25">            
+              
+              {/* Widget 1: Story */}
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 className="title">
                   <span className="text">The Celsius Story</span>
@@ -66,6 +85,7 @@ export default function FooterPage({
                 <p>{aboutText}</p>
               </div>
 
+              {/* Widget 2: Quick Links */}
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default" 
@@ -84,6 +104,7 @@ export default function FooterPage({
                 </ul>
               </div>
 
+              {/* Widget 3: Collections */}
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
@@ -102,6 +123,7 @@ export default function FooterPage({
                 </ul>
               </div>
 
+              {/* Widget 4: Contact (DYNAMIC) */}
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                  <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
@@ -114,18 +136,21 @@ export default function FooterPage({
                 <ul className={`address ${openSection === 'contact' ? '' : 'd-none d-md-block'}`}>
                   <li>
                     <i className="fa fa-home" />
-                    <span>{contact.address}</span>
+                    {/* Dynamic Address */}
+                    <span>{displayAddress}</span>
                   </li>
                   <li>
                     <i className="fa fa-phone" />
                     <span>
-                      <a href={`tel:${contact.phone}`}>{contact.phone}</a>
+                      {/* Dynamic Phone */}
+                      <a href={`tel:${displayPhone}`}>{displayPhone}</a>
                     </span>
                   </li>
                   <li>
                     <i className="fa fa-envelope-o" />
                     <span>
-                      <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                      {/* Dynamic Email */}
+                      <a href={`mailto:${displayEmail}`}>{displayEmail}</a>
                     </span>
                   </li>
                 </ul>
@@ -133,21 +158,25 @@ export default function FooterPage({
             </div>
           </div>
         </div>
+
+        {/* Footer Bottom */}
         <div className="footer-bottom section">
           <div className="container ft-border pt-40 pb-40 pt-xs-20 pb-xs-20">
             <div className="row justify-content-between align-items-center">
               <div className="col-lg-6 col-md-6 col-sm-8">
                 <div className="copyright text-start">
                   <p>
+                    {/* Dynamic Copyright Name */}
                     Copyright &copy; {new Date().getFullYear()}{" "}
-                    <a href="#">{copyrightOwner}</a>. <span className="d-none d-sm-inline">All rights reserved.</span>
+                    <a href="#">{displaySiteName}</a>. <span className="d-none d-sm-inline">All rights reserved.</span>
                   </p>
                 </div>
               </div>
               <div className="col-lg-6 col-md-6 col-sm-4">
                 <div className="footer-logo text-end">
                   <Link href="/">
-                    <img src={logoSrc} alt="logo" style={{ height: 30 }} />
+                    {/* Dynamic Logo */}
+                    <img src={displayLogo} alt="logo" style={{ height: 30 }} />
                   </Link>
                 </div>
               </div>
@@ -159,3 +188,165 @@ export default function FooterPage({
     </>
   );
 }
+
+// "use client";
+
+// import React, { useState } from "react";
+// import ScrollToTopButton from "./ScrollToTopButton";
+// import Link from "next/link";
+
+// type LinkItem = { label: string; href: string };
+// type Props = {
+//   aboutText?: string;
+//   quickLinks?: LinkItem[];
+//   collectionLinks?: LinkItem[];
+//   contact?: {
+//     address?: string;
+//     phone?: string;
+//     email?: string;
+//   };
+//   copyrightOwner?: string;
+//   logoSrc?: string;
+// };
+
+// const defaultQuickLinks: LinkItem[] = [
+//   { label: "About Us", href: "/about" },
+//   { label: "Contact Us", href: "/contact" },
+//   { label: "Track Order", href: "/track-order" },
+//   { label: "My Account", href: "/my-account" },
+//   { label: "Privacy Policy", href: "#" },
+//   { label: "Terms & Conditions", href: "#" },
+// ];
+
+// const defaultCollectionLinks: LinkItem[] = [
+//   { label: "Men's Perfumes", href: "/collections/perfumes?gender=Male" },
+//   { label: "Women's Perfumes", href: "/collections/perfumes?gender=Female" },
+//   { label: "Unisex Perfumes", href: "/collections/perfumes?gender=Unisex" },
+//   { label: "New Arrivals", href: "/collections/perfumes?sort=newest" },
+// ];
+
+// export default function FooterPage({
+//   aboutText = "Experience the essence of 'Make in Bharat' luxury. The Celsius Collection offers premium, long-lasting fragrances crafted with the world's best oils—luxury within reach.",
+//   quickLinks = defaultQuickLinks,
+//   collectionLinks = defaultCollectionLinks,
+//   contact = {
+//     address: "Celsius HQ, Business Bay, India",
+//     phone: "+91 98765 43210",
+//     email: "support@celsius.com",
+//   },
+//   copyrightOwner = "Celsius",
+//   logoSrc = "/assets/images/logo.png",
+// }: Props) {
+
+//   const [openSection, setOpenSection] = useState<string | null>(null);
+
+//   const toggleSection = (section: string) => {
+//     setOpenSection(openSection === section ? null : section);
+//   };
+
+//   return (
+//     <>
+//       <footer className="footer-section section bg-dark">
+//         <div className="footer-top section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-45 pb-lg-25 pb-md-15 pb-sm-5 pb-xs-0">
+//           <div className="container">
+//             <div className="row row-25">            
+//               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
+//                 <h4 className="title">
+//                   <span className="text">The Celsius Story</span>
+//                 </h4>
+//                 <p>{aboutText}</p>
+//               </div>
+
+//               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
+//                 <h4 
+//                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default" 
+//                   onClick={() => toggleSection('quick')}
+//                   style={{ cursor: 'pointer' }}
+//                 >
+//                   <span className="text">Quick Links</span>
+//                   <span className="d-md-none text-[#E6B422]">{openSection === 'quick' ? '−' : '+'}</span>
+//                 </h4>
+//                 <ul className={`ft-menu ${openSection === 'quick' ? '' : 'd-none d-md-block'}`}>
+//                   {quickLinks.map((l, i) => (
+//                     <li key={i}>
+//                       <Link href={l.href}>{l.label}</Link>
+//                     </li>
+//                   ))}
+//                 </ul>
+//               </div>
+
+//               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
+//                 <h4 
+//                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
+//                   onClick={() => toggleSection('collections')}
+//                   style={{ cursor: 'pointer' }}
+//                 >
+//                   <span className="text">Collections</span>
+//                   <span className="d-md-none text-[#E6B422]">{openSection === 'collections' ? '−' : '+'}</span>
+//                 </h4>
+//                 <ul className={`ft-menu ${openSection === 'collections' ? '' : 'd-none d-md-block'}`}>
+//                   {collectionLinks.map((l, i) => (
+//                     <li key={i}>
+//                       <Link href={l.href}>{l.label}</Link>
+//                     </li>
+//                   ))}
+//                 </ul>
+//               </div>
+
+//               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
+//                  <h4 
+//                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
+//                   onClick={() => toggleSection('contact')}
+//                   style={{ cursor: 'pointer' }}
+//                 >
+//                   <span className="text">Contact Us</span>
+//                   <span className="d-md-none text-[#E6B422]">{openSection === 'contact' ? '−' : '+'}</span>
+//                 </h4>
+//                 <ul className={`address ${openSection === 'contact' ? '' : 'd-none d-md-block'}`}>
+//                   <li>
+//                     <i className="fa fa-home" />
+//                     <span>{contact.address}</span>
+//                   </li>
+//                   <li>
+//                     <i className="fa fa-phone" />
+//                     <span>
+//                       <a href={`tel:${contact.phone}`}>{contact.phone}</a>
+//                     </span>
+//                   </li>
+//                   <li>
+//                     <i className="fa fa-envelope-o" />
+//                     <span>
+//                       <a href={`mailto:${contact.email}`}>{contact.email}</a>
+//                     </span>
+//                   </li>
+//                 </ul>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//         <div className="footer-bottom section">
+//           <div className="container ft-border pt-40 pb-40 pt-xs-20 pb-xs-20">
+//             <div className="row justify-content-between align-items-center">
+//               <div className="col-lg-6 col-md-6 col-sm-8">
+//                 <div className="copyright text-start">
+//                   <p>
+//                     Copyright &copy; {new Date().getFullYear()}{" "}
+//                     <a href="#">{copyrightOwner}</a>. <span className="d-none d-sm-inline">All rights reserved.</span>
+//                   </p>
+//                 </div>
+//               </div>
+//               <div className="col-lg-6 col-md-6 col-sm-4">
+//                 <div className="footer-logo text-end">
+//                   <Link href="/">
+//                     <img src={logoSrc} alt="logo" style={{ height: 30 }} />
+//                   </Link>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </footer>
+//       <ScrollToTopButton mode="start" />
+//     </>
+//   );
+// }
