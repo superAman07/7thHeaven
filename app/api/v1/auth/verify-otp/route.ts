@@ -69,7 +69,26 @@ export async function POST(request: Request) {
       return response;
 
     } else {
-      // This is a SIGNUP flow. Issue a short-lived token to set a password.
+      
+      const referralCode = request.cookies.get('referralCode')?.value;
+      let referrerId = undefined;
+
+      if (referralCode) {
+        const referrer = await prisma.user.findUnique({
+          where: { referralCode }
+        });
+        if (referrer && referrer.id !== user.id) {
+          referrerId = referrer.id;
+        }
+      }
+
+      // Update user with referrer if found
+      if (referrerId && !user.referrerId) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { referrerId }
+        });
+      }
       const verificationToken = jwt.sign(
         { userId: user.id, phone: user.phone },
         process.env.JWT_SECRET!,
