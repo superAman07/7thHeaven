@@ -219,8 +219,16 @@ model Notification {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   isRead    Boolean  @default(false)
-  type      String   // ORDER_UPDATE, MLM_REWARD, PROMO
+  type      String   
   createdAt DateTime @default(now())
+}
+
+model SiteContent {
+  id        String   @id @default(cuid())
+  section   String   @unique 
+  content   Json     
+  updatedAt DateTime @updatedAt
+  updatedBy String?  
 }
 
 enum GenderTags {
