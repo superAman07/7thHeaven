@@ -139,7 +139,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                     margin: 5px 0 10px;
                 }
                 .price-new {
-                    color: #ddb040;
+                    color: #B6902E;
                     font-weight: 700;
                     font-size: 26px;
                 }
@@ -167,8 +167,14 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                     letter-spacing: 1px;
                 }
                 .quick-buy-btn:hover {
-                    background-color: #ddb040;
-                    color: #fff;
+                    background: linear-gradient(90deg, #B6902E, #D6B869, #B6902E);
+                    background-size: 200% auto;
+                    animation: shineGold 3s linear infinite;
+                    color: #252525;
+                }
+                
+                @keyframes shineGold {
+                    to { background-position: 200% center; }
                 }
                 .stock-sticker {
                     position: absolute;
