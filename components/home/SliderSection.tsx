@@ -1,234 +1,190 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React from 'react';
 
 const SliderSection = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
-
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
   return (
     <>
       <style jsx global>{`
-        /* --- UTILITIES --- */
+        /* --- HERO CONTAINER --- */
+        .hero-section {
+            position: relative;
+            overflow: hidden; /* Prevents content from escaping */
+            margin-bottom: 40px;
+        }
+
+        .hero-item {
+            position: relative;
+            min-height: 650px;
+            display: flex;
+            align-items: center;
+            background-image: url('/assets/images/bg-hero.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Dark Gradient Overlay */
         .hero-overlay-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            /* Professional Gradient Overlay: Darker on left for text readability */
-            background: linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.2) 100%);
-            z-index: 1; /* Above video */
-        }
-
-        .hero-play-pause-btn {
-            position: absolute;
-            bottom: 40px;
-            left: 50px;
-            z-index: 20;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-        .hero-play-pause-btn:hover {
-            background: #B6902E; 
-            border-color: #B6902E;
-            color: #fff;
-            transform: scale(1.05);
-        }
-        @media (max-width: 767px) {
-            .hero-play-pause-btn {
-                bottom: 25px;
-                right: 20px;
-                width: 36px;
-                height: 36px;
-            }
-        }
-        .video-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.65) 70%, rgba(0,0,0,0.8) 100%);
+            z-index: 1;
         }
         
-        /* --- HERO TEXT OVERLAY --- */
+        /* --- TEXT OVERLAY --- */
         .hero-text-overlay {
             position: relative;
             z-index: 10;
             padding: 20px 0;
+            text-align: center;
         }
         
-        /* Brand Tag: Regal & Engraved */
-        .hero-text-overlay h2 {
-            font-family: 'Cinzel', serif !important;
-            /* Note: .text-gradient-gold handles color */
-            font-size: 13px; 
-            font-weight: 700;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-            text-shadow: none; 
-            display: inline-block;
+        /* Entry Animations (Run Once) */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Main Headline: Editorial & Elegant */
+        /* Brand Tag */
+        .hero-text-overlay h2 {
+            font-family: 'Cinzel', serif !important;
+            font-size: 14px; 
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            display: inline-block;
+            
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.2s;
+        }
+
+        /* Main Headline */
         .hero-text-overlay h1 {
             font-family: 'Cormorant Garamond', serif !important;
             font-style: italic;
             color: #fff !important;
-            font-size: 76px; /* Increased size for impact */
+            font-size: 80px; 
             font-weight: 500;
-            line-height: 1.05;
-            margin-top: 5px;
-            margin-bottom: 25px;
-            text-shadow: none; /* Removed shadow thanks to overlay */
+            line-height: 1.1;
+            margin-bottom: 30px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.4s;
         }
 
-        /* Subtitle: Sentence Case = More Expensive Feel */
+        /* Subtitle */
         .hero-text-overlay h3 {
             font-family: 'Montserrat', sans-serif !important;
-            color: #e0e0e0 !important;
+            color: #f0f0f0 !important;
             font-size: 16px; 
             font-weight: 400;
-            line-height: 1.6;
-            margin-bottom: 45px;
-            max-width: 500px;
-            /* Removed uppercase text-transform */
+            line-height: 1.8;
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.6s;
         }
 
-        /* --- GRADIENT BUTTON --- */
+        /* --- BUTTON --- */
         .hero-btn {
             font-family: 'Montserrat', sans-serif !important;
             display: inline-block;
             background: linear-gradient(90deg, #B6902E, #D6B869, #B6902E);
             background-size: 200% auto;
             color: #fff;
-            padding: 18px 45px;
+            padding: 18px 50px;
             font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             border-radius: 0;
             transition: all 0.3s ease;
             border: 2px solid #B6902E; 
             text-decoration: none;
+            margin-top: 88px;
+            
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.8s;
         }
 
         .hero-btn:hover {
-            background-color: transparent;
-            background-image: linear-gradient(90deg, #B6902E, #D6B869, #B6902E);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            border-image-source: linear-gradient(90deg, #B6902E, #D6B869, #B6902E);
-            border-image-slice: 1;
-            animation: shineGold 3s linear infinite;
-            box-shadow: 0 5px 15px rgba(182, 144, 46, 0.2); 
+            background: transparent;
+            color: #D6B869;
+            border-color: #D6B869;
+            box-shadow: 0 0 20px rgba(182, 144, 46, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .text-gradient-gold {
+          background: linear-gradient(to right, #B6902E, #E9DDBC, #B6902E);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          background-size: 200% auto;
+          animation: shineGold 3s linear infinite;
         }
 
         @keyframes shineGold {
             to { background-position: 200% center; }
         }
 
-        .text-gradient-gold {
-          background: linear-gradient(
-            to right, 
-            #B6902E 0%, 
-            #D6B869 25%, 
-            #E9DDBC 50%, 
-            #D6B869 75%, 
-            #B6902E 100%
-          );
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          color: transparent !important;
-          background-size: 200% auto;
-          animation: shineGold 3s linear infinite;
-          display: inline-block;
-        }
-
         @media (max-width: 991px) {
-            .hero-text-overlay h1 { font-size: 55px; }
+            .hero-text-overlay h1 { font-size: 60px; }
         }
         @media (max-width: 767px) {
-            .hero-text-overlay h1 { font-size: 40px; }
-            .hero-text-overlay h3 { font-size: 13px; max-width: 100%; }
-            .hero-text-overlay { text-align: left; } /* Keep aligned left on mobile for luxury look */
-            
+            .hero-item { min-height: 500px; }
+            .hero-text-overlay h1 { font-size: 44px; margin-bottom: 20px; }
+            .hero-text-overlay h3 { font-size: 14px; max-width: 90%; margin-bottom: 35px; }
             .hero-btn {
-                padding: 14px 30px;
+                padding: 15px 35px;
                 font-size: 11px;
-                letter-spacing: 1px;
-                width: auto; /* Prevent full width stretching */
-                white-space: nowrap; /* Prevent text wrapping */
+                letter-spacing: 2px;
             }
         }
       `}</style>
-      <div className="hero-section section position-relative mb-10">
-        <div className="hero-item" style={{ minHeight: '650px', display: 'flex', alignItems: 'center' }}>
-          
-          <video 
-              ref={videoRef}
-              className="video-bg"
-              src="/celsius-vid.mp4"
-              loop
-              muted
-              playsInline
-              autoPlay
-          />
+      
+      <div className="hero-section section position-relative">
+        <div className="hero-item">
           
           <div className="hero-overlay-layer"></div>
           
           <div className="container" style={{ position: 'relative', zIndex: 10 }}>
-            <div className="row">
-              <div className="col-lg-8 col-md-10 col-12">
-                <div className="hero-text-overlay text-start">
+            <div className="row justify-content-center">
+              <div className="col-lg-10 col-12">
+                <div className="hero-text-overlay">
+                  
                   <h2 className="text-gradient-gold">Made In Bharat</h2>
+                  
                   <h1>The Scent <br className="d-md-none" /> of Success</h1>
+                  
                   <h3>Premium, long-lasting fragrances crafted with the world's rarest oils.</h3>
+                  
                   <a href="/collections/perfumes" className="hero-btn">Shop The Collection</a>
+
                 </div>
               </div>
             </div>
           </div>
 
-          <button 
-              className="hero-play-pause-btn" 
-              onClick={togglePlay}
-              aria-label={isPlaying ? "Pause Video" : "Play Video"}
-          >
-              {isPlaying ? (
-                  <i className="fa fa-pause" style={{ fontSize: '14px' }}></i>
-              ) : (
-                  <i className="fa fa-play" style={{ fontSize: '14px', marginLeft: '3px' }}></i> 
-                )
-              } 
-          </button> 
         </div> 
       </div> 
     </> 
