@@ -18,10 +18,32 @@ const SliderSection = () => {
             min-height: 650px;
             display: flex;
             align-items: center;
+            overflow: hidden; /* Required for zoom effect */
+        }
+
+        /* Animated Background Image */
+        .hero-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-image: url('/assets/images/bg-hero.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            animation: slowZoom 20s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes slowZoom {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.08);
+            }
         }
 
         /* Dark Gradient Overlay */
