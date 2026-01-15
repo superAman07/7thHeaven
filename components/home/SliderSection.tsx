@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Crown } from 'lucide-react'; 
 
 const SliderSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -21,6 +20,18 @@ const SliderSection = () => {
   return (
     <>
       <style jsx global>{`
+        /* --- UTILITIES --- */
+        .hero-overlay-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Professional Gradient Overlay: Darker on left for text readability */
+            background: linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.2) 100%);
+            z-index: 1; /* Above video */
+        }
+
         .hero-play-pause-btn {
             position: absolute;
             bottom: 40px;
@@ -41,8 +52,8 @@ const SliderSection = () => {
             outline: none;
         }
         .hero-play-pause-btn:hover {
-            background: #E6B422; 
-            border-color: #E6B422;
+            background: #B6902E; 
+            border-color: #B6902E;
             color: #fff;
             transform: scale(1.05);
         }
@@ -64,7 +75,7 @@ const SliderSection = () => {
             z-index: -1;
         }
         
-        /* --- NEW PROFESSIONAL FONT STYLES --- */
+        /* --- HERO TEXT OVERLAY --- */
         .hero-text-overlay {
             position: relative;
             z-index: 10;
@@ -73,60 +84,58 @@ const SliderSection = () => {
         
         /* Brand Tag: Regal & Engraved */
         .hero-text-overlay h2 {
-            font-family: 'Cinzel', serif !important; /* Update: Luxury Brand Font */
-            color: #E6B422 !important;
-            font-size: 15px; 
+            font-family: 'Cinzel', serif !important;
+            /* Note: .text-gradient-gold handles color */
+            font-size: 13px; 
             font-weight: 700;
             letter-spacing: 4px;
             text-transform: uppercase;
-            margin-bottom: 0;
-            text-shadow: none; /* Removed muddy shadow for crisp look */
+            margin-bottom: 12px;
+            text-shadow: none; 
             display: inline-block;
         }
 
         /* Main Headline: Editorial & Elegant */
         .hero-text-overlay h1 {
-            font-family: 'Cormorant Garamond', serif !important; /* Update: Classic Serif */
+            font-family: 'Cormorant Garamond', serif !important;
             font-style: italic;
             color: #fff !important;
-            font-size: 70px;
-            font-weight: 600;
-            line-height: 1.1;
-            margin-top: 15px;
-            margin-bottom: 25px;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Softer, premium shadow */
-        }
-
-        /* Subtitle: Modern & Clean */
-        .hero-text-overlay h3 {
-            font-family: 'Montserrat', sans-serif !important; /* Update: Clean Sans Serif */
-            color: #e0e0e0 !important;
-            font-size: 14px;
+            font-size: 76px; /* Increased size for impact */
             font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 45px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            line-height: 1.05;
+            margin-top: 5px;
+            margin-bottom: 25px;
+            text-shadow: none; /* Removed shadow thanks to overlay */
         }
 
+        /* Subtitle: Sentence Case = More Expensive Feel */
+        .hero-text-overlay h3 {
+            font-family: 'Montserrat', sans-serif !important;
+            color: #e0e0e0 !important;
+            font-size: 16px; 
+            font-weight: 400;
+            line-height: 1.6;
+            margin-bottom: 45px;
+            max-width: 500px;
+            /* Removed uppercase text-transform */
+        }
+
+        /* --- GRADIENT BUTTON --- */
         .hero-btn {
             font-family: 'Montserrat', sans-serif !important;
             display: inline-block;
-            
             background: linear-gradient(90deg, #B6902E, #D6B869, #B6902E);
             background-size: 200% auto;
             color: #fff;
-            
             padding: 18px 45px;
             font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
             border-radius: 0;
-            text-decoration: none;
-            
-            border: 2px solid #B6902E; 
             transition: all 0.3s ease;
+            border: 2px solid #B6902E; 
+            text-decoration: none;
         }
 
         .hero-btn:hover {
@@ -135,10 +144,8 @@ const SliderSection = () => {
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            
             border-image-source: linear-gradient(90deg, #B6902E, #D6B869, #B6902E);
             border-image-slice: 1;
-            
             animation: shineGold 3s linear infinite;
             box-shadow: 0 5px 15px rgba(182, 144, 46, 0.2); 
         }
@@ -146,6 +153,7 @@ const SliderSection = () => {
         @keyframes shineGold {
             to { background-position: 200% center; }
         }
+
         .text-gradient-gold {
           background: linear-gradient(
             to right, 
@@ -158,25 +166,10 @@ const SliderSection = () => {
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
+          color: transparent !important;
           background-size: 200% auto;
-          animation: shineGold 5s linear infinite;
-          display: inline-block; /* Required for gradient to show nicely */
-        }
-        .hero-btn:hover {
-          background-color: transparent;
-        }
-
-        .hero-btn:hover span {
-          background: linear-gradient(
-            to right,
-            #B6902E 0%,
-            #D6B869 25%,
-            #E9DDBC 50%,
-            #D6B869 75%,
-            #B6902E 100%
-          );
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          animation: shineGold 3s linear infinite;
+          display: inline-block;
         }
 
         @media (max-width: 991px) {
@@ -184,13 +177,21 @@ const SliderSection = () => {
         }
         @media (max-width: 767px) {
             .hero-text-overlay h1 { font-size: 40px; }
-            .hero-text-overlay h3 { font-size: 12px; }
-            .hero-text-overlay { text-align: center; }
-            .crown-header { justify-content: center; }
+            .hero-text-overlay h3 { font-size: 13px; max-width: 100%; }
+            .hero-text-overlay { text-align: left; } /* Keep aligned left on mobile for luxury look */
+            
+            .hero-btn {
+                padding: 14px 30px;
+                font-size: 11px;
+                letter-spacing: 1px;
+                width: auto; /* Prevent full width stretching */
+                white-space: nowrap; /* Prevent text wrapping */
+            }
         }
       `}</style>
       <div className="hero-section section position-relative mb-10">
         <div className="hero-item" style={{ minHeight: '650px', display: 'flex', alignItems: 'center' }}>
+          
           <video 
               ref={videoRef}
               className="video-bg"
@@ -201,22 +202,16 @@ const SliderSection = () => {
               autoPlay
           />
           
-          <div className="container">
+          <div className="hero-overlay-layer"></div>
+          
+          <div className="container" style={{ position: 'relative', zIndex: 10 }}>
             <div className="row">
               <div className="col-lg-8 col-md-10 col-12">
                 <div className="hero-text-overlay text-start">
-                  
-                  {/* CROWN HEADER */}
-                  <div className="crown-header d-flex align-items-center gap-3 mb-3">
-                    <Crown size={20} color="#E6B422" fill="#E6B422" />
-                    <h2 className="text-gradient-gold">CELSIUS Exclusive</h2>
-                  </div>
-                  
-                  {/* NEW BRAND MESSAGING */}
-                  <h1>Earn While You Shop... <br/> The Celsius Experience</h1>
-                  <h3>Luxury. Longevity. Made in Bharat.</h3>
-                  
-                  <a href="/collections/perfumes" className="hero-btn">Shop Collection</a>
+                  <h2 className="text-gradient-gold">Made In Bharat</h2>
+                  <h1>The Scent <br className="d-md-none" /> of Success</h1>
+                  <h3>Premium, long-lasting fragrances crafted with the world's rarest oils.</h3>
+                  <a href="/collections/perfumes" className="hero-btn">Shop The Collection</a>
                 </div>
               </div>
             </div>
