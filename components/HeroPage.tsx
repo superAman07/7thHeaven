@@ -13,6 +13,7 @@ import BestSellersSection from "./home/BestSellersSection";
 import { ProductSection2Skeleton } from "./home/ProductSection2Skeleton";
 import TabbedProductsSection from "./home/TabbedProductsSection";
 import { GenderTags } from "@prisma/client";
+import { getSiteContent, defaultHomeAbout } from "@/lib/site-content";
 
 export type PublicProduct = {
     id: string;
@@ -70,6 +71,7 @@ const ProductSectionSkeleton = () => (
 );
 
 export default async function HeroPage() {
+    const aboutContent = await getSiteContent('home_about', defaultHomeAbout);
     return <>
         <div id="main-wrapper">
             <SliderSection />
@@ -81,7 +83,7 @@ export default async function HeroPage() {
                 <TabbedProductsSection />
             </Suspense>
             <HowItWorksPage />
-            <AboutUsAreaSection />
+            <AboutUsAreaSection data={aboutContent} />
             <FeatureSectionPage />
         </div>
     </>
