@@ -2429,12 +2429,16 @@ ul.cart-items li {
     text-transform: uppercase;
     letter-spacing: 3px;
     border-radius: 0;
+    /* margin-top: 88px; */
     transition: all 0.3s ease;
     border: 2px solid #B6902E;
     text-decoration: none;
     opacity: 0;
     animation: fadeInUp 0.8s ease-out forwards;
     animation-delay: 0.8s;
+
+    position: relative;
+    top: 88px;
 }
 
 .hero-btn:hover {
