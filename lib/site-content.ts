@@ -67,7 +67,7 @@ export async function getSiteContent<T>(section: string, defaultValue: T): Promi
       where: { section }
     });
 
-    if (!record || !record.content || record.content === Prisma.DbNull) {
+    if (!record || !record.content) {
       return defaultValue;
     }
 
