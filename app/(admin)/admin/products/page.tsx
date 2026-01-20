@@ -468,8 +468,11 @@ export default function ProductsPage() {
         )}
       </div>
 
-      <div className={`fixed inset-0 z-40 transition-opacity duration-300 ease-in-out ${isPanelOpen ? 'bg-black/60' : 'pointer-events-none opacity-0'}`} onClick={closePanel}></div>
-      <div className={`fixed top-0 right-0 h-full w-full max-w-2xl bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div 
+        className={`fixed inset-0 z-999 bg-black/50 transition-opacity duration-300 ease-in-out ${isPanelOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`} 
+        onClick={closePanel}
+      ></div>
+      <div className={`fixed top-0 right-0 h-full w-full max-w-2xl bg-white shadow-xl z-1000 transform transition-transform duration-300 ease-in-out ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <form className="flex flex-col h-full" onSubmit={handleFormSubmit}>
           <div className="flex items-center justify-between px-6 py-4 border-b">
             <h2 className="text-lg font-semibold text-gray-800">{currentProduct ? 'Edit Product' : 'Add New Product'}</h2>
@@ -494,7 +497,12 @@ export default function ProductsPage() {
                 {imageUrls.map(url => (
                   <div key={url} className="relative group">
                     <img src={url} alt="Product image" className="h-24 w-24 object-cover rounded-lg" />
-                    <button type="button" onClick={() => removeImage(url)} className="absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      type="button" 
+                      onClick={() => removeImage(url)} 
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors z-10"
+                      title="Remove Image"
+                    >
                       <X className="w-3 h-3" />
                     </button>
                   </div>

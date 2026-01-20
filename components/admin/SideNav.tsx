@@ -54,7 +54,7 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
   return (
     <>
       <nav 
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-72 p-6 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 bg-white/80 backdrop-blur-xl border-r border-gray-100 ${
+        className={`fixed inset-y-0 left-0 z-30 flex flex-col w-72 p-6 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 bg-white/80 backdrop-blur-xl border-r border-gray-100 ${
           isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
         }`}
         aria-label="Sidebar"
@@ -105,7 +105,7 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-            className="fixed inset-0 bg-black/40 z-40 md:hidden backdrop-blur-sm"
+            className="fixed inset-0 bg-black/40 z-20 md:hidden backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
         />
       )}
