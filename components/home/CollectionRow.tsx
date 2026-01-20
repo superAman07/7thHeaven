@@ -23,31 +23,43 @@ export default async function CollectionRow({ title, categorySlug, bgClass = "bg
     if (products.length === 0) return null;
 
     return (
-        <section className={`w-full py-16 md:py-24 ${bgClass}`}>
-            <div className="container mx-auto px-4 sm:px-6">
-                {/* Header Section */}
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-gray-900 tracking-wide uppercase mb-4" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
-                        {title}
-                    </h2>
-                    {/* Gold Separator Line */}
-                    <div className="h-1 w-24 bg-[#D6B869] mx-auto rounded-full"></div>
+        <section className={`shop-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45 pb-70 pb-lg-50 pb-md-40 pb-sm-60 pb-xs-50 ${bgClass}`}>
+            <div className="container">
+                <div className="row">
+                    <div className="col-lg-12 order-lg-2 order-1">
+                        <div className="row">
+                            <div className="col-12">
+                                <div className="shop-banner-title text-center mb-10 section-header-gold">
+                                    <h2 className="text-uppercase">{title}</h2>
+                                    <div className="gold-separator"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-12">
+                                <div className="shop-product">
+                                    <div className="tab-content">
+                                        <div className="tab-pane fade active show">
+                                            <div className="product-slider tf-element-carousel">
+                                                <ProductSlider products={products as any[]} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                {/* Products Slider */}
-                <div className="w-full">
-                    {/* passing data to a Client Component for React-Slick */}
-                    <ProductSlider products={products as any[]} /> 
-                </div>
-
                 {/* View All Button */}
-                <div className="mt-10 text-center">
-                    <Link 
-                        href={`/collections/${categorySlug}`}
-                        className="inline-block px-8 py-3 bg-[#333333] text-white hover:bg-[#D6B869] hover:text-[#1A1A1A] transition-colors duration-300 uppercase tracking-widest text-sm font-semibold border-0"
-                    >
-                        View Collection
-                    </Link>
+                <div className="row">
+                    <div className="col-12 text-center mt-40">
+                        <Link 
+                            href={`/collections/${categorySlug}`}
+                            className="btn"
+                        >
+                            <span>View Collection</span>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </section>
