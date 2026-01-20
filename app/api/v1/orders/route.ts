@@ -129,6 +129,12 @@ export async function POST(req: NextRequest) {
             if (!product) {
                 throw new Error(`Product with ID ${item.productId} not found.`);
             }
+            if (product.isArchived) {
+                throw new Error(`Item "${product.name}" is no longer available (Archived). Please remove it from your cart.`);
+            }
+            if (!product.inStock) {
+                 throw new Error(`Item "${product.name}" is currently out of stock.`);
+            }
             let selectedVariant;
             if (item.variantId) {
                 selectedVariant = product.variants.find(v => v.id === item.variantId);

@@ -36,6 +36,7 @@ export async function getProducts(params: ProductFilterParams) {
 
     const where: Prisma.ProductWhereInput = {
         AND: [
+            { isArchived: false },
             search ? {
                 OR: [
                     { name: { contains: search, mode: 'insensitive' } },

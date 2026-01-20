@@ -40,8 +40,8 @@ async function getProductData(slug: string) {
     },
   });
 
-  if (!productData) {
-    console.log('No product found for slug:', slug); // Debug log
+  if (!productData || productData.isArchived) {
+    console.log('Product not found or archived:', slug);
     notFound();
   }
 

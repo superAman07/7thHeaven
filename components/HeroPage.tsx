@@ -1,18 +1,19 @@
 import prisma from "@/lib/prisma";
 import AboutUsAreaSection from "./home/AboutUsArea";
-import CategoryGender from "./home/CategoryGender";
+// import CategoryGender from "./home/CategoryGender";
 import FeatureSectionPage from "./home/FeatureSection";
 import FooterPage from "./home/Footer";
 import HowItWorksPage from "./home/HowItWorks";
 import NavBar from "./home/NavBar";
-import ProductSection2 from "./home/ProductSection2";
+// import ProductSection2 from "./home/ProductSection2";
 import SliderSection from "./home/SliderSection";
 import { Suspense } from "react";
 import { ProductCardSkeleton } from './home/ProductCardSkeleton';
-import BestSellersSection from "./home/BestSellersSection";
+// import BestSellersSection from "./home/BestSellersSection";
 import { ProductSection2Skeleton } from "./home/ProductSection2Skeleton";
-import TabbedProductsSection from "./home/TabbedProductsSection";
+// import TabbedProductsSection from "./home/TabbedProductsSection";
 import { GenderTags } from "@prisma/client";
+import CollectionRow from "./home/CollectionRow";
 import { getSiteContent, defaultHomeAbout } from "@/lib/site-content";
 
 export type PublicProduct = {
@@ -75,12 +76,26 @@ export default async function HeroPage() {
     return <>
         <div id="main-wrapper">
             <SliderSection />
-            <Suspense fallback={<ProductSectionSkeleton />}>
-                <BestSellersSection />
-            </Suspense>
-            <CategoryGender />
             <Suspense fallback={<ProductSection2Skeleton />}>
-                <TabbedProductsSection />
+                <CollectionRow 
+                    title="Skyline Series" 
+                    categorySlug="skyline-series" 
+                    bgClass="bg-white" 
+                />
+            </Suspense>
+            <Suspense fallback={<ProductSection2Skeleton />}>
+                <CollectionRow 
+                    title="Corporate Collection" 
+                    categorySlug="corporate-collection" 
+                    bgClass="bg-[#FAFAFA]"
+                />
+            </Suspense>
+            <Suspense fallback={<ProductSection2Skeleton />}>
+                <CollectionRow 
+                    title="Tatva Series" 
+                    categorySlug="tatva-series" 
+                    bgClass="bg-white" 
+                />
             </Suspense>
             <HowItWorksPage />
             <AboutUsAreaSection data={aboutContent} />

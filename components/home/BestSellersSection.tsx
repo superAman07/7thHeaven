@@ -6,7 +6,10 @@ import Link from 'next/link';
 
 async function getBestSellers(): Promise<PublicProduct[]> {
     const productsFromDb = await prisma.product.findMany({
-        where: { inStock: true },
+        where: { 
+            inStock: true,
+            isArchived: false
+        },
         orderBy: { createdAt: 'desc' },
         take: 8,
         select: {

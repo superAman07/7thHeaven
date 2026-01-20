@@ -16,6 +16,8 @@ function formatCartForClient(cart: any) {
     if (!cart || !cart.items) return [];
     return cart.items.map((item: any) => {
         const activeVariant = item.variant || item.product.variants[0];
+        const isArchived = item.product.isArchived;
+        const effectiveStock = isArchived ? 0 : (activeVariant?.stock || 0);
 
         return {
             id: activeVariant ? `${item.product.id}-${activeVariant.id}` : item.product.id,
@@ -30,13 +32,13 @@ function formatCartForClient(cart: any) {
                 id: activeVariant.id,
                 price: activeVariant.price.toNumber(),
                 size: activeVariant.size,
-                stock: activeVariant.stock
+                stock: effectiveStock
             } : null,
             variants: item.product.variants.map((v: any) => ({
                 id: v.id,
                 price: v.price.toNumber(),
                 size: v.size,
-                stock: v.stock
+                stock: isArchived ? 0 : v.stock
             })),
             category: item.product.category
         };
@@ -94,6 +96,14 @@ export async function POST(req: NextRequest) {
 
         if (!productId || !quantity) {
              return NextResponse.json({ error: 'Invalid cart data' }, { status: 400 });
+        }
+
+        const productCheck = await prisma.product.findUnique({
+            where: { id: productId },
+            select: { isArchived: true, inStock: true }
+        });
+        if (productCheck && (productCheck.isArchived || !productCheck.inStock)) {
+             return NextResponse.json({ error: 'Product is unavailable/out of stock' }, { status: 400 });
         }
 
         let cart = await prisma.cart.findUnique({
@@ -173,19 +183,30 @@ export async function PUT(req: NextRequest) {
         }
 
         let availableStock = 0;
+        let isArchived = false;
 
         if (variantId) {
             const variant = await prisma.productVariant.findUnique({
-                where: { id: variantId }
+                where: { id: variantId },
+                include: { product: { select: { isArchived: true } } }
             });
             if (!variant) return NextResponse.json({ error: 'Variant not found' }, { status: 404 });
             availableStock = variant.stock;
+            isArchived = variant.product.isArchived;
         } else {
             const product = await prisma.product.findUnique({
                 where: { id: productId }
             });
             if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
             availableStock = product.stock;
+            isArchived = product.isArchived;
+        }
+
+        if (isArchived) {
+             return NextResponse.json({ 
+                error: `This product is no longer available.`,
+                maxStock: 0 
+            }, { status: 400 });
         }
 
         if (quantity > availableStock) {
