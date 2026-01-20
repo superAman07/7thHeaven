@@ -44,7 +44,7 @@ export default async function CollectionRow({ title, categorySlug, bgClass = "bg
                 <div className="mt-10 text-center">
                     <Link 
                         href={`/collections/${categorySlug}`}
-                        className="inline-block px-8 py-3 border border-[#D6B869] text-[#1A1A1A] hover:bg-[#D6B869] hover:text-white transition-colors duration-300 uppercase tracking-widest text-sm font-semibold"
+                        className="inline-block px-8 py-3 bg-[#333333] text-white hover:bg-[#D6B869] hover:text-[#1A1A1A] transition-colors duration-300 uppercase tracking-widest text-sm font-semibold border-0"
                     >
                         View Collection
                     </Link>
