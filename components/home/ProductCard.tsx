@@ -97,21 +97,19 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                 /* Custom Select Styling */
                 .product-size-select select {
                     width: 100%;
-                    padding: 8px 35px 8px 15px; /* Extra right padding for arrow */
+                    padding: 8px 35px 8px 15px;
                     font-size: 13px;
                     font-weight: 500;
                     color: #333;
                     background-color: #fff;
                     border: 1px solid #e5e5e5;
-                    border-radius: 0; /* Sharp edges for professional look */
+                    border-radius: 0;
                     cursor: pointer;
                     
-                    /* Remove default browser arrow */
                     appearance: none;
                     -webkit-appearance: none;
                     -moz-appearance: none;
                     
-                    /* Custom Arrow Icon */
                     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
                     background-repeat: no-repeat;
                     background-position: right 10px center;
@@ -120,37 +118,48 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                     transition: all 0.3s ease;
                 }
 
-                /* Hover State */
                 .product-size-select select:hover {
-                    border-color: #ddb040; /* Golden border on hover */
+                    border-color: #ddb040;
                 }
 
-                /* Focus State (Removes blue outline) */
                 .product-size-select select:focus {
                     outline: none;
                     border-color: #ddb040;
-                    box-shadow: 0 0 0 1px #ddb040; /* Subtle golden glow */
+                    box-shadow: 0 0 0 1px #ddb040;
                 }
+                
+                /* FIX 1: Professional Price Display with Proper Spacing */
                 .price-box {
                     display: flex;
+                    flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    gap: 8px;
-                    margin: 5px 0 10px;
+                    gap: 4px;
+                    margin: 8px 0 10px;
+                    min-height: 60px; /* Consistent height regardless of content */
                 }
+                
                 .price-new {
                     color: #B6902E;
                     font-weight: 700;
-                    font-size: 26px;
+                    font-size: 20px; /* Reduced from 26px for better fit */
+                    font-family: 'Montserrat', sans-serif; /* Professional sans-serif font */
+                    letter-spacing: 0.5px;
+                    line-height: 1.2;
+                    white-space: nowrap; /* Prevent line breaks */
                 }
+                
                 .price-old {
                     color: #888;
-                    text-decoration: line-through; /* Adds the cut */
-                    font-size: 22px;
+                    text-decoration: line-through;
+                    font-size: 16px; /* Reduced from 22px */
                     font-weight: 400;
+                    font-family: 'Montserrat', sans-serif; /* Professional sans-serif font */
+                    letter-spacing: 0.3px;
+                    line-height: 1.2;
+                    white-space: nowrap;
                 }
 
-                /* Quick Buy Button */
                 .quick-buy-btn {
                     display: block;
                     width: 100%;
@@ -176,26 +185,45 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                 @keyframes shineGold {
                     to { background-position: 200% center; }
                 }
-                .stock-sticker {
+                
+                /* FIX 2: High-Contrast Discount Tag with Black Background */
+                .descount-sticker-custom {
                     position: absolute;
-                    right: 10px;
-                    /* Top is handled inline to avoid collision with 'New' tag */
-                    color: #e53935;
-                    border: 2px solid #e53935;
-                    background: rgba(255, 255, 255, 0.9);
+                    left: 10px;
+                    top: 10px;
+                    background-color: #000000; /* Solid black background for maximum contrast */
+                    color: #D6B869; /* Golden text */
+                    border: 2px solid #D6B869; /* Golden border */
                     font-weight: 700;
                     text-align: center;
                     line-height: 24px;
-                    padding: 0 10px;
+                    padding: 2px 10px;
+                    font-size: 13px;
+                    text-transform: uppercase;
+                    z-index: 2;
+                    letter-spacing: 0.5px;
+                    font-family: 'Montserrat', sans-serif;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+                }
+                
+                .stock-sticker {
+                    position: absolute;
+                    right: 10px;
+                    color: #e53935;
+                    border: 2px solid #e53935;
+                    background: rgba(255, 255, 255, 0.95); /* Slightly more opaque */
+                    font-weight: 700;
+                    text-align: center;
+                    line-height: 24px;
+                    padding: 2px 10px;
                     font-size: 11px;
                     text-transform: uppercase;
                     z-index: 2;
                     letter-spacing: 0.5px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
                 }
                 
                 .product-btn.disabled {
-                    // background-color: #f5f5f5;
-                    // color: #999;
                     cursor: not-allowed;
                     pointer-events: none;
                 }
@@ -218,7 +246,14 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                         </Link>
                         
                         {product.isNewArrival && <span className="sticker">New</span>}
-                        {priceData.discount > 0 && <span className="descount-sticker">-{priceData.discount}%</span>}
+                        
+                        {/* FIXED: Black background discount tag */}
+                        {priceData.discount > 0 && (
+                            <span className="descount-sticker-custom">
+                                -{Math.round(priceData.discount)}%
+                            </span>
+                        )}
+                        
                         {isLowStock && (
                             <span 
                                 className="stock-sticker" 
@@ -278,12 +313,6 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                             <Link href={`/products/${product.slug}`}>{product.name}</Link>
                         </h3>
 
-                        {/* <div className="ratting">
-                            {[...Array(5)].map((_, i) => (
-                                <i key={i} className={`fa ${i < (product.ratingsAvg || 0) ? 'fa-star' : 'fa-star-o'}`}></i>
-                            ))}
-                        </div> */}
-
                         {product.variants && product.variants.length > 1 ? (
                             <div className="product-size-select">
                                 <select 
@@ -308,12 +337,15 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                                 {selectedVariant?.size} {/[a-zA-Z]/.test(selectedVariant?.size || '') ? '' : 'ml'}
                             </div>
                         )}
-                        <h4 className="price-box">
-                            <span className="price-new">Rs. {priceData.current.toFixed(2)}</span>
+                        
+                        {/* FIXED: Professional price display */}
+                        <div className="price-box">
+                            <span className="price-new">₹{priceData.current.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                             {priceData.discount > 0 && (
-                                <span className="price-old">Rs. {priceData.old.toFixed(2)}</span>
+                                <span className="price-old">₹{priceData.old.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                             )}
-                        </h4>
+                        </div>
+                        
                         <button 
                             className="quick-buy-btn" 
                             onClick={handleQuickBuy}
