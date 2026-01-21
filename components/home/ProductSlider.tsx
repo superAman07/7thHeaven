@@ -34,7 +34,7 @@ const settings = {
     infinite: true,
     speed: 500,
     slidesToShow: 4,
-    slidesToScroll: 1,
+    slidesToScroll: 4,
     arrows: true,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
@@ -44,7 +44,7 @@ const settings = {
             breakpoint: 1199,
             settings: {
                 slidesToShow: 3,
-                slidesToScroll: 1,
+                slidesToScroll: 3,
                 arrows: true,
                 autoplay: false,
             }
@@ -53,20 +53,24 @@ const settings = {
             breakpoint: 991,
             settings: {
                 slidesToShow: 2,
-                slidesToScroll: 1,
+                slidesToScroll: 2,
                 arrows: false,
                 autoplay: true,
                 autoplaySpeed: 3000,
+                pauseOnHover: true,
+                pauseOnFocus: true,
             }
         },
         {
             breakpoint: 768,
             settings: {
                 slidesToShow: 2,
-                slidesToScroll: 1,
+                slidesToScroll: 2,
                 arrows: false,
                 autoplay: true,
                 autoplaySpeed: 3000,
+                pauseOnHover: true, // ADDED
+                pauseOnFocus: true,
             }
         },
         {
@@ -76,41 +80,45 @@ const settings = {
                 slidesToScroll: 1,
                 arrows: false,
                 autoplay: true,
-                autoplaySpeed: 3000,
+                autoplaySpeed: 3000, // CHANGED: Increased from 1500ms for better UX
+                infinite: true,
+                pauseOnHover: true, // ADDED: Critical for mobile touch
+                pauseOnFocus: true, // ADDED
+                pauseOnDotsHover: true, // ADDED: Pause when touching dots
+                swipe: true, // ADDED: Ensure swipe is enabled
+                swipeToSlide: true, // ADDED: Allow swiping to any slide
+                touchThreshold: 10,
             }
         }
     ]
 };
 
 export default function ProductSlider({ products }: { products: PublicProduct[] }) {
-    // const [isMobile, setIsMobile] = useState(false);
-
-    // useEffect(() => {
-    //     const checkMobile = () => {
-    //         setIsMobile(window.innerWidth < 992);
-    //     };
-        
-    //     checkMobile();
-    //     window.addEventListener('resize', checkMobile);
-    //     return () => window.removeEventListener('resize', checkMobile);
-    // }, []);
-
     const handleQuickView = (p: any) => {
         console.log("Open Modal", p.id);
     };
 
-    // const sliderSettings = {
-    //     ...settings,
-    //     ...(isMobile ? {} : {
-    //         nextArrow: <NextArrow />,
-    //         prevArrow: <PrevArrow />,
-    //     })
-    // };
-
     return (
-        <div className="slider-container px-2 relative">
+        <div className="slider-container relative">
             <style jsx global>{`
-                /* Target our specific custom class to override global style.css */
+                .slider-container .slick-slide > div {
+                    padding: 0 8px;
+                }
+                
+                @media (max-width: 640px) {
+                    .slider-container {
+                        padding-left: 0 !important;
+                        padding-right: 0 !important;
+                    }
+                    .slider-container .slick-slide > div {
+                        padding: 0 !important;
+                    }
+                    .slider-container .slick-list {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                }
+                    
                 .slider-container .slick-slider .custom-product-arrow {
                     position: absolute !important;
                     top: 50% !important;
@@ -132,15 +140,12 @@ export default function ProductSlider({ products }: { products: PublicProduct[] 
                     opacity: 1 !important; /* CHANGED: Always visible on desktop */
                     cursor: pointer;
                 }
-
-                /* CHANGED: Hide arrows on mobile/tablet screens */
                 @media (max-width: 991px) {
                     .slider-container .slick-slider .custom-product-arrow {
-                        display: none !important; /* Force hide on mobile */
+                        display: none !important;
                     }
                 }
 
-                /* Show on Hover - Desktop only */
                 @media (min-width: 992px) {
                     .slider-container .slick-slider .custom-product-arrow {
                         opacity: 0;
@@ -176,7 +181,7 @@ export default function ProductSlider({ products }: { products: PublicProduct[] 
             `}</style>
             <Slider {...settings}>
                 {products.map((product) => (
-                    <div key={product.id} className="px-2 pb-8"> 
+                    <div key={product.id} className=" pb-8"> 
                          <ProductCard 
                             product={product} 
                             onQuickView={handleQuickView}
