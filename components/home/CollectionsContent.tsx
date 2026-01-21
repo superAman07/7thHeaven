@@ -33,6 +33,8 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
   const [sortBy, setSortBy] = useState('newest');
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
 
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
   // 1. Initialize filters from URL
   useEffect(() => {
     const genderParam = searchParams.get('gender');
@@ -101,15 +103,18 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
       
       if (selectedGenders.length) params.append('gender', selectedGenders.join(','));
       
-      // Logic: If 'In Stock' is selected, we send status=true. 
-      // If 'Out of Stock' is selected, we send status=false.
-      // If BOTH or NEITHER are selected, we don't send the param (show all).
       if (selectedStatus.length === 1) {
           if (selectedStatus.includes('In Stock')) params.append('status', 'true');
           if (selectedStatus.includes('Out of Stock')) params.append('status', 'false');
       }
+
+      if (categorySlug && categorySlug !== 'perfumes') {
+        params.append('category', categorySlug);
+      } 
+      else if (selectedCategories.length > 0) {
+        params.append('category', selectedCategories.join(','));
+      }
       
-      params.append('category', categorySlug);
       params.append('sort', sortBy);
       params.append('page', currentPage.toString());
       params.append('limit', '12');
@@ -178,6 +183,13 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (catId: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]
+    );
     setCurrentPage(1);
   };
 
@@ -286,6 +298,28 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                     ))}
                   </div>
                 </div>
+                {categorySlug === 'perfumes' && (
+                  <div className="mb-4">
+                    <div className={`section-header ${!collapsedSections['category'] ? 'active' : ''}`} onClick={() => toggleSection('category')}>
+                      <div className="filter-title">Category</div>
+                      <span style={{ fontSize: '20px', cursor: 'pointer', transform: !collapsedSections['category'] ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }}>⌃</span>
+                    </div>
+                    <div className="section-content" style={{ maxHeight: collapsedSections['category'] ? '0px' : '500px', overflow: 'hidden', transition: 'max-height 0.35s ease' }}>
+                      {categories.map(cat => (
+                        <div className="category-item" key={cat.id}>
+                          <div>
+                            <input
+                              type="checkbox"
+                              checked={selectedCategories.includes(cat.id)}
+                              onChange={() => handleCategoryChange(cat.id)}
+                            /> {cat.name}
+                          </div>
+                          <span>{cat.count || ''}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

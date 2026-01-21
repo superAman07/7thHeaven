@@ -79,14 +79,10 @@ const settings = {
                 slidesToShow: 1,
                 slidesToScroll: 1,
                 arrows: false,
-                autoplay: true,
-                autoplaySpeed: 3000, // CHANGED: Increased from 1500ms for better UX
+                autoplay: false,
                 infinite: true,
-                pauseOnHover: true, // ADDED: Critical for mobile touch
-                pauseOnFocus: true, // ADDED
-                pauseOnDotsHover: true, // ADDED: Pause when touching dots
-                swipe: true, // ADDED: Ensure swipe is enabled
-                swipeToSlide: true, // ADDED: Allow swiping to any slide
+                swipe: true,
+                swipeToSlide: true,
                 touchThreshold: 10,
             }
         }
