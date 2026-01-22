@@ -2320,7 +2320,7 @@ ul.cart-items li {
 
 .hero-item {
     position: relative;
-    min-height: 650px;
+    /* min-height: 650px; */
     display: flex;
     align-items: center;
     overflow: hidden;
