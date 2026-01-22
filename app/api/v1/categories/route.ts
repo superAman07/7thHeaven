@@ -9,4 +9,4 @@ export async function GET() {
         console.error('GET /api/v1/categories Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-}
+} 

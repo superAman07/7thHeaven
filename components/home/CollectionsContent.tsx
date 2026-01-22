@@ -34,6 +34,7 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   // 1. Initialize filters from URL
   useEffect(() => {
@@ -55,7 +56,7 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
     const sortParam = searchParams.get('sort');
     if (sortParam && sortParam !== sortBy) setSortBy(sortParam);
 
-    fetchCategories();
+    // fetchCategories();
   }, [searchParams]); 
 
   // 2. Debounce Price Range
@@ -88,6 +89,18 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
       console.error("Error fetching categories", error);
     }
   };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (isMobileFilterOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  }, [isMobileFilterOpen]);
 
   // 4. Fetch Products
   const fetchProducts = useCallback(async () => {
@@ -221,13 +234,53 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
         <div className="container">
           <div className="row">
             <div className="filter-title d-block d-lg-none mb-3">Filter</div>
+            <div className="col-12 d-lg-none mb-4">
+              <div className="flex items-center justify-between bg-white p-3 border border-gray-200 rounded-lg shadow-sm">
+                <span className="font-medium text-gray-900">{products.length} Products</span>
+                <button 
+                  onClick={() => setIsMobileFilterOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-bold uppercase tracking-wider rounded-md hover:bg-[#B6902E] transition-colors"
+                >
+                  <i className="fa fa-filter"></i> Filter & Sort
+                </button>
+              </div>
+            </div>
 
-            {/* Sidebar */}
-            <div className="col-lg-3 order-lg-1 order-2">
-              <div className="filter-sidebar">
+                        {/* FILTER SIDEBAR / DRAWER */}
+            <div className={`col-lg-3 order-lg-1 order-2`}>
+              {/* Overlay for mobile */}
+              <div 
+                className={`fixed inset-0 bg-black/50 z-9998 transition-opacity duration-300 lg:hidden ${isMobileFilterOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                onClick={() => setIsMobileFilterOpen(false)}
+              ></div>
+
+              {/* The Sidebar Content */}
+              <div className={`
+                  filter-sidebar 
+                  bg-white 
+                  lg:block 
+                  /* Mobile Drawer Styles */
+                  fixed lg:static top-0 left-0 h-full lg:h-auto w-[85%] lg:w-full z-9999 lg:z-auto 
+                  transform transition-transform duration-300 ease-in-out
+                  ${isMobileFilterOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                  overflow-y-auto lg:overflow-visible p-6 lg:p-0 shadow-2xl lg:shadow-none
+              `}>
+                
+                {/* Mobile Drawer Header */}
+                <div className="flex items-center justify-between mb-6 lg:hidden">
+                  <h3 className="text-xl font-serif font-bold text-gray-900 m-0">Filters</h3>
+                  <button 
+                    onClick={() => setIsMobileFilterOpen(false)}
+                    className="p-2 text-gray-500 hover:text-red-600 transition-colors"
+                  >
+                    <i className="fa fa-times text-xl"></i>
+                  </button>
+                </div>
+
+                {/* --- EXISTING FILTERS BELOW --- */}
 
                 {/* Price Filter */}
-                <div className="mb-4">
+                <div className="mb-6 lg:mb-4 border-b lg:border-none pb-4 lg:pb-0 border-gray-100">
                   <div className={`section-header ${!collapsedSections['price'] ? 'active' : ''}`} onClick={() => toggleSection('price')}>
                     <div className="filter-title">Price</div>
                     <span style={{ fontSize: '20px', cursor: 'pointer', transform: !collapsedSections['price'] ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }}>⌃</span>
@@ -258,7 +311,7 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                 </div>
 
                 {/* Availability Filter */}
-                <div className="mb-4">
+                <div className="mb-6 lg:mb-4 border-b lg:border-none pb-4 lg:pb-0 border-gray-100">
                   <div className={`section-header ${!collapsedSections['status'] ? 'active' : ''}`} onClick={() => toggleSection('status')}>
                     <div className="filter-title">Availability</div>
                     <span style={{ fontSize: '20px', cursor: 'pointer', transform: !collapsedSections['status'] ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }}>⌃</span>
@@ -279,7 +332,7 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                 </div>
 
                 {/* Gender Filter */}
-                <div className="mb-4">
+                <div className="mb-6 lg:mb-4 border-b lg:border-none pb-4 lg:pb-0 border-gray-100">
                   <div className={`section-header ${!collapsedSections['gender'] ? 'active' : ''}`} onClick={() => toggleSection('gender')}>
                     <div className="filter-title">Gender</div>
                     <span style={{ fontSize: '20px', cursor: 'pointer', transform: !collapsedSections['gender'] ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }}>⌃</span>
@@ -298,13 +351,19 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                     ))}
                   </div>
                 </div>
-                {categorySlug === 'perfumes' && (
-                  <div className="mb-4">
+
+                {/* Category Filter (Fixed Rendering Logic) */}
+                {/* We removed the strict 'perfumes' check so you can debug the list. 
+                    If you want it strictly for Perfumes page later, verify categorySlug is exactly 'perfumes' 
+                */}
+                {(categorySlug === 'perfumes' || categories.length > 0) && (
+                  <div className="mb-6 lg:mb-4">
                     <div className={`section-header ${!collapsedSections['category'] ? 'active' : ''}`} onClick={() => toggleSection('category')}>
                       <div className="filter-title">Category</div>
                       <span style={{ fontSize: '20px', cursor: 'pointer', transform: !collapsedSections['category'] ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }}>⌃</span>
                     </div>
                     <div className="section-content" style={{ maxHeight: collapsedSections['category'] ? '0px' : '500px', overflow: 'hidden', transition: 'max-height 0.35s ease' }}>
+                    {categories.length === 0 && <p className="text-sm text-gray-500 italic mt-2">No categories found.</p>}
                       {categories.map(cat => (
                         <div className="category-item" key={cat.id}>
                           <div>
@@ -320,6 +379,17 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                     </div>
                   </div>
                 )}
+                
+                {/* Mobile Apply Button */}
+                <div className="lg:hidden mt-8">
+                  <button 
+                    onClick={() => setIsMobileFilterOpen(false)}
+                    className="w-full py-3 bg-[#B6902E] text-white font-bold uppercase tracking-widest rounded shadow-lg"
+                  >
+                    View {products.length} Results
+                  </button>
+                </div>
+                
               </div>
             </div>
 
