@@ -8,8 +8,8 @@ const SliderSection = () => {
       <style jsx global>{`
         @media (max-width: 767px) {
             .hero-item {
-                min-height: 100dvh !important; /* Forces taller height on mobile */
-                height: 100dvh !important;
+                min-height: 90dvh !important; /* Forces taller height on mobile */
+                height: 90dvh !important;
             }
             .hero-text-overlay {
                 padding-top: 20px;
