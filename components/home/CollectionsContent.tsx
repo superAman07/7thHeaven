@@ -230,20 +230,73 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
       </div>
 
       {/* Shop Section */}
-      <div className="shop-section section pt-100 pb-70">
+      <div className="shop-section section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-30 pb-70 pb-lg-50 pb-md-40 pb-sm-30 pb-xs-20">
         <div className="container">
           <div className="row">
-            <div className="filter-title d-block d-lg-none mb-3">Filter</div>
-            <div className="col-12 d-lg-none mb-4">
-              <div className="flex items-center justify-between bg-white p-3 border border-gray-200 rounded-lg shadow-sm">
-                <span className="font-medium text-gray-900">{products.length} Products</span>
-                <button 
+            {/* MOBILE TOOLBAR (Sleek, App-like Sticky Bar) */}
+            <div className="d-lg-none w-100 relative mb-4">
+               
+               {/* Clean Single Line: Title (Count) ----------- Sort */}
+               <div className="flex items-center justify-between px-1 pb-3 border-b border-gray-200">
+                 <div className="flex items-baseline gap-2">
+                    <h2 className="text-lg font-serif font-bold text-[#1a1a1a] m-0 uppercase tracking-wider leading-none">
+                      {categorySlug === 'perfumes' ? 'Perfumes' : formatCategoryName(categorySlug || 'Collection')}
+                    </h2>
+                    <span className="text-xs text-gray-500 font-medium font-sans">
+                        ({products.length})
+                    </span>
+                 </div>
+                 
+                 {/* Minimal Sort (No box, just text) */}
+                 <div className="relative">
+                    <select 
+                      value={sortBy}
+                      onChange={handleSortChange}
+                      className="text-[11px] font-bold border-none bg-transparent text-gray-800 focus:ring-0 cursor-pointer pr-4 uppercase tracking-widest text-right"
+                      style={{ outline: 'none', boxShadow: 'none' }}
+                    > 
+                      <option value="newest">Sort</option>
+                      <option value="price_asc">Price: Low</option>
+                      <option value="price_desc">Price: High</option>
+                    </select>
+                    {/* Tiny down arrow */}
+                    <i className="fa fa-caret-down absolute right-0 top-1/2 -translate-y-1/2 text-gray-800 text-[10px] pointer-events-none"></i>
+                 </div>
+               </div>
+
+               {/* Vertical Filter Tab (Fixed Left) - Kept as is */}
+               <button 
                   onClick={() => setIsMobileFilterOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-bold uppercase tracking-wider rounded-md hover:bg-[#B6902E] transition-colors"
+                  style={{
+                    position: 'fixed',
+                    left: '0',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    zIndex: 90,
+                    backgroundColor: '#000',
+                    color: '#fff',
+                    padding: '14px 6px',
+                    borderRadius: '0 6px 6px 0',
+                    boxShadow: '2px 0 10px rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderLeft: 'none'
+                  }}
+                  className="group"
                 >
-                  <i className="fa fa-filter"></i> Filter & Sort
+                  <i className="fa fa-sliders text-[#D4AF37] text-xs"></i>
+                  <span style={{ 
+                      writingMode: 'vertical-rl', 
+                      textOrientation: 'mixed',
+                      fontSize: '9px',
+                      fontWeight: 800,
+                      letterSpacing: '1px',
+                      textTransform: 'uppercase'
+                  }}>Filter</span>
                 </button>
-              </div>
             </div>
 
                         {/* FILTER SIDEBAR / DRAWER */}
@@ -397,7 +450,7 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
             <div className="col-lg-9 order-lg-2 order-1">
               <div className="row">
                 <div className="col-12">
-                  <div className="shop-topbar-wrapper d-md-flex justify-content-md-between align-items-center">
+                  <div className="shop-topbar-wrapper d-none d-lg-flex justify-content-md-between align-items-center">
                     <div className="grid-list-option">
                       <ul className="nav">
                         <li><a className="active show" href="#"><i className="fa fa-th"></i></a></li>
@@ -506,6 +559,19 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                 .category-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 15px; }
                 .category-item input { margin-right: 10px; width: 17px; height: 17px; }
                 .section-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+                .sticky-mobile-filter {
+                  position: sticky;
+                  top: 60px; /* Adjust based on your header height */
+                  z-index: 99;
+                  margin: 0 -15px 20px -15px; /* Negative margin to span full width in container */
+              }
+
+              /* Remove Negative margins if container padding is issue */
+              @media (max-width: 767px) {
+                  .container { padding-left: 0; padding-right: 0; }
+                  .shop-product .col-6 { padding: 0 5px; } /* Tighter grid */
+                  .row { margin-left: 0; margin-right: 0; }
+              }
             `}</style>
     </div>
   );
