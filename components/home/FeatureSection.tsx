@@ -47,7 +47,7 @@ const defaultFeatures: Feature[] = [
 
 export default function FeatureSectionPage({ features = defaultFeatures }: Props) {
   return (
-        <div className="bg-white py-16 md:py-24 lg:py-32 overflow-hidden w-full relative z-10 min-h-[300px]">
+        <div className="bg-[#fcfaf7] py-16 md:py-24 lg:py-32 overflow-hidden w-full relative z-10 min-h-[300px]">
       {/* Dynamic Styles for Premium Fonts */}
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@100..900&display=swap');
@@ -57,7 +57,7 @@ export default function FeatureSectionPage({ features = defaultFeatures }: Props
         .gold-border { border-color: #BF953F; }
       `}} />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 bg-[#f8f9fa]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-12 md:gap-x-8 lg:gap-x-0">
           {features.map((feat, index) => (
             <div 

@@ -31,7 +31,7 @@ export default function AboutUsAreaSection({
   ];
   return (
     <>
-      <div className="about-us-area section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50">
+      <div className="about-us-area bg-[#fcfaf7] section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50">
         <div className="container">
           <div className="row">
             <div className="col-lg-6 col-12"> 

@@ -1,6 +1,6 @@
 export default function HowItWorksPage() {
     return (
-        <div className="section bg-linear-to-br from-gray-50 to-gray-100 py-16 md:py-20 lg:py-24">
+        <div className="section bg-[#fcfaf7] py-16 md:py-20 lg:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12 md:mb-16">
                     <h2 
