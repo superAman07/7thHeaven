@@ -9,10 +9,12 @@ export type ProductFilterParams = {
     gender?: string;
     sort?: string;
     onSale?: boolean;
+    minPrice?: number;
+    maxPrice?: number; 
 };
 
 export async function getProducts(params: ProductFilterParams) {
-    const { page = 1, limit = 10, search, category, gender, sort, onSale } = params;
+    const { page = 1, limit = 10, search, category, gender, sort, onSale, minPrice, maxPrice } = params;
     const skip = (page - 1) * limit;
 
     const genderMap: Record<string, string> = {
@@ -34,6 +36,37 @@ export async function getProducts(params: ProductFilterParams) {
         }
     }
 
+    let categoryFilter: any = {};
+    if (category) {
+        if (category.includes(',')) {
+            // Multiple IDs passed (from checkboxes)
+             categoryFilter = { categoryId: { in: category.split(',') } };
+        } else {
+             // Single value: Could be Slug (from URL) or ID (from single checkbox)
+             // We try to match either Slug OR ID to be safe
+             categoryFilter = {
+                OR: [
+                    { category: { slug: category } },
+                    { categoryId: category }
+                ]
+             };
+        }
+    }
+
+    let priceFilter: any = {};
+    if (minPrice !== undefined || maxPrice !== undefined) {
+         priceFilter = {
+             variants: {
+                 some: {
+                     price: {
+                         gte: minPrice || 0,
+                         lte: maxPrice || 999999
+                     }
+                 }
+             }
+         };
+    }
+
     const where: Prisma.ProductWhereInput = {
         AND: [
             { isArchived: false },
@@ -43,15 +76,21 @@ export async function getProducts(params: ProductFilterParams) {
                     { description: { contains: search, mode: 'insensitive' } },
                 ],
             } : {},
-            category ? { category: { slug: category } } : {},
+            categoryFilter,
             genderFilter,
+            priceFilter,
             onSale ? { discountPercentage: { gt: 0 } } : {},
         ],
     };
 
     let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: 'desc' };
+    if (sort === 'price_asc') orderBy = { variants: { _count: 'desc' } };
+    if (sort === 'price_asc') {
+    }
+    
     if (sort === 'name_asc') orderBy = { name: 'asc' };
     if (sort === 'name_desc') orderBy = { name: 'desc' };
+    if (sort === 'newest') orderBy = { createdAt: 'desc' };
 
     const products = await prisma.product.findMany({
         where,
@@ -69,6 +108,7 @@ export async function getProducts(params: ProductFilterParams) {
 
     const formattedProducts = products.map(p => ({
         ...p,
+        category: p.category,
         discountPercentage: p.discountPercentage?.toNumber() || 0,
         variants: p.variants.map(v => ({ ...v, price: v.price.toNumber() })),
         ratingsAvg: p.reviews.length > 0
@@ -76,6 +116,12 @@ export async function getProducts(params: ProductFilterParams) {
             : 0,
         reviews: [], // FIX: Return empty array instead of undefined to match PublicProduct type
     }));
+
+    if (sort === 'price_asc') {
+        formattedProducts.sort((a, b) => (a.variants[0]?.price || 0) - (b.variants[0]?.price || 0));
+    } else if (sort === 'price_desc') {
+        formattedProducts.sort((a, b) => (b.variants[0]?.price || 0) - (a.variants[0]?.price || 0));
+    }
 
     return {
         data: formattedProducts,

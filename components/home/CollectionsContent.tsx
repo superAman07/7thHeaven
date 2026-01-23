@@ -121,6 +121,8 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
           if (selectedStatus.includes('Out of Stock')) params.append('status', 'false');
       }
 
+      // Logic: If we are on specifics (e.g. /collections/skyline), use that. 
+      // If on /collections/perfumes, use the checkboxes.
       if (categorySlug && categorySlug !== 'perfumes') {
         params.append('category', categorySlug);
       } 
@@ -144,7 +146,8 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
     } finally {
       setLoading(false);
     }
-  }, [debouncedPriceRange, selectedGenders, selectedStatus, sortBy, currentPage, categorySlug]);
+  // FIXED: Added 'selectedCategories' to dependency array so checking boxes actually triggers refresh
+  }, [debouncedPriceRange, selectedGenders, selectedStatus, sortBy, currentPage, categorySlug, selectedCategories]);
 
   // 5. Trigger Fetch
   useEffect(() => {
@@ -287,7 +290,7 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                   }}
                   className="group"
                 >
-                  <i className="fa fa-sliders text-[#D4AF37] text-xs"></i>
+                  <i className="fa fa-sliders text-[#D4AF37] text-xs "></i>
                   <span style={{ 
                       writingMode: 'vertical-rl', 
                       textOrientation: 'mixed',
