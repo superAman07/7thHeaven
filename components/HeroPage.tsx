@@ -80,21 +80,21 @@ export default async function HeroPage() {
                 <CollectionRow 
                     title="Skyline Series" 
                     categorySlug="skyline-series" 
-                    bgClass="bg-white" 
+                    bgClass="bg-[#fcfaf7]" 
                 />
             </Suspense>
             <Suspense fallback={<ProductSection2Skeleton />}>
                 <CollectionRow 
                     title="Corporate Collection" 
                     categorySlug="corporate-collection" 
-                    bgClass="bg-[#FAFAFA]"
+                    bgClass="bg-[#fcfaf7]"
                 />
             </Suspense>
             <Suspense fallback={<ProductSection2Skeleton />}>
                 <CollectionRow 
                     title="Tatva Series" 
                     categorySlug="tatva-series" 
-                    bgClass="bg-white" 
+                    bgClass="bg-[#fcfaf7]" 
                 />
             </Suspense>
             <HowItWorksPage />
