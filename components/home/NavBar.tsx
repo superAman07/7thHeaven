@@ -155,9 +155,9 @@ export default function NavBar() {
     const links = [
         { href: '/', label: 'Home' },
         { href: '/collections/perfumes', label: 'Collections' },
-        { href: '/collections/perfumes?gender=Female', label: 'Women' },
-        { href: '/collections/perfumes?gender=Male', label: 'Men' },
-        { href: '/collections/perfumes?gender=Unisex', label: 'Unisex' },
+        // { href: '/collections/perfumes?gender=Female', label: 'Women' },
+        // { href: '/collections/perfumes?gender=Male', label: 'Men' },
+        // { href: '/collections/perfumes?gender=Unisex', label: 'Unisex' },
         { href: '/collections/perfumes?sort=newest', label: 'NEW ARRIVALS' },
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact Us' },
