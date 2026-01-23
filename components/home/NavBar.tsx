@@ -451,7 +451,7 @@ export default function NavBar() {
                                                 border: 0,
                                                 padding: 6,
                                                 zIndex: 10005,
-                                                display: 'inline-flex',
+                                                display: isMobileOpen ? 'none' : 'inline-flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                             }}
@@ -467,49 +467,8 @@ export default function NavBar() {
                                                 style={{ display: isMobileOpen ? 'block' : 'none' }}
                                             />
                                         </button>
-
-                                        <nav className="mean-nav" aria-hidden={!isMobileOpen} style={{
-                                            display: isMobileOpen ? 'block' : 'none',
-                                            position: 'absolute',
-                                            top: '100%',
-                                            left: 0,
-                                            width: '100%',
-                                            backgroundColor: '#ffffff',
-                                            zIndex: 9999,
-                                            boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
-                                            borderTop: '1px solid #eee',
-                                            maxHeight: '80vh',
-                                            overflowY: 'auto'
-                                        }}>
-                                            <ul style={{ 
-                                                display: isMobileOpen ? 'block' : 'none', 
-                                                margin: 0, 
-                                                padding: 0,
-                                                maxHeight: 'none'
-                                            }}>
-                                                {links.map((l) => (
-                                                    <li key={l.label} style={{ listStyle: 'none' }}>
-                                                        <Link 
-                                                            href={l.href}
-                                                            onClick={() => setIsMobileOpen(false)}
-                                                            style={{
-                                                                display: 'block',
-                                                                padding: '16px 20px',
-                                                                borderBottom: '1px solid #f1f1f1',
-                                                                color: l.label === '7th Heaven Club' ? '#D4AF37' : '#333',
-                                                                fontWeight: l.label === '7th Heaven Club' ? 'bold' : 'normal',
-                                                                textDecoration: 'none',
-                                                                fontSize: '14px',
-                                                                textTransform: 'uppercase',
-                                                                letterSpacing: '0.5px'
-                                                            }}
-                                                        >
-                                                            {l.label}
-                                                        </Link>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </nav>
+                                        
+                                        {/* REMOVED: Old <nav className="mean-nav"> popup menu */}
                                     </div>
                                 </div>
                             </div>
@@ -517,6 +476,93 @@ export default function NavBar() {
                     </div>
                 </div>
             </header>
+            {/* -----------------------------------------------------------------
+               NEW MOBILE DRAWER (SLIDE-OUT MENU)
+               ----------------------------------------------------------------- */}
+            {/* 1. Backdrop Overlay */}
+            <div 
+                className={`fixed inset-0 z-9998 transition-all duration-300 ${isMobileOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                style={{ 
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+                    backgroundColor: 'rgba(0,0,0,0.6)', 
+                    backdropFilter: 'blur(4px)',
+                    zIndex: 9998 
+                }}
+                onClick={() => setIsMobileOpen(false)}
+            />
+
+            {/* 2. The Side Drawer */}
+            <div 
+                className={`fixed top-0 right-0 h-full bg-white shadow-2xl z-9999 transition-transform duration-300 ease-in-out`}
+                style={{ 
+                    position: 'fixed', top: 0, right: 0, bottom: 0,
+                    width: '300px', 
+                    maxWidth: '85%',
+                    zIndex: 9999,
+                    transform: isMobileOpen ? 'translateX(0)' : 'translateX(100%)',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}
+            >
+                {/* Header: Logo & Close */}
+                <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50">
+                    <img src="/assets/images/logo.png" alt="Celsius" style={{ height: '25px', opacity: 0.9 }} />
+                    <button 
+                        onClick={() => setIsMobileOpen(false)}
+                        className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-500 hover:text-red-500 shadow-sm transition-colors"
+                    >
+                        <i className="fa fa-times text-lg"></i>
+                    </button>
+                </div>
+
+                {/* Body: Navigation Links */}
+                <div className="flex-1 overflow-y-auto py-2">
+                    <ul className="m-0 p-0 list-none">
+                        {links.map((link) => (
+                            <li key={link.label} className="border-b border-gray-50 last:border-0">
+                                <Link 
+                                    href={link.href}
+                                    onClick={() => setIsMobileOpen(false)}
+                                    className="block px-6 py-4 text-[14px] font-bold uppercase tracking-wider text-gray-800 hover:bg-gray-50 transition-colors"
+                                    style={link.label === '7th Heaven Club' ? { color: '#D4AF37' } : {}}
+                                >
+                                    {link.label}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                {/* Footer: Quick Actions */}
+                <div className="p-5 border-t border-gray-100 bg-[#f9f9f9]">
+                    <div className="grid grid-cols-2 gap-4">
+                        <Link 
+                            href="/my-account" 
+                            onClick={() => setIsMobileOpen(false)}
+                            className="flex flex-col items-center gap-2 text-gray-600 hover:text-[#D4AF37] transition-colors p-3 rounded-lg bg-white shadow-sm border border-gray-100"
+                        >
+                            <i className="fa fa-user-circle text-xl"></i>
+                            <span className="text-[10px] uppercase font-bold tracking-widest">Account</span>
+                        </Link>
+                        <Link 
+                            href="/wishlist" 
+                            onClick={() => setIsMobileOpen(false)}
+                            className="flex flex-col items-center gap-2 text-gray-600 hover:text-[#D4AF37] transition-colors p-3 rounded-lg bg-white shadow-sm border border-gray-100"
+                        >
+                            <i className="fa fa-heart text-xl"></i>
+                            <span className="text-[10px] uppercase font-bold tracking-widest">Wishlist</span>
+                        </Link>
+                    </div>
+                    {user && (
+                         <button 
+                            onClick={(e) => { handleLogout(e); setIsMobileOpen(false); }}
+                            className="w-full mt-4 py-3 text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                         >
+                            Sign Out
+                         </button>
+                    )}
+                </div>
+            </div>
         </>
     );
 }
