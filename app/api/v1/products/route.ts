@@ -12,6 +12,8 @@ export async function GET(req: NextRequest) {
       category: searchParams.get('category') || undefined,
       gender: searchParams.get('gender') || undefined,
       sort: searchParams.get('sort') || undefined,
+      minPrice: searchParams.get('minPrice') ? parseInt(searchParams.get('minPrice')!) : undefined,
+      maxPrice: searchParams.get('maxPrice') ? parseInt(searchParams.get('maxPrice')!) : undefined,
     };
 
     const result = await getProducts(params);
