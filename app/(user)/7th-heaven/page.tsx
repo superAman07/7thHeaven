@@ -4,6 +4,9 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { ProductCard } from '@/components/home/ProductCard';
+import ProductQuickViewModal from '@/components/home/QuickViewModal';
+import { PublicProduct } from '@/components/HeroPage';
 
 interface LevelData {
     level: number;
@@ -31,6 +34,9 @@ export default function SeventhHeavenPage() {
     const [loading, setLoading] = useState(true);
     const [isGuest, setIsGuest] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
+    const [clubProducts, setClubProducts] = useState<PublicProduct[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -39,6 +45,33 @@ export default function SeventhHeavenPage() {
                 const res = await axios.get('/api/v1/network');
                 if (res.data.success) {
                     setData(res.data.data);
+                }
+                const prodRes = await axios.get('/api/v1/products/club');
+                if (prodRes.data.success) {
+                    const mappedProducts: PublicProduct[] = prodRes.data.products.map((p: any) => ({
+                        id: p.id,
+                        name: p.name,
+                        slug: p.slug,
+                        description: '',
+                        images: [p.image || '/assets/images/product/shop.webp'], // Ensure array
+                        genderTags: [], 
+                        inStock: true,
+                        ratingsAvg: 0,
+                        createdAt: new Date(),
+                        categoryId: '',
+                        isNewArrival: false,
+                        discountPercentage: p.discountPercentage,
+                        category: { name: p.category, slug: '' },
+                        // Construct variants so ProductCard price logic works
+                        variants: [{ 
+                            id: p.id, 
+                            price: p.price, 
+                            size: 'Standard', 
+                            stock: 100 
+                        }],
+                        reviews: []
+                    }));
+                    setClubProducts(mappedProducts);
                 }
             } catch (error) {
                 if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -52,6 +85,16 @@ export default function SeventhHeavenPage() {
         };
         fetchData();
     }, []);
+
+    const handleOpenModal = (product: PublicProduct) => {
+        setSelectedProduct(product);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedProduct(null);
+    };
 
     const copyToClipboard = () => {
         if (data?.referralCode) {
@@ -132,6 +175,31 @@ export default function SeventhHeavenPage() {
                         </div>
                     </div>
                 </div>
+
+                {clubProducts.length > 0 && (
+                    <div className="container mx-auto px-4 mt-16 mb-20">
+                        <div className="flex flex-col md:flex-row items-center justify-between mb-8 border-b border-gray-200 pb-4">
+                            <div>
+                                <h3 className="text-2xl font-bold text-gray-800 font-serif">Club Essentials</h3>
+                                <p className="text-gray-500 text-sm mt-1">Curated picks for your personal collection.</p>
+                            </div>
+                            <Link href="/collections/perfumes" className="text-[#ddb040] font-bold text-sm hover:underline mt-4 md:mt-0 uppercase tracking-widest">
+                                View All <i className="fa fa-arrow-right ml-1"></i>
+                            </Link>
+                        </div>
+
+                        <div className="row">
+                            {clubProducts.map((product) => (
+                                <div className="col-lg-3 col-md-4 col-sm-6" key={product.id}>
+                                    <ProductCard 
+                                        product={product} 
+                                        onQuickView={handleOpenModal} 
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="mb-16 text-center max-w-4xl mx-auto">
                     <h3 className="text-2xl font-bold text-gray-800 mb-3 font-serif">The Path to Prestige</h3>
@@ -251,6 +319,15 @@ export default function SeventhHeavenPage() {
                     </div>
                 </div>
             </div>
+            
+            {/* QUICK VIEW MODAL */}
+            {selectedProduct && (
+                <ProductQuickViewModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    productId={selectedProduct.id}
+                />
+            )}
         </div>
     );
 }
