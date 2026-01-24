@@ -171,7 +171,9 @@ model MLMSettings {
   applyAfterDiscount  Boolean  @default(true)
   autoGrantMembership Boolean  @default(true)
   perCategoryRules    Json? // optional map
+  maxClubProductPrice Decimal  @default(4000)
   createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt @default(now())
 }
 
 model MLMAuditLog {
