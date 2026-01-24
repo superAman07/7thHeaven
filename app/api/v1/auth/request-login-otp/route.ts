@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`--- LOGIN OTP for ${phone}: ${otp} ---`);
 
-    return NextResponse.json({ success: true, message: 'OTP has been sent to your phone number.' });
+    return NextResponse.json({ success: true, message: 'OTP has been sent to your phone number.', debugOtp: otp });
 
   } catch (error) {
     console.error('Error in /api/v1/auth/request-login-otp:', error);

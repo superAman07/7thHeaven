@@ -224,7 +224,11 @@ export default function AuthPage() {
         setIsLoading(true);
         try {
             await axios.post('/api/v1/auth/request-otp', { fullName, email, phone, referralCode: referralCode || undefined  });
-            toast.success('OTP sent to your phone.');
+            if (res.data.debugOtp) {
+                toast.success(`TESTING OTP: ${res.data.debugOtp}`, { duration: 5000, icon: '🔑' });
+            } else {
+                toast.success('OTP sent to your phone.');
+            }
             switchView(View.SIGNUP_STEP_2_OTP);
         } catch (err) {
             setError(getErrorMessage(err));
@@ -278,7 +282,11 @@ export default function AuthPage() {
         setIsLoading(true);
         try {
             await axios.post('/api/v1/auth/request-login-otp', { phone });
-            toast.success('OTP sent to your phone.');
+            if (res.data.debugOtp) {
+                toast.success(`TESTING OTP: ${res.data.debugOtp}`, { duration: 5000, icon: '🔑' });
+            } else {
+                toast.success('OTP sent to your phone.');
+            }
             switchView(View.SIGNUP_STEP_2_OTP);
         } catch (err) {
             const errorMessage = getErrorMessage(err);
