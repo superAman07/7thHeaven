@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
     try {
       const response = await axios.post('/api/v1/admin/login', { email, password });
       if (response.data.success) {
-        router.push('/admin');
+        router.push('/admin/dashboard');
         router.refresh();
       }
     } catch (err: any) {

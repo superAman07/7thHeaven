@@ -10,13 +10,15 @@ import {
   ArrowRight,
   Settings2,
   Crown,
-  Sparkles
+  Sparkles,
+  Tag // Imported Tag icon for the new input
 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardPage() {
 
   const [minPurchase, setMinPurchase] = useState('');
+  const [maxClubPrice, setMaxClubPrice] = useState(''); // 1. New State
   const [loading, setLoading] = useState(false);
   
   const [stats, setStats] = useState({
@@ -34,7 +36,11 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       const settingsRes = await axios.get('/api/v1/settings');
-      if (settingsRes.data.success) setMinPurchase(settingsRes.data.value);
+      if (settingsRes.data.success) {
+        setMinPurchase(settingsRes.data.value);
+        // 2. Load existing Max Price from API
+        setMaxClubPrice(settingsRes.data.maxClubPrice || 4000); 
+      }
 
       const ordersRes = await axios.get('/api/v1/admin/orders?limit=5'); 
       if (ordersRes.data.success) {
@@ -60,7 +66,11 @@ export default function DashboardPage() {
   const handleSaveSettings = async () => {
     setLoading(true);
     try {
-      await axios.post('/api/v1/settings', { minPurchase }, { withCredentials: true });
+      // 3. Save both settings
+      await axios.post('/api/v1/settings', { 
+        minPurchase,
+        maxClubProductPrice: maxClubPrice 
+      }, { withCredentials: true });
       alert('Settings updated successfully!');
     } catch (error) {
       alert('Failed to update settings');
@@ -210,48 +220,71 @@ export default function DashboardPage() {
               </div>
               
               <div className="space-y-6">
-                <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">
-                    Elite Club Entry Threshold
-                  </label>
-                  <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-6">
+                  
+                  {/* Min Purchase Level */}
+                  <div>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">
+                      Elite Club Entry Threshold
+                    </label>
                     <div className="relative group/input">
                       <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[#E6B422] font-black text-2xl group-hover/input:scale-110 transition-transform">₹</span>
                       <input 
                           type="number" 
                           value={minPurchase}
                           onChange={(e) => setMinPurchase(e.target.value)}
-                          className="w-full pl-14 pr-5 py-5 bg-linear-to-r from-gray-50 to-white border-2 border-gray-200 rounded-2xl font-black text-2xl text-gray-900 focus:border-[#E6B422] focus:ring-4 focus:ring-[#E6B422]/10 outline-none transition-all placeholder:text-gray-300 shadow-inner"
+                          className="w-full pl-14 pr-5 py-4 bg-linear-to-r from-gray-50 to-white border-2 border-gray-200 rounded-2xl font-black text-xl text-gray-900 focus:border-[#E6B422] focus:ring-4 focus:ring-[#E6B422]/10 outline-none transition-all placeholder:text-gray-300 shadow-inner"
                           placeholder="2000"
-                          style={{ letterSpacing: '0.05em' }}
                       />
                     </div>
-                    <button 
-                      onClick={handleSaveSettings}
-                      disabled={loading}
-                      className="relative w-full px-6 py-4 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
-                    >
-                      <div className="absolute inset-0 bg-linear-to-r from-black via-gray-800 to-black group-hover/btn:scale-105 transition-transform duration-500"></div>
-                      <div className="absolute inset-0 bg-linear-to-r from-[#E6B422] via-[#F4D03F] to-[#E6B422] opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
-                      <span className="relative z-10 text-white text-sm flex items-center justify-center gap-2">
-                        {loading ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            Processing...
-                          </>
-                        ) : (
-                          <>
-                            <Settings2 className="w-4 h-4" />
-                            Secure Settings
-                          </>
-                        )}
-                      </span>
-                    </button>
                   </div>
-                  <p className="text-[10px] text-gray-400 font-bold mt-4 leading-relaxed italic px-2">
-                    * Clients exceeding this investment threshold gain immediate access to the 7th Heaven Elite Circle.
-                  </p>
+
+                  {/* 4. New Input: Max Product Price for Display */}
+                  <div>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">
+                       Club Display Price Limit
+                    </label>
+                    <div className="relative group/input">
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-purple-500 font-black text-2xl group-hover/input:scale-110 transition-transform">
+                         <Tag className="w-5 h-5" />
+                      </span>
+                      <input 
+                          type="number" 
+                          value={maxClubPrice} // Connected State
+                          onChange={(e) => setMaxClubPrice(e.target.value)}
+                          className="w-full pl-14 pr-5 py-4 bg-linear-to-r from-gray-50 to-white border-2 border-gray-200 rounded-2xl font-black text-xl text-gray-900 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all placeholder:text-gray-300 shadow-inner"
+                          placeholder="4000"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Save Button */}
+                  <button 
+                    onClick={handleSaveSettings}
+                    disabled={loading}
+                    className="relative w-full px-6 py-4 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 mt-2"
+                  >
+                    <div className="absolute inset-0 bg-linear-to-r from-black via-gray-800 to-black group-hover/btn:scale-105 transition-transform duration-500"></div>
+                    <div className="absolute inset-0 bg-linear-to-r from-[#E6B422] via-[#F4D03F] to-[#E6B422] opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
+                    <span className="relative z-10 text-white text-sm flex items-center justify-center gap-2">
+                      {loading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Settings2 className="w-4 h-4" />
+                          Update Limits
+                        </>
+                      )}
+                    </span>
+                  </button>
+                  
                 </div>
+                <p className="text-[10px] text-gray-400 font-bold leading-relaxed italic px-2 text-center">
+                  * Entry threshold gates access. <br/> * Price limit forces max price for products shown on club page.
+                </p>
               </div>
             </div>
           </div>
