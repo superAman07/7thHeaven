@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
             where: { id: userId },
             select: {
                 id: true,
+                fullName: true,
                 referralCode: true,
                 is7thHeaven: true,
                 children: { // Level 1
