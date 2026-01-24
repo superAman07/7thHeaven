@@ -22,6 +22,7 @@ interface DirectReferral {
 }
 
 interface NetworkData {
+    fullName: string;
     referralCode: string;
     isMember: boolean;
     levels: LevelData[];
@@ -35,6 +36,7 @@ export default function SeventhHeavenPage() {
     const [isGuest, setIsGuest] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
     const [clubProducts, setClubProducts] = useState<PublicProduct[]>([]);
+    const [maxPriceLimit, setMaxPriceLimit] = useState(4000);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
     const router = useRouter();
@@ -48,12 +50,13 @@ export default function SeventhHeavenPage() {
                 }
                 const prodRes = await axios.get('/api/v1/products/club');
                 if (prodRes.data.success) {
+                    if(prodRes.data.maxPriceLimit) setMaxPriceLimit(prodRes.data.maxPriceLimit);
                     const mappedProducts: PublicProduct[] = prodRes.data.products.map((p: any) => ({
                         id: p.id,
                         name: p.name,
                         slug: p.slug,
                         description: '',
-                        images: [p.image || '/assets/images/product/shop.webp'], // Ensure array
+                        images: [p.image || '/assets/images/product/shop.webp'],
                         genderTags: [], 
                         inStock: true,
                         ratingsAvg: 0,
@@ -91,10 +94,7 @@ export default function SeventhHeavenPage() {
         setIsModalOpen(true);
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setSelectedProduct(null);
-    };
+    const handleCloseModal = () => setIsModalOpen(false);
 
     const copyToClipboard = () => {
         if (data?.referralCode) {
@@ -126,64 +126,66 @@ export default function SeventhHeavenPage() {
         <div className="bg-gray-50 min-h-screen pb-20">
             <div className="w-full bg-[#1a1a1a] pt-28 pb-32 relative">
                 <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-white font-serif text-4xl mb-2" style={{ fontFamily: '"Cormorant Garamond", serif' }}>7th Heaven Club</h1>
-                    <p className="text-[#ddb040] text-lg tracking-wider uppercase">Your Exclusive Network</p>
+                    <h1 className="text-white font-serif text-4xl mb-2">7th Heaven Club</h1>
+                    <p className="text-[#ddb040] text-lg tracking-wider uppercase">Your Empire Dashboard</p>
                 </div>
             </div>
             <div className="container mx-auto px-4 relative z-10 -mt-16">
-                {/* --- Status Card --- */}
+                
+                {/* 1. STATUS CARD */}
                 <div className="bg-white rounded-xl shadow-lg p-6 mb-12 border-t-4 border-[#ddb040] relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                        <i className="fa fa-trophy text-9xl text-[#ddb040]"></i>
-                    </div>
-
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center relative z-10">
                         <div>
+                            {/* Personalized Greeting */}
                             <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                                Welcome, Member
+                                Welcome, <span className="text-[#ddb040]">{data.fullName?.split(' ')[0] || 'Member'}</span>
                             </h2>
                             <p className="text-gray-600 mb-4 flex items-center gap-2">
-                                Status:
-                                <span className={`text-xs font-bold px-2 py-1 rounded ${data.isMember ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                    {data.isMember ? 'ACTIVE' : 'INACTIVE'}
-                                </span>
+                                Status: <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">ACTIVE</span>
                             </p>
+                            
+                            {/* Referral Code Box */}
                             <div className="flex flex-wrap items-center gap-3">
                                 <div className="bg-gray-50 px-4 py-2 rounded border border-gray-200 font-mono text-lg font-bold text-gray-700 tracking-wide">
                                     {data.referralCode || 'NO CODE'}
                                 </div>
                                 <button
                                     onClick={copyToClipboard}
-                                    className="bg-[#ddb040] hover:bg-[#c59d35] text-white px-5 py-2 rounded transition-colors duration-200 shadow-sm flex items-center gap-2 font-medium"
+                                    className="bg-[#1a1a1a] hover:bg-[#333] text-white px-5 py-2 rounded shadow-sm flex items-center gap-2 font-medium transition-colors"
                                 >
                                     <i className={`fa ${copySuccess ? 'fa-check' : 'fa-copy'}`}></i>
-                                    {copySuccess ? ' Copied!' : ' Copy Link'}
+                                    {copySuccess ? ' Copied!' : ' Copy Code'}
                                 </button>
                             </div>
                         </div>
 
-                        {/* Right Side: Stats */}
-                        <div className="flex justify-center lg:justify-end gap-8 text-center">
-                            <div>
+                        {/* Stats */}
+                        <div className="flex justify-center lg:justify-end gap-8 text-center divide-x divide-gray-100">
+                            <div className="px-4">
                                 <div className="text-4xl font-bold text-[#ddb040] mb-1">{data.totalTeamSize}</div>
-                                <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Total Members</div>
+                                <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Network Size</div>
                             </div>
-                            <div>
+                            <div className="px-4">
                                 <div className="text-4xl font-bold text-gray-800 mb-1">{data.levels.filter(l => l.isCompleted).length}/7</div>
-                                <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Levels Unlocked</div>
+                                <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Levels Unlocked</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                {/* 2. CLUB ESSENTIALS (Affordable Products) */}
                 {clubProducts.length > 0 && (
-                    <div className="container mx-auto px-4 mt-16 mb-20">
-                        <div className="flex flex-col md:flex-row items-center justify-between mb-8 border-b border-gray-200 pb-4">
+                    <div className="mb-14">
+                        <div className="flex items-end justify-between mb-6 border-b border-gray-200 pb-3">
                             <div>
-                                <h3 className="text-2xl font-bold text-gray-800 font-serif">Club Essentials</h3>
-                                <p className="text-gray-500 text-sm mt-1">Curated picks for your personal collection.</p>
+                                <h3 className="text-xl font-bold text-gray-800 font-serif">Club Essentials</h3>
+                                <p className="text-gray-500 text-xs mt-1">Smart picks to maintain your active status.</p>
                             </div>
-                            <Link href="/collections/perfumes" className="text-[#ddb040] font-bold text-sm hover:underline mt-4 md:mt-0 uppercase tracking-widest">
+                            {/* Professional Filter Link: Keeps user in shop funnel but filters by price */}
+                            <Link 
+                                href={`/collections/perfumes?maxPrice=${maxPriceLimit}&sort=price_asc`} 
+                                className="text-[#ddb040] font-bold text-xs hover:text-black uppercase tracking-widest transition-colors"
+                            >
                                 View All <i className="fa fa-arrow-right ml-1"></i>
                             </Link>
                         </div>
@@ -191,132 +193,87 @@ export default function SeventhHeavenPage() {
                         <div className="row">
                             {clubProducts.map((product) => (
                                 <div className="col-lg-3 col-md-4 col-sm-6" key={product.id}>
-                                    <ProductCard 
-                                        product={product} 
-                                        onQuickView={handleOpenModal} 
-                                    />
+                                    <ProductCard product={product} onQuickView={handleOpenModal} />
                                 </div>
                             ))}
                         </div>
                     </div>
                 )}
 
-                <div className="mb-16 text-center max-w-4xl mx-auto">
-                    <h3 className="text-2xl font-bold text-gray-800 mb-3 font-serif">The Path to Prestige</h3>
-                    <p className="text-gray-600 mb-10 max-w-2xl mx-auto">
-                        Your influence has value. Build your network through 7 tiers of connections. 
-                        When your network fills <strong>Level 7</strong>, you unlock an exclusive luxury reward curated by our founders.
-                    </p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                            <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🤝</div>
-                            <h4 className="font-bold text-gray-800 mb-2">1. Invite</h4>
-                            <p className="text-sm text-gray-500">Share your code. When friends join, they fill your Level 1.</p>
-                        </div>
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                            <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🌱</div>
-                            <h4 className="font-bold text-gray-800 mb-2">2. Expand</h4>
-                            <p className="text-sm text-gray-500">As your friends invite others, your Levels 2-7 fill up automatically.</p>
-                        </div>
-                        <div className="bg-linear-to-br from-gray-900 to-black p-6 rounded-xl shadow-lg text-white relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-16 h-16 bg-[#ddb040] opacity-20 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-150"></div>
-                            <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl backdrop-blur-sm">🎁</div>
-                            <h4 className="font-bold text-[#ddb040]! mb-2">3. Claim Reward</h4>
-                            <p className="text-sm text-gray-300">Complete Level 7 to receive a surprise luxury gift package.</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* --- Levels Grid --- */}
-                <div className="mb-8">
-                    <h3 className="text-xl font-bold text-gray-800 mb-6 pl-3 border-l-4 border-[#ddb040]">Your Progress</h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {/* 3. LEVELS GRID */}
+                <div className="mb-12">
+                    <h3 className="text-xl font-bold text-gray-800 mb-6 pl-3 border-l-4 border-[#ddb040]">Network Progress</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {data.levels.map((level) => (
-                            <div
-                                key={level.level}
-                                className={`relative rounded-xl p-6 transition-all duration-300 hover:-translate-y-1 bg-white border ${level.isCompleted
-                                        ? 'border-[#ddb040] shadow-md'
-                                        : 'border-gray-200 shadow-sm'
-                                    }`}
-                            >
-                                <div className="flex justify-between items-start mb-4">
-                                    <div>
-                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Level</span>
-                                        <h4 className="text-3xl font-bold text-gray-800">0{level.level}</h4>
-                                    </div>
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${level.isCompleted ? 'bg-[#ddb040] text-white' : 'bg-gray-100 text-gray-400'
-                                        }`}>
-                                        <i className={`fa ${level.isCompleted ? 'fa-check' : 'fa-lock'}`}></i>
-                                    </div>
+                            <div key={level.level} className={`relative rounded-xl p-5 border bg-white ${level.isCompleted ? 'border-[#ddb040] shadow-md' : 'border-gray-100'}`}>
+                                <div className="flex justify-between items-start mb-3">
+                                    <h4 className="text-2xl font-bold text-gray-800">Lvl 0{level.level}</h4>
+                                    <i className={`fa ${level.isCompleted ? 'fa-check-circle text-[#ddb040]' : 'fa-lock text-gray-300'} text-xl`}></i>
                                 </div>
-
-                                <div className="mb-2 flex justify-between text-sm font-medium">
-                                    <span className="text-gray-600">Members</span>
-                                    <span className={level.isCompleted ? 'text-[#ddb040]' : 'text-gray-400'}>
-                                        {level.count} / {level.target}
-                                    </span>
+                                <div className="w-full bg-gray-100 rounded-full h-1.5 mb-2">
+                                    <div className="bg-[#ddb040] h-full rounded-full transition-all duration-1000" style={{ width: `${level.progress}%` }}></div>
                                 </div>
-
-                                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                                    <div
-                                        className="bg-[#ddb040] h-full rounded-full transition-all duration-1000 ease-out"
-                                        style={{ width: `${level.progress}%` }}
-                                    ></div>
+                                <div className="flex justify-between text-xs text-gray-500 font-medium">
+                                    <span>Progress</span>
+                                    <span>{level.count} / {level.target}</span>
                                 </div>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* --- Direct Referrals Table --- */}
+                {/* 4. DIRECT REFERRALS (Improved Empty State) */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-12">
-                    <div className="p-6 border-b border-gray-100">
-                        <h3 className="text-xl font-bold text-gray-800">Direct Referrals</h3>
+                    <div className="p-5 border-b border-gray-100 bg-gray-50">
+                        <h3 className="text-lg font-bold text-gray-800">Direct Referrals (Level 1)</h3>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-gray-50 text-gray-600 text-sm uppercase tracking-wider">
-                                <tr>
-                                    <th className="px-6 py-4 font-semibold">Member Name</th>
-                                    <th className="px-6 py-4 font-semibold">Join Date</th>
-                                    <th className="px-6 py-4 font-semibold">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {data.directReferrals.length > 0 ? (
-                                    data.directReferrals.map((member, index) => (
+                    
+                    {data.directReferrals.length > 0 ? (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-white text-gray-400 text-[10px] uppercase tracking-wider border-b border-gray-100">
+                                    <tr>
+                                        <th className="px-6 py-3 font-bold">Associate</th>
+                                        <th className="px-6 py-3 font-bold">Date Joined</th>
+                                        <th className="px-6 py-3 font-bold">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {data.directReferrals.map((member, index) => (
                                         <tr key={index} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 font-medium text-gray-900">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-[#ddb040]/10 text-[#ddb040] flex items-center justify-center text-sm font-bold">
-                                                        {member.name.charAt(0)}
-                                                    </div>
-                                                    {member.name}
-                                                </div>
+                                            <td className="px-6 py-4 font-bold text-gray-800 text-sm">
+                                                {member.name}
                                             </td>
-                                            <td className="px-6 py-4 text-gray-600">
+                                            <td className="px-6 py-4 text-gray-500 text-sm">
                                                 {new Date(member.joinedAt).toLocaleDateString()}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                    Active
-                                                </span>
+                                                <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                                                <span className="text-xs font-medium text-gray-600">Active</span>
                                             </td>
                                         </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan={3} className="px-6 py-12 text-center text-gray-500">
-                                            <div className="mb-2"><i className="fa fa-user-plus text-3xl text-gray-300"></i></div>
-                                            <p>No direct referrals yet. Share your code to start building!</p>
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        // PROFESSIONAL EMPTY STATE
+                        <div className="py-12 text-center">
+                            <div className="w-16 h-16 bg-[#ddb040]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i className="fa fa-user-plus text-2xl text-[#ddb040]"></i>
+                            </div>
+                            <h4 className="text-gray-900 font-bold mb-2">Start Your Team</h4>
+                            <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto">
+                                You haven't referred anyone yet. Share your unique code to invite friends and unlock Level 1 rewards.
+                            </p>
+                            <button 
+                                onClick={copyToClipboard}
+                                className="bg-[#ddb040] text-black font-bold uppercase text-xs px-6 py-3 rounded hover:bg-[#c59d35] transition-colors"
+                            >
+                                Share Referral Code
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
             

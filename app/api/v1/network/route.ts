@@ -116,17 +116,19 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             success: true,
             data: {
+                fullName: userNetwork.fullName,
                 referralCode: userNetwork.referralCode,
                 isMember: userNetwork.is7thHeaven,
                 levels: levels,
                 totalTeamSize: levelCounts.reduce((a, b) => a + b, 0),
-                directReferrals: level1.length > 0 
-                    ? level1.map(u => ({ name: u.fullName, joinedAt: u.createdAt }))
-                    : [
-                        { name: "Amit Sharma", joinedAt: new Date().toISOString() },
-                        { name: "Rahul Verma", joinedAt: new Date(Date.now() - 86400000).toISOString() },
-                        { name: "Priya Singh", joinedAt: new Date(Date.now() - 172800000).toISOString() }
-                      ]
+                // directReferrals: level1.length > 0 
+                //     ? level1.map(u => ({ name: u.fullName, joinedAt: u.createdAt }))
+                //     : [
+                //         { name: "Amit Sharma", joinedAt: new Date().toISOString() },
+                //         { name: "Rahul Verma", joinedAt: new Date(Date.now() - 86400000).toISOString() },
+                //         { name: "Priya Singh", joinedAt: new Date(Date.now() - 172800000).toISOString() }
+                //       ]
+                directReferrals: level1.map(u => ({ name: u.fullName, joinedAt: u.createdAt }))
             }
         });
 

@@ -296,13 +296,11 @@ img {
 @media only screen and (max-width: 575px) {
   .container {
     max-width: 450px;
-    min-width: 360px;
   }
 }
 @media only screen and (max-width: 479px) {
   .container {
     max-width: 360px;
-    min-widht: 350px;
   }
 }
 .g-0 {
