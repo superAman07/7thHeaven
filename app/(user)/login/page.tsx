@@ -223,7 +223,7 @@ export default function AuthPage() {
         setError(null);
         setIsLoading(true);
         try {
-            await axios.post('/api/v1/auth/request-otp', { fullName, email, phone, referralCode: referralCode || undefined  });
+            const res = await axios.post('/api/v1/auth/request-otp', { fullName, email, phone, referralCode: referralCode || undefined  });
             if (res.data.debugOtp) {
                 toast.success(`TESTING OTP: ${res.data.debugOtp}`, { duration: 5000, icon: '🔑' });
             } else {
@@ -281,7 +281,7 @@ export default function AuthPage() {
         setError(null);
         setIsLoading(true);
         try {
-            await axios.post('/api/v1/auth/request-login-otp', { phone });
+            const res = await axios.post('/api/v1/auth/request-login-otp', { phone });
             if (res.data.debugOtp) {
                 toast.success(`TESTING OTP: ${res.data.debugOtp}`, { duration: 5000, icon: '🔑' });
             } else {
