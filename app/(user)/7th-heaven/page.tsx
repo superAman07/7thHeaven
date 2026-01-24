@@ -145,16 +145,16 @@ export default function SeventhHeavenPage() {
                             </p>
                             
                             {/* Referral Code Box */}
-                            <div className="flex flex-wrap items-center gap-3">
-                                <div className="bg-gray-50 px-4 py-2 rounded border border-gray-200 font-mono text-lg font-bold text-gray-700 tracking-wide">
+                            <div className="flex items-center gap-2">
+                                <div className="bg-gray-50 px-3 py-2 rounded border border-gray-200 font-mono text-base font-bold text-gray-800 tracking-wider">
                                     {data.referralCode || 'NO CODE'}
                                 </div>
                                 <button
                                     onClick={copyToClipboard}
-                                    className="bg-[#1a1a1a] hover:bg-[#333] text-white px-5 py-2 rounded shadow-sm flex items-center gap-2 font-medium transition-colors"
+                                    className="bg-[#1a1a1a] hover:bg-[#333] text-white h-[42px] px-4 rounded shadow-sm flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-colors whitespace-nowrap"
                                 >
-                                    <i className={`fa ${copySuccess ? 'fa-check' : 'fa-copy'}`}></i>
-                                    {copySuccess ? ' Copied!' : ' Copy Code'}
+                                    <i className={`fa ${copySuccess ? 'fa-check text-[#ddb040]' : 'fa-copy'}`}></i>
+                                    {copySuccess ? 'Copied' : 'Copy'}
                                 </button>
                             </div>
                         </div>
