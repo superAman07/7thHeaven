@@ -81,7 +81,7 @@ export default function FeatureSectionPage({ features = defaultFeatures }: Props
                 </h3>
                 
                 {/* Decorative short line */}
-                <div className="w-8 h-[1px] bg-[#BF953F]/40 group-hover:w-16 group-hover:bg-[#BF953F] transition-all duration-500"></div>
+                <div className="w-8 h-px bg-[#BF953F]/40 group-hover:w-16 group-hover:bg-[#BF953F] transition-all duration-500"></div>
                 
                 {feat.subtitle && (
                   <p className="font-[Montserrat] text-[#4A4A4A] text-sm leading-7 tracking-wide group-hover:text-[#1A1A1A] transition-colors duration-300">
