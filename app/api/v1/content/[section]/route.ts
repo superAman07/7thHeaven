@@ -13,6 +13,8 @@ const getDefaultForSection = (section: string) => {
             return defaultGlobalSettings;
         case 'home_about':
             return defaultHomeAbout;
+        case 'home_sections':
+            return defaultHomeSections;
         default:
             return {};
     }

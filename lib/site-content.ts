@@ -35,6 +35,20 @@ export interface PageContent {
   lastUpdated?: string;
 }
 
+export interface HomeSection {
+  id: string;
+  title: string;
+  categorySlug: string;
+  bgClass?: string;
+  order: number;
+}
+
+export const defaultHomeSections: HomeSection[] = [
+  { id: '1', title: 'Skyline Series', categorySlug: 'skyline-series', bgClass: 'bg-[#fcfaf7]', order: 1 },
+  { id: '2', title: 'Corporate Collection', categorySlug: 'corporate-collection', bgClass: 'bg-[#fcfaf7]', order: 2 },
+  { id: '3', title: 'Tatva Series', categorySlug: 'tatva-series', bgClass: 'bg-[#fcfaf7]', order: 3 },
+];
+
 export const defaultGlobalSettings: GlobalSettings = {
   siteName: "Celsius",
   supportEmail: "support@celsius.com",

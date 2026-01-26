@@ -14,7 +14,7 @@ import { ProductSection2Skeleton } from "./home/ProductSection2Skeleton";
 // import TabbedProductsSection from "./home/TabbedProductsSection";
 import { GenderTags } from "@prisma/client";
 import CollectionRow from "./home/CollectionRow";
-import { getSiteContent, defaultHomeAbout } from "@/lib/site-content";
+import { getSiteContent, defaultHomeAbout , defaultHomeSections, HomeSection } from "@/lib/site-content";
 
 export type PublicProduct = {
     id: string;
@@ -73,30 +73,19 @@ const ProductSectionSkeleton = () => (
 
 export default async function HeroPage() {
     const aboutContent = await getSiteContent('home_about', defaultHomeAbout);
+    const sections = await getSiteContent<HomeSection[]>('home_sections', defaultHomeSections);
     return <>
         <div id="main-wrapper">
             <SliderSection />
-            <Suspense fallback={<ProductSection2Skeleton />}>
-                <CollectionRow 
-                    title="Skyline Series" 
-                    categorySlug="skyline-series" 
-                    bgClass="bg-[#fcfaf7]" 
-                />
-            </Suspense>
-            <Suspense fallback={<ProductSection2Skeleton />}>
-                <CollectionRow 
-                    title="Corporate Collection" 
-                    categorySlug="corporate-collection" 
-                    bgClass="bg-[#fcfaf7]"
-                />
-            </Suspense>
-            <Suspense fallback={<ProductSection2Skeleton />}>
-                <CollectionRow 
-                    title="Tatva Series" 
-                    categorySlug="tatva-series" 
-                    bgClass="bg-[#fcfaf7]" 
-                />
-            </Suspense>
+            {sections.map((section) => (
+                <Suspense key={section.id} fallback={<ProductSection2Skeleton />}>
+                    <CollectionRow 
+                        title={section.title} 
+                        categorySlug={section.categorySlug} 
+                        bgClass={section.bgClass} 
+                    />
+                </Suspense>
+            ))}
             <HowItWorksPage />
             <AboutUsAreaSection data={aboutContent} />
             <FeatureSectionPage />
