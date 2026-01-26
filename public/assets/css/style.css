@@ -7809,3 +7809,44 @@ h2.entry-title:before {
     color: #333;
     margin-bottom: 10px;
 }
+
+/* --- SASVA LUXURY GOLD UTILITIES --- */
+.text-gold-sasva {
+  background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+.btn-gold-sasva {
+  background: linear-gradient(to right, #bf953f, #aa771c);
+  color: #fff;
+  border: none;
+  transition: all 0.4s ease;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.btn-gold-sasva::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(to right, #aa771c, #bf953f);
+  transition: all 0.4s ease;
+  z-index: -1;
+}
+
+.btn-gold-sasva:hover::before {
+  width: 100%;
+}
+
+.btn-gold-sasva:hover {
+  color: #fff;
+  box-shadow: 0 5px 15px rgba(191, 149, 63, 0.4);
+  transform: translateY(-2px);
+}
