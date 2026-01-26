@@ -3,7 +3,8 @@ import {
     getSiteContent, 
     updateSiteContent, 
     defaultGlobalSettings, 
-    defaultHomeAbout 
+    defaultHomeAbout,
+    defaultHomeSections
 } from '@/lib/site-content';
 import * as jose from 'jose';
 
