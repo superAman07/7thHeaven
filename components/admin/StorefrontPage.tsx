@@ -77,7 +77,7 @@ export default function StorefrontPage() {
             title: customTitle,
             categorySlug: category.slug, // This drives the API
             order: sections.length + 1,
-            bgClass: (sections.length % 2 === 0) ? 'bg-[#fcfaf7]' : 'bg-white' 
+            bgClass: (sections.length % 2 === 0) ? 'bg-[#fcfaf7]' : 'bg-[#fcfaf7]' 
         };
 
         setSections([...sections, newSection]);
