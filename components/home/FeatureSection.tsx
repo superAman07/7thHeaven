@@ -47,52 +47,48 @@ const defaultFeatures: Feature[] = [
 
 export default function FeatureSectionPage({ features = defaultFeatures }: Props) {
   return (
-        <div className="bg-[#fcfaf7] py-16 md:py-24 lg:py-32 overflow-hidden w-full relative z-10 min-h-[300px]">
-      {/* Dynamic Styles for Premium Fonts */}
+      <div className="bg-[#fcfaf7] py-20 lg:py-32 overflow-hidden w-full relative z-10 transition-colors duration-500">
+      {/* Premium Font Definitions */}
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@100..900&display=swap');
-        .font-serif { font-family: 'Playfair Display', serif; }
-        .font-sans { font-family: 'Montserrat', sans-serif; }
-        .gold-text { color: #BF953F; }
-        .gold-border { border-color: #BF953F; }
       `}} />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 bg-[#f8f9fa]">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-12 md:gap-x-8 lg:gap-x-0">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
           {features.map((feat, index) => (
             <div 
               key={feat.id} 
-              className={`group relative flex flex-col items-center text-center p-8 transition-all duration-700 hover:bg-[#FDFBF7]
-                ${index !== features.length - 1 ? 'lg:border-r lg:border-zinc-100' : ''} 
-                ${feat.extraClass ?? ""}`}
+              className={`
+                group relative flex flex-col items-center text-center p-8 md:p-12 transition-all duration-500
+                border-b md:border-b-0 border-[#BF953F]/10
+                ${index !== features.length - 1 ? 'md:border-r' : ''}
+                hover:bg-[#ffffff] hover:shadow-[0_10px_40px_-10px_rgba(191,149,63,0.1)] z-0 hover:z-10
+              `}
             >
-              {/* Icon Container */}
-              <div className="mb-8 relative">
-                <div className="p-5 rounded-full bg-white border border-zinc-100 shadow-sm text-[#BF953F] group-hover:bg-[#BF953F] group-hover:text-white group-hover:scale-110 transition-all duration-500 ease-out">
-                  {feat.icon}
+              {/* Icon Container - FIXED: Used bg-[#ffffff] to bypass global .bg-white !important rule */}
+              <div className="mb-8 relative transition-transform duration-500 group-hover:-translate-y-2">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center border border-[#BF953F]/20 bg-[#ffffff] text-[#BF953F] group-hover:bg-[#BF953F] group-hover:text-[#ffffff] group-hover:border-[#BF953F] transition-all duration-500 shadow-sm">
+                   <div className="transform group-hover:scale-110 transition-transform duration-500">
+                     {feat.icon}
+                   </div>
                 </div>
-                {/* Decorative background ring */}
-                <div className="absolute -inset-2 border border-[#BF953F]/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-700"></div>
               </div>
 
-              {/* Content */}
+              {/* Text Content */}
               <div className="flex flex-col items-center space-y-4 max-w-sm">
-                <h2 className="text-2xl md:text-3xl font-serif font-medium tracking-tight text-[#1A1A1A] group-hover:text-[#BF953F] transition-colors duration-300">
+                <h3 className="text-2xl font-[Playfair_Display] font-medium text-[#1A1A1A] group-hover:text-[#BF953F] transition-colors duration-300">
                   {feat.title}
-                </h2>
+                </h3>
                 
-                {/* Golden Divider */}
-                <div className="w-10 h-[1.5px] bg-[#BF953F]/30 group-hover:w-20 transition-all duration-500"></div>
+                {/* Decorative short line */}
+                <div className="w-8 h-[1px] bg-[#BF953F]/40 group-hover:w-16 group-hover:bg-[#BF953F] transition-all duration-500"></div>
                 
                 {feat.subtitle && (
-                  <p className="text-zinc-500 font-sans text-sm md:text-base leading-relaxed tracking-wide">
+                  <p className="font-[Montserrat] text-[#4A4A4A] text-sm leading-7 tracking-wide group-hover:text-[#1A1A1A] transition-colors duration-300">
                     {feat.subtitle}
                   </p>
                 )}
               </div>
-
-              {/* Mobile Decorative Divider (Visible only on mobile/tablet) */}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-px bg-linear-to-r from-transparent via-zinc-100 to-transparent lg:hidden"></div>
             </div>
           ))}
         </div>
