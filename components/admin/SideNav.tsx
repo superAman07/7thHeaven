@@ -12,6 +12,7 @@ const navItems = [
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
   { href: '/admin/customers', label: 'Customers', icon: Users },
   { href: '/admin/network', label: 'Network Settings', icon: Share2 },
+  { href: '/admin/storefront', label: 'Store Front Page', icon: LayoutDashboard },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell },
 ];
 

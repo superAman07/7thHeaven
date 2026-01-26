@@ -6,7 +6,9 @@ import {
     defaultHomeAbout,
     defaultHomeSections
 } from '@/lib/site-content';
+import { getUserIdFromToken } from '@/lib/auth';
 import * as jose from 'jose';
+import prisma from '@/lib/prisma';
 
 const getDefaultForSection = (section: string) => {
     switch (section) {
@@ -41,35 +43,29 @@ export async function GET(
     }
 }
 
-// ----------------------------------------------------------------------
-// 2. PUT: Admin Access Only
-// Used by Admin Dashboard to save changes.
-// ----------------------------------------------------------------------
 export async function PUT(
     request: NextRequest,
     { params }: { params: Promise<{ section: string }> }
 ) {
     try {
-        // 1. Security Check: Verify Admin Token
-        const token = request.cookies.get('admin_token')?.value;
-        if (!token) {
-            return NextResponse.json({ success: false, error: 'Unauthorized: No token provided' }, { status: 401 });
+        // 1. FIXED: Use the standard Auth Helper (Fixes 401)
+        const userId = await getUserIdFromToken(request);
+        
+        if (!userId) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
         }
 
-        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-        try {
-            await jose.jwtVerify(token, secret);
-        } catch (e) {
-            return NextResponse.json({ success: false, error: 'Unauthorized: Invalid token' }, { status: 401 });
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user || !user.isAdmin) {
+             return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
         }
 
         // 2. Parse Data
         const { section } = await params;
         const body = await request.json();
 
-        // 3. Update Database (Upsert)
-        // Note: You can extract admin ID from token if you want to track "updatedBy"
-        const updatedContent = await updateSiteContent(section, body);
+        // 3. Update Database
+        const updatedContent = await updateSiteContent(section, body, userId);
 
         return NextResponse.json({ success: true, data: updatedContent });
 

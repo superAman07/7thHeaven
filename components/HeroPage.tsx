@@ -73,7 +73,9 @@ const ProductSectionSkeleton = () => (
 
 export default async function HeroPage() {
     const aboutContent = await getSiteContent('home_about', defaultHomeAbout);
-    const sections = await getSiteContent<HomeSection[]>('home_sections', defaultHomeSections);
+    const rawSections = await getSiteContent<HomeSection[]>('home_sections', defaultHomeSections);
+    
+    const sections = Array.isArray(rawSections) ? rawSections : defaultHomeSections;
     return <>
         <div id="main-wrapper">
             <SliderSection />

@@ -44,9 +44,9 @@ export interface HomeSection {
 }
 
 export const defaultHomeSections: HomeSection[] = [
-  { id: '1', title: 'Skyline Series', categorySlug: 'skyline-series', bgClass: 'bg-[#fcfaf7]', order: 1 },
-  { id: '2', title: 'Corporate Collection', categorySlug: 'corporate-collection', bgClass: 'bg-[#fcfaf7]', order: 2 },
-  { id: '3', title: 'Tatva Series', categorySlug: 'tatva-series', bgClass: 'bg-[#fcfaf7]', order: 3 },
+  // { id: '1', title: 'Skyline Series', categorySlug: 'skyline-series', bgClass: 'bg-[#fcfaf7]', order: 1 },
+  // { id: '2', title: 'Corporate Collection', categorySlug: 'corporate-collection', bgClass: 'bg-[#fcfaf7]', order: 2 },
+  // { id: '3', title: 'Tatva Series', categorySlug: 'tatva-series', bgClass: 'bg-[#fcfaf7]', order: 3 },
 ];
 
 export const defaultGlobalSettings: GlobalSettings = {
@@ -83,6 +83,10 @@ export async function getSiteContent<T>(section: string, defaultValue: T): Promi
 
     if (!record || !record.content) {
       return defaultValue;
+    }
+
+    if (Array.isArray(defaultValue)) {
+        return record.content as T;
     }
 
     return { ...defaultValue, ...(record.content as object) }; 
