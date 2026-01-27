@@ -58,7 +58,7 @@ const ProductSectionSkeleton = () => (
                     <div className="row">
                         <div className="col-12">
                             <div className="shop-banner-title text-center">
-                                <h2>SELECT & TRY FROM <br /> OUR BEST SELLERS</h2>
+                                <h2>Loading...</h2>
                             </div>
                         </div>
                     </div>
@@ -80,7 +80,7 @@ export default async function HeroPage() {
         <div id="main-wrapper">
             <SliderSection />
             {sections.map((section) => (
-                <Suspense key={section.id} fallback={<ProductSection2Skeleton />}>
+                <Suspense key={section.id} fallback={<ProductSectionSkeleton />}>
                     <CollectionRow 
                         title={section.title} 
                         categorySlug={section.categorySlug} 
