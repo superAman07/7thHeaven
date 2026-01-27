@@ -166,6 +166,7 @@ const OtpInput: React.FC<OtpInputProps> = ({ otp, setOtp }) => {
 
 export default function AuthPage() {
     const router = useRouter();
+    const hasCheckedReferral = useRef(false);
     const [view, setView] = useState<View>(View.LOGIN);
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
@@ -180,9 +181,14 @@ export default function AuthPage() {
     const [referralCode, setReferralCode] = useState<string | null>(null);
 
     useEffect(() => {
+        if (hasCheckedReferral.current) return;
+        
         const match = document.cookie.match(new RegExp('(^| )referralCode=([^;]+)'));
         if (match) {
+            hasCheckedReferral.current = true;
             setReferralCode(match[2]);
+            setView(View.SIGNUP_STEP_1_PHONE);
+            toast.success(`You were referred by ${match[2]}! Create your account to get started.`, { duration: 4000, icon: '🎁' });
         }
     }, []);
 
