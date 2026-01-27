@@ -60,7 +60,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`antialiased`}
       >
         <Toaster position="top-center" reverseOrder={false} />
         <CartProvider>

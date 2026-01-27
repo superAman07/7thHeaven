@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { ProductCard } from '@/components/home/ProductCard';
 import ProductQuickViewModal from '@/components/home/QuickViewModal';
 import { PublicProduct } from '@/components/HeroPage';
+import ShareButton from '@/components/ShareButton';
 
 interface LevelData {
     level: number;
@@ -145,17 +146,18 @@ export default function SeventhHeavenPage() {
                             </p>
                             
                             {/* Referral Code Box */}
-                            <div className="flex items-center gap-2">
-                                <div className="bg-gray-50 px-3 py-2 rounded border border-gray-200 font-mono text-base font-bold text-gray-800 tracking-wider">
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <div className="bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200 font-mono text-base font-bold text-gray-800 tracking-wider">
                                     {data.referralCode || 'NO CODE'}
                                 </div>
                                 <button
                                     onClick={copyToClipboard}
-                                    className="bg-[#1a1a1a] hover:bg-[#333] text-white h-[42px] px-4 rounded shadow-sm flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-colors whitespace-nowrap"
+                                    className="bg-[#1a1a1a] hover:bg-[#333] text-white h-[42px] px-4 rounded-lg shadow-sm flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors"
                                 >
                                     <i className={`fa ${copySuccess ? 'fa-check text-[#ddb040]' : 'fa-copy'}`}></i>
                                     {copySuccess ? 'Copied' : 'Copy'}
                                 </button>
+                                <ShareButton referralCode={data.referralCode} variant="icon" />
                             </div>
                         </div>
 
