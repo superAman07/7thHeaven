@@ -6,6 +6,7 @@ import { ProductCard } from './ProductCard';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { PublicProduct } from '../HeroPage';
+import ProductQuickViewModal from './QuickViewModal';
 
 function NextArrow(props: any) {
   const { className, style, onClick } = props;
@@ -90,8 +91,16 @@ const settings = {
 };
 
 export default function ProductSlider({ products }: { products: PublicProduct[] }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
+    
     const handleQuickView = (p: any) => {
-        console.log("Open Modal", p.id);
+        setSelectedProduct(p);
+        setIsModalOpen(true);
+    };
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedProduct(null);
     };
 
     return (
@@ -185,6 +194,13 @@ export default function ProductSlider({ products }: { products: PublicProduct[] 
                     </div>
                 ))}
             </Slider>
+            {selectedProduct && (
+                <ProductQuickViewModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    productId={selectedProduct.id}
+                />
+            )}
         </div>
     );
 }
