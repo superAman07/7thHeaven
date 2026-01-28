@@ -6,7 +6,6 @@ import {
   Sparkles, Moon, Sun, LocateFixed 
 } from 'lucide-react';
 
-// --- TYPES ---
 export interface NetworkNode {
     id: string;
     name: string;
@@ -207,7 +206,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
     );
 };
 
-const NetworkGalaxy = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+const NetworkGalaxy = ({ isOpen, onClose, data }: { isOpen: boolean, onClose: () => void, data?: NetworkNode | null }) => {
     // const [isGalaxyOpen, setIsGalaxyOpen] = useState(true);
     const [scale, setScale] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -375,7 +374,7 @@ const NetworkGalaxy = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                             className="absolute top-[150px] left-1/2 -translate-x-1/2 origin-top will-change-transform"
                          >
                              <GalaxyTree 
-                                 node={ROOT_USER_DATA} 
+                                 node={data || ROOT_USER_DATA} 
                                  onNodeClick={(node, rect) => dragDistance.current < 10 && setSelectedNode({ node, rect })} 
                                  isDark={isDark}
                             />

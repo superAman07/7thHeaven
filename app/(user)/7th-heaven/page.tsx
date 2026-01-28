@@ -42,6 +42,7 @@ export default function SeventhHeavenPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
     const [isGalaxyOpen, setIsGalaxyOpen] = useState(false);
+    const [graphData, setGraphData] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -90,6 +91,20 @@ export default function SeventhHeavenPage() {
             }
         };
         fetchData();
+    }, []);
+
+    useEffect(() => {
+        const fetchGraphData = async () => {
+            try {
+                const response = await axios.get('/api/v1/network/graph');
+                if (response.data.success) {
+                    setGraphData(response.data.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch galaxy graph", error);
+            }
+        };
+        fetchGraphData();
     }, []);
 
     const handleOpenModal = (product: PublicProduct) => {
@@ -291,7 +306,8 @@ export default function SeventhHeavenPage() {
 
             <NetworkGalaxy 
                 isOpen={isGalaxyOpen} 
-                onClose={() => setIsGalaxyOpen(false)} 
+                onClose={() => setIsGalaxyOpen(false)}
+                data={graphData}
             />
             
             {selectedProduct && (
