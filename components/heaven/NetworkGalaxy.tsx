@@ -59,6 +59,12 @@ const getNextHeavenName = (level: number) => {
     return getHeavenName(level + 1);
 };
 
+const countDescendantsAtDepth = (node: NetworkNode, targetDepth: number): number => {
+    if (targetDepth === 1) return node.children ? node.children.length : 0;
+    if (!node.children || node.children.length === 0) return 0;
+    return node.children.reduce((acc, child) => acc + countDescendantsAtDepth(child, targetDepth - 1), 0);
+};
+
 const getOrdinal = (n: number) => {
     const s = ["th", "st", "nd", "rd"];
     const v = n % 100;
@@ -164,30 +170,30 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
     const left = rect.left + rect.width / 2;
     const isActive = node.status === 'ACTIVE';
     const nextRankName = getNextHeavenName(node.level);
-
+    // --- SMART BOTTLENECK LOGIC ---
     let currentProgressCount = 0;
     let progressLabel = "";
     let target = 0;
-
     const directCount = node.children ? node.children.length : 0;
-
+    // PRIORITY 1: Directs (The Foundation)
+    // If you have less than 5 directs, your focus MUST be directs, no matter your 'Level' badge.
     if (directCount < 5) {
         currentProgressCount = directCount;
         target = 5;
         progressLabel = "Direct Souls";
     } 
+    // PRIORITY 2: Structure (The Empire)
+    // If you have 5+ directs, your focus shifts to the Next Generation depth.
     else {
-        const nextGenCount = node.children?.reduce((acc, child) => {
-             return acc + (child.children ? child.children.length : 0);
-        }, 0) || 0;
-        
-        currentProgressCount = nextGenCount;
-        target = node.nextLevelTarget || Math.pow(5, (node.level === 0 ? 1 : node.level) + 1);
-        progressLabel = "Empire Souls";
+        // e.g. If Level 0, we need depth 1 (Directs) - covered above
+        // If Level 1, we need depth 2. If Level 2, we need depth 3.
+        const requiredDepth = (node.level === 0 ? 1 : node.level) + 1;
+        currentProgressCount = countDescendantsAtDepth(node, requiredDepth);
+        target = node.nextLevelTarget || Math.pow(5, requiredDepth);
+        progressLabel = `Gen ${requiredDepth} Souls`;
     }
-
     const progressPercent = Math.min((currentProgressCount / target) * 100, 100);
-
+    // ----------------------------
     return (
         <div className="fixed z-[10000] pointer-events-none" style={{ top: top, left: left }}>
             <motion.div 
@@ -196,8 +202,8 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
                 className={`absolute -translate-x-1/2 w-72 backdrop-blur-xl rounded-2xl shadow-2xl p-4 border font-serif ${isDark ? 'bg-[#1a1a1a]/95 border-[#ddb040]/30 text-white' : 'bg-white/95 border-[#ddb040]/20 text-gray-800'}`}
             >
+                {/* Header Badge */}
                 <div className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45 border-b border-r ${isDark ? 'bg-[#1a1a1a] border-[#ddb040]/30' : 'bg-white border-[#ddb040]/20'}`}></div>
-                
                 <div className={`flex items-center justify-between mb-3 border-b pb-2 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
                     <div>
                         <h4 className={`text-lg font-bold font-sans ${isDark ? 'text-white' : 'text-gray-900'}`}>{node.name}</h4>
@@ -207,7 +213,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                         {isActive ? 'ACTIVE' : 'DORMANT'}
                     </span>
                 </div>
-
+                {/* Stats Row */}
                 <div className="flex justify-between items-center text-center mb-4 gap-2">
                     <div className={`rounded-lg p-2 flex-1 ${isDark ? 'bg-white/5' : 'bg-gray-50'}`}>
                         <div className={`text-sm font-bold font-sans ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{node.teamSize}</div>
@@ -218,7 +224,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                         <div className="text-[8px] text-[#ddb040] opacity-90 uppercase font-sans tracking-wide">Current Rank</div>
                     </div>
                 </div>
-
+                {/* Progress Bar Row */}
                 <div className="font-sans">
                      <div className={`flex justify-between text-[9px] font-bold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                         <span className="uppercase tracking-wider">To {nextRankName}</span>
