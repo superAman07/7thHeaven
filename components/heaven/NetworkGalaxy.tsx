@@ -55,6 +55,10 @@ const getHeavenName = (level: number) => {
     return `${level}${getOrdinal(level)} Heaven`;
 };
 
+const getNextHeavenName = (level: number) => {
+    return getHeavenName(level + 1);
+};
+
 const getOrdinal = (n: number) => {
     const s = ["th", "st", "nd", "rd"];
     const v = n % 100;
@@ -159,7 +163,30 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
     const top = rect.top - 180; 
     const left = rect.left + rect.width / 2;
     const isActive = node.status === 'ACTIVE';
-    const progressPercent = Math.min((node.teamSize / (node.nextLevelTarget || 1)) * 100, 100);
+    const nextRankName = getNextHeavenName(node.level);
+
+    let currentProgressCount = 0;
+    let progressLabel = "";
+    let target = 0;
+
+    const directCount = node.children ? node.children.length : 0;
+
+    if (directCount < 5) {
+        currentProgressCount = directCount;
+        target = 5;
+        progressLabel = "Direct Souls";
+    } 
+    else {
+        const nextGenCount = node.children?.reduce((acc, child) => {
+             return acc + (child.children ? child.children.length : 0);
+        }, 0) || 0;
+        
+        currentProgressCount = nextGenCount;
+        target = node.nextLevelTarget || Math.pow(5, (node.level === 0 ? 1 : node.level) + 1);
+        progressLabel = "Empire Souls";
+    }
+
+    const progressPercent = Math.min((currentProgressCount / target) * 100, 100);
 
     return (
         <div className="fixed z-[10000] pointer-events-none" style={{ top: top, left: left }}>
@@ -167,14 +194,12 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                 initial={{ opacity: 0, scale: 0.9, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                // UPDATED: Increased width (w-72) and reduced padding (p-4) for better fit
                 className={`absolute -translate-x-1/2 w-72 backdrop-blur-xl rounded-2xl shadow-2xl p-4 border font-serif ${isDark ? 'bg-[#1a1a1a]/95 border-[#ddb040]/30 text-white' : 'bg-white/95 border-[#ddb040]/20 text-gray-800'}`}
             >
                 <div className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45 border-b border-r ${isDark ? 'bg-[#1a1a1a] border-[#ddb040]/30' : 'bg-white border-[#ddb040]/20'}`}></div>
                 
                 <div className={`flex items-center justify-between mb-3 border-b pb-2 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
                     <div>
-                        {/* FIXED: Explicit colors for visibility */}
                         <h4 className={`text-lg font-bold font-sans ${isDark ? 'text-white' : 'text-gray-900'}`}>{node.name}</h4>
                         <div className={`text-[10px] uppercase  tracking-widest font-sans ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Joined {node.joinedAt}</div>
                     </div>
@@ -182,20 +207,22 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                         {isActive ? 'ACTIVE' : 'DORMANT'}
                     </span>
                 </div>
+
                 <div className="flex justify-between items-center text-center mb-4 gap-2">
                     <div className={`rounded-lg p-2 flex-1 ${isDark ? 'bg-white/5' : 'bg-gray-50'}`}>
                         <div className={`text-sm font-bold font-sans ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{node.teamSize}</div>
-                        <div className="text-[8px] opacity-90 uppercase font-sans tracking-wide">Network</div>
+                        <div className="text-[8px] opacity-90 uppercase font-sans tracking-wide">Network Size</div>
                     </div>
                     <div className={`rounded-lg p-2 flex-1 border ${isDark ? 'bg-[#ddb040]/10 border-[#ddb040]/20' : 'bg-amber-50 border-amber-100'}`}>
                         <div className="text-xs font-bold text-[#ddb040] font-sans whitespace-nowrap">{getHeavenName(node.level)}</div>
-                        <div className="text-[8px] text-[#ddb040] opacity-90 uppercase font-sans tracking-wide">Rank</div>
+                        <div className="text-[8px] text-[#ddb040] opacity-90 uppercase font-sans tracking-wide">Current Rank</div>
                     </div>
                 </div>
+
                 <div className="font-sans">
                      <div className={`flex justify-between text-[9px] font-bold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        <span>Path to Next Rank</span>
-                        <span>{Math.round(progressPercent)}%</span>
+                        <span className="uppercase tracking-wider">To {nextRankName}</span>
+                        <span>{currentProgressCount}/{target} <span className="opacity-70 font-normal normal-case">{progressLabel}</span></span>
                     </div>
                     <div className="h-1.5 w-full bg-gray-500/20 rounded-full overflow-hidden">
                         <motion.div initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1 }} className="h-full bg-gradient-to-r from-[#ddb040] to-amber-300 rounded-full" />
@@ -207,7 +234,6 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
 };
 
 const NetworkGalaxy = ({ isOpen, onClose, data }: { isOpen: boolean, onClose: () => void, data?: NetworkNode | null }) => {
-    // const [isGalaxyOpen, setIsGalaxyOpen] = useState(true);
     const [scale, setScale] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [selectedNode, setSelectedNode] = useState<SelectedNodeState | null>(null);
@@ -217,7 +243,6 @@ const NetworkGalaxy = ({ isOpen, onClose, data }: { isOpen: boolean, onClose: ()
     const lastMousePos = useRef({ x: 0, y: 0 });
     const dragDistance = useRef(0);
 
-    // Initial center position
     useEffect(() => {
         if (isOpen) {
             setPosition({ x: window.innerWidth / 2, y: 150 });
@@ -243,7 +268,6 @@ const NetworkGalaxy = ({ isOpen, onClose, data }: { isOpen: boolean, onClose: ()
         setTimeout(() => setIsDragging(false), 50);
     }, []);
 
-    // Global listeners for fluid dragging
     useEffect(() => {
         const onMouseMoveGlobal = (e: MouseEvent) => handleMove(e.clientX, e.clientY);
         const onTouchMoveGlobal = (e: TouchEvent) => {

@@ -65,8 +65,8 @@ export default function ShareButton({
         onClick={() => setIsOpen(true)}
         className={
           variant === 'icon'
-            ? 'bg-gradient-to-r from-[#ddb040] to-[#e8c55a] hover:from-[#c59d35] hover:to-[#ddb040] text-black w-[42px] h-[42px] rounded-lg shadow-lg flex items-center justify-center text-sm transition-all transform hover:scale-105'
-            : 'bg-gradient-to-r from-[#ddb040] to-[#e8c55a] text-black w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-xl animate-pulse hover:animate-none hover:scale-110 transition-transform'
+            ? 'bg-linear-to-r from-[#ddb040] to-[#e8c55a] hover:from-[#c59d35] hover:to-[#ddb040] text-black w-[42px] h-[42px] rounded-lg shadow-lg flex items-center justify-center text-sm transition-all transform hover:scale-105'
+            : 'bg-linear-to-r from-[#ddb040] to-[#e8c55a] text-black w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-xl animate-pulse hover:animate-none hover:scale-110 transition-transform'
         }
         title="Share & Earn"
       >
@@ -76,7 +76,7 @@ export default function ShareButton({
       {/* MODAL OVERLAY */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-99999 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         >
           {/* MODAL CONTENT */}
@@ -85,7 +85,7 @@ export default function ShareButton({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with Premium Gradient */}
-            <div className="bg-gradient-to-br from-[#1a1a1a] to-[#000] p-6 text-center relative overflow-hidden">
+            <div className="bg-linear-to-br from-[#1a1a1a] to-black p-6 text-center relative overflow-hidden">
               {/* Decorative glow */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-[#ddb040] opacity-20 blur-3xl rounded-full pointer-events-none" />
 
@@ -97,7 +97,7 @@ export default function ShareButton({
               </button>
 
               <div className="relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-tr from-[#ddb040] to-[#fce38a] rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(221,176,64,0.4)]">
+                <div className="w-16 h-16 bg-linear-to-tr from-[#ddb040] to-[#fce38a] rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(221,176,64,0.4)]">
                   <i className="fa fa-gift text-3xl text-black/80" />
                 </div>
 
