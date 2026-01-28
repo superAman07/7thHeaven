@@ -324,6 +324,37 @@ const NetworkGalaxy = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                          </div>
                     </div>
 
+                    <div className="absolute left-4 top-4 z-40 pointer-events-none flex flex-col gap-3 select-none">
+                        {/* Title for the guide */}
+                         <div className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${isDark ? 'text-white/40' : 'text-black/40'}`}>
+                            Visual Guide
+                         </div>
+                         {/* Compact Legend Items */}
+                         <div className="flex flex-col gap-2">
+                             {/* Item 1 */}
+                             <div className="flex items-center gap-2 opacity-80">
+                                <Crown size={12} className={isDark ? 'text-[#ddb040]' : 'text-amber-600'} />
+                                <span className={`text-[10px] md:text-xs font-bold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    You (Root)
+                                </span>
+                             </div>
+                             {/* Item 2 */}
+                             <div className="flex items-center gap-2 opacity-80">
+                                <Star size={12} className={isDark ? 'text-[#ddb040]' : 'text-amber-600'} />
+                                <span className={`text-[10px] md:text-xs font-bold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    Active Soul
+                                </span>
+                             </div>
+                             {/* Item 3 */}
+                             <div className="flex items-center gap-2 opacity-60">
+                                <User size={12} className={isDark ? 'text-gray-500' : 'text-gray-400'} />
+                                <span className={`text-[10px] md:text-xs font-bold ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                                    Dormant
+                                </span>
+                             </div>
+                         </div>
+                    </div>
+
                     {/* CANVAS AREA */}
                     <div 
                         className={`flex-1 relative overflow-hidden flex! items-center! justify-center! ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
