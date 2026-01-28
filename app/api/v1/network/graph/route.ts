@@ -2,28 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserIdFromToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 
-// Helper to format date
 const formatDateSimple = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 };
 
-// Helper to recursively format the tree and calculate counts
 const formatNode = (user: any, level: number = 0): any => {
     const children = user.children ? user.children.map((c: any) => formatNode(c, level + 1)) : [];
     
-    // Calculate total team size (direct + indirect)
-    const teamSize = children.reduce((acc: number, child: any) => acc + 1 + (child.teamSize || 0), 0);
-    
-    // Next level target (simple logic: powers of 5, or custom logic)
+    const teamSize = children.reduce((acc: number, child: any) => {
+        const childVal = child.status === 'ACTIVE' ? 1 : 0;
+        return acc + childVal + (child.teamSize || 0);
+    }, 0);
     const targets = [5, 25, 125, 625, 3125]; 
     const nextTarget = targets[level] || 3125;
-
     return {
         id: user.id,
         name: user.fullName || "User",
-        level: level, // 0 = Root, 1 = Direct Referrals, etc.
+        level: level,
         status: user.is7thHeaven ? 'ACTIVE' : 'DORMANT',
-        joinedAt: formatDateSimple(user.createdAt),
+        joinedAt: user.createdAt.toISOString().split('T')[0],
         teamSize: teamSize, 
         nextLevelTarget: nextTarget,
         children: children

@@ -193,7 +193,6 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
         progressLabel = `Gen ${requiredDepth} Souls`;
     }
     const progressPercent = Math.min((currentProgressCount / target) * 100, 100);
-    // ----------------------------
     return (
         <div className="fixed z-[10000] pointer-events-none" style={{ top: top, left: left }}>
             <motion.div 
@@ -204,6 +203,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
             >
                 {/* Header Badge */}
                 <div className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45 border-b border-r ${isDark ? 'bg-[#1a1a1a] border-[#ddb040]/30' : 'bg-white border-[#ddb040]/20'}`}></div>
+                
                 <div className={`flex items-center justify-between mb-3 border-b pb-2 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
                     <div>
                         <h4 className={`text-lg font-bold font-sans ${isDark ? 'text-white' : 'text-gray-900'}`}>{node.name}</h4>
@@ -225,7 +225,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                     </div>
                 </div>
                 {/* Progress Bar Row */}
-                <div className="font-sans">
+                <div className="font-sans mb-1">
                      <div className={`flex justify-between text-[9px] font-bold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                         <span className="uppercase tracking-wider">To {nextRankName}</span>
                         <span>{currentProgressCount}/{target} <span className="opacity-70 font-normal normal-case">{progressLabel}</span></span>
@@ -234,6 +234,13 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                         <motion.div initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1 }} className="h-full bg-gradient-to-r from-[#ddb040] to-amber-300 rounded-full" />
                     </div>
                 </div>
+                {/* DORMANT STATUS EXPLANATION (Only shows if Dormant) */}
+                {!isActive && (
+                    <div className={`mt-3 pt-2 border-t ${isDark ? 'border-white/10 text-gray-400' : 'border-gray-100 text-gray-500'} text-[10px] leading-relaxed font-sans`}>
+                        <span className="font-bold uppercase tracking-wider text-red-400/80 mr-1">Dormant:</span>
+                        Visible but inactive. Has not entered 7th Heaven yet.
+                    </div>
+                )}
             </motion.div>
         </div>
     );
