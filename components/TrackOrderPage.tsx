@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { generateInvoice } from '@/services/invoiceGenerator';
 
 export default function TrackOrderPage() {
     const [orderId, setOrderId] = useState('');
@@ -27,6 +28,27 @@ export default function TrackOrderPage() {
             toast.error(msg);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDownloadInvoice = () => {
+        if (!orderData) return;
+        
+        try {
+            const invoiceData: any = {
+                id: orderData.id,
+                status: orderData.status,
+                createdAt: orderData.createdAt,
+                subtotal: parseFloat(orderData.subtotal),
+                paymentStatus: orderData.paymentStatus,
+                items: orderData.items,
+                shippingAddress: orderData.shippingAddress
+            };
+            generateInvoice(invoiceData);
+            toast.success("Invoice downloading...");
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to generate invoice");
         }
     };
 
@@ -96,43 +118,83 @@ export default function TrackOrderPage() {
                     {orderData && (
                         <div className="row justify-content-center mt-50">
                             <div className="col-lg-8">
-                                <div className="order-details-table table-responsive border p-4 rounded">
-                                    <h3 className="mb-4">Order Status: <span className="text-primary">{orderData.status}</span></h3>
-                                    <table className="table">
-                                        <tbody>
-                                            <tr>
-                                                <td><strong>Order ID:</strong></td>
-                                                <td>{orderData.id}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Date:</strong></td>
-                                                <td>{new Date(orderData.createdAt).toLocaleDateString()}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Payment Status:</strong></td>
-                                                <td>
-                                                    <span className={`badge ${orderData.paymentStatus === 'PAID' ? 'bg-success' : 'bg-warning'}`}>
-                                                        {orderData.paymentStatus}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Total Amount:</strong></td>
-                                                <td>Rs. {parseFloat(orderData.subtotal).toFixed(2)}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                                                <div className="order-details-table border p-4 rounded bg-white shadow-sm">
+                                    {/* HEADER SECTION STACKED */}
+                                    <div className="mb-4 pb-3 border-bottom">
+                                        <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                                            <h3 className="m-0" style={{ fontSize: '1.5rem' }}>
+                                                Order Status: <span className="text-primary font-weight-bold">{orderData.status}</span>
+                                            </h3>
+                                            
+                                            {/* CHECK CONDITION: {(orderData.paymentStatus || '').trim().toUpperCase()} */}
+                                            {['PAID', 'REFUNDED'].includes((orderData.paymentStatus || '').toString().trim().toUpperCase()) && (
+                                                <button 
+                                                    onClick={handleDownloadInvoice}
+                                                    className="btn btn-dark d-flex align-items-center gap-2 shadow-sm"
+                                                    style={{ 
+                                                        backgroundColor: '#ddb040', 
+                                                        color: '#fff',
+                                                        borderColor: '#ddb040',
+                                                        padding: '10px 24px', 
+                                                        borderRadius: '50px',
+                                                        fontSize: '0.9rem',
+                                                        fontWeight: 'bold'
+                                                    }}
+                                                >
+                                                    <i className="fa fa-file-pdf-o"></i> 
+                                                    <span>Download Invoice</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
 
-                                    <h4 className="mt-4">Items</h4>
-                                    <ul className="list-group">
+                                    {/* TABLE SECTION */}
+                                    <div className="table-responsive">
+                                        <table className="table">
+                                            <tbody>
+                                                <tr>
+                                                    <td style={{ width: '40%', borderTop: 'none' }}><strong>Order ID:</strong></td>
+                                                    <td style={{ borderTop: 'none' }}>
+                                                        <span className="badge badge-light border" style={{ fontSize: '1rem', color: '#333' }}>
+                                                            #{orderData.id}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Date:</strong></td>
+                                                    <td>{new Date(orderData.createdAt).toLocaleDateString()}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Payment Status:</strong></td>
+                                                    <td>
+                                                        {/* Force show the raw value for debug if needed, but keeping logic same as badge */}
+                                                        <span className={`badge ${orderData.paymentStatus === 'PAID' ? 'bg-success' : 'bg-warning'}`} style={{ fontSize: '0.9rem', padding: '6px 12px' }}>
+                                                            {orderData.paymentStatus}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Total Amount:</strong></td>
+                                                    <td className="font-weight-bold" style={{ fontSize: '1.2em' }}>Rs. {parseFloat(orderData.subtotal).toFixed(2)}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <h4 className="mt-4 mb-3 border-bottom pb-2">Items</h4>
+                                    <ul className="list-group list-group-flush">
                                         {Array.isArray(orderData.items) && orderData.items.map((item: any, idx: number) => (
-                                            <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <strong>{item.name}</strong>
-                                                    <br />
-                                                    <small className="text-muted">Size: {item.size} | Qty: {item.quantity}</small>
+                                            <li key={idx} className="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <div className="d-flex align-items-center gap-3">
+                                                    <div className="bg-light rounded d-flex align-items-center justify-center" style={{ width: '50px', height: '50px' }}>
+                                                        <i className="fa fa-cube text-muted"></i>
+                                                    </div>
+                                                    <div>
+                                                        <strong className="d-block text-dark">{item.name}</strong>
+                                                        <small className="text-muted">Size: {item.size}ml | Qty: {item.quantity}</small>
+                                                    </div>
                                                 </div>
-                                                <span>Rs. {item.priceAtPurchase}</span>
+                                                <span className="font-weight-bold">Rs. {item.priceAtPurchase}</span>
                                             </li>
                                         ))}
                                     </ul>
