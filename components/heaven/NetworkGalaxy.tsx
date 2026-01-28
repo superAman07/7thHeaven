@@ -204,9 +204,8 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
     );
 };
 
-// --- MAIN APPLICATION COMPONENT ---
-const NetworkGalaxy: React.FC = () => {
-    const [isGalaxyOpen, setIsGalaxyOpen] = useState(true);
+const NetworkGalaxy = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+    // const [isGalaxyOpen, setIsGalaxyOpen] = useState(true);
     const [scale, setScale] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [selectedNode, setSelectedNode] = useState<SelectedNodeState | null>(null);
@@ -218,10 +217,10 @@ const NetworkGalaxy: React.FC = () => {
 
     // Initial center position
     useEffect(() => {
-        if (isGalaxyOpen) {
+        if (isOpen) {
             setPosition({ x: window.innerWidth / 2, y: 150 });
         }
-    }, [isGalaxyOpen]);
+    }, [isOpen]);
 
     const handleStart = useCallback((clientX: number, clientY: number) => {
         setIsDragging(true);
@@ -271,18 +270,8 @@ const NetworkGalaxy: React.FC = () => {
         setPosition({ x: window.innerWidth / 2, y: 150 });
     };
 
-    if (!isGalaxyOpen) {
-        return (
-            <div className="min-h-screen bg-[#0f0f0f] flex! items-center! justify-center!">
-                <button 
-                  onClick={() => setIsGalaxyOpen(true)}
-                  className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-700 text-white rounded-2xl shadow-2xl font-serif text-xl flex items-center gap-3 hover:scale-105 transition-transform"
-                >
-                  <Sparkles size={24} />
-                  Open Celestial Hierarchy
-                </button>
-            </div>
-        );
+    if (!isOpen) {
+        return null;
     }
 
     return (
@@ -290,7 +279,7 @@ const NetworkGalaxy: React.FC = () => {
             <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className={`fixed inset-0 z-[1000] flex flex-col overflow-hidden font-serif transition-colors duration-500 ${isDark ? 'bg-[#0f0f0f] text-white' : 'bg-[#fcfaf7] text-gray-800'}`}
+                className={`fixed inset-0 z-9999 flex flex-col overflow-hidden font-serif transition-colors duration-500 ${isDark ? 'bg-[#0f0f0f] text-white' : 'bg-[#fcfaf7] text-gray-800'}`}
             >
                 {/* Visual Textures */}
                 <div className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${isDark ? 'opacity-10' : 'opacity-20'} bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-multiply`} />
@@ -307,7 +296,7 @@ const NetworkGalaxy: React.FC = () => {
                             <p className="text-[8px] md:text-xs text-[#ddb040] font-sans font-bold uppercase tracking-[0.2em]">Network Explorer</p>
                         </div>
                     </div>
-                    <button onClick={() => setIsGalaxyOpen(false)} className={`w-10 h-10 rounded-full flex! items-center! justify-center! transition-colors ${isDark ? 'bg-white/10 hover:bg-white/20' : 'bg-red-50 text-red-500 hover:bg-red-100'}`}>
+                    <button onClick={onClose} className={`w-10 h-10 rounded-full flex! items-center! justify-center! transition-colors ${isDark ? 'bg-white/10 hover:bg-white/20' : 'bg-red-50 text-red-500 hover:bg-red-100'}`}>
                         <X size={20} />
                     </button>
                 </header>
