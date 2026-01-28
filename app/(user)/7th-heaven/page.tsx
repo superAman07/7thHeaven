@@ -276,29 +276,39 @@ export default function SeventhHeavenPage() {
 
         {/* 4. DIRECT REFERRALS (Improved Empty State) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-12">
-          <div className="p-5 border-b border-gray-100 bg-gray-50">
-            <h3 className="text-3xl! font-serif! text-gray-800">Direct Referrals</h3>
+          <div className="p-6 border-b border-gray-100 bg-gray-50/50">
+            <h3 className="text-3xl! font-serif! text-gray-900">Direct Referrals</h3>
           </div>
 
           {data.directReferrals.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead className="bg-white text-gray-400 text-[10px] uppercase tracking-wider border-b border-gray-100">
+            <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
+              <table className="w-full text-left relative border-collapse">
+                <thead className="bg-white text-gray-400 text-[10px] uppercase tracking-wider border-b border-gray-100 sticky top-0 z-10 shadow-sm">
                   <tr>
-                    <th className="px-6 py-3 font-bold">Associate</th>
-                    <th className="px-6 py-3 font-bold">Date Joined</th>
-                    <th className="px-6 py-3 font-bold">Status</th>
+                    <th className="px-6 py-4 font-bold! bg-gray-50/95 backdrop-blur-sm whitespace-nowrap">Associate</th>
+                    <th className="px-6 py-4 font-bold! bg-gray-50/95 backdrop-blur-sm whitespace-nowrap">Date Joined</th>
+                    <th className="px-6 py-4 font-bold! bg-gray-50/95 backdrop-blur-sm whitespace-nowrap">Status</th>
                   </tr>
                 </thead>
 
                 <tbody className="divide-y divide-gray-50">
                   {data.directReferrals.map((member, index) => (
-                    <tr key={index} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 font-bold text-gray-800 text-sm">{member.name}</td>
-                      <td className="px-6 py-4 text-gray-500 text-sm">{new Date(member.joinedAt).toLocaleDateString()}</td>
+                    <tr key={index} className="hover:bg-amber-50/30 transition-colors duration-150">
                       <td className="px-6 py-4">
-                        <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2" />
-                        <span className="text-xs font-medium text-gray-600">Active</span>
+                        <span className="font-serif! font-bold! text-gray-800 text-sm block">
+                            {member.name}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-gray-600 text-xs! font-mono! tracking-tight">
+                            {new Date(member.joinedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse" />
+                           <span className="text-[10px] font-bold uppercase tracking-wide">Active</span>
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -306,24 +316,13 @@ export default function SeventhHeavenPage() {
               </table>
             </div>
           ) : (
-            // PROFESSIONAL EMPTY STATE
-            <div className="py-12 text-center">
-              <div className="w-16 h-16 bg-[#ddb040]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fa fa-user-plus text-2xl text-[#ddb040]" />
-              </div>
-
-              <h4 className="text-gray-900 font-bold mb-2">Start Your Team</h4>
-              <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto">
-                You haven't referred anyone yet. Share your unique code to invite friends and unlock Level 1 rewards.
-              </p>
-
-              <button
-                onClick={copyToClipboard}
-                className="bg-[#ddb040] text-black font-bold uppercase text-xs px-6 py-3 rounded hover:bg-[#c59d35] transition-colors"
-              >
-                Share Referral Code
-              </button>
-            </div>
+             <div className="p-16 text-center">
+                <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-4 border border-gray-100">
+                    <i className="fa fa-users text-gray-300 text-2xl" />
+                </div>
+                <p className="font-serif text-lg text-gray-500 italic mb-2">"Great empires begin with a single step."</p>
+                <p className="text-xs text-gray-400 uppercase tracking-widest">start referring to unlock the galaxy</p>
+             </div>
           )}
         </div>
 
