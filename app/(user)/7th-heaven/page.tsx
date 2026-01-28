@@ -165,9 +165,17 @@ export default function SeventhHeavenPage() {
 
                         {/* Stats */}
                         <div className="flex justify-center lg:justify-end gap-8 text-center divide-x divide-gray-100">
-                            <div className="px-4">
-                                <div className="text-4xl font-bold text-[#ddb040] mb-1">{data.totalTeamSize}</div>
-                                <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Network Size</div>
+                            <div 
+                                className="px-4 cursor-pointer hover:scale-105 transition-transform duration-300 group"
+                                onClick={() => setIsGalaxyOpen(true)}
+                                title="View Galaxy Map"
+                            >
+                                <div className="text-4xl font-bold text-[#ddb040] mb-1 group-hover:text-[#b6902e] transition-colors">
+                                    {data.totalTeamSize}
+                                </div>
+                                <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold group-hover:text-gray-600">
+                                    Network Size <i className="fa fa-external-link ml-1 text-[9px]"></i>
+                                </div>
                             </div>
                             <div className="px-4">
                                 <div className="text-4xl font-bold text-gray-800 mb-1">{data.levels.filter(l => l.isCompleted).length}/7</div>
@@ -280,8 +288,12 @@ export default function SeventhHeavenPage() {
                     )}
                 </div>
             </div>
+
+            <NetworkGalaxy 
+                isOpen={isGalaxyOpen} 
+                onClose={() => setIsGalaxyOpen(false)} 
+            />
             
-            {/* QUICK VIEW MODAL */}
             {selectedProduct && (
                 <ProductQuickViewModal
                     isOpen={isModalOpen}
