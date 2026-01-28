@@ -31,7 +31,7 @@ const generateMockGalaxy = (depth: number = 1, maxDepth: number = 5): NetworkNod
         id: `node-${depth}-${i}-${Math.random().toString(36).substr(2, 9)}`,
         name: `Angel ${depth}-${i}`,
         level: depth,
-        status: Math.random() > 0.4 ? 'ACTIVE' : 'INACTIVE',
+        status: Math.random() > 0.4 ? 'ACTIVE' : 'DORMANT',
         joinedAt: 'Nov 2023',
         teamSize: Math.floor(Math.random() * 40) + 1,
         nextLevelTarget: 50 * depth,
