@@ -23,8 +23,11 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
     );
 
     const currentStock = selectedVariant?.stock ?? 0;
-    const isOutOfStock = currentStock === 0;
-    const isLowStock = currentStock > 0 && currentStock <= 5;
+    const isGlobalOutOfStock = !product.inStock; 
+    const isVariantOutOfStock = currentStock === 0;
+    
+    const isOutOfStock = isGlobalOutOfStock || isVariantOutOfStock;
+    const isLowStock = !isGlobalOutOfStock && currentStock > 0 && currentStock <= 5;
 
     const cartItemId = selectedVariant ? `${product.id}-${selectedVariant.id}` : product.id;
     const cartItem = cartItems.find(item => 
@@ -269,7 +272,9 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                                 onClick={handleCartAction}
                                 style={{ cursor: isOutOfStock ? 'not-allowed' : 'pointer', color: isInCart ? '#ddb040' : undefined }}
                             >
-                                {isOutOfStock ? 'Out of Stock' : (isAdding ? 'Added!' : (isInCart ? 'Remove' : 'Add to Cart'))}
+                                {isGlobalOutOfStock 
+                                    ? 'not in stock' 
+                                    : (isVariantOutOfStock ? 'Sold Out' : (isAdding ? 'Added!' : (isInCart ? 'Remove' : 'Add to Cart')))}
                             </a>
                             <ul className="d-flex">
                                 <li>
