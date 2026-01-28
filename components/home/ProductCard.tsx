@@ -239,7 +239,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
 
             <div className="col-12" style={{ padding: '0 15px' }}>
                 <div className="single-product mb-30">
-                    <div className="product-img">
+                    <div className="product-img transition-all duration-300 border border-[#ddb040]/20 group-hover:border-[#ddb040] group-hover:shadow-[0_0_15px_rgba(221,176,64,0.15)] rounded-lg overflow-hidden">
                         <Link href={`/products/${product.slug}`}>
                             <img 
                                 src={product.images[0] || '/assets/images/product/shop.webp'} 
