@@ -168,13 +168,16 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                 initial={{ opacity: 0, scale: 0.9, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                className={`absolute -translate-x-1/2 w-64 backdrop-blur-xl rounded-2xl shadow-2xl p-5 border font-serif ${isDark ? 'bg-[#1a1a1a]/95 border-[#ddb040]/30 text-white' : 'bg-white/95 border-[#ddb040]/20 text-gray-800'}`}
+                // UPDATED: Increased width (w-72) and reduced padding (p-4) for better fit
+                className={`absolute -translate-x-1/2 w-72 backdrop-blur-xl rounded-2xl shadow-2xl p-4 border font-serif ${isDark ? 'bg-[#1a1a1a]/95 border-[#ddb040]/30 text-white' : 'bg-white/95 border-[#ddb040]/20 text-gray-800'}`}
             >
                 <div className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45 border-b border-r ${isDark ? 'bg-[#1a1a1a] border-[#ddb040]/30' : 'bg-white border-[#ddb040]/20'}`}></div>
+                
                 <div className={`flex items-center justify-between mb-3 border-b pb-2 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
                     <div>
-                        <h4 className="text-lg font-bold">{node.name}</h4>
-                        <div className="text-[10px] opacity-60 font-sans uppercase tracking-widest">Joined {node.joinedAt}</div>
+                        {/* FIXED: Explicit colors for visibility */}
+                        <h4 className={`text-lg font-bold font-sans ${isDark ? 'text-white' : 'text-gray-900'}`}>{node.name}</h4>
+                        <div className={`text-[10px] uppercase  tracking-widest font-sans ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Joined {node.joinedAt}</div>
                     </div>
                     <span className={`text-[9px] font-bold px-3 py-1 rounded-full border font-sans ${isActive ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-gray-500/10 text-gray-500 border-gray-500/20'}`}>
                         {isActive ? 'ACTIVE' : 'DORMANT'}
@@ -182,16 +185,16 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                 </div>
                 <div className="flex justify-between items-center text-center mb-4 gap-2">
                     <div className={`rounded-lg p-2 flex-1 ${isDark ? 'bg-white/5' : 'bg-gray-50'}`}>
-                        <div className="text-sm font-bold font-sans">{node.teamSize}</div>
-                        <div className="text-[8px] opacity-50 uppercase font-sans tracking-wide">Network</div>
+                        <div className={`text-sm font-bold font-sans ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{node.teamSize}</div>
+                        <div className="text-[8px] opacity-90 uppercase font-sans tracking-wide">Network</div>
                     </div>
                     <div className={`rounded-lg p-2 flex-1 border ${isDark ? 'bg-[#ddb040]/10 border-[#ddb040]/20' : 'bg-amber-50 border-amber-100'}`}>
-                        <div className="text-xs font-bold text-[#ddb040] whitespace-nowrap">{getHeavenName(node.level)}</div>
-                        <div className="text-[8px] text-[#ddb040] opacity-80 uppercase font-sans tracking-wide">Rank</div>
+                        <div className="text-xs font-bold text-[#ddb040] font-sans whitespace-nowrap">{getHeavenName(node.level)}</div>
+                        <div className="text-[8px] text-[#ddb040] opacity-90 uppercase font-sans tracking-wide">Rank</div>
                     </div>
                 </div>
                 <div className="font-sans">
-                     <div className="flex justify-between text-[9px] font-bold opacity-60 mb-1">
+                     <div className={`flex justify-between text-[9px] font-bold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                         <span>Path to Next Rank</span>
                         <span>{Math.round(progressPercent)}%</span>
                     </div>
