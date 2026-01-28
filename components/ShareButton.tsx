@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -153,17 +154,17 @@ export default function ShareButton({
 
                 <div className="flex justify-center gap-3 sm:gap-5">
                   {shareLinks.map((link) => (
-                    <button
+                    <Link
                       key={link.name}
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       title={link.name}
-                      className={`${link.color} text-white w-12 h-12 rounded-full! flex items-center justify-center text-2xl transition-all transform hover:scale-110 hover:-translate-y-1 shadow-lg`}
+                      className={`${link.color} text-white w-12 h-12 rounded-full! flex! items-center! justify-center! text-2xl transition-all transform hover:scale-110 hover:-translate-y-1 shadow-lg`}
                       onClick={() => setIsOpen(false)}
                     >
                       <i className={`fa ${link.icon}`} />
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </div>

@@ -8,6 +8,7 @@ import { ProductCard } from '@/components/home/ProductCard';
 import ProductQuickViewModal from '@/components/home/QuickViewModal';
 import { PublicProduct } from '@/components/HeroPage';
 import ShareButton from '@/components/ShareButton';
+import NetworkGalaxy from '@/components/heaven/NetworkGalaxy';
 
 interface LevelData {
     level: number;
@@ -40,6 +41,7 @@ export default function SeventhHeavenPage() {
     const [maxPriceLimit, setMaxPriceLimit] = useState(4000);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
+    const [isGalaxyOpen, setIsGalaxyOpen] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
