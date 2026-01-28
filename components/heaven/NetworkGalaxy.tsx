@@ -10,7 +10,7 @@ export interface NetworkNode {
     id: string;
     name: string;
     level: number;
-    status: 'ACTIVE' | 'INACTIVE';
+    status: 'ACTIVE' | 'DORMANT';
     joinedAt: string;
     teamSize: number;
     nextLevelTarget: number;
@@ -246,7 +246,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
     );
 };
 
-const NetworkGalaxy = ({ isOpen, onClose, data }: { isOpen: boolean, onClose: () => void, data?: NetworkNode | null }) => {
+const NetworkGalaxy = ({ isOpen, onClose, data }: { isOpen: boolean, onClose: () => void, data?: NetworkNode | null }): React.JSX.Element | null => {
     const [scale, setScale] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [selectedNode, setSelectedNode] = useState<SelectedNodeState | null>(null);
