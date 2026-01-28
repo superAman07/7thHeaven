@@ -102,7 +102,7 @@ const NodeOrb: React.FC<{
                 className={`
                     w-16 h-16 rounded-full flex! items-center! justify-center! shadow-xl relative cursor-pointer transition-all duration-300
                     ${isRoot 
-                        ? 'bg-gradient-to-br from-[#ddb040] to-amber-700 text-white ring-4 ring-[#ddb040]/30' 
+                        ? 'bg-linear-to-br from-[#ddb040] to-amber-700 text-white ring-4 ring-[#ddb040]/30' 
                         : isActive 
                             ? isDark ? 'bg-[#1a1a1a] border-2 border-[#ddb040] text-[#ddb040]' : 'bg-white border-2 border-[#ddb040] text-[#ddb040]' 
                             : isDark ? 'bg-gray-800 border-2 border-gray-700 text-gray-600 grayscale' : 'bg-gray-200 border-2 border-gray-300 text-gray-400 grayscale'
@@ -150,11 +150,11 @@ const GalaxyTree = ({ node, onNodeClick, isDark }: { node: NetworkNode, onNodeCl
                         exit={{ opacity: 0, height: 0 }}
                         className="relative flex! justify-center! gap-12 mt-4 pt-10"
                     >
-                         <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[calc(100%-6rem)] h-px bg-gradient-to-r from-transparent ${isDark ? 'via-[#ddb040]/50' : 'via-[#ddb040]/30'} to-transparent`} />
-                         <div className={`absolute -top-6 left-1/2 w-px h-16 bg-gradient-to-b from-transparent ${isDark ? 'via-[#ddb040]/50 to-[#ddb040]/50' : 'via-[#ddb040]/30 to-[#ddb040]/30'}`} />
+                         <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[calc(100%-6rem)] h-px bg-linear-to-r from-transparent ${isDark ? 'via-[#ddb040]/50' : 'via-[#ddb040]/30'} to-transparent`} />
+                         <div className={`absolute -top-6 left-1/2 w-px h-16 bg-linear-to-b from-transparent ${isDark ? 'via-[#ddb040]/50 to-[#ddb040]/50' : 'via-[#ddb040]/30 to-[#ddb040]/30'}`} />
                         {node.children!.map((child) => (
                             <div key={child.id} className="relative flex flex-col items-center">
-                                 <div className={`absolute -top-10 left-1/2 w-px h-10 bg-gradient-to-b ${isDark ? 'from-[#ddb040]/50' : 'from-[#ddb040]/30'} to-transparent`} />
+                                 <div className={`absolute -top-10 left-1/2 w-px h-10 bg-linear-to-b ${isDark ? 'from-[#ddb040]/50' : 'from-[#ddb040]/30'} to-transparent`} />
                                 <GalaxyTree node={child} onNodeClick={onNodeClick} isDark={isDark} />
                             </div>
                         ))}
@@ -231,7 +231,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                         <span>{currentProgressCount}/{target} <span className="opacity-70 font-normal normal-case">{progressLabel}</span></span>
                     </div>
                     <div className="h-1.5 w-full bg-gray-500/20 rounded-full overflow-hidden">
-                        <motion.div initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1 }} className="h-full bg-gradient-to-r from-[#ddb040] to-amber-300 rounded-full" />
+                        <motion.div initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1 }} className="h-full bg-linear-to-r from-[#ddb040] to-amber-300 rounded-full" />
                     </div>
                 </div>
                 {/* DORMANT STATUS EXPLANATION (Only shows if Dormant) */}
