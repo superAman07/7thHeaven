@@ -44,10 +44,21 @@ const StockBadge: React.FC<{ inStock: boolean }> = ({ inStock }) => (
   </span>
 );
 
-const ToggleSwitch: React.FC<{ checked: boolean; onChange: (checked: boolean) => void }> = ({ checked, onChange }) => (
-  <button type="button" onClick={() => onChange(!checked)} className={`relative inline-flex items-center h-6 rounded-full w-11 cursor-pointer transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 ${checked ? 'bg-gray-800' : 'bg-gray-200'}`} role="switch" aria-checked={checked}>
-    <span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform duration-200 ease-in-out ${checked ? 'translate-x-6' : 'translate-x-1'}`} />
-  </button>
+const ToggleSwitch: React.FC<{ checked: boolean; onChange: (checked: boolean) => void; label?: string }> = ({ checked, onChange, label }) => (
+  <div 
+    onClick={() => onChange(!checked)}
+    className={`
+      relative inline-flex items-center h-7 w-12 rounded-full cursor-pointer transition-colors duration-200 ease-in-out border-2
+      ${checked ? 'bg-green-500 border-green-500' : 'bg-gray-200 border-gray-200'}
+    `}
+  >
+    <span 
+      className={`
+        inline-block w-5 h-5 transform bg-white rounded-full shadow-sm transition-transform duration-200 ease-in-out
+        ${checked ? 'translate-x-[22px]' : 'translate-x-[2px]'}
+      `} 
+    />
+  </div>
 );
 
 const StockCell = ({ variants }: { variants: ProductVariant[] }) => {
@@ -538,9 +549,17 @@ export default function ProductsPage() {
                   className="w-full px-4 py-2.5 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" 
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">In Stock</span>
-                <ToggleSwitch checked={inStock} onChange={setInStock} />
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div>
+                    <span className="block text-sm font-bold text-gray-700">Stock Availability</span>
+                    <span className="text-xs text-gray-500">{inStock ? 'Product is visible' : 'Product is hidden/unavailable'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className={`text-xs font-bold ${inStock ? 'text-green-600' : 'text-red-500'}`}>
+                        {inStock ? 'AVAILABLE' : 'UNAVAILABLE'}
+                    </span>
+                    <ToggleSwitch checked={inStock} onChange={setInStock} />
+                </div>
               </div>
             </div>
             <div>
