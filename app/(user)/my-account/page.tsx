@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'next/navigation';
+import { generateInvoice, InvoiceData } from '@/services/invoiceGenerator';
 
 interface UserProfile {
     id: string;
@@ -160,6 +161,29 @@ function ProfileContent() {
             toast.error(error.response?.data?.error || "Failed to cancel order");
         } finally {
             setIsCancelling(false);
+        }
+    };
+
+    const handleDownloadInvoice = (order: Order) => {
+        if (!order) return;
+        
+        // Convert Order to InvoiceData format if needed, or pass directly if keys match
+        // Assuming Order interface matches InvoiceData mostly, but let's be safe:
+        const invoiceData: any = {
+            id: order.id,
+            status: order.status,
+            createdAt: order.createdAt,
+            subtotal: parseFloat(order.subtotal),
+            paymentStatus: order.paymentStatus,
+            items: order.items,
+            shippingAddress: order.shippingAddress
+        };
+        try {
+            generateInvoice(invoiceData);
+            toast.success("Invoice downloaded!");
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to generate invoice");
         }
     };
 
@@ -713,9 +737,26 @@ function ProfileContent() {
             {showOrderModal && selectedOrder && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
                     <div className="bg-white p-6 rounded-lg shadow-lg" style={{ backgroundColor: 'white', padding: '30px', borderRadius: '8px', width: '90%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
-                        <div className="d-flex justify-content-between align-items-center mb-4" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                            <h3 className="text-lg font-bold m-0">Order Details #{selectedOrder.id.slice(-6).toUpperCase()}</h3>
-                            <button onClick={() => setShowOrderModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
+                        <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-b">
+                            <div>
+                                <h3 className="text-xl font-bold m-0 text-gray-800">Order Details</h3>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded text-gray-600">
+                                        #{selectedOrder.id}
+                                    </span>
+                                    <button 
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(selectedOrder.id);
+                                            toast.success("Order ID copied");
+                                        }}
+                                        className="text-gray-400 hover:text-[#ddb040] transition-colors"
+                                        title="Copy Order ID"
+                                    >
+                                        <i className="fa fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button onClick={() => setShowOrderModal(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
                         </div>
 
                         <div className="row mb-4">
@@ -828,8 +869,8 @@ function ProfileContent() {
                                         disabled={isCancelling}
                                         className="btn btn-outline-danger btn-sm"
                                         style={{ 
-                                            borderColor: '#dc3545', 
-                                            color: '#dc3545', 
+                                            borderColor: '#dc3545!', 
+                                            color: '#dc3545!', 
                                             fontWeight: 'bold',
                                             padding: '8px 16px'
                                         }}
@@ -839,6 +880,15 @@ function ProfileContent() {
                                         ) : (
                                             <><i className="fa fa-times-circle mr-1"></i> Cancel Order</>
                                         )}
+                                    </button>
+                                )}
+                                {selectedOrder.paymentStatus === 'PAID' && (
+                                    <button 
+                                        onClick={() => handleDownloadInvoice(selectedOrder)}
+                                        className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2"
+                                    >
+                                        <i className="fa fa-file-pdf-o"></i>
+                                        <span>Invoice</span>
                                     </button>
                                 )}
                             </div>

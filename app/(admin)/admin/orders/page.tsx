@@ -112,20 +112,27 @@ export default function OrdersPage() {
     setCurrentOrder(null);
   };
 
-  const handleStatusUpdate = async (newStatus: string) => {
+  const handleStatusUpdate = async (newStatus: string, type: 'status' | 'paymentStatus' = 'status') => {
     if (!currentOrder) return;
     try {
-      await axios.put(`/api/v1/admin/orders/${currentOrder.id}`, { status: newStatus });
-      // Update local state
-      setCurrentOrder(prev => prev ? { ...prev, status: newStatus } : null);
-      setOrders(prev => prev.map(o => o.id === currentOrder.id ? { ...o, status: newStatus } : o));
-      alert('Order status updated successfully');
+      const payload = type === 'status' ? { status: newStatus } : { paymentStatus: newStatus };
+      
+      await axios.put(`/api/v1/admin/orders/${currentOrder.id}`, payload);
+      
+      const updatedFields = type === 'status' ? { status: newStatus } : { paymentStatus: newStatus };
+      setCurrentOrder(prev => prev ? { ...prev, ...updatedFields } : null);
+      setOrders(prev => prev.map(o => o.id === currentOrder.id ? { ...o, ...updatedFields } : o));
+      
+      if (newStatus === 'REFUNDED') {
+          alert('Refund processed & User Notified!');
+      } else {
+          alert('Order updated successfully');
+      }
     } catch (error) {
-      alert('Failed to update status');
+      alert('Failed to update');
     }
   };
 
-  // Helper to parse items safely
   const getOrderItems = (order: Order) => {
     if (Array.isArray(order.items)) return order.items;
     return [];
@@ -250,6 +257,27 @@ export default function OrdersPage() {
                   <option value="CANCELLED">Cancelled</option>
                 </select>
               </div>
+
+              {currentOrder.status === 'CANCELLED' && currentOrder.paymentStatus === 'PAID' && (
+                  <div className="bg-red-50 p-4 rounded-lg border border-red-100 mt-4">
+                      <div className="flex justify-between items-center">
+                          <div>
+                              <h4 className="font-bold text-red-800 text-sm">Action Required</h4>
+                              <p className="text-xs text-red-600 mt-1">User cancelled this paid order.</p>
+                          </div>
+                          <button 
+                              onClick={() => {
+                                  if(confirm("Confirm Refund? This will notify the user.")) {
+                                      handleStatusUpdate('REFUNDED', 'paymentStatus');
+                                  }
+                              }}
+                              className="bg-red-600 text-white text-xs font-bold px-4 py-2 rounded hover:bg-red-700 transition-colors shadow-sm"
+                          >
+                              Process Refund
+                          </button>
+                      </div>
+                  </div>
+              )}
 
               {/* Customer Details */}
               <div className="grid grid-cols-2 gap-6">

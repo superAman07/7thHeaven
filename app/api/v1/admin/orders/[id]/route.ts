@@ -8,17 +8,33 @@ export async function PUT(
     try {
         const { id } = await params;
         const body = await req.json();
-        const { status } = body;
+        const { status, paymentStatus } = body;
 
-        const validStatuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
-        if (!validStatuses.includes(status)) {
+        const validStatuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED', 'RETURNED'];
+        
+        if (status && !validStatuses.includes(status)) {
             return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
         }
 
+        const dataToUpdate: any = {};
+        if (status) dataToUpdate.status = status;
+        if (paymentStatus) dataToUpdate.paymentStatus = paymentStatus;
+
         const updatedOrder = await prisma.order.update({
             where: { id },
-            data: { status },
+            data: dataToUpdate,
         });
+
+        if (paymentStatus === 'REFUNDED') {
+            await prisma.notification.create({
+                data: {
+                    userId: updatedOrder.userId,
+                    title: `Refund Processed #${updatedOrder.id.slice(-6).toUpperCase()}`,
+                    body: "Your refund has been processed successfully. It should reflect in your account shortly.",
+                    type: 'ORDER_UPDATE'
+                }
+            });
+        }
 
         return NextResponse.json({ success: true, data: updatedOrder });
 
