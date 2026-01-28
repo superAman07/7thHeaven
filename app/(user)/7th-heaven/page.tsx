@@ -277,7 +277,7 @@ export default function SeventhHeavenPage() {
         {/* 4. DIRECT REFERRALS (Improved Empty State) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-12">
           <div className="p-6 border-b border-gray-100 bg-gray-50/50">
-            <h3 className="text-3xl! font-serif! text-gray-900">Direct Referrals</h3>
+            <h3 className="text-xl! md:text-3xl! font-serif! text-gray-900">Direct Referrals</h3>
           </div>
 
           {data.directReferrals.length > 0 ? (
