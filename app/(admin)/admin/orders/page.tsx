@@ -11,24 +11,14 @@ interface OrderUser {
   phone: string;
 }
 
-interface OrderItem {
-  productId: string;
-  quantity: number;
-  priceAtPurchase: number;
-  // We might not have name/image in the JSON if not saved, 
-  // but assuming your create order logic saves a snapshot or we fetch it.
-  // For now, let's assume the JSON has basic details or we rely on IDs.
-  // Ideally, your Order creation should save { name, image, price, qty } in 'items'.
-}
-
 interface Order {
   id: string;
   user: OrderUser;
-  items: any; // JSON
+  items: any;
   subtotal: string;
   paymentStatus: string;
   status: string;
-  shippingAddress: any; // JSON
+  shippingAddress: any;
   createdAt: string;
 }
 
@@ -37,6 +27,7 @@ interface PaginationMeta {
   page: number;
   limit: number;
   totalPages: number;
+  refundPendingCount?: number; // Added optional
 }
 
 const StatusBadge: React.FC<{ status: string; type: 'payment' | 'order' }> = ({ status, type }) => {
@@ -48,6 +39,7 @@ const StatusBadge: React.FC<{ status: string; type: 'payment' | 'order' }> = ({ 
   if (type === 'payment') {
     if (s === 'PAID') colorClass = 'bg-green-100 text-green-800';
     else if (s === 'FAILED') colorClass = 'bg-red-100 text-red-800';
+    else if (s === 'REFUNDED') colorClass = 'bg-cyan-100 text-cyan-800 border border-cyan-200';
     else colorClass = 'bg-yellow-100 text-yellow-800';
   } else {
     // Order Status
@@ -77,6 +69,8 @@ export default function OrdersPage() {
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
   const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [refundPendingCount, setRefundPendingCount] = useState(0);
+
   const itemsPerPage = 10;
 
   const fetchOrders = useCallback(async () => {
@@ -91,6 +85,9 @@ export default function OrdersPage() {
       const response = await axios.get(`/api/v1/admin/orders?${params.toString()}`);
       setOrders(response.data.data);
       setMeta(response.data.meta);
+      if (response.data.meta.refundPendingCount !== undefined) {
+          setRefundPendingCount(response.data.meta.refundPendingCount);
+      }
     } catch (err) {
       console.error('Failed to fetch orders', err);
     } finally {
@@ -112,6 +109,7 @@ export default function OrdersPage() {
     setCurrentOrder(null);
   };
 
+  // UPDATED: Handle Refund Status Update
   const handleStatusUpdate = async (newStatus: string, type: 'status' | 'paymentStatus' = 'status') => {
     if (!currentOrder) return;
     try {
@@ -121,7 +119,9 @@ export default function OrdersPage() {
       
       const updatedFields = type === 'status' ? { status: newStatus } : { paymentStatus: newStatus };
       setCurrentOrder(prev => prev ? { ...prev, ...updatedFields } : null);
-      setOrders(prev => prev.map(o => o.id === currentOrder.id ? { ...o, ...updatedFields } : o));
+      
+      // Refresh list to update counts if we just refunded something
+      fetchOrders();
       
       if (newStatus === 'REFUNDED') {
           alert('Refund processed & User Notified!');
@@ -141,8 +141,22 @@ export default function OrdersPage() {
   return (
     <>
       <div className="bg-white p-6 rounded-lg shadow-sm">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
           <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
+          
+          {/* NEW: Quick Filter for Refund Pending */}
+          <button 
+            onClick={() => { setStatusFilter('REFUND_PENDING'); setCurrentPage(1); }}
+            className={`relative flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${statusFilter === 'REFUND_PENDING' ? 'bg-[#ddb040] text-white' : 'bg-red-50 text-red-700 hover:bg-red-100'}`}
+          >
+            <AlertCircle className="w-4 h-4 mr-2" />
+            Refunds Awaiting
+            {refundPendingCount > 0 && (
+                <span className="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
+                    {refundPendingCount}
+                </span>
+            )}
+          </button>
         </div>
 
         <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -163,11 +177,13 @@ export default function OrdersPage() {
               className="w-full px-3 py-2 border text-gray-600 cursor-pointer border-gray-300 rounded-lg shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm"
             >
               <option value="">All Statuses</option>
+              <option value="REFUND_PENDING">⚠ Refund Awaiting ({refundPendingCount})</option>
               <option value="PENDING">Pending</option>
               <option value="PROCESSING">Processing</option>
               <option value="SHIPPED">Shipped</option>
               <option value="DELIVERED">Delivered</option>
               <option value="CANCELLED">Cancelled</option>
+              <option value="REFUNDED">Refunded</option>
             </select>
           </div>
         </div>
@@ -258,6 +274,7 @@ export default function OrdersPage() {
                 </select>
               </div>
 
+               {/* REFUND ACTION BUTTON */}
               {currentOrder.status === 'CANCELLED' && currentOrder.paymentStatus === 'PAID' && (
                   <div className="bg-red-50 p-4 rounded-lg border border-red-100 mt-4">
                       <div className="flex justify-between items-center">
