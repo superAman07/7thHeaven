@@ -322,7 +322,7 @@ const NetworkGalaxy = ({ isOpen, onClose, data }: { isOpen: boolean, onClose: ()
             >
                 {/* Visual Textures */}
                 <div className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${isDark ? 'opacity-10' : 'opacity-20'} bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-multiply`} />
-                {isDark && <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-500/5 via-[#0f0f0f] to-[#0f0f0f] pointer-events-none" />}
+                {isDark && <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-amber-500/5 via-[#0f0f0f] to-[#0f0f0f] pointer-events-none" />}
 
                 {/* --- HEADER --- */}
                 <header className={`relative z-50 flex justify-between items-center p-4 md:p-6 border-b backdrop-blur-md ${isDark ? 'bg-black/40 border-white/10' : 'bg-white/80 border-gray-100'}`}>
