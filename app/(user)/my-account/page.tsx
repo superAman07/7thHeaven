@@ -63,6 +63,7 @@ function ProfileContent() {
     const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
     const totalPages = Math.ceil(orders.length / itemsPerPage);
     const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [isCancelling, setIsCancelling] = useState(false);
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -143,6 +144,24 @@ function ProfileContent() {
         fetchData();
     }, []);
 
+    const handleCancelOrder = async () => {
+        if (!selectedOrder) return;
+        if (!confirm("Are you sure you want to cancel this order? This action cannot be undone.")) return;
+        setIsCancelling(true);
+        try {
+            const res = await axios.post('/api/v1/orders/cancel', { orderId: selectedOrder.id });
+            if (res.data.success) {
+                toast.success(res.data.message);
+                setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, status: 'CANCELLED' } : o));
+                setSelectedOrder(prev => prev ? { ...prev, status: 'CANCELLED' } : null);
+                setShowOrderModal(false);
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.error || "Failed to cancel order");
+        } finally {
+            setIsCancelling(false);
+        }
+    };
 
     const handleLogout = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -783,7 +802,29 @@ function ProfileContent() {
                         ) : (
                             <p>No shipping address available.</p>
                         )}
-                        <div className="mt-4 text-right" style={{ textAlign: 'right', marginTop: '20px' }}>
+                        <div className="mt-4 flex justify-between items-center" style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                            <div>
+                                {!['DELIVERED', 'CANCELLED', 'FAILED', 'REFUNDED', 'RETURNED'].includes(selectedOrder.status.toUpperCase()) && (
+                                    <button 
+                                        onClick={handleCancelOrder} 
+                                        disabled={isCancelling}
+                                        className="btn btn-outline-danger btn-sm"
+                                        style={{ 
+                                            borderColor: '#dc3545', 
+                                            color: '#dc3545', 
+                                            fontWeight: 'bold',
+                                            padding: '8px 16px'
+                                        }}
+                                    >
+                                        {isCancelling ? (
+                                            <><i className="fa fa-spinner fa-spin mr-1"></i> Cancelling...</>
+                                        ) : (
+                                            <><i className="fa fa-times-circle mr-1"></i> Cancel Order</>
+                                        )}
+                                    </button>
+                                )}
+                            </div>
+                            
                             <button onClick={() => setShowOrderModal(false)} className="btn btn-secondary">Close</button>
                         </div>
                     </div>
