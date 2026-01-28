@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, X, Bell } from 'lucide-react';
 
 const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/categories', label: 'Categories', icon: Tags },
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
@@ -24,7 +24,7 @@ interface NavLinkProps {
 
 const NavLink: React.FC<NavLinkProps> = ({ href, label, icon: Icon }) => {
   const pathname = usePathname();
-  const isActive = pathname === href || (href === '/admin' && pathname === '/admin/dashboard');
+  const isActive = pathname === href || (href === '/admin/dashboard' && pathname === '/admin/dashboard');
 
   return (
     <Link
