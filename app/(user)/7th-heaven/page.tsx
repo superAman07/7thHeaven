@@ -213,16 +213,16 @@ export default function SeventhHeavenPage() {
         {/* 2. CLUB ESSENTIALS (Affordable Products) */}
         {clubProducts.length > 0 && (
           <div className="mb-14">
-            <div className="flex items-end justify-between mb-6 border-b border-gray-200 pb-3">
-              <div>
-                <h3 className="text-3xl! font-serif! text-gray-900!">Club Essentials</h3>
-                <p className="text-gray-600! text-xs! mt-2! font-sans! tracking-wide">Smart picks to maintain your active status.</p>
+            <div className="flex items-center md:items-end justify-between mb-6 border-b border-gray-200 pb-3">
+              <div className="pr-4">
+                <h3 className="text-2xl md:text-3xl font-serif text-gray-900">Club Essentials</h3>
+                <p className="text-gray-600 text-[10px] md:text-xs mt-1 md:mt-2 font-sans tracking-wide leading-tight">
+                    Smart picks to maintain active status.
+                </p>
               </div>
-
-              {/* Professional Filter Link */}
               <Link
                 href={`/collections/perfumes?maxPrice=${maxPriceLimit}&sort=price_asc`}
-                className="text-[#ddb040] font-bold text-xs hover:text-black uppercase tracking-widest transition-colors"
+                className="text-[#ddb040] font-bold text-[10px] md:text-xs hover:text-black uppercase tracking-widest transition-colors whitespace-nowrap shrink-0"
               >
                 View All <i className="fa fa-arrow-right ml-1" />
               </Link>
