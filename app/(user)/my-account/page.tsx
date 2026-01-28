@@ -729,6 +729,24 @@ function ProfileContent() {
                             </div>
                         </div>
 
+                         {selectedOrder.status === 'CANCELLED' && (
+                             <div className={`p-4 mb-6 rounded-lg border ${selectedOrder.paymentStatus === 'PAID' ? 'bg-amber-50 border-[#ddb040]/30' : 'bg-gray-50 border-gray-200'}`}>
+                                <div className="flex items-start gap-3">
+                                    <i className={`fa ${selectedOrder.paymentStatus === 'PAID' ? 'fa-clock-o text-[#ddb040]' : 'fa-info-circle text-gray-400'} mt-1 text-lg`}></i>
+                                    <div>
+                                        <h4 className={`font-bold text-sm m-0 ${selectedOrder.paymentStatus === 'PAID' ? 'text-[#8a6d3b]' : 'text-gray-700'}`}>
+                                            {selectedOrder.paymentStatus === 'PAID' ? 'Refund Initiated' : 'Order Cancelled'}
+                                        </h4>
+                                        <p className="text-xs m-0 mt-1 text-gray-600 leading-relaxed">
+                                            {selectedOrder.paymentStatus === 'PAID' 
+                                                ? "Your order has been cancelled. The refund process has been initiated and the amount will be reflected in your source account within 24-48 hours. Thank you for your patience."
+                                                : "This order has been cancelled successfully. No payment was deducted."}
+                                        </p>
+                                    </div>
+                                </div>
+                             </div>
+                        )}
+
                         <h4 className="mb-3" style={{ fontSize: '1.1rem', fontWeight: 'bold', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Items</h4>
                         <div className="table-responsive mb-4">
                             <table className="table table-sm">
