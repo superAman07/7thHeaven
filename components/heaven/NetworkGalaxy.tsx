@@ -350,7 +350,7 @@ const NetworkGalaxy = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                     <div className="absolute right-4 md:right-6 bottom-6 md:top-6 z-40 flex flex-col gap-3">
                         <button 
                             onClick={() => setIsDark(!isDark)}
-                            className={`w-12 h-12 rounded-xl flex! items-center! justify-center! border! shadow-lg! transition-all ${isDark ? 'bg-white text-black border-white' : 'bg-[#1a1a1a] text-[#ddb040] border-[#1a1a1a]'}`}
+                            className={`w-12 h-12 rounded-xl flex! items-center! justify-center! border! shadow-lg! transition-all ${isDark ? 'bg-white text-black border-white' : 'bg-[#1a1a1a]! text-[#ddb040]! border-[#1a1a1a]'}`}
                         >
                             {isDark ? <Sun size={20} /> : <Moon size={20} />}
                         </button>
