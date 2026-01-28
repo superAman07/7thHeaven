@@ -162,8 +162,8 @@ export default function SeventhHeavenPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center relative z-10">
             <div>
               {/* Personalized Greeting */}
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Welcome, <span className="text-[#ddb040]">{data.fullName?.split(' ')[0] || 'Member'}</span>
+              <h2 className="text-2xl font-serif text-gray-800 mb-2">
+                Welcome, <span className="text-[#ddb040] ">{data.fullName?.split(' ')[0] || 'Member'}</span>
               </h2>
               <p className="text-gray-600 mb-4 flex items-center gap-2">
                 Status: <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">ACTIVE</span>
@@ -215,8 +215,8 @@ export default function SeventhHeavenPage() {
           <div className="mb-14">
             <div className="flex items-end justify-between mb-6 border-b border-gray-200 pb-3">
               <div>
-                <h3 className="text-xl font-bold text-gray-800 font-serif">Club Essentials</h3>
-                <p className="text-gray-500 text-xs mt-1">Smart picks to maintain your active status.</p>
+                <h3 className="text-3xl! font-serif! text-gray-900!">Club Essentials</h3>
+                <p className="text-gray-600! text-xs! mt-2! font-sans! tracking-wide">Smart picks to maintain your active status.</p>
               </div>
 
               {/* Professional Filter Link */}
@@ -240,38 +240,44 @@ export default function SeventhHeavenPage() {
 
         {/* 3. LEVELS GRID */}
         <div className="mb-12">
-          <h3 className="text-xl font-bold text-gray-800 mb-6 pl-3 border-l-4 border-[#ddb040]">Heaven Progress</h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {data.levels.map((level) => (
-              <div
-                key={level.level}
-                className={`relative rounded-xl p-5 border bg-white ${level.isCompleted ? 'border-[#ddb040] shadow-md' : 'border-gray-100'}`}
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <h4 className="text-2xl font-bold text-gray-800">Lvl 0{level.level}</h4>
-                  <i className={`fa ${level.isCompleted ? 'fa-check-circle text-[#ddb040]' : 'fa-lock text-gray-300'} text-xl`} />
-                </div>
-
-                <div className="w-full bg-gray-100 rounded-full h-1.5 mb-2">
-                  <div className="bg-[#ddb040] h-full rounded-full transition-all duration-1000" style={{ width: `${level.progress}%` }} />
-                </div>
-
-                <div className="flex justify-between text-xs text-gray-500 font-medium">
-                  <span>Progress</span>
-                  <span>
-                    {level.count} / {level.target}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+            <h3 className="text-3xl! font-serif! text-gray-900 mb-8 pl-4 border-l-4 border-[#ddb040]">Heaven Progress</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {data.levels.map((level) => {
+                  const previousLevel = data.levels.find(l => l.level === level.level - 1);
+                  const isUnlocked = level.level === 1 || previousLevel?.isCompleted;
+                  return (
+                    <div
+                      key={level.level}
+                      className={`relative rounded-xl p-6 border bg-white transition-all duration-300 ${level.isCompleted ? 'border-[#ddb040] shadow-md ring-1 ring-[#ddb040]/30' : 'border-gray-100 hover:border-gray-200'}`}
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <h4 className={`text-2xl font-serif ${level.isCompleted ? 'text-[#ddb040]' : 'text-gray-800'}`}>
+                          Heaven 0{level.level}
+                        </h4>
+                        <i className={`fa ${level.isCompleted ? 'fa-check-circle text-[#ddb040]' : 'fa-lock text-gray-200'} text-xl`} />
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-1.5 mb-3 overflow-hidden">
+                        <div 
+                            className={`h-full rounded-full transition-all duration-1000 ${level.isCompleted ? 'bg-[#ddb040]' : 'bg-gray-300'}`} 
+                            style={{ width: isUnlocked ? `${level.progress}%` : '0%' }} 
+                        />
+                      </div>
+                      <div className="flex justify-between text-[10px] uppercase tracking-widest font-bold text-gray-400">
+                        <span>Progress</span>
+                        <span className={level.isCompleted ? 'text-[#ddb040]' : ''}>
+                          {isUnlocked ? `${level.count} / ${level.target}` : '???'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
         </div>
 
         {/* 4. DIRECT REFERRALS (Improved Empty State) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-12">
           <div className="p-5 border-b border-gray-100 bg-gray-50">
-            <h3 className="text-lg font-bold text-gray-800">Direct Referrals (Level 1)</h3>
+            <h3 className="text-3xl! font-serif! text-gray-800">Direct Referrals</h3>
           </div>
 
           {data.directReferrals.length > 0 ? (
