@@ -334,6 +334,8 @@ function ProfileContent() {
             'FAILED': { backgroundColor: '#dc3545', color: 'white' },
             'PENDING': { backgroundColor: '#ffc107', color: 'black' },
             'PROCESSING': { backgroundColor: '#6f42c1', color: 'white' },
+            'REFUNDED': { backgroundColor: '#0dcaf0', color: 'black', border: '1px solid #0dcaf0' }, // Cyan with black text for Visibility
+            'RETURNED': { backgroundColor: '#6c757d', color: 'white' }
         };
 
         return (
