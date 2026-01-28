@@ -14,6 +14,7 @@ import { ProductSection2Skeleton } from "./home/ProductSection2Skeleton";
 // import TabbedProductsSection from "./home/TabbedProductsSection";
 import { GenderTags } from "@prisma/client";
 import CollectionRow from "./home/CollectionRow";
+import FloatingHeavenButton from "./home/FloatingHeavenButton";
 import { getSiteContent, defaultHomeAbout , defaultHomeSections, HomeSection } from "@/lib/site-content";
 
 export type PublicProduct = {
@@ -78,6 +79,7 @@ export default async function HeroPage() {
     const sections = Array.isArray(rawSections) ? rawSections : defaultHomeSections;
     return <>
         <div id="main-wrapper">
+            <FloatingHeavenButton />
             <SliderSection />
             {sections.map((section) => (
                 <Suspense key={section.id} fallback={<ProductSectionSkeleton />}>
