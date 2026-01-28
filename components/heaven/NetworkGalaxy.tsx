@@ -292,8 +292,10 @@ const NetworkGalaxy = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                             <Sparkles size={20} />
                         </div>
                         <div>
-                            <h2 className="text-lg md:text-2xl font-bold leading-tight">Celestial Galaxy</h2>
-                            <p className="text-[8px] md:text-xs text-[#ddb040] font-sans font-bold uppercase tracking-[0.2em]">Network Explorer</p>
+                            <h2 className={`text-base md:text-xl font-bold leading-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                Celestial Galaxy
+                            </h2>
+                            <p className="text-[8px] md:text-[10px] text-[#ddb040] font-sans font-bold uppercase tracking-[0.2em]">Network Explorer</p>
                         </div>
                     </div>
                     <button onClick={onClose} className={`w-10 h-10 rounded-full flex! items-center! justify-center! transition-colors ${isDark ? 'bg-white/10 hover:bg-white/20' : 'bg-red-50 text-red-500 hover:bg-red-100'}`}>
