@@ -194,7 +194,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
     }
     const progressPercent = Math.min((currentProgressCount / target) * 100, 100);
     return (
-        <div className="fixed z-[10000] pointer-events-none" style={{ top: top, left: left }}>
+        <div className="fixed z-10000 pointer-events-none" style={{ top: top, left: left }}>
             <motion.div 
                 initial={{ opacity: 0, scale: 0.9, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}

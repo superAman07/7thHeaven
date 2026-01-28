@@ -194,17 +194,17 @@ export default function SeventhHeavenPage() {
                 onClick={() => setIsGalaxyOpen(true)}
                 title="View Galaxy Map"
               >
-                <div className="text-4xl font-bold text-[#ddb040] mb-1 group-hover:text-[#b6902e] transition-colors">
+                <div className="text-2xl font-bold text-[#ddb040] mb-1 group-hover:text-[#b6902e] transition-colors">
                   {data.totalTeamSize}
                 </div>
                 <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold group-hover:text-gray-600">
-                  Network Size <i className="fa fa-external-link ml-1 text-[9px]" />
+                  Heaven Size <i className="fa fa-external-link ml-1 text-[9px]" />
                 </div>
               </div>
 
               <div className="px-4">
-                <div className="text-4xl font-bold text-gray-800 mb-1">{data.levels.filter((l) => l.isCompleted).length} / 7</div>
-                <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Levels Unlocked</div>
+                <div className="text-2xl font-bold text-gray-800 mb-1">{data.levels.filter((l) => l.isCompleted).length} / 7</div>
+                <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Heaven Unlocked</div>
               </div>
             </div>
           </div>
@@ -240,7 +240,7 @@ export default function SeventhHeavenPage() {
 
         {/* 3. LEVELS GRID */}
         <div className="mb-12">
-          <h3 className="text-xl font-bold text-gray-800 mb-6 pl-3 border-l-4 border-[#ddb040]">Network Progress</h3>
+          <h3 className="text-xl font-bold text-gray-800 mb-6 pl-3 border-l-4 border-[#ddb040]">Heaven Progress</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {data.levels.map((level) => (
