@@ -82,9 +82,11 @@ export default function CustomersPage() {
   };
 
   const filteredCustomers = customers.filter(c => 
-    c.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.phone.includes(searchTerm)
+    !c.isAdmin && (
+        c.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.phone.includes(searchTerm)
+    )
   );
   
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,7 +111,6 @@ export default function CustomersPage() {
         
         {/* Status Legend */}
          <div className="flex gap-4 text-xs font-medium bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
-            <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-500"></span> Admin</div>
             <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#ddb040]"></span> VIP (7th Heaven)</div>
             <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-400"></span> User</div>
          </div>
