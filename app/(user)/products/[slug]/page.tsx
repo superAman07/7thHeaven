@@ -67,13 +67,14 @@ async function getProductData(slug: string) {
 }
 
 export async function generateStaticParams() {
-  const products = await prisma.product.findMany({
-    select: { slug: true },
-  });
+  // const products = await prisma.product.findMany({
+  //   select: { slug: true },
+  // });
 
-  return products.map((product) => ({
-    slug: product.slug,
-  }));
+  // return products.map((product) => ({
+  //   slug: product.slug,
+  // }));
+  return [];
 }
 
 // Fixed: Await the params Promise
