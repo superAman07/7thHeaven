@@ -40,6 +40,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: { message: 'Invalid credentials.' } }, { status: 401 });
     }
 
+    if (user.isBlocked) {
+      return NextResponse.json({ success: false, error: { message: 'Your account has been suspended. Please contact support.' } }, { status: 403 });
+    }
+
     const sessionToken = jwt.sign(
       { userId: user.id, phone: user.phone, fullName: user.fullName, email: user.email },
       process.env.JWT_SECRET!,
