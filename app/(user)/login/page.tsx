@@ -299,7 +299,7 @@ export default function AuthPage() {
     };
 
     const renderContent = () => {
-        const commonButtonClasses = "w-full text-white font-semibold h-12 text-lg rounded-lg flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-gold shadow-md";
+        const commonButtonClasses = "w-full text-white font-semibold h-12 text-lg rounded-lg flex! items-center! justify-center! gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-gold shadow-md";
 
         const passwordToggleIcon = (
             <button
@@ -338,7 +338,7 @@ export default function AuthPage() {
                             <button type="submit" disabled={isLoading} className={commonButtonClasses}>
                                 {isLoading ? (
                                     <>
-                                        <div className="w-5 h-5 rounded-full spinner-gradient-gold"></div>
+                                        <div className="w-5 h-5 rounded-full flex justify-center items-center spinner-gradient-gold"></div>
                                         <span>Signing In...</span>
                                     </>
                                 ) : 'Sign In'}
