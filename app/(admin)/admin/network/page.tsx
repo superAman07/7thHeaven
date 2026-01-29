@@ -1,8 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Search, Trophy, Users, Gift, ChevronRight, Star, Crown, X, Phone, Mail, CheckCircle, Send } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Search, Trophy, Users, Gift, Star, Crown, X, Phone, Mail, CheckCircle, Send, Network, Activity } from 'lucide-react';
+import toast, { Toaster } from 'react-hot-toast';
+import NetworkGalaxy, { NetworkNode } from '@/components/heaven/NetworkGalaxy';
 
 interface Leader {
     id: string;
@@ -27,6 +28,8 @@ export default function NetworkLeadersPage() {
     const [selectedLeader, setSelectedLeader] = useState<Leader | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [processingStep, setProcessingStep] = useState<'initial' | 'sending' | 'completed'>('initial');
+    const [showNetworkModal, setShowNetworkModal] = useState(false);
+    const [networkData, setNetworkData] = useState<NetworkNode | null>(null);
 
     useEffect(() => {
         fetchLeaders();
@@ -43,6 +46,18 @@ export default function NetworkLeadersPage() {
             toast.error("Failed to load network data");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleOpenNetwork = async (leader: Leader) => {
+        setShowNetworkModal(true);
+        setNetworkData(null); 
+        try {
+            const res = await axios.get(`/api/v1/network/graph?targetUserId=${leader.id}`);
+            if(res.data.success) setNetworkData(res.data.data);
+            else toast.error("Failed to load network.");
+        } catch (error) {
+            toast.error("Could not fetch user network.");
         }
     };
 
@@ -165,8 +180,14 @@ export default function NetworkLeadersPage() {
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <div className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-bold text-sm">
-                                                <Users className="w-3 h-3" />
-                                                {leader.stats.totalTeam}
+                                                <button 
+                                                    onClick={() => handleOpenNetwork(leader)}
+                                                    className="group/btn relative inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full font-bold text-sm hover:text-white transition-all cursor-pointer border border-blue-100"
+                                                >
+                                                    <Users className="w-3 h-3 group-hover/btn:hidden" />
+                                                    <Network className="w-3 h-3 hidden group-hover/btn:block" />
+                                                    {leader.stats.totalTeam}
+                                                </button>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
@@ -190,16 +211,18 @@ export default function NetworkLeadersPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <button 
-                                                className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
-                                                    leader.stats.level7Progress >= 100 
-                                                    ? 'bg-[#E6B422] text-white hover:bg-black shadow-md cursor-pointer' 
-                                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                }`}
-                                                disabled={leader.stats.level7Progress < 100}
                                                 onClick={() => openRewardModal(leader)}
+                                                className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all shadow-sm cursor-pointer border ${
+                                                    leader.stats.level7Progress >= 100 
+                                                    ? 'bg-[#E6B422] text-white border-[#E6B422] hover:bg-black hover:border-black' 
+                                                    : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                                }`}
                                             >
-                                                <Gift className="w-4 h-4" />
-                                                Process Reward
+                                                {leader.stats.level7Progress >= 100 ? (
+                                                     <><Gift className="w-4 h-4" /> Process Reward</>
+                                                ) : (
+                                                     <><Activity className="w-4 h-4" /> Check Status</>
+                                                )}
                                             </button>
                                         </td>
                                     </tr>
@@ -219,7 +242,7 @@ export default function NetworkLeadersPage() {
                 </div>
             </div>
             {isModalOpen && selectedLeader && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-99! flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-[#E6B422]">
                         {/* Modal Header */}
                         <div className="bg-black p-6 text-center relative">
@@ -264,39 +287,66 @@ export default function NetworkLeadersPage() {
 
                             {/* Actions */}
                             <div className="space-y-3">
-                                {processingStep === 'completed' ? (
-                                    <div className="text-center py-4 bg-green-50 rounded-xl border border-green-100">
-                                        <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-2" />
-                                        <p className="text-green-800 font-bold">Notification Sent!</p>
-                                        <p className="text-xs text-green-600">Please contact the user to arrange delivery.</p>
-                                    </div>
-                                ) : (
-                                    <button 
-                                        onClick={handleSendCongratulation}
-                                        disabled={processingStep === 'sending'}
-                                        className="w-full bg-[#E6B422] text-white py-3 rounded-xl font-bold uppercase tracking-wider hover:bg-[#b5952f] transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#E6B422]/20"
-                                    >
-                                        {processingStep === 'sending' ? (
-                                            'Sending...'
+                                {selectedLeader.stats.level7Progress >= 100 ? (
+                                    /* --- CASE 1: WINNER (Level 7 Complete) --- */
+                                    <>
+                                        <div className="bg-[#E6B422]/10 p-4 rounded-xl text-center mb-2 border border-[#E6B422]/20">
+                                            <p className="text-[#E6B422] font-black text-lg">ELIGIBLE FOR REWARD</p>
+                                            <p className="text-xs text-gray-600">User has completed the 7th Heaven Cycle.</p>
+                                        </div>
+                                        {processingStep === 'completed' ? (
+                                            <div className="text-center py-4 bg-green-50 rounded-xl border border-green-100">
+                                                <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-2" />
+                                                <p className="text-green-800 font-bold">Notification Sent!</p>
+                                            </div>
                                         ) : (
-                                            <>
-                                                <Send className="w-4 h-4" /> Send Official Congratulation
-                                            </>
+                                            <button 
+                                                onClick={handleSendCongratulation}
+                                                disabled={processingStep === 'sending'}
+                                                className="w-full bg-[#E6B422] text-white py-3 rounded-xl font-bold uppercase tracking-wider hover:bg-[#b5952f] transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform active:scale-95"
+                                            >
+                                                {processingStep === 'sending' ? 'Sending...' : <><Send className="w-4 h-4" /> Send Prize Notification</>}
+                                            </button>
                                         )}
-                                    </button>
+                                    </>
+                                ) : (
+                                    /* --- CASE 2: IN PROGRESS (Show Stats) --- */
+                                    <div className="bg-gray-50 p-6 rounded-xl text-center border border-gray-100">
+                                        <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
+                                            <Trophy className="w-8 h-8 opacity-50" />
+                                        </div>
+                                        <h5 className="text-gray-900 font-bold mb-1">Not Eligible Yet</h5>
+                                        <p className="text-sm text-gray-500 mb-4">
+                                            User is at <span className="text-[#E6B422] font-bold">{selectedLeader.stats.level7Progress.toFixed(1)}%</span> completion.
+                                        </p>
+                                        
+                                        {/* Progress Bar inside Modal */}
+                                        <div className="w-full bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
+                                            <div 
+                                                className="bg-gray-400 h-full rounded-full" 
+                                                style={{ width: `${selectedLeader.stats.level7Progress}%` }}
+                                            ></div>
+                                        </div>
+                                        <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Target: 100%</p>
+                                    </div>
                                 )}
                                 
                                 <button 
                                     onClick={() => setIsModalOpen(false)}
                                     className="w-full py-3 text-gray-500 font-medium text-sm hover:text-gray-800"
                                 >
-                                    Close
+                                    Close Window
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
+            <NetworkGalaxy 
+                isOpen={showNetworkModal} 
+                onClose={() => setShowNetworkModal(false)} 
+                data={networkData} 
+            />
         </div>
     );
 }
