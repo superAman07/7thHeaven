@@ -96,7 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div 
       className="flex h-screen overflow-hidden relative" 
       style={{ 
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'Inter, system-ui, sans-serif !important',
         background: 'linear-gradient(135deg, #FAFAF8 0%, #F5F3EF 100%)'
       }}
     >
