@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
                 phone: user.phone,
                 is7thHeaven: user.is7thHeaven,
                 isAdmin: user.isAdmin,
+                isBlocked: user.isBlocked,
                 createdAt: user.createdAt,
                 lifetimeSpend: realSpend.toString(),
                 referralCode: user.referralCode,

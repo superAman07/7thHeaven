@@ -19,6 +19,7 @@ model User {
   otpExpiry        DateTime?
   isAdmin          Boolean   @default(false)
   is7thHeaven      Boolean   @default(false)
+  isBlocked        Boolean   @default(false)
   referralCode     String?   @unique
   referrerId       String?
   referrer         User?     @relation("Referrals", fields: [referrerId], references: [id], onDelete: NoAction, onUpdate: NoAction)

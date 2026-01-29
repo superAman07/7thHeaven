@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, User, Shield, Zap, Mail, Network, TreeDeciduous, Send, Smartphone, X, Package, MapPin } from 'lucide-react';
+import { Search, User, Shield, Zap, Mail, Network, TreeDeciduous, Send, Smartphone, X, Package, MapPin, Ban, CheckCircle } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 import NetworkGalaxy, { NetworkNode } from '@/components/heaven/NetworkGalaxy'; 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -25,6 +25,7 @@ interface Customer {
   phone: string;
   is7thHeaven: boolean;
   isAdmin: boolean;
+  isBlocked: boolean;
   createdAt: string;
   lifetimeSpend: string;
   referralCode: string;
@@ -37,6 +38,7 @@ export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'blocked' | 'vip' | 'user'>('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   
   // Modals
@@ -81,13 +83,19 @@ export default function CustomersPage() {
     }
   };
 
-  const filteredCustomers = customers.filter(c => 
-    !c.isAdmin && (
+  const filteredCustomers = customers.filter(c => {
+    if (c.isAdmin) return false;
+    
+    if (statusFilter === 'blocked' && !c.isBlocked) return false;
+    if (statusFilter === 'vip' && !c.is7thHeaven) return false;
+    if (statusFilter === 'user' && (c.is7thHeaven || c.isBlocked)) return false;
+    
+    return (
         c.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.phone.includes(searchTerm)
-    )
-  );
+    );
+  });
   
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) setSelectedIds(customers.map(c => c.id));
@@ -97,6 +105,21 @@ export default function CustomersPage() {
   const handleSelectUser = (id: string) => {
     if (selectedIds.includes(id)) setSelectedIds(selectedIds.filter(sid => sid !== id));
     else setSelectedIds([...selectedIds, id]);
+  };
+
+  const handleToggleBlock = async (userId: string, currentlyBlocked: boolean) => {
+    try {
+      const res = await axios.patch(`/api/v1/admin/customers/${userId}`, {
+        isBlocked: !currentlyBlocked
+      });
+      if (res.data.success) {
+        toast.success(currentlyBlocked ? 'User unblocked!' : 'User blocked!');
+        fetchCustomers();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to update user status');
+    }
   };
 
 
@@ -110,10 +133,23 @@ export default function CustomersPage() {
         </div>
         
         {/* Status Legend */}
-         <div className="flex gap-4 text-xs font-medium bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
-            <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#ddb040]"></span> VIP (7th Heaven)</div>
-            <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-400"></span> User</div>
-         </div>
+         <div className="flex gap-4 items-center">
+            <select 
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as any)}
+              className="px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ddb040]"
+            >
+              <option value="all">All Users</option>
+              <option value="blocked">🚫 Blocked</option>
+              <option value="vip">⚡ VIP Only</option>
+              <option value="user">👤 Regular Users</option>
+            </select>
+            <div className="flex gap-4 text-xs font-medium bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
+              <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#ddb040]"></span> VIP</div>
+              <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500"></span> Blocked</div>
+              <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-400"></span> User</div>
+            </div>
+          </div>
       </div>
       
       {/* SEARCH & ACTIONS */}
@@ -178,7 +214,11 @@ export default function CustomersPage() {
                                 </div>
                             </td>
                             <td className="px-6 py-4">
-                                {customer.isAdmin ? (
+                                {customer.isBlocked ? (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
+                                        <Ban size={10} className="mr-1" /> Blocked
+                                    </span>
+                                ) : customer.isAdmin ? (
                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700 border border-purple-200">
                                         <Shield size={10} className="mr-1" /> Admin
                                     </span>
@@ -204,7 +244,14 @@ export default function CustomersPage() {
                             <td className="px-6 py-4 font-mono font-bold text-gray-800 text-xs">
                                 ₹{parseFloat(customer.lifetimeSpend).toLocaleString()}
                             </td>
-                            <td className="px-6 py-4 text-right">
+                            <td className="px-6 py-4 text-right flex items-center justify-start gap-1">
+                                <button 
+                                    onClick={(e) => { e.stopPropagation(); handleToggleBlock(customer.id, customer.isBlocked); }}
+                                    className={`p-2 rounded-full transition-colors ${customer.isBlocked ? 'text-green-600 hover:bg-green-50' : 'text-red-400 hover:bg-red-50 hover:text-red-600'}`}
+                                    title={customer.isBlocked ? 'Unblock User' : 'Block User'}
+                                >
+                                    {customer.isBlocked ? <CheckCircle size={18} /> : <Ban size={18} />}
+                                </button>
                                 <button 
                                     onClick={(e) => { e.stopPropagation(); setMessageTarget({ ids: [customer.id], name: customer.fullName }); setShowMessageModal(true); }}
                                     className="text-gray-400 hover:text-blue-600 p-2 rounded-full hover:bg-blue-50 transition-colors"
