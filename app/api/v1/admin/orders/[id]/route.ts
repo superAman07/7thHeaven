@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { sendOrderStatusUpdate } from '@/lib/email';
 
 export async function PUT(
     req: NextRequest,
@@ -11,7 +12,7 @@ export async function PUT(
         const { status, paymentStatus } = body;
 
         const validStatuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED', 'RETURNED'];
-        
+
         if (status && !validStatuses.includes(status)) {
             return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
         }
@@ -23,7 +24,24 @@ export async function PUT(
         const updatedOrder = await prisma.order.update({
             where: { id },
             data: dataToUpdate,
+            include: { user: true }
         });
+
+        // Send email notification for status updates
+        if (status && updatedOrder.shippingAddress) {
+            const shippingAddr = updatedOrder.shippingAddress as any;
+            const customerEmail = shippingAddr.email || updatedOrder.user?.email;
+            const customerName = shippingAddr.fullName || updatedOrder.user?.fullName || 'Customer';
+
+            if (customerEmail) {
+                sendOrderStatusUpdate(customerEmail, {
+                    orderId: updatedOrder.id,
+                    customerName,
+                    status,
+                    message: getStatusMessage(status)
+                }).catch(err => console.error('Status email error:', err));
+            }
+        }
 
         if (paymentStatus === 'REFUNDED') {
             await prisma.notification.create({
@@ -42,4 +60,16 @@ export async function PUT(
         console.error('Update Order Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
+}
+
+function getStatusMessage(status: string): string {
+    const messages: Record<string, string> = {
+        PROCESSING: 'Your order is being prepared and will be shipped soon.',
+        SHIPPED: 'Great news! Your order has been shipped and is on its way to you.',
+        DELIVERED: 'Your order has been delivered. We hope you love your purchase!',
+        CANCELLED: 'Your order has been cancelled. If you have any questions, please contact support.',
+        REFUNDED: 'Your refund has been processed. It should reflect in your account within 5-7 business days.',
+        RETURNED: 'We have received your returned items. Your refund will be processed shortly.'
+    };
+    return messages[status] || `Your order status has been updated to: ${status}`;
 }

@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import { z } from 'zod';
 import uniqid from 'uniqid';
 import { sendNotification } from '@/lib/notifications';
+import { sendOrderConfirmation } from '@/lib/email';
 
 function generateReferralCode() {
     return '7H-' + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -237,6 +238,21 @@ export async function POST(req: NextRequest) {
              if (cart) {
                 await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
              }
+             
+             // 5. Send Order Confirmation Email
+             if (shippingDetails.email) {
+                sendOrderConfirmation(shippingDetails.email, {
+                  orderId: newOrder.id,
+                  customerName: shippingDetails.fullName,
+                  items: orderItemsData.map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.priceAtPurchase
+                  })),
+                  total: subtotal
+                }).catch(err => console.error('Email send error:', err));
+             }
+             
              return NextResponse.json({
                 success: true,
                 orderId: newOrder.id,

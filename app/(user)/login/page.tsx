@@ -230,11 +230,7 @@ export default function AuthPage() {
         setIsLoading(true);
         try {
             const res = await axios.post('/api/v1/auth/request-otp', { fullName, email, phone, referralCode: referralCode || undefined  });
-            if (res.data.debugOtp) {
-                toast.success(`TESTING OTP: ${res.data.debugOtp}`, { duration: 5000, icon: '🔑' });
-            } else {
-                toast.success('OTP sent to your phone.');
-            }
+            toast.success(res.data.message || 'OTP sent to your email.');
             switchView(View.SIGNUP_STEP_2_OTP);
         } catch (err) {
             setError(getErrorMessage(err));
@@ -287,12 +283,9 @@ export default function AuthPage() {
         setError(null);
         setIsLoading(true);
         try {
-            const res = await axios.post('/api/v1/auth/request-login-otp', { phone });
-            if (res.data.debugOtp) {
-                toast.success(`TESTING OTP: ${res.data.debugOtp}`, { duration: 5000, icon: '🔑' });
-            } else {
-                toast.success('OTP sent to your phone.');
-            }
+            const res = await axios.post('/api/v1/auth/request-login-otp', { email });
+            toast.success(res.data.message || 'OTP sent to your email.');
+            setPhone(res.data.phone || '');
             switchView(View.SIGNUP_STEP_2_OTP);
         } catch (err) {
             const errorMessage = getErrorMessage(err);
@@ -403,10 +396,10 @@ export default function AuthPage() {
                     <>
                         <div className="text-center mb-8">
                             <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-4 border-2 border-[#E6B422]/20">
-                                <PhoneIcon className="w-8 h-8 text-[#E6B422]" />
+                                <MailIcon className="w-8 h-8 text-[#E6B422]" />
                             </div>
-                            <h1 className="text-3xl font-bold text-gray-900">Verify Your Phone</h1>
-                            <p className="text-gray-500 mt-1">Enter the 6-digit code sent to {phone}</p>
+                            <h1 className="text-3xl font-bold text-gray-900">Verify Your Email</h1>
+                            <p className="text-gray-500 mt-1">Enter the 6-digit code sent to {email ? email.replace(/(.{2})(.*)(@.*)/, '$1***$3') : 'your email'}</p>
                         </div>
                         <form onSubmit={handleVerifyOtp} className="space-y-8">
                             <OtpInput otp={otp} setOtp={setOtp} />
@@ -415,7 +408,7 @@ export default function AuthPage() {
                             </button>
                         </form>
                         <div className="mt-6 text-center text-sm text-gray-500">
-                            Entered the wrong number? <button type="button" onClick={() => switchView(View.SIGNUP_STEP_1_PHONE)} className="text-[#E6B422] font-semibold hover:text-[#B8941F] transition-colors">Go Back</button>
+                            Didn't receive the code? <button type="button" onClick={() => switchView(View.LOGIN_OTP)} className="text-[#E6B422] font-semibold hover:text-[#B8941F] transition-colors">Resend</button>
                         </div>
                     </>
                 );
@@ -453,13 +446,22 @@ export default function AuthPage() {
                     <>
                         <div className="text-center mb-8">
                             <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-4 border-2 border-[#E6B422]/20">
-                                <PhoneIcon className="w-8 h-8 text-[#E6B422]" />
+                                <MailIcon className="w-8 h-8 text-[#E6B422]" />
                             </div>
                             <h1 className="text-3xl font-bold text-gray-900">Login with OTP</h1>
-                            <p className="text-gray-500 mt-1">We'll send a verification code to your phone</p>
+                            <p className="text-gray-500 mt-1">We'll send a verification code to your email</p>
                         </div>
                         <form onSubmit={handleRequestLoginOtp} className="space-y-6">
-                            <AuthInput id="loginPhone" label="Phone Number" type="tel" icon={<PhoneIcon className="w-5 h-5" />} value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                            <AuthInput 
+                                id="loginEmail" 
+                                label="Email Address" 
+                                type="email" 
+                                icon={<MailIcon className="w-5 h-5" />} 
+                                value={email} 
+                                onChange={(e) => setEmail(e.target.value)} 
+                                placeholder="Enter your email"
+                                required 
+                            />
                             <button type="submit" disabled={isLoading} className={commonButtonClasses}>
                                 {isLoading ? <><div className="w-5 h-5 rounded-full spinner-gradient-gold"></div> Sending OTP...</> : 'Send OTP'}
                             </button>

@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { sendOTPEmail } from '@/lib/email';
 
 const requestOtpSchema = z.object({
   fullName: z.string().min(3, { message: 'Full name must be at least 3 characters long' }),
@@ -70,8 +71,13 @@ export async function POST(request: NextRequest) {
     });
 
     console.log(`--- OTP for ${phone}: ${otp} ---`);
-
-    return NextResponse.json({ success: true, message: 'OTP has been sent to your phone number.', debugOtp: otp });
+    sendOTPEmail(email, otp, fullName).catch(err => 
+      console.error('OTP email error:', err)
+    );
+    return NextResponse.json({ 
+      success: true, 
+      message: `OTP has been sent to your email (${email.replace(/(.{2})(.*)(@.*)/, '$1***$3')}).`
+    });
 
   } catch (error: any) {
     if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
