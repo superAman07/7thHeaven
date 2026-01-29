@@ -202,8 +202,7 @@ export async function POST(req: NextRequest) {
                     where: { id: userId! },
                     data: { 
                         is7thHeaven: true, 
-                        referralCode: newReferralCode, 
-                        isAdmin: true // Added as requested
+                        referralCode: newReferralCode,
                     } 
                 });
              } else {
