@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { PublicProduct } from '../HeroPage';
+import { usePathname } from 'next/navigation';
 
 const MOBILE_BREAKPOINT = 991;
 
@@ -18,6 +19,7 @@ export default function NavBar() {
 
     const [user, setUser] = useState(null);
     const router = useRouter();
+    const pathname = usePathname();
 
     const mobileMenuRef = useRef<HTMLDivElement | null>(null);
     const searchRef = useRef<HTMLDivElement>(null);
@@ -82,12 +84,15 @@ export default function NavBar() {
                 const res = await axios.get('/api/v1/auth/me');
                 if (res.data.success) {
                     setUser(res.data.user);
+                } else {
+                    setUser(null);
                 }
             } catch (error) {
+                setUser(null);
             }
         };
         checkAuth();
-    }, []);
+    }, [pathname]);
 
     const handleLogout = async (e: React.MouseEvent) => {
         e.preventDefault();

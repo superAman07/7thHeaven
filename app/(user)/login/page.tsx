@@ -215,8 +215,8 @@ export default function AuthPage() {
         try {
             await axios.post('/api/v1/auth/login', { identifier, password });
             toast.success('Logged in successfully!');
-            router.push('/');
             router.refresh();
+            router.push('/');
         } catch (err) {
             setError(getErrorMessage(err));
         } finally {
@@ -252,8 +252,8 @@ export default function AuthPage() {
                 setVerificationToken(data.verificationToken);
                 switchView(View.SIGNUP_STEP_3_PASSWORD);
             } else {
-                router.push('/');
                 router.refresh();
+                router.push('/');
             }
         } catch (err) {
             setError(getErrorMessage(err));
@@ -269,8 +269,8 @@ export default function AuthPage() {
         try {
             await axios.post('/api/v1/auth/set-password', { verificationToken, password });
             toast.success('Account created! Welcome!');
-            router.push('/');
             router.refresh();
+            router.push('/');
         } catch (err) {
             setError(getErrorMessage(err));
         } finally {
