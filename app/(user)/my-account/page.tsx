@@ -678,11 +678,11 @@ function ProfileContent() {
                                                                     <input placeholder="Full Name" type="text" value={formData.fullName} onChange={e => setFormData({ ...formData, fullName: e.target.value })} />
                                                                 </div>
                                                                 <div className="col-lg-6 col-12 mb-30">
-                                                                    <label>Email Address (Requires OTP)</label>
+                                                                    <label>Email Address <span style={{fontSize: '12px', color: '#888'}}>(Requires OTP)</span></label>
                                                                     <input placeholder="Email Address" type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
                                                                 </div>
                                                                 <div className="col-lg-6 col-12 mb-30">
-                                                                    <label>Phone Number (Requires OTP)</label>
+                                                                    <label>Phone Number</label>
                                                                     <input placeholder="Phone Number" type="text" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
                                                                 </div>
 
@@ -718,7 +718,7 @@ function ProfileContent() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
                     <div className="bg-white p-6 rounded-lg shadow-lg" style={{ backgroundColor: 'white', padding: '30px', borderRadius: '8px', width: '100%', maxWidth: '400px' }}>
                         <h3 className="text-lg font-bold mb-4">Verify OTP</h3>
-                        <p className="mb-4 text-sm text-gray-600">Please enter the 6-digit code sent to your device.</p>
+                        <p className="mb-4 text-sm text-gray-600">Please enter the 6-digit code sent to your email or phone number.</p>
                         <input
                             type="text"
                             value={otp}

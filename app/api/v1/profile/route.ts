@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserIdFromToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs'; 
+import { sendOTPEmail } from '@/lib/email';
 
 export async function GET(req: NextRequest) {
     try {
@@ -53,22 +54,20 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid request parameters' }, { status: 400 });
         }
 
-        // Generate 6 digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         
-        // Log OTP to console as requested
-        console.log(`------------------------------------------------`);
-        console.log(`[DEV] OTP for Profile Update (${type}: ${value}): ${otp}`);
-        console.log(`------------------------------------------------`);
-
-        // Hash OTP
         const otpHash = await bcrypt.hash(otp, 10);
-        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+        const user = await prisma.user.findUnique({ where: { id: userId }, select: { fullName: true } });
 
         await prisma.user.update({
             where: { id: userId },
             data: { otpHash, otpExpiry }
         });
+        if (type === 'email') {
+            sendOTPEmail(value, otp, user?.fullName || 'Customer')
+                .catch(err => console.error('Profile OTP email error:', err));
+        }
 
         return NextResponse.json({ success: true, message: `OTP sent to ${value}` });
 
