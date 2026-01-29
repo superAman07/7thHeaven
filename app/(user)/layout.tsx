@@ -4,6 +4,7 @@ import { WishlistProvider } from "@/components/WishlistContext";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getSiteContent, defaultGlobalSettings } from "@/lib/site-content";
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "7th Heaven - Perfumes & Fragrances",
