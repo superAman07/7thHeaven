@@ -23,9 +23,9 @@ const updateProductSchema = z.object({
   variants: z.array(variantSchema).min(1).optional(),
 });
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }>}) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const {id} = await params;
+    const { id } = await params;
     const product = await prisma.product.findUnique({
       where: { id },
       include: {
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }>}) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     await prisma.product.update({
@@ -58,11 +58,11 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }>}) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const body = await request.json();
-    
+
     const validation = updateProductSchema.safeParse(body);
 
     if (!validation.success) {
@@ -87,11 +87,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
         const variantsToCreate = variants.filter(v => !v.id);
         const variantsToUpdate = variants.filter(v => v.id && existingVariantIds.has(v.id));
-        
+
         const incomingVariantIds = new Set(variants.filter(v => v.id).map(v => v.id));
         const variantIdsToDelete = existingVariants
-            .map(v => v.id)
-            .filter(vid => !incomingVariantIds.has(vid));
+          .map(v => v.id)
+          .filter(vid => !incomingVariantIds.has(vid));
 
         if (variantIdsToDelete.length > 0) {
           await tx.productVariant.deleteMany({ where: { id: { in: variantIdsToDelete } } });
@@ -99,11 +99,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
         if (variantsToCreate.length > 0) {
           await tx.productVariant.createMany({
-            data: variantsToCreate.map(({ size, price, stock }) => ({ 
-                productId: id, 
-                size, 
-                price: price,
-                stock: stock
+            data: variantsToCreate.map(({ size, price, stock }) => ({
+              productId: id,
+              size,
+              price: price,
+              stock: stock
             })),
           });
         }
@@ -112,10 +112,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           if (variant.id) {
             await tx.productVariant.update({
               where: { id: variant.id },
-              data: { 
-                  size: variant.size, 
-                  price: variant.price,
-                  stock: variant.stock 
+              data: {
+                size: variant.size,
+                price: variant.price,
+                stock: variant.stock
               },
             });
           }
@@ -126,12 +126,19 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     });
 
     const finalProduct = await prisma.product.findUnique({
-        where: { id },
-        include: { variants: true, category: true }
+      where: { id },
+      include: { variants: true, category: true }
     });
 
     return NextResponse.json({ success: true, data: finalProduct });
   } catch (error) {
-    return NextResponse.json({ success: false, error: { message: 'An unexpected error occurred.' } }, { status: 500 });
+    console.error("❌ PUT Product Error:", error);
+    return NextResponse.json({
+      success: false,
+      error: {
+        message: error instanceof Error ? error.message : 'An unexpected error occurred.',
+        details: error
+      }
+    }, { status: 500 });
   }
 }

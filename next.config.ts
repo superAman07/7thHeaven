@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-   async redirects() {
+    async redirects() {
         return [
             {
                 source: '/products',
@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
                 permanent: true,
             },
         ]
+    },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'celsius-heaven-assets.s3.ap-south-1.amazonaws.com',
+                port: '',
+                pathname: '/**',
+            },
+        ],
     },
 };
 
