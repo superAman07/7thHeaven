@@ -55,7 +55,7 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
   return (
     <>
       <nav 
-        className={`fixed inset-y-0 left-0 z-30 flex flex-col w-72 p-6 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 bg-white/80 backdrop-blur-xl border-r border-gray-100 ${
+        className={`fixed inset-y-0 left-0 z-30 md:z-0! flex flex-col w-72 p-6 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 bg-white/80 backdrop-blur-xl border-r border-gray-100 ${
           isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
         }`}
         aria-label="Sidebar"
@@ -73,16 +73,10 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
                <span className="text-[10px] text-gray-400 uppercase tracking-[0.2em] font-bold">Admin Portal</span>
             </div>
           </Link>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="md:hidden p-2 rounded-lg text-gray-400 hover:text-gray-800 hover:bg-gray-100 transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
+          {/* Removed the mobile close button (hamburger/X) as requested */}
         </div>
-
         {/* Navigation Links */}
-        <div className="flex flex-col flex-1 overflow-y-auto custom-scrollbar space-y-1">
+        <div className="flex! flex-col! flex-1! overflow-y-auto! custom-scrollbar! space-y-0!">
           {navItems.map((item) => (
             <NavLink key={item.href} {...item} />
           ))}
