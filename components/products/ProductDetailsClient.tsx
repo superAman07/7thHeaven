@@ -320,12 +320,40 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                         <div className="col-xl-7 col-lg-6 col-md-6">
                             {/* Product Details Content - Same structure as QuickViewModal */}
                             <div className="product-details-content">
-                                <div className="product-nav">
-                                    <a href="#" onClick={(e) => { e.preventDefault(); handlePrevImage(); }} title="Previous image">
-                                        <i className="fa fa-angle-left"></i>
+                                <div className="product-nav" style={{ display: 'flex', gap: '8px' }}>
+                                    <a 
+                                        href="#" 
+                                        onClick={(e) => { e.preventDefault(); handlePrevImage(); }} 
+                                        title="Previous image"
+                                        style={{
+                                            width: '36px',
+                                            height: '36px',
+                                            borderRadius: '4px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            color: '#333',
+                                            transition: 'all 0.3s'
+                                        }}
+                                    >
+                                        <i className="fa fa-angle-left" style={{ fontSize: '18px' }}></i>
                                     </a>
-                                    <a href="#" onClick={(e) => { e.preventDefault(); handleNextImage(); }} title="Next image">
-                                        <i className="fa fa-angle-right"></i>
+                                    <a 
+                                        href="#" 
+                                        onClick={(e) => { e.preventDefault(); handleNextImage(); }} 
+                                        title="Next image"
+                                        style={{
+                                            width: '36px',
+                                            height: '36px',
+                                            borderRadius: '4px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            color: '#333',
+                                            transition: 'all 0.3s'
+                                        }}
+                                    >
+                                        <i className="fa fa-angle-right" style={{ fontSize: '18px' }}></i>
                                     </a>
                                 </div>
 
@@ -432,12 +460,9 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                     </div>
                                 </div>
 
-                                <div className="wishlist-compare-btn">
-                                    <a 
-                                        href="#" 
-                                        className="wishlist-btn mb-md-10 mb-sm-10"
-                                        onClick={(e) => {
-                                            e.preventDefault();
+                                <div className="wishlist-compare-btn" style={{ marginTop: '15px' }}>
+                                    <button 
+                                        onClick={() => {
                                             toggleWishlist({
                                                 id: product.id,
                                                 name: product.name,
@@ -445,11 +470,24 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                 slug: product.slug
                                             });
                                         }}
-                                        style={{ cursor: 'pointer' }}
+                                        style={{ 
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            padding: '0',
+                                            background: 'none',
+                                            border: 'none',
+                                            color: isInWishlist(product.id) ? '#B6902E' : '#666',
+                                            fontWeight: '500',
+                                            fontSize: '14px',
+                                            textDecoration: 'underline',
+                                            transition: 'all 0.3s ease'
+                                        }}
                                     >
-                                        {isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
-                                    </a>
-                                    {/* <a href="#" className="add-compare">Compare</a> */}
+                                        <i className={`fa ${isInWishlist(product.id) ? 'fa-heart' : 'fa-heart-o'}`} style={{ color: isInWishlist(product.id) ? '#B6902E' : '#666' }}></i>
+                                        {isInWishlist(product.id) ? 'Added to Wishlist' : 'Add to Wishlist'}
+                                    </button>
                                 </div>
 
                                 <div className="product-meta">
@@ -472,13 +510,51 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
 
                                 <div className="single-product-sharing">
                                     <h3>Share this product</h3>
-                                    <ul className="d-flex">
-                                        <li><a href="#" title="Twitter"><i className="fa fa-twitter"></i></a></li>
-                                        <li><a href="#" title="Facebook"><i className="fa fa-facebook"></i></a></li>
-                                        <li><a href="#" title="Google Plus"><i className="fa fa-google-plus"></i></a></li>
-                                        <li><a href="#" title="Pinterest"><i className="fa fa-pinterest"></i></a></li>
-                                        <li><a href="#" title="Instagram"><i className="fa fa-instagram"></i></a></li>
-                                        <li><a href="#" title="Vimeo"><i className="fa fa-vimeo"></i></a></li>
+                                    <ul className="d-flex" style={{ gap: '10px', listStyle: 'none', padding: 0, margin: 0 }}>
+                                        <li>
+                                            <a 
+                                                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(product.name)}&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title="Share on Twitter"
+                                                style={{ color: '#1DA1F2', fontSize: '18px' }}
+                                            >
+                                                <i className="fa fa-twitter"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title="Share on Facebook"
+                                                style={{ color: '#4267B2', fontSize: '18px' }}
+                                            >
+                                                <i className="fa fa-facebook"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&media=${encodeURIComponent(product.images[0] || '')}&description=${encodeURIComponent(product.name)}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title="Share on Pinterest"
+                                                style={{ color: '#E60023', fontSize: '18px' }}
+                                            >
+                                                <i className="fa fa-pinterest"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(product.name + ' - ' + (typeof window !== 'undefined' ? window.location.href : ''))}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title="Share on WhatsApp"
+                                                style={{ color: '#25D366', fontSize: '18px' }}
+                                            >
+                                                <i className="fa fa-whatsapp"></i>
+                                            </a>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
