@@ -137,8 +137,16 @@ export default function NavBar() {
     const links = [
         { href: '/', label: 'Home' },
         { href: '/collections/perfumes', label: 'Collections' },
+        { href: '/contact', label: 'Contact Us' },
+        { href: '/7th-heaven', label: '7th Heaven Club' },
+    ];
+
+    const mobileLinks = [
+        { href: '/', label: 'Home' },
+        { href: '/collections/perfumes', label: 'Collections' },
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact Us' },
+        { href: '/track-order', label: 'Track Order' },
         { href: '/7th-heaven', label: '7th Heaven Club' },
     ];
 
@@ -152,11 +160,11 @@ export default function NavBar() {
                         : 'bg-transparent! h-[140px]! md:h-[160px]!'
                 }`}
             >
-                <div className="container! mx-auto! h-full! px-4! md:px-8!">
+                <div className="container! mx-auto! h-full! px-2! md:px-4! lg:px-4!">
                     <div className="relative! flex! items-center! justify-between! h-full!">
                         
                         {/* --- DESKTOP: LEFT SECTION (Nav Links) --- */}
-                        <nav className="hidden! lg:flex! flex-1! items-center! gap-6!">
+                        <nav className="hidden! xl:flex! flex-1! items-center! gap-6!">
                             {links.map((l) => (
                                 <a 
                                     key={l.label}
@@ -173,7 +181,7 @@ export default function NavBar() {
                         </nav>
 
                         {/* --- MOBILE: LEFT SECTION (Hamburger) --- */}
-                        <div className="lg:hidden! flex-1! flex! items-center!">
+                        <div className="xl:hidden! flex-1! flex! items-center!">
                             <a href="/cart" className={`text-xl! hover:!text-[#D4AF37]! transition-colors! relative! ${isSticky ? 'text-gray-800!' : 'text-white!'}`}>
                                 <i className="fa fa-shopping-bag"></i>
                                 {cartCount > 0 && (
@@ -194,7 +202,7 @@ export default function NavBar() {
                                 />
                             </a>
                         </div>
-                        <div className="hidden! lg:flex! flex-1! items-center! justify-end! gap-2! md:gap-4!">
+                        <div className="hidden! xl:flex! flex-1! items-center! justify-end! gap-4!">
                             
                             {/* Search */}
                             <div className="relative!" ref={searchRef}>
@@ -328,7 +336,7 @@ export default function NavBar() {
                             </div>
                         </div>
                         {/* --- MOBILE: RIGHT SECTION (Hamburger Only) --- */}
-                        <div className="lg:hidden! flex-1! flex! items-center! justify-end!">
+                        <div className="xl:hidden! flex-1! flex! items-center! justify-end!">
                             <button 
                                 onClick={toggleMobile}
                                 className={`text-2xl! p-2! transition-colors! ${isSticky ? 'text-gray-800!' : 'text-white!'}`}
@@ -342,12 +350,12 @@ export default function NavBar() {
 
             {/* Mobile Drawer Overlay */}
             <div 
-                className={`fixed! inset-0! bg-black/50! z-1001! transition-opacity! lg:hidden! ${isMobileOpen ? 'opacity-100! visible!' : 'opacity-0! invisible!'}`} 
+                className={`fixed! inset-0! bg-black/50! z-1001! transition-opacity! xl:hidden! ${isMobileOpen ? 'opacity-100! visible!' : 'opacity-0! invisible!'}`} 
                 onClick={toggleMobile}
             ></div>
 
             {/* Mobile Drawer */}
-            <div className={`fixed! top-0! right-0! h-full! w-[280px]! bg-white! z-1002! transform! transition-transform! duration-300! lg:!hidden! ${isMobileOpen ? 'translate-x-0!' : 'translate-x-full!'}`}>
+            <div className={`fixed! top-0! right-0! h-full! w-[280px]! bg-white! z-1002! transform! transition-transform! duration-300! xl:!hidden! ${isMobileOpen ? 'translate-x-0!' : 'translate-x-full!'}`}>
                 {/* Header */}
                 <div className="flex! items-center! justify-between! p-4! border-b!">
                     <img src="/celsius-logo.png" alt="logo" className="h-10!" />
@@ -392,7 +400,7 @@ export default function NavBar() {
                 
                 {/* Nav Links */}
                 <nav className="p-4!">
-                    {links.map((l) => (
+                    {mobileLinks.map((l) => (
                         <a 
                             key={l.label}
                             href={l.href}
