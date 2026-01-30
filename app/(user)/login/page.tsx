@@ -10,7 +10,10 @@ enum View {
     SIGNUP_STEP_1_PHONE = 'SIGNUP_STEP_1_PHONE',
     SIGNUP_STEP_2_OTP = 'SIGNUP_STEP_2_OTP',
     SIGNUP_STEP_3_PASSWORD = 'SIGNUP_STEP_3_PASSWORD',
-    LOGIN_OTP = 'LOGIN_OTP'
+    LOGIN_OTP = 'LOGIN_OTP',
+    FORGOT_PASSWORD = 'FORGOT_PASSWORD',           
+    FORGOT_PASSWORD_OTP = 'FORGOT_PASSWORD_OTP',   
+    FORGOT_PASSWORD_RESET = 'FORGOT_PASSWORD_RESET' 
 }
 
 interface IconProps {
@@ -179,6 +182,7 @@ export default function AuthPage() {
     const [error, setError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [referralCode, setReferralCode] = useState<string | null>(null);
+    const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
 
     useEffect(() => {
         if (hasCheckedReferral.current) return;
@@ -203,7 +207,13 @@ export default function AuthPage() {
             if (data.error?.details) {
                 return Object.values(data.error.details).flat().join(' ');
             }
-            return data.error?.message || 'An error occurred.';
+            if (data.error?.message) {
+                return data.error.message;
+            }
+            if (typeof data.error === 'string') {
+                return data.error;
+            }
+            return 'An error occurred.';
         }
         return error.message || 'An unknown network error occurred.';
     };
@@ -217,6 +227,53 @@ export default function AuthPage() {
             toast.success('Logged in successfully!');
             router.refresh();
             router.push('/');
+        } catch (err) {
+            setError(getErrorMessage(err));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleForgotPasswordRequest = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setIsLoading(true);
+        try {
+            const res = await axios.post('/api/v1/auth/forgot-password', { email: forgotPasswordEmail });
+            if (res.data.success) {
+                toast.success(res.data.message);
+                switchView(View.FORGOT_PASSWORD_OTP);
+            }
+        } catch (err) {
+            setError(getErrorMessage(err));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResetPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters');
+            return;
+        }
+        
+        setIsLoading(true);
+        try {
+            const res = await axios.post('/api/v1/auth/reset-password', { 
+                email: forgotPasswordEmail, 
+                otp, 
+                newPassword: password 
+            });
+            if (res.data.success) {
+                toast.success(res.data.message);
+                setOtp('');
+                setPassword('');
+                setForgotPasswordEmail('');
+                switchView(View.LOGIN);
+            }
         } catch (err) {
             setError(getErrorMessage(err));
         } finally {
@@ -297,6 +354,31 @@ export default function AuthPage() {
             setIsLoading(false);
         }
     };
+    const handleVerifyResetOtp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        
+        if (otp.length !== 6) {
+            setError('Please enter the complete 6-digit OTP');
+            return;
+        }
+        
+        setIsLoading(true);
+        try {
+            const res = await axios.post('/api/v1/auth/verify-reset-otp', { 
+                email: forgotPasswordEmail, 
+                otp 
+            });
+            if (res.data.success) {
+                toast.success('OTP verified!');
+                switchView(View.FORGOT_PASSWORD_RESET);
+            }
+        } catch (err) {
+            setError(getErrorMessage(err));
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const renderContent = () => {
         const commonButtonClasses = "w-full text-white font-semibold h-12 text-lg rounded-lg flex! items-center! justify-center! gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-gold shadow-md";
@@ -335,6 +417,15 @@ export default function AuthPage() {
                                 required
                                 endIcon={passwordToggleIcon}
                             />
+                            <div className="text-right mb-4">
+                                <button
+                                    type="button"
+                                    onClick={() => switchView(View.FORGOT_PASSWORD)}
+                                    className="text-sm text-[#E6B422] hover:text-[#b8952b] hover:underline transition-colors"
+                                >
+                                    Forgot Password?
+                                </button>
+                            </div>
                             <button type="submit" disabled={isLoading} className={commonButtonClasses}>
                                 {isLoading ? (
                                     <>
@@ -469,6 +560,90 @@ export default function AuthPage() {
                         <div className="mt-6 text-center text-sm">
                             <button type="button" onClick={() => switchView(View.LOGIN)} className="text-[#E6B422] font-semibold hover:text-[#B8941F] transition-colors">Back to Password Login</button>
                         </div>
+                    </>
+                );
+            case View.FORGOT_PASSWORD:
+                return (
+                    <>
+                        <div className="text-center mb-8">
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-4 border-2 border-[#E6B422]/20">
+                                <MailIcon className="w-8 h-8 text-[#E6B422]" />
+                            </div>
+                            <h1 className="text-3xl font-bold text-gray-900">Forgot Password</h1>
+                            <p className="text-gray-500 mt-1">Enter your email to receive a reset code</p>
+                        </div>
+                        <form onSubmit={handleForgotPasswordRequest} className="space-y-6">
+                            <AuthInput
+                                id="forgotEmail"
+                                label="Email Address"
+                                type="email"
+                                icon={<MailIcon className="w-5 h-5" />}
+                                placeholder="Enter your email"
+                                value={forgotPasswordEmail}
+                                onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                                required
+                            />
+                            <button type="submit" disabled={isLoading} className={commonButtonClasses}>
+                                {isLoading ? <><div className="w-5 h-5 rounded-full spinner-gradient-gold"></div> Sending OTP...</> : 'Send Reset Code'}
+                            </button>
+                        </form>
+                        <div className="mt-6 text-center text-sm">
+                            <button type="button" onClick={() => switchView(View.LOGIN)} className="text-[#E6B422] font-semibold hover:text-[#B8941F] transition-colors">Back to Login</button>
+                        </div>
+                    </>
+                );
+            case View.FORGOT_PASSWORD_OTP:
+                return (
+                    <>
+                        <div className="text-center mb-8">
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-4 border-2 border-[#E6B422]/20">
+                                <LockIcon className="w-8 h-8 text-[#E6B422]" />
+                            </div>
+                            <h1 className="text-3xl font-bold text-gray-900">Enter Reset Code</h1>
+                            <p className="text-gray-500 mt-1">We sent a 6-digit code to <strong>{forgotPasswordEmail}</strong></p>
+                        </div>
+                        <form onSubmit={handleVerifyResetOtp} className="space-y-6">
+                            <OtpInput otp={otp} setOtp={setOtp} />
+                            <button type="submit" disabled={isLoading || otp.length !== 6} className={commonButtonClasses}>
+                                {isLoading ? <><div className="w-5 h-5 rounded-full spinner-gradient-gold"></div> Verifying...</> : 'Continue'}
+                            </button>
+                        </form>
+                        <div className="mt-6 text-center text-sm">
+                            <button type="button" onClick={() => switchView(View.FORGOT_PASSWORD)} className="text-[#E6B422] font-semibold hover:text-[#B8941F] transition-colors">Resend Code</button>
+                        </div>
+                    </>
+                );
+            case View.FORGOT_PASSWORD_RESET:
+                return (
+                    <>
+                        <div className="text-center mb-8">
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-4 border-2 border-[#E6B422]/20">
+                                <LockIcon className="w-8 h-8 text-[#E6B422]" />
+                            </div>
+                            <h1 className="text-3xl font-bold text-gray-900">Set New Password</h1>
+                            <p className="text-gray-500 mt-1">Create a strong password for your account</p>
+                        </div>
+                        <form onSubmit={handleResetPassword} className="space-y-6">
+                            <AuthInput
+                                id="newPassword"
+                                label="New Password"
+                                type={showPassword ? 'text' : 'password'}
+                                icon={<LockIcon className="w-5 h-5" />}
+                                placeholder="Enter new password (min 6 characters)"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                minLength={6}
+                                endIcon={
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-gray-400 hover:text-[#E6B422]">
+                                        {showPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                                    </button>
+                                }
+                            />
+                            <button type="submit" disabled={isLoading || password.length < 6} className={commonButtonClasses}>
+                                {isLoading ? <><div className="w-5 h-5 rounded-full spinner-gradient-gold"></div> Resetting...</> : 'Reset Password'}
+                            </button>
+                        </form>
                     </>
                 );
             default:
