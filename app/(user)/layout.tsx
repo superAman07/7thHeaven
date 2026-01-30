@@ -1,5 +1,5 @@
 import FooterPage from "@/components/home/Footer";
-import NavBar from "@/components/home/NavBar";
+import NavBar from "@/components/home/NavBar2";
 import { WishlistProvider } from "@/components/WishlistContext";
 import type { Metadata } from "next";
 import { Suspense } from "react";

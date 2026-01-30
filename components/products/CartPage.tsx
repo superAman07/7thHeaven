@@ -56,7 +56,12 @@ const CartPageComponent: React.FC = () => {
     return (
         <>
             {/* Page Banner Section Start */}
-            <div className="page-banner-section section" style={{ backgroundColor: '#ddb040' }}>
+            <div 
+                className="page-banner-section section min-h-[30vh]! lg:min-h-[45vh]! flex! items-end! pb-[30px]! lg:pb-[40px]!" 
+                style={{ 
+                    background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)',
+                }}
+            >
                 <div className="container">
                     <div className="row">
                         <div className="col">

@@ -148,7 +148,12 @@ export default function ContactPage() {
     return (
         <div id="main-wrapper">
             {/* Page Banner */}
-            <div className="page-banner-section section" style={{ backgroundColor: '#1a1511' }}>
+            <div 
+                className="page-banner-section section min-h-[30vh]! lg:min-h-[45vh]! flex! items-end! pb-[30px]! lg:pb-[40px]!" 
+                style={{ 
+                    background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)',
+                }}
+            >
                 <div className="container">
                     <div className="row">
                         <div className="col">
@@ -189,7 +194,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Phone</h5>
-                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>+91 94539 58378</p>
+                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>+91 xxxxx xxxxx</p>
                                     </div>
                                 </div>
 

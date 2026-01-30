@@ -17,7 +17,7 @@ const SliderSection = () => {
         }
       `}</style>
       <div className="hero-section section position-relative">
-        <div className="hero-item min-h-[650px] h-full">
+        <div className="hero-item min-h-screen h-screen">
           
           <div className="hero-overlay-layer"></div>
           
