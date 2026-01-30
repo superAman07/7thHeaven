@@ -189,6 +189,66 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
 
     return (
         <>
+            <div 
+                className="page-banner-section"
+                style={{
+                    background: 'linear-gradient(135deg, #0d0b09 0%, #1a1511 50%, #0d0b09 100%)',
+                    padding: '140px 0 25px 0',
+                }}
+            >
+                <div className="container">
+                    {/* Desktop: Flex row | Mobile: Center stacked */}
+                    <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'flex-end',
+                        flexWrap: 'wrap',
+                        gap: '10px'
+                    }}>
+                        {/* Breadcrumb - Left */}
+                        <nav className="banner-breadcrumb">
+                            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', letterSpacing: '1px' }}>
+                                <Link href="/" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Home</Link>
+                                {' / '}
+                                <Link href="/collections" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Collections</Link>
+                                {' / '}
+                                <Link href={`/collections/${product.category.slug}`} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                                    {product.category.name}
+                                </Link>
+                            </span>
+                        </nav>
+                        
+                        {/* Product Name - Right */}
+                        <h1 className="banner-product-name" style={{ 
+                            color: '#fff', 
+                            fontSize: '24px', 
+                            fontWeight: '600',
+                            textTransform: 'uppercase',
+                            letterSpacing: '2px',
+                            margin: 0
+                        }}>
+                            {product.name}
+                        </h1>
+                    </div>
+                </div>
+            </div>
+
+            {/* Add this style tag for responsive */}
+            <style jsx>{`
+                @media (max-width: 767px) {
+                    .page-banner-section .container > div {
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        text-align: center !important;
+                    }
+                    .banner-product-name {
+                        font-size: 18px !important;
+                    }
+                    .banner-breadcrumb span {
+                        font-size: 11px !important;
+                    }
+                }
+            `}</style>
             <div className="single-product-section section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-100 pb-lg-80 pb-md-70 pb-sm-30 pb-xs-20">
                 <div className="container">
                     <div className="row">
