@@ -311,18 +311,18 @@ export default function NavBar() {
                                 </div>
                             </div>
                             {/* Account */}
-                            <div className="!relative group" style={{ display: 'flex', alignItems: 'center' }}>
-                                <a className="!text-xl hover:!text-[#D4AF37] !transition-colors" style={{ cursor: 'pointer', color: isSticky ? '#1f2937' : '#ffffff' }}>
+                            <div className="relative! group" style={{ display: 'flex', alignItems: 'center' }}>
+                                <a className="text-xl! hover:text-[#D4AF37]! transition-colors!" style={{ cursor: 'pointer', color: isSticky ? '#1f2937' : '#ffffff' }}>
                                     <i className="fa fa-user"></i>
                                 </a>
-                                <div className="!absolute !right-0 !top-full !mt-2 !w-[180px] !bg-white !shadow-xl !py-2 !opacity-0 !invisible group-hover:!opacity-100 group-hover:!visible !transition-all !duration-200 !z-[100]">
-                                    <a href="/my-account" className="!block !px-4 !py-2 !text-sm !text-gray-700 hover:!bg-gray-50">My Account</a>
-                                    <a href="/wishlist" className="!block !px-4 !py-2 !text-sm !text-gray-700 hover:!bg-gray-50">My Wish List</a>
-                                    {user && <a href="/my-account?tab=orders" className="!block !px-4 !py-2 !text-sm !text-gray-700 hover:!bg-gray-50">My Orders</a>}
+                                <div className="absolute! right-0! top-full! mt-2! w-[180px]! bg-white! shadow-xl! py-2! opacity-0! invisible! group-hover:opacity-100! group-hover:visible! transition-all! duration-200! z-100!">
+                                    <a href="/my-account" className="block! px-4! py-2! text-sm! text-gray-700! hover:bg-gray-50!">My Account</a>
+                                    <a href="/wishlist" className="block! px-4! py-2! text-sm! text-gray-700! hover:bg-gray-50!">My Wish List</a>
+                                    {user && <a href="/my-account?tab=orders" className="block! px-4! py-2! text-sm! text-gray-700! hover:bg-gray-50!">My Orders</a>}
                                     {user ? (
-                                        <a href="/" onClick={handleLogout} className="!block !px-4 !py-2 !text-sm !text-red-500 hover:!bg-gray-50">Logout</a>
+                                        <a href="/" onClick={handleLogout} className="block! px-4! py-2! text-sm! text-red-500! hover:bg-gray-50!">Logout</a>
                                     ) : ( 
-                                        <a href="/login" className="!block !px-4 !py-2 !text-sm !font-bold !text-[#D4AF37] hover:!bg-gray-50">Sign In</a>
+                                        <a href="/login" className="block! px-4! py-2! text-sm! font-bold! text-[#D4AF37]! hover:bg-gray-50!">Sign In</a>
                                     )}
                                 </div>
                             </div>
