@@ -193,3 +193,80 @@ export async function sendWelcomeEmail(email: string, name: string) {
 
     return sendEmail({ to: email, subject: `Welcome to Celsius, ${name}! 🎉`, html });
 }
+
+
+// Ticket Confirmation Email
+export async function sendTicketConfirmationEmail(
+    to: string,
+    ticketId: string,
+    subject: string,
+    customerName: string
+) {
+    const html = `
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 16px; overflow: hidden;">
+            <div style="background: linear-gradient(135deg, #E6B422 0%, #D4A420 100%); padding: 30px; text-align: center;">
+                <h1 style="color: #1a1a2e; margin: 0; font-size: 28px;">Ticket Received!</h1>
+            </div>
+            <div style="padding: 30px; color: #ffffff;">
+                <p style="font-size: 16px;">Dear <strong>${customerName}</strong>,</p>
+                <p style="font-size: 16px; line-height: 1.6;">Thank you for reaching out to us. We have received your support request and our team will get back to you shortly.</p>
+                
+                <div style="background: rgba(230, 180, 34, 0.1); border-left: 4px solid #E6B422; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                    <p style="margin: 0; color: #E6B422; font-weight: bold;">Ticket ID: #${ticketId.slice(-8).toUpperCase()}</p>
+                    <p style="margin: 10px 0 0 0; color: #cccccc;">Subject: ${subject}</p>
+                </div>
+                
+                <p style="font-size: 14px; color: #888888; line-height: 1.6;">You can track the status of your ticket on our Contact Us page. We typically respond within 24-48 hours.</p>
+                
+                <p style="font-size: 16px; margin-top: 30px;">Best regards,<br><strong style="color: #E6B422;">Celsius Support Team</strong></p>
+            </div>
+        </div>
+    `;
+
+    await sendEmail({
+        to,
+        subject: `Ticket Received: ${subject} - Celsius`,
+        html
+    });
+}
+
+// Ticket Response Email
+export async function sendTicketResponseEmail(
+    to: string,
+    ticketId: string,
+    ticketSubject: string,
+    responseMessage: string,
+    customerName: string
+) {
+    const html = `
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 16px; overflow: hidden;">
+            <div style="background: linear-gradient(135deg, #E6B422 0%, #D4A420 100%); padding: 30px; text-align: center;">
+                <h1 style="color: #1a1a2e; margin: 0; font-size: 28px;">New Response to Your Ticket</h1>
+            </div>
+            <div style="padding: 30px; color: #ffffff;">
+                <p style="font-size: 16px;">Dear <strong>${customerName}</strong>,</p>
+                <p style="font-size: 16px; line-height: 1.6;">Our support team has responded to your ticket.</p>
+                
+                <div style="background: rgba(230, 180, 34, 0.1); border-left: 4px solid #E6B422; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                    <p style="margin: 0; color: #E6B422; font-weight: bold;">Ticket: #${ticketId.slice(-8).toUpperCase()}</p>
+                    <p style="margin: 5px 0; color: #cccccc; font-size: 14px;">${ticketSubject}</p>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <p style="margin: 0; color: #E6B422; font-size: 14px; font-weight: bold;">Response:</p>
+                    <p style="margin: 10px 0 0 0; color: #ffffff; line-height: 1.6;">${responseMessage}</p>
+                </div>
+                
+                <p style="font-size: 14px; color: #888888;">Visit the Contact Us page to view the full conversation and respond if needed.</p>
+                
+                <p style="font-size: 16px; margin-top: 30px;">Best regards,<br><strong style="color: #E6B422;">Celsius Support Team</strong></p>
+            </div>
+        </div>
+    `;
+
+    await sendEmail({
+        to,
+        subject: `Response to Ticket #${ticketId.slice(-8).toUpperCase()} - Celsius`,
+        html
+    });
+}

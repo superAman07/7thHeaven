@@ -39,6 +39,7 @@ model User {
   reviews          Review[]
   wishlist         Wishlist?
   notifications    Notification[]
+  tickets          SupportTicket[]
 }
 
 model Category {
@@ -233,6 +234,31 @@ model SiteContent {
   content   Json     
   updatedAt DateTime @updatedAt
   updatedBy String?  
+}
+
+model SupportTicket {
+  id          String   @id @default(cuid())
+  subject     String
+  category    String   
+  message     String
+  status      String   @default("OPEN")
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guestEmail  String?  
+  guestPhone  String?  
+  guestName   String?  
+  responses   TicketResponse[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TicketResponse {
+  id        String   @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  message   String
+  isAdmin   Boolean  @default(true)
+  createdAt DateTime @default(now())
 }
 
 enum GenderTags {
