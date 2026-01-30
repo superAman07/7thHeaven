@@ -83,7 +83,7 @@ export async function getProducts(params: ProductFilterParams) {
         ],
     };
 
-    let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: 'desc' };
+    let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: 'asc' };
     if (sort === 'price_asc') orderBy = { variants: { _count: 'desc' } };
     if (sort === 'price_asc') {
     }
