@@ -378,24 +378,31 @@ export default function NavBar() {
                             <i className="fa fa-search"></i>
                         </button>
                     </form>
-                    {showSuggestions && suggestions.length > 0 && (
-                        <div className="mt-3! max-h-[200px]! overflow-y-auto! border-t! border-gray-100! pt-3!">
-                            {suggestions.map(p => (
-                                <a 
-                                    key={p.id}
-                                    href={`/products/${p.slug}`}
-                                    className="flex! items-center! gap-3! py-2! hover:bg-gray-50! rounded-lg! no-underline!"
-                                    onClick={toggleMobile}
-                                >
-                                    <img src={p.images[0]} alt={p.name} className="w-10! h-10! rounded! object-cover!" />
-                                    <div>
-                                        <p className="text-sm! font-medium! text-gray-800! m-0!">{p.name}</p>
-                                        <p className="text-xs! text-gray-500! m-0!">Rs. {p.variants[0].price}</p>
-                                    </div>
-                                </a>
-                            ))}
-                        </div>
-                    )}
+                    {suggestions.map(p => {
+                        const productUrl = `/products/${p.slug}`;
+                        return (
+                            <div 
+                                key={p.id}
+                                className="flex! items-center! gap-3! py-2! hover:bg-gray-50! rounded-lg! cursor-pointer!"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    // Close drawer and clear search
+                                    setIsMobileOpen(false);
+                                    setSearchTerm('');
+                                    setShowSuggestions(false);
+                                    // Use window.location for reliable navigation
+                                    window.location.href = productUrl;
+                                }}
+                            >
+                                <img src={p.images[0]} alt={p.name} className="w-10! h-10! rounded! object-cover!" />
+                                <div>
+                                    <p className="text-sm! font-medium! text-gray-800! m-0!">{p.name}</p>
+                                    <p className="text-xs! text-gray-500! m-0!">Rs. {p.variants[0].price}</p>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
                 
                 {/* Nav Links */}
