@@ -373,7 +373,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 }
 
 .bg-dark {
-  background-color: #333333 !important;
+  background-color: #1a1511 !important;
 }
 
 .bg-theme {
@@ -1082,7 +1082,7 @@ header.header.is-sticky .header-bottom {
   }
 }
 .header-top.bg-dark {
-  border-color: #535353;
+  border-color: #1a1511;
 }
 .header-top > .container > .row > .col {
   -webkit-box-flex: 0;
