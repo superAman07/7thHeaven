@@ -28,7 +28,7 @@ const SliderSection = () => {
                   
                   <h2 className="text-gradient-gold">Made In Bharat</h2>
                   
-                  <h1>The Scent <br className="d-md-none" /> of Success</h1>
+                  <h1>The Scent of Success</h1>
                   
                   <h3>Premium, long-lasting fragrances crafted with the world's rarest oils.</h3>
                   
