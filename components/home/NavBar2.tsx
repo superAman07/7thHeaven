@@ -146,25 +146,25 @@ export default function NavBar() {
         <>
             {/* Header Main Container */}
             <header 
-                className={`!fixed !top-0 !left-0 !right-0 !z-[1000] !transition-all !duration-500 !ease-in-out ${
+                className={`fixed! top-0! left-0! right-0! z-1000! transition-all! duration-500! ease-in-out! ${
                     isSticky 
-                        ? '!bg-white/80 !backdrop-blur-xl !shadow-lg !h-[80px]' 
-                        : '!bg-transparent !h-[140px] md:!h-[160px]'
+                        ? 'bg-white/80! backdrop-blur-xl! shadow-lg! h-[80px]!' 
+                        : 'bg-transparent! h-[140px]! md:h-[160px]!'
                 }`}
             >
-                <div className="!container !mx-auto !h-full !px-4 md:!px-8">
-                    <div className="!relative !flex !items-center !justify-between !h-full">
+                <div className="container! mx-auto! h-full! px-4! md:px-8!">
+                    <div className="relative! flex! items-center! justify-between! h-full!">
                         
                         {/* --- DESKTOP: LEFT SECTION (Nav Links) --- */}
-                        <nav className="!hidden lg:!flex !flex-1 !items-center !gap-6">
+                        <nav className="hidden! lg:flex! flex-1! items-center! gap-6!">
                             {links.map((l) => (
                                 <a 
                                     key={l.label}
                                     href={l.href}
-                                    className={`!text-[13px] !font-semibold !uppercase !tracking-widest !transition-colors !duration-300 hover:!text-[#D4AF37] ${
+                                    className={`text-[13px]! font-semibold! uppercase! tracking-widest! transition-colors! duration-300! hover:text-[#D4AF37]! ${
                                         l.label === '7th Heaven Club' 
-                                            ? '!text-[#D4AF37]' 
-                                            : isSticky ? '!text-gray-800' : '!text-white'
+                                            ? 'text-[#D4AF37]!' 
+                                            : isSticky ? 'text-gray-800!' : 'text-white!'
                                     }`}
                                 >
                                     {l.label}
@@ -173,11 +173,11 @@ export default function NavBar() {
                         </nav>
 
                         {/* --- MOBILE: LEFT SECTION (Hamburger) --- */}
-                        <div className="lg:!hidden !flex-1 !flex !items-center">
-                            <a href="/cart" className={`!text-xl hover:!text-[#D4AF37] !transition-colors !relative ${isSticky ? '!text-gray-800' : '!text-white'}`}>
+                        <div className="lg:hidden! flex-1! flex! items-center!">
+                            <a href="/cart" className={`text-xl! hover:!text-[#D4AF37]! transition-colors! relative! ${isSticky ? 'text-gray-800!' : 'text-white!'}`}>
                                 <i className="fa fa-shopping-bag"></i>
                                 {cartCount > 0 && (
-                                    <span className="!absolute !-top-2 !-right-3 !bg-[#D4AF37] !text-white !text-[10px] !font-bold !w-4 !h-4 !rounded-full !flex !items-center !justify-center">
+                                    <span className="absolute! -top-2! -right-3! bg-[#D4AF37]! text-white! text-[10px]! font-bold! w-4! h-4! rounded-full! flex! items-center! justify-center!">
                                         {cartCount}
                                     </span>
                                 )}
@@ -185,48 +185,48 @@ export default function NavBar() {
                         </div>
 
                         {/* --- CENTER SECTION (LOGO) --- */}
-                        <div className="!absolute !left-1/2 !top-1/2 !-translate-x-1/2 !-translate-y-1/2 !z-50">
-                            <a href="/" className="!block">
+                        <div className="absolute! left-1/2! top-1/2! -translate-x-1/2! -translate-y-1/2! z-50!">
+                            <a href="/" className="block!">
                                 <img 
                                     src="/celsius-logo.png" 
                                     alt="logo" 
-                                    className={`!transition-all !duration-500 !object-contain ${isSticky ? '!h-[50px] md:!h-[60px]' : '!h-[90px] md:!h-[120px]'}`}
+                                    className={`transition-all! duration-500! object-contain! ${isSticky ? 'h-[50px]! md:h-[60px]!' : 'h-[90px]! md:h-[120px]!'}`}
                                 />
                             </a>
                         </div>
-                        <div className="!hidden lg:!flex !flex-1 !items-center !justify-end !gap-2 md:!gap-4">
+                        <div className="hidden! lg:flex! flex-1! items-center! justify-end! gap-2! md:gap-4!">
                             
                             {/* Search */}
-                            <div className="!relative" ref={searchRef}>
+                            <div className="relative!" ref={searchRef}>
                                 <button 
                                     onClick={toggleSearch} 
-                                    className={`!text-xl hover:!text-[#D4AF37] !transition-colors ${isSticky ? '!text-gray-800' : '!text-white'}`}
+                                    className={`text-xl! hover:text-[#D4AF37]! transition-colors! ${isSticky ? 'text-gray-800!' : 'text-white!'}`}
                                 >
                                     <i className={`fa ${isSearchOpen ? 'fa-times' : 'fa-search'}`}></i>
                                 </button>
                                 {/* Search Dropdown */}
-                                <div className={`!absolute !right-0 !top-full !mt-4 !w-[280px] md:!w-[350px] !bg-white !shadow-2xl !rounded-xl !border !border-gray-100 !transition-all !duration-300 !origin-top-right ${isSearchOpen ? '!opacity-100 !scale-100 !visible' : '!opacity-0 !scale-95 !invisible'}`}>
-                                    <div className="!p-4">
-                                        <form onSubmit={handleSearch} className="!relative">
+                                <div className={`absolute! right-0! top-full! mt-4! w-[280px] md:w-[350px]! bg-white! shadow-2xl! rounded-xl! border! border-gray-100! transition-all! duration-300! origin-top-right! ${isSearchOpen ? 'opacity-100! scale-100! visible!' : 'opacity-0! scale-95! invisible!'}`}>
+                                    <div className="p-4!">
+                                        <form onSubmit={handleSearch} className="relative!">
                                             <input 
                                                 type="text" 
                                                 placeholder="Search perfumes..." 
-                                                className="!w-full !pl-4 !pr-10 !py-2 !bg-gray-50 !border !border-gray-200 !rounded-full focus:!outline-none focus:!ring-2 focus:!ring-[#D4AF37] !text-sm"
+                                                className="w-full! pl-4! pr-10! py-2! bg-gray-50! border! border-gray-200! rounded-full! focus:outline-none! focus:ring-2! focus:ring-[#D4AF37]! text-sm!"
                                                 value={searchTerm}
                                                 onChange={(e) => setSearchTerm(e.target.value)}
                                             />
-                                            <button type="submit" className="!absolute !right-3 !top-1/2 !-translate-y-1/2 !text-gray-400 hover:!text-[#D4AF37]">
+                                            <button type="submit" className="absolute! right-3! top-1/2! -translate-y-1/2! text-gray-400! hover:text-[#D4AF37]!">
                                                 <i className="fa fa-arrow-right"></i>
                                             </button>
                                         </form>
                                         {showSuggestions && (
-                                            <div className="!mt-4 !max-h-[300px] !overflow-y-auto">
+                                            <div className="mt-4! max-h-[300px]! overflow-y-auto!">
                                                 {suggestions.map(p => (
-                                                    <a key={p.id} href={`/products/${p.slug}`} className="!flex !items-center !gap-3 !p-2 hover:!bg-gray-50 !rounded-lg !transition-colors !no-underline">
-                                                        <img src={p.images[0]} alt={p.name} className="!w-10 !h-10 !object-cover !rounded" />
+                                                    <a key={p.id} href={`/products/${p.slug}`} className="flex! items-center! gap-3! p-2! hover:bg-gray-50! rounded-lg! transition-colors! no-underline!">
+                                                        <img src={p.images[0]} alt={p.name} className="w-10! h-10! object-cover! rounded!" />
                                                         <div>
-                                                            <p className="!text-xs !font-bold !text-gray-800 !m-0">{p.name}</p>
-                                                            <p className="!text-[10px] !text-gray-500 !m-0">Rs. {p.variants[0].price}</p>
+                                                            <p className="text-xs! font-bold! text-gray-800! m-0!">{p.name}</p>
+                                                            <p className="text-[10px]! text-gray-500! m-0!">Rs. {p.variants[0].price}</p>
                                                         </div>
                                                     </a>
                                                 ))}
@@ -237,17 +237,17 @@ export default function NavBar() {
                             </div>
                             {/* Cart */}
                             <div className="header-cart" style={{ position: 'relative' }}>
-                                <a href="/cart" className={`!text-xl hover:!text-[#D4AF37] !transition-colors !relative ${isSticky ? '!text-gray-800' : '!text-white'}`}>
+                                <a href="/cart" className={`text-xl! hover:!text-[#D4AF37]! transition-colors! relative! ${isSticky ? 'text-gray-800!' : 'text-white!'}`}>
                                     <i className="fa fa-shopping-bag"></i>
                                     {cartCount > 0 && (
-                                        <span className="!absolute !-top-2 !-right-3 !bg-[#D4AF37] !text-white !text-[10px] !font-bold !w-4 !h-4 !rounded-full !flex !items-center !justify-center">
+                                        <span className="absolute! -top-2! -right-3! bg-[#D4AF37]! text-white! text-[10px]! font-bold! w-4! h-4! rounded-full! flex! items-center! justify-center!">
                                             {cartCount}
                                         </span>
                                     )}
                                 </a>
                                 <div className="header-cart-dropdown">
                                     {cartItems.length === 0 ? (
-                                        <div className="!text-center !p-3">
+                                        <div className="text-center! p-3!">
                                             <p>Your cart is empty.</p>
                                         </div>
                                     ) : (
@@ -328,10 +328,10 @@ export default function NavBar() {
                             </div>
                         </div>
                         {/* --- MOBILE: RIGHT SECTION (Hamburger Only) --- */}
-                        <div className="lg:!hidden !flex-1 !flex !items-center !justify-end">
+                        <div className="lg:hidden! flex-1! flex! items-center! justify-end!">
                             <button 
                                 onClick={toggleMobile}
-                                className={`!text-2xl !p-2 !transition-colors ${isSticky ? '!text-gray-800' : '!text-white'}`}
+                                className={`text-2xl! p-2! transition-colors! ${isSticky ? 'text-gray-800!' : 'text-white!'}`}
                             >
                                 <i className="fa fa-bars"></i>
                             </button>
@@ -342,43 +342,43 @@ export default function NavBar() {
 
             {/* Mobile Drawer Overlay */}
             <div 
-                className={`!fixed !inset-0 !bg-black/50 !z-[1001] !transition-opacity lg:!hidden ${isMobileOpen ? '!opacity-100 !visible' : '!opacity-0 !invisible'}`} 
+                className={`fixed! inset-0! bg-black/50! z-1001! transition-opacity! lg:hidden! ${isMobileOpen ? 'opacity-100! visible!' : 'opacity-0! invisible!'}`} 
                 onClick={toggleMobile}
             ></div>
 
             {/* Mobile Drawer */}
-            <div className={`!fixed !top-0 !right-0 !h-full !w-[280px] !bg-white !z-[1002] !transform !transition-transform !duration-300 lg:!hidden ${isMobileOpen ? '!translate-x-0' : '!translate-x-full'}`}>
+            <div className={`fixed! top-0! right-0! h-full! w-[280px]! bg-white! z-1002! transform! transition-transform! duration-300! lg:!hidden! ${isMobileOpen ? 'translate-x-0!' : 'translate-x-full!'}`}>
                 {/* Header */}
-                <div className="!flex !items-center !justify-between !p-4 !border-b">
-                    <img src="/celsius-logo.png" alt="logo" className="!h-10" />
-                    <button onClick={toggleMobile} className="!text-2xl !text-gray-600">
+                <div className="flex! items-center! justify-between! p-4! border-b!">
+                    <img src="/celsius-logo.png" alt="logo" className="h-10!" />
+                    <button onClick={toggleMobile} className="text-2xl! text-gray-600!">
                         <i className="fa fa-times"></i>
                     </button>
                 </div>
                 
                 {/* Search */}
-                <div className="!p-4 !border-b">
-                    <form onSubmit={handleSearch} className="!flex !gap-2">
+                <div className="p-4! border-b!">
+                    <form onSubmit={handleSearch} className="flex! gap-2!">
                         <input 
                             type="text"
                             placeholder="Search..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="!flex-1 !px-3 !py-2 !border !border-gray-200 !rounded !text-sm"
+                            className="flex-1! px-3! py-2! border! border-gray-200! rounded! text-sm!"
                         />
-                        <button type="submit" className="!px-3 !py-2 !bg-[#D4AF37] !text-white !rounded">
+                        <button type="submit" className="px-3! py-2! bg-[#D4AF37]! text-white! rounded!">
                             <i className="fa fa-search"></i>
                         </button>
                     </form>
                 </div>
                 
                 {/* Nav Links */}
-                <nav className="!p-4">
+                <nav className="p-4!">
                     {links.map((l) => (
                         <a 
                             key={l.label}
                             href={l.href}
-                            className={`!block !py-3 !text-sm !font-medium !border-b !border-gray-100 ${l.label === '7th Heaven Club' ? '!text-[#D4AF37]' : '!text-gray-700'}`}
+                            className={`block! py-3! text-sm! font-medium! border-b! border-gray-100! ${l.label === '7th Heaven Club' ? 'text-[#D4AF37]!' : 'text-gray-700!'}`}
                             onClick={toggleMobile}
                         >
                             {l.label}
@@ -387,20 +387,20 @@ export default function NavBar() {
                 </nav>
                 
                 {/* Account Links */}
-                <div className="!p-4 !border-t">
-                    <a href="/my-account" className="!flex !items-center !gap-3 !py-2 !text-sm !text-gray-700">
-                        <i className="fa fa-user"></i> My Account
+                <div className="p-4! border-t!">
+                    <a href="/my-account" className="flex! items-center! gap-3! py-2! text-sm! text-gray-700!">
+                        <i className="fa fa-user!"></i> My Account
                     </a>
-                    <a href="/wishlist" className="!flex !items-center !gap-3 !py-2 !text-sm !text-gray-700">
-                        <i className="fa fa-heart"></i> My Wishlist
+                    <a href="/wishlist" className="flex! items-center! gap-3! py-2! text-sm! text-gray-700!">
+                        <i className="fa fa-heart!"></i> My Wishlist
                     </a>
                     {user ? (
-                        <button onClick={handleLogout} className="!flex !items-center !gap-3 !py-2 !text-sm !text-red-500 !w-full">
-                            <i className="fa fa-sign-out"></i> Logout
+                        <button onClick={handleLogout} className="flex! items-center! gap-3! py-2! text-sm! text-red-500! w-full!">
+                            <i className="fa fa-sign-out!"></i> Logout
                         </button>
                     ) : (
-                        <a href="/login" className="!flex !items-center !gap-3 !py-2 !text-sm !font-bold !text-[#D4AF37]">
-                            <i className="fa fa-sign-in"></i> Sign In
+                        <a href="/login" className="flex! items-center! gap-3! py-2! text-sm! font-bold! text-[#D4AF37]!">
+                            <i className="fa fa-sign-in!"></i> Sign In
                         </a>
                     )}
                 </div>
