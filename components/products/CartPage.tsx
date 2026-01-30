@@ -82,8 +82,8 @@ const CartPageComponent: React.FC = () => {
                 <div className="container">
                     <div className="row">
                         <div className="col-12">
-                            {/* Cart Table */}
-                            <div className="cart-table table-responsive mb-30">
+                            {/* Desktop Cart Table */}
+                            <div className="cart-table table-responsive mb-30 d-none d-md-block">
                                 <table className="table">
                                     <thead>
                                         <tr>
@@ -136,6 +136,122 @@ const CartPageComponent: React.FC = () => {
                                         )}
                                     </tbody>
                                 </table>
+                            </div>
+
+                            {/* Mobile Cart Cards */}
+                            <div className="d-block d-md-none mb-30">
+                                {cartItems.length === 0 ? (
+                                    <div className="text-center p-4">
+                                        Your cart is empty. <Link href="/collections">Continue shopping</Link>
+                                    </div>
+                                ) : (
+                                    cartItems.map((item) => {
+                                        const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
+                                        const discount = item.discountPercentage || 0;
+                                        const currentPrice = price * (1 - discount / 100);
+
+                                        return (
+                                            <div 
+                                                key={item.id} 
+                                                style={{ 
+                                                    display: 'flex', 
+                                                    gap: '15px', 
+                                                    padding: '15px', 
+                                                    borderBottom: '1px solid #eee',
+                                                    position: 'relative'
+                                                }}
+                                            >
+                                                {/* Image */}
+                                                <Link href={`/products/${item.slug}`} style={{ flexShrink: 0 }}>
+                                                    <img
+                                                        src={item.images[0]}
+                                                        alt={item.name}
+                                                        style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px' }}
+                                                    />
+                                                </Link>
+                                                
+                                                {/* Product Info */}
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <Link 
+                                                        href={`/products/${item.slug}`} 
+                                                        style={{ 
+                                                            fontWeight: '600', 
+                                                            color: '#333', 
+                                                            textDecoration: 'none',
+                                                            display: 'block',
+                                                            marginBottom: '4px',
+                                                            fontSize: '14px'
+                                                        }}
+                                                    >
+                                                        {item.name}
+                                                    </Link>
+                                                    {item.selectedVariant && (
+                                                        <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#777' }}>
+                                                            Size: {item.selectedVariant.size}ml
+                                                        </p>
+                                                    )}
+                                                    <p style={{ margin: '0 0 8px 0', color: '#B6902E', fontWeight: '600', fontSize: '14px' }}>
+                                                        Rs.{currentPrice.toFixed(2)}
+                                                    </p>
+                                                    
+                                                    {/* Quantity Controls */}
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                        <div style={{ 
+                                                            display: 'flex', 
+                                                            alignItems: 'center', 
+                                                            border: '1px solid #ddd', 
+                                                            borderRadius: '4px'
+                                                        }}>
+                                                            <button 
+                                                                onClick={() => handleDecrement(item.id)}
+                                                                style={{ 
+                                                                    width: '30px', 
+                                                                    height: '30px', 
+                                                                    border: 'none', 
+                                                                    background: 'none',
+                                                                    cursor: 'pointer',
+                                                                    fontSize: '16px'
+                                                                }}
+                                                            >-</button>
+                                                            <span style={{ padding: '0 10px', fontSize: '14px' }}>{item.quantity}</span>
+                                                            <button 
+                                                                onClick={() => handleIncrement(item.id)}
+                                                                style={{ 
+                                                                    width: '30px', 
+                                                                    height: '30px', 
+                                                                    border: 'none', 
+                                                                    background: 'none',
+                                                                    cursor: 'pointer',
+                                                                    fontSize: '16px'
+                                                                }}
+                                                            >+</button>
+                                                        </div>
+                                                        <span style={{ fontSize: '13px', color: '#666' }}>
+                                                            = Rs.{(currentPrice * item.quantity).toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                
+                                                {/* Remove Button */}
+                                                <button
+                                                    onClick={() => handleRemove(item.id)}
+                                                    style={{ 
+                                                        position: 'absolute',
+                                                        top: '10px',
+                                                        right: '10px',
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        color: '#999',
+                                                        cursor: 'pointer',
+                                                        fontSize: '16px'
+                                                    }}
+                                                >
+                                                    <i className="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                        );
+                                    })
+                                )}
                             </div>
 
                             <div className="row">
