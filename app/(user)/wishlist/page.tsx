@@ -52,17 +52,21 @@ export default function WishlistPage() {
     };
 
     const handleAddToCart = (product: any) => {
+        const selectedVariant = product.variants?.[0] || null;
+        
         const cartProduct = {
             ...product,
-            variants: product.variants || []
+            variants: product.variants || [],
+            selectedVariant: selectedVariant,
+            stock: selectedVariant?.stock || 99
         };
+        
         addToCart(cartProduct, 1);
         toast.success('Added to cart');
     };
 
     return (
         <div id="main-wrapper">
-            {/* Page Banner Section Start */}
             <div 
                 className="page-banner-section section min-h-[30vh]! lg:min-h-[45vh]! flex! items-end! pb-[30px]! lg:pb-[40px]!" 
                 style={{ 
