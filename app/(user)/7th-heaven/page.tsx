@@ -343,11 +343,11 @@ function MarketingView() {
   return (
     <div className="bg-[#252525] min-h-screen text-white">
       {/* Hero */}
-      <div className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+      <div className="relative h-[80vh] flex items-center justify-center overflow-hidden pt-20! md:pt-40! lg:pt-20">
         <div className="absolute inset-0 bg-[url('/assets/images/hero/slider-1.jpg')] bg-cover bg-center opacity-40" />
         <div className="relative z-10 text-center px-4">
           <h1
-            className="text-5xl md:text-7xl font-serif mb-6 text-[#E6B422] font-bold"
+            className="text-3xl! md:text-5xl! font-serif! mb-6! text-[#E6B422]! font-bold!"
             style={{ fontFamily: '"Cormorant Garamond", serif' }}
           >
             7th Heaven Club
@@ -382,19 +382,19 @@ function MarketingView() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
           <div className="p-8 border border-white/10 rounded-xl hover:border-[#E6B422]/50 transition-colors">
             <div className="text-4xl mb-4">💎</div>
-            <h3 className="text-xl font-bold mb-2 text-[#E6B422]">Exclusive Rewards</h3>
+            <h3 className="text-xl font-bold mb-2 text-[#E6B422]!">Exclusive Rewards</h3>
             <p className="text-gray-400">Access limited edition fragrances reserved only for club members.</p>
           </div>
 
           <div className="p-8 border border-white/10 rounded-xl hover:border-[#E6B422]/50 transition-colors">
             <div className="text-4xl mb-4">🤝</div>
-            <h3 className="text-xl font-bold mb-2 text-[#E6B422]">Build Your Network</h3>
+            <h3 className="text-xl font-bold mb-2 text-[#E6B422]!">Build Your Network</h3>
             <p className="text-gray-400">Invite friends and grow your influence. Watch your empire expand in real-time.</p>
           </div>
 
           <div className="p-8 border border-white/10 rounded-xl hover:border-[#E6B422]/50 transition-colors">
             <div className="text-4xl mb-4">🎁</div>
-            <h3 className="text-xl font-bold mb-2 text-[#E6B422]">Luxury Gifts</h3>
+            <h3 className="text-xl font-bold mb-2 text-[#E6B422]!">Luxury Gifts</h3>
             <p className="text-gray-400">Complete Level 7 to unlock a curated luxury gift package from our founders.</p>
           </div>
         </div>
