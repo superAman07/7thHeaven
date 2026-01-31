@@ -261,6 +261,38 @@ model TicketResponse {
   createdAt DateTime @default(now())
 }
 
+model SiteSettings {
+  id              String   @id @default("site-settings")
+  
+  companyName     String   @default("Celsius")
+  tagline         String?
+  
+  phone           String?
+  email           String?
+  whatsapp        String?
+  
+  address         String?
+  city            String?
+  state           String?
+  country         String   @default("India")
+  pincode         String?
+  
+  businessHours   String?
+  
+  instagram       String?
+  facebook        String?
+  twitter         String?
+  youtube         String?
+  
+  aboutTitle      String?
+  aboutContent    String?  @db.Text
+  aboutImage      String?
+  
+  footerText      String?
+  
+  updatedAt       DateTime @updatedAt
+}
+
 enum GenderTags {
   Male
   Female

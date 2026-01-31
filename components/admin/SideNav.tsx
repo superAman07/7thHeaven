@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, Bell, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, Bell, MessageSquare, Settings } from 'lucide-react';
 
 const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -15,6 +15,7 @@ const navItems = [
   { href: '/admin/support-tickets', label: 'Support Tickets', icon: MessageSquare },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell },
   { href: '/admin/storefront', label: 'Store Front Page', icon: LayoutDashboard },
+  { href: '/admin/site-settings', label: 'Site Settings', icon: Settings },
 ];
 
 interface NavLinkProps {

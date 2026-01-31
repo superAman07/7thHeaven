@@ -5,6 +5,18 @@ import Link from 'next/link';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+interface SiteSettings {
+    companyName: string;
+    phone: string;
+    email: string;
+    whatsapp: string;
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+    businessHours: string;
+}
+
 interface TicketResponse {
     id: string;
     message: string;
@@ -38,6 +50,7 @@ export default function ContactPage() {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
+    const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
 
     // Form state
     const [subject, setSubject] = useState('');
@@ -52,6 +65,11 @@ export default function ContactPage() {
         
         const init = async () => {
             try {
+                const settingsRes = await axios.get('/api/v1/site-settings');
+                if (settingsRes.data.success && isMounted) {
+                    setSiteSettings(settingsRes.data.data);
+                }
+
                 const res = await axios.get('/api/v1/auth/me');
                 if (!isMounted) return;
                 if (res.data.success) {
@@ -134,6 +152,14 @@ export default function ContactPage() {
         });
     };
 
+    // Get display values with fallbacks
+    const displayLocation = siteSettings?.city && siteSettings?.state 
+        ? `${siteSettings.city}, ${siteSettings.state}, ${siteSettings.country || 'India'}`
+        : 'Mumbai, Maharashtra, India';
+    const displayPhone = siteSettings?.phone || '+91 xxxxx xxxxx';
+    const displayEmail = siteSettings?.email || 'support@celsius.com';
+    const displayHours = siteSettings?.businessHours || 'Mon - Sat: 10AM - 7PM';
+
     if (loading) {
         return (
             <div className="min-h-screen flex! items-center! justify-center! bg-gray-50">
@@ -173,7 +199,7 @@ export default function ContactPage() {
             <div className="contact-section section" style={{ padding: '60px 0' }}>
                 <div className="container">
                     <div className="row">
-                        {/* Contact Info - Mobile: Full Width, Desktop: Side */}
+                        {/* Contact Info - Dynamic Data */}
                         <div className="col-lg-4 col-12" style={{ marginBottom: '30px' }}>
                             <div className="contact-info" style={{ background: '#fff', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(45,42,38,0.08)' }}>
                                 <h3 style={{ color: '#2D2A26', marginBottom: '20px', fontSize: '20px', fontWeight: '600' }}>Get In Touch</h3>
@@ -184,7 +210,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Our Location</h5>
-                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>Mumbai, Maharashtra, India</p>
+                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{displayLocation}</p>
                                     </div>
                                 </div>
 
@@ -194,7 +220,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Phone</h5>
-                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>+91 xxxxx xxxxx</p>
+                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{displayPhone}</p>
                                     </div>
                                 </div>
 
@@ -204,7 +230,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Email</h5>
-                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>jchindia@gmail.com</p>
+                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{displayEmail}</p>
                                     </div>
                                 </div>
 
@@ -214,13 +240,13 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Hours</h5>
-                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>Mon - Sat: 10AM - 7PM</p>
+                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{displayHours}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Contact Form */}
+                        {/* Contact Form - Same as before */}
                         <div className="col-lg-8 col-12">
                             <div style={{ background: '#fff', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(45,42,38,0.08)' }}>
                                 <h3 style={{ marginBottom: '8px', color: '#2D2A26', fontSize: '20px', fontWeight: '600' }}>Submit a Support Ticket</h3>
@@ -328,7 +354,7 @@ export default function ContactPage() {
                         </div>
                     </div>
 
-                    {/* User's Tickets Section - Compact */}
+                    {/* User's Tickets Section - Same as before */}
                     {isLoggedIn && tickets.length > 0 && (
                         <div className="row" style={{ marginTop: '40px' }}>
                             <div className="col-12">
@@ -339,7 +365,6 @@ export default function ContactPage() {
                                         </h4>
                                     </div>
                                     
-                                    {/* Scrollable Tickets Container - Max 3 visible */}
                                     <div style={{ maxHeight: '280px', overflowY: 'auto' }}>
                                         {tickets.map(ticket => (
                                             <div 
@@ -351,7 +376,6 @@ export default function ContactPage() {
                                                     overflow: 'hidden'
                                                 }}
                                             >
-                                                {/* Ticket Header - Clickable */}
                                                 <div 
                                                     onClick={() => setExpandedTicket(expandedTicket === ticket.id ? null : ticket.id)}
                                                     style={{ 
@@ -393,7 +417,6 @@ export default function ContactPage() {
                                                     </div>
                                                 </div>
 
-                                                {/* Expanded Details */}
                                                 {expandedTicket === ticket.id && (
                                                     <div style={{ padding: '12px 15px', borderTop: '1px solid #E5DFD5', background: '#fafafa', fontSize: '13px' }}>
                                                         <p style={{ margin: '0 0 10px', color: '#5C5550' }}><strong>Your message:</strong> {ticket.message}</p>
