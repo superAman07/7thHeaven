@@ -123,6 +123,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       }
 
       return product;
+    }, {
+      maxWait: 10000,
+      timeout: 30000,
     });
 
     const finalProduct = await prisma.product.findUnique({

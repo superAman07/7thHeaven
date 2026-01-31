@@ -1,7 +1,7 @@
 'use client'
 
 import axios from 'axios';
-import { ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Search, Trash2, X, AlertTriangle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ImagePlus, Loader2, Pencil, Plus, Search, Trash2, X, AlertTriangle } from 'lucide-react';
 import React, { useState, useEffect, FormEvent, useCallback, useRef } from 'react';
 import { useDebounce } from 'use-debounce';
 
@@ -140,6 +140,7 @@ export default function ProductsPage() {
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
   const [filters, setFilters] = useState({ category: '', status: '', gender: '' });
   const [currentPage, setCurrentPage] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const itemsPerPage = 7;
 
   const getStockStatus = (variants: ProductVariant[]) => {
@@ -243,6 +244,7 @@ export default function ProductsPage() {
 
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const isEditing = !!currentProduct;
     const url = isEditing ? `/api/v1/admin/products/${currentProduct.id}` : '/api/v1/admin/products';
     const method = isEditing ? 'put' : 'post';
@@ -274,6 +276,8 @@ export default function ProductsPage() {
       const message = errorData?.message || 'An unknown error occurred.';
       console.error(errorData);
       alert(`Error: ${message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -354,15 +358,12 @@ export default function ProductsPage() {
     return minPrice === maxPrice ? `₹${minPrice.toFixed(2)}` : `₹${minPrice.toFixed(2)} - ₹${maxPrice.toFixed(2)}`;
   };
 
-  if (isLoading) return <div className="text-center p-8">Loading products...</div>;
-  if (error) return <div className="text-center p-8 text-red-500">{error}</div>;
-
   return (
     <>
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
           <h1 className="text-2xl font-bold text-gray-800">Products</h1>
-          <button onClick={openPanelForNew} className="flex items-center justify-center bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 transition-colors cursor-pointer">
+          <button onClick={openPanelForNew} className="flex! items-center justify-center bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 transition-colors cursor-pointer">
             <Plus className="w-4 h-4 mr-2" /> Add Product
           </button>
         </div>
@@ -424,10 +425,26 @@ export default function ProductsPage() {
               </tr>
             </thead>
             <tbody>
-              {isLoading && <tr><td colSpan={6} className="text-center py-8 text-gray-500">Fetching data...</td></tr>}
-              {!isLoading && products.length > 0 ? products.map(product => {
-                // Determine row style based on stock
-              const status = getStockStatus(product.variants);
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-12">
+                    <div className="flex items-center justify-center gap-2 text-gray-500">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Loading products...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-8 text-red-500">{error}</td>
+                </tr>
+              ) : products.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-8 text-gray-500">No products found.</td>
+                </tr>
+              ) : (
+                products.map(product => {
+                const status = getStockStatus(product.variants);
                 const rowClass = status === 'critical' 
                     ? 'bg-red-50 border-l-4 border-l-red-500' 
                     : status === 'low' 
@@ -435,32 +452,32 @@ export default function ProductsPage() {
                         : 'bg-white border-b hover:bg-gray-50';
 
                 return (
-                <tr key={product.id} className={`${rowClass} transition-colors`}>
-                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                    <div className="flex items-center gap-3">
-                      <img src={product.images[0]} alt={product.name} className="w-10 h-10 object-cover rounded-md" />
-                      <div className="flex flex-col">
-                        <span>{product.name}</span>
-                        {status === 'critical' && <span className="text-[10px] text-red-600 font-bold uppercase">Out of Stock</span>}
-                        {status === 'low' && <span className="text-[10px] text-yellow-700 font-bold uppercase">Low Stock</span>}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">{product.category.name}</td>
-                  <td className="px-6 py-4">{formatPriceRange(product.variants)}</td>
-                  <td className="px-6 py-4">
-                    <StockCell variants={product.variants} />
-                  </td>
-                  <td className="px-6 py-4">{new Date(product.createdAt).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end space-x-2">
-                      <button onClick={() => openPanelForEdit(product)} className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 hover:text-blue-600"><Pencil className="w-4 h-4" /></button>
-                      <button onClick={() => handleDelete(product.id)} className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
-                    </div>
-                  </td>
-                </tr>
-              )}) : !isLoading && (
-                <tr><td colSpan={6} className="text-center py-8 text-gray-500">No products found.</td></tr>
+                    <tr key={product.id} className={`${rowClass} transition-colors`}>
+                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <img src={product.images[0]} alt={product.name} className="w-10 h-10 object-cover rounded-md" />
+                          <div className="flex flex-col">
+                            <span>{product.name}</span>
+                            {status === 'critical' && <span className="text-[10px] text-red-600 font-bold uppercase">Out of Stock</span>}
+                            {status === 'low' && <span className="text-[10px] text-yellow-700 font-bold uppercase">Low Stock</span>}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">{product.category.name}</td>
+                      <td className="px-6 py-4">{formatPriceRange(product.variants)}</td>
+                      <td className="px-6 py-4">
+                        <StockCell variants={product.variants} />
+                      </td>
+                      <td className="px-6 py-4">{new Date(product.createdAt).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end space-x-2">
+                          <button onClick={() => openPanelForEdit(product)} className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 hover:text-blue-600"><Pencil className="w-4 h-4" /></button>
+                          <button onClick={() => handleDelete(product.id)} className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -606,7 +623,18 @@ export default function ProductsPage() {
           </div>
           <div className="flex justify-end p-4 border-t bg-gray-50 space-x-2">
             <button type="button" onClick={closePanel} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer">Cancel</button>
-            <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-gray-800 border border-transparent rounded-lg shadow-sm hover:bg-gray-700 cursor-pointer">Save Product</button>
+            <button 
+              type="submit"
+              disabled={isUploading || isSubmitting}
+              className="px-4 py-2 text-sm font-medium text-white bg-gray-800 border border-transparent rounded-lg shadow-sm hover:bg-gray-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Saving...
+                </>
+              ) : 'Save Product'}
+            </button>
           </div>
         </form>
       </div>
