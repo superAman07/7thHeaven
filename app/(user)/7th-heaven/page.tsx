@@ -149,7 +149,7 @@ export default function SeventhHeavenPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="w-full bg-[#1a1a1a] pt-28 pb-32 relative">
+      <div className="w-full bg-[#1a1a1a] pt-36 md:pt-44 pb-32 md:pb-36 relative">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-white font-serif text-4xl mb-2">7th Heaven Club</h1>
           <p className="text-[#ddb040] text-lg tracking-wider uppercase">Your Empire Dashboard</p>
