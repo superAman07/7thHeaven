@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useRef } from 'react';
+import { ImagePlus, X } from 'lucide-react';
 
 interface SiteSettings {
     companyName: string;
@@ -54,6 +56,8 @@ export default function SiteSettingsPage() {
     const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState<'contact' | 'about' | 'social' | 'footer'>('contact');
     const [hasFetched, setHasFetched] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const fetchSettings = useCallback(async () => {
         if (hasFetched) return;
@@ -86,6 +90,38 @@ export default function SiteSettingsPage() {
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        setIsUploading(true);
+        const file = files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await axios.post('/api/v1/admin/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            if (response.data.success) {
+                handleChange('aboutImage', response.data.data.url);
+                toast.success('Image uploaded successfully!');
+            }
+        } catch (err) {
+            console.error('Image upload failed:', err);
+            toast.error('Image upload failed. Please try again.');
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    };
+
+    const removeImage = () => {
+        handleChange('aboutImage', '');
     };
 
     const handleChange = (field: keyof SiteSettings, value: string) => {
@@ -182,12 +218,50 @@ export default function SiteSettingsPage() {
                                 placeholder="Tell your brand story..."
                             />
                         </div>
-                        <InputField label="About Image URL" value={settings.aboutImage} onChange={v => handleChange('aboutImage', v)} placeholder="https://..." />
-                        {settings.aboutImage && (
-                            <div className="mt-2!">
-                                <img src={settings.aboutImage} alt="About preview" className="h-40! object-cover! rounded-lg!" />
-                            </div>
-                        )}
+                        
+                        {/* Image Upload Section */}
+                        <div>
+                            <label className="block! text-sm! font-medium! text-gray-700! mb-2!">About Page Image</label>
+                            
+                            {settings.aboutImage ? (
+                                <div className="relative! inline-block!">
+                                    <img 
+                                        src={settings.aboutImage} 
+                                        alt="About preview" 
+                                        className="h-48! w-72! object-cover! rounded-lg! border! border-gray-200!" 
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={removeImage}
+                                        className="absolute! -top-2! -right-2! bg-red-500! text-white! rounded-full! p-1! hover:bg-red-600!"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="w-72! h-48! border-2! border-dashed! border-gray-300! rounded-lg! flex! flex-col! items-center! justify-center! cursor-pointer! hover:border-amber-500! hover:bg-amber-50! transition-all!"
+                                >
+                                    {isUploading ? (
+                                        <div className="animate-spin! rounded-full! h-8! w-8! border-b-2! border-amber-600!"></div>
+                                    ) : (
+                                        <>
+                                            <ImagePlus size={32} className="text-gray-400! mb-2!" />
+                                            <span className="text-sm! text-gray-500!">Click to upload image</span>
+                                        </>
+                                    )}
+                                </div>
+                            )}
+                            
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleImageUpload}
+                                accept="image/*"
+                                className="hidden!"
+                            />
+                        </div>
                     </div>
                 </div>
             )}
