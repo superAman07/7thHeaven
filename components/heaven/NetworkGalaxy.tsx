@@ -268,6 +268,26 @@ const NetworkGalaxy = ({ isOpen, onClose, data }: { isOpen: boolean, onClose: ()
         dragDistance.current = 0;
     }, []);
 
+    useEffect(() => {
+        if (isOpen) {
+            const navbar = document.getElementById('main-navbar');
+            
+            if (navbar) {
+                navbar.style.display = 'none';
+            }
+        } else {
+            const navbar = document.getElementById('main-navbar');
+            if (navbar) {
+                navbar.style.display = '';
+            }
+        }
+        
+        return () => {
+            const navbar = document.getElementById('main-navbar');
+            if (navbar) navbar.style.display = '';
+        };
+    }, [isOpen]);
+
     const handleMove = useCallback((clientX: number, clientY: number) => {
         if (!isDragging) return;
         const dx = clientX - lastMousePos.current.x;

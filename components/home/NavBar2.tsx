@@ -154,6 +154,7 @@ export default function NavBar() {
         <>
             {/* Header Main Container */}
             <header 
+                id="main-navbar"
                 className={`fixed! top-0! left-0! right-0! z-1000! transition-all! duration-500! ease-in-out! ${
                     isSticky 
                         ? 'bg-white/80! backdrop-blur-xl! shadow-lg! h-[80px]!' 
