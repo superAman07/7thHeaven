@@ -652,8 +652,13 @@ export default function AuthPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <div className="w-full max-w-md mx-auto">
+        <div 
+            className="min-h-screen flex! items-start! md:items-center! justify-center! p-4! pt-28! md:pt-0!"
+            style={{ 
+                background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)',
+            }}
+        >
+            <div className="w-full max-w-md mx-auto mt-30!">
                 <div className="bg-white border border-gray-200 rounded-2xl shadow-2xl p-8">
                     {error && (
                         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg text-sm animate-fade-in">
