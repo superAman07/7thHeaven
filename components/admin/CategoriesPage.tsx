@@ -3,7 +3,6 @@
 import { Pencil, Plus, Trash2, X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import React, { useState, useEffect, FormEvent } from 'react';
 
-// Define the type for a category
 interface Category {
   id: string;
   name: string;
@@ -18,14 +17,13 @@ const CategoriesPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // State for the form
   const [currentCategory, setCurrentCategory] = useState<Partial<Category> | null>(null);
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [image, setImage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch categories from the API
   const fetchCategories = async () => {
     setIsLoading(true);
     setError(null);
@@ -51,7 +49,6 @@ const CategoriesPage: React.FC = () => {
     fetchCategories();
   }, []);
 
-  // Effect to prevent body scroll when the panel is open
   useEffect(() => {
     if (isPanelOpen) {
       document.body.style.overflow = 'hidden';
@@ -112,6 +109,7 @@ const CategoriesPage: React.FC = () => {
 
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const isEditing = !!currentCategory;
     const url = isEditing ? `/api/v1/admin/categories/${currentCategory.id}` : '/api/v1/admin/categories';
     const method = isEditing ? 'PUT' : 'POST';
@@ -125,13 +123,15 @@ const CategoriesPage: React.FC = () => {
 
       const data = await response.json();
       if (data.success) {
-        fetchCategories(); // Re-fetch to show the new/updated data
+        fetchCategories();
         closePanel();
       } else {
         alert(`Error: ${data.error.message || 'An unknown error occurred.'}`);
       }
     } catch (err) {
       alert('An error occurred while saving the category.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -160,7 +160,7 @@ const CategoriesPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-800">Product Categories</h1>
           <button
             onClick={openPanelForNew}
-            className="flex items-center justify-center bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 transition-colors cursor-pointer"
+            className="flex! items-center! justify-center! bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 transition-colors cursor-pointer"
             aria-haspopup="dialog"
             aria-expanded={isPanelOpen}
           >
@@ -311,10 +311,15 @@ const CategoriesPage: React.FC = () => {
               </button>
               <button 
                 type="submit"
-                disabled={isUploading}
-                className="px-4 py-2 text-sm font-medium text-white bg-gray-800 border border-transparent rounded-lg shadow-sm hover:bg-gray-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isUploading || isSubmitting}
+                className="px-4 py-2 text-sm font-medium text-white bg-gray-800 border border-transparent rounded-lg shadow-sm hover:bg-gray-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                {isUploading ? 'Uploading...' : 'Save Category'}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : isUploading ? 'Uploading...' : 'Save Category'}
               </button>
             </div>
           </form>
