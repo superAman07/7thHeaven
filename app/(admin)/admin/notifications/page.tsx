@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Send, Bell, Users, Trash2, RefreshCw, Search, History, Megaphone } from 'lucide-react';
+import { Send, Bell, Users, Trash2, RefreshCw, Search, History, Megaphone, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface NotificationHistory {
@@ -161,7 +161,7 @@ export default function AdminNotificationsPage() {
                                 disabled={sending}
                                 className="w-full bg-[#E6B422] text-white py-3 rounded-lg font-bold hover:bg-[#b8952b] transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#E6B422]/20 before:content-none after:content-none"
                             >
-                                {sending ? 'Sending...' : <><Send className="w-4 h-4" /> Send Now</>}
+                                {sending ? <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</> : <><Send className="w-4 h-4" /> Send Now</>}
                             </button>
                         </form>
                     </div>
@@ -199,7 +199,10 @@ export default function AdminNotificationsPage() {
 
                         <div className="divide-y max-h-[600px] overflow-y-auto">
                             {loadingHistory ? (
-                                <div className="p-8 text-center text-gray-500">Loading history...</div>
+                                <div className="p-8 text-center text-gray-500 flex items-center justify-center gap-2">
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Loading history...
+                                </div>
                             ) : history.length === 0 ? (
                                 <div className="p-8 text-center text-gray-500">No notifications found.</div>
                             ) : (
