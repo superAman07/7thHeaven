@@ -5,14 +5,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, Bell, MessageSquare, Settings } from 'lucide-react';
 
-const getNavItems = (newOrdersCount: number) => [
+const getNavItems = (newOrdersCount: number, openTicketsCount: number) => [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/categories', label: 'Categories', icon: Tags },
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart, badgeCount: newOrdersCount },
   { href: '/admin/customers', label: 'Customers', icon: Users },
   { href: '/admin/network', label: 'Network Settings', icon: Share2 },
-  { href: '/admin/support-tickets', label: 'Support Tickets', icon: MessageSquare },
+  { href: '/admin/support-tickets', label: 'Support Tickets', icon: MessageSquare, badgeCount: openTicketsCount },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell },
   { href: '/admin/storefront', label: 'Store Front Page', icon: LayoutDashboard },
   { href: '/admin/site-settings', label: 'Site Settings', icon: Settings },
@@ -56,22 +56,31 @@ interface SideNavProps {
 const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
 
   const [newOrdersCount, setNewOrdersCount] = useState(0);
+  const [openTicketsCount, setOpenTicketsCount] = useState(0);
+
   useEffect(() => {
-    const fetchOrderCounts = async () => {
+    const fetchCounts = async () => {
       try {
-        const res = await fetch('/api/v1/admin/orders?limit=1');
-        const data = await res.json();
-        if (data.meta?.newOrdersCount) {
-          setNewOrdersCount(data.meta.newOrdersCount);
+        // Fetch order counts
+        const ordersRes = await fetch('/api/v1/admin/orders?limit=1');
+        const ordersData = await ordersRes.json();
+        if (ordersData.meta?.newOrdersCount) {
+          setNewOrdersCount(ordersData.meta.newOrdersCount);
+        }
+
+        // Fetch open tickets count
+        const ticketsRes = await fetch('/api/v1/admin/tickets?status=OPEN');
+        const ticketsData = await ticketsRes.json();
+        if (ticketsData.success) {
+          setOpenTicketsCount(ticketsData.tickets?.length || 0);
         }
       } catch (err) {
-        console.error('Failed to fetch order counts');
+        console.error('Failed to fetch counts');
       }
     };
     
-    fetchOrderCounts();
-    // Refresh every 60 seconds
-    const interval = setInterval(fetchOrderCounts, 60000);
+    fetchCounts();
+    const interval = setInterval(fetchCounts, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -97,7 +106,7 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
 
         {/* Navigation Links */}
         <div className="flex! flex-col! flex-1! overflow-y-auto! custom-scrollbar! gap-0.5!">
-          {getNavItems(newOrdersCount).map((item) => (
+          {getNavItems(newOrdersCount, openTicketsCount).map((item) => (
             <NavLink key={item.href} {...item} />
           ))}
         </div>

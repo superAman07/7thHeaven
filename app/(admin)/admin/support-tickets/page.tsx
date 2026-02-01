@@ -49,6 +49,7 @@ export default function AdminSupportTicketsPage() {
     const [responseText, setResponseText] = useState('');
     const [sending, setSending] = useState(false);
     const [statusFilter, setStatusFilter] = useState<string>('');
+    const [updatingStatus, setUpdatingStatus] = useState(false);
 
     useEffect(() => {
         fetchTickets();
@@ -102,6 +103,7 @@ export default function AdminSupportTicketsPage() {
     };
 
     const handleStatusChange = async (ticketId: string, newStatus: string) => {
+        setUpdatingStatus(true);
         try {
             const res = await axios.put(`/api/v1/admin/tickets/${ticketId}`, { status: newStatus });
             if (res.data.success) {
@@ -115,6 +117,8 @@ export default function AdminSupportTicketsPage() {
             }
         } catch (err: any) {
             toast.error(err.response?.data?.error || 'Failed to update status');
+        } finally {
+            setUpdatingStatus(false);
         }
     };
 
@@ -295,28 +299,32 @@ export default function AdminSupportTicketsPage() {
                             <span style={{ fontSize: '13px', color: '#666' }}>Status:</span>
                             <button
                                 onClick={() => handleStatusChange(selectedTicket.id, 'OPEN')}
+                                disabled={updatingStatus}
                                 style={{ 
                                     padding: '5px 12px', 
                                     borderRadius: '5px', 
                                     border: 'none', 
-                                    cursor: 'pointer',
+                                    cursor: updatingStatus ? 'not-allowed' : 'pointer',
                                     background: selectedTicket.status === 'OPEN' ? '#28a745' : '#e0e0e0',
                                     color: selectedTicket.status === 'OPEN' ? 'white' : '#666',
-                                    fontSize: '12px'
+                                    fontSize: '12px',
+                                    opacity: updatingStatus ? 0.6 : 1
                                 }}
-                            >Open</button>
+                            >{updatingStatus ? '...' : 'Open'}</button>
                             <button
                                 onClick={() => handleStatusChange(selectedTicket.id, 'CLOSED')}
+                                disabled={updatingStatus}
                                 style={{ 
                                     padding: '5px 12px', 
                                     borderRadius: '5px', 
                                     border: 'none', 
-                                    cursor: 'pointer',
+                                    cursor: updatingStatus ? 'not-allowed' : 'pointer',
                                     background: selectedTicket.status === 'CLOSED' ? '#6c757d' : '#e0e0e0',
                                     color: selectedTicket.status === 'CLOSED' ? 'white' : '#666',
-                                    fontSize: '12px'
+                                    fontSize: '12px',
+                                    opacity: updatingStatus ? 0.6 : 1
                                 }}
-                            >Closed</button>
+                            >{updatingStatus ? '...' : 'Closed'}</button>
                         </div>
 
                         {/* Messages */}
