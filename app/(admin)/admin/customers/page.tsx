@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, User, Shield, Zap, Mail, Network, TreeDeciduous, Send, Smartphone, X, Package, MapPin, Ban, CheckCircle } from 'lucide-react';
+import { Search, User, Shield, Zap, Mail, Network, TreeDeciduous, Send, Smartphone, X, Package, MapPin, Ban, CheckCircle, Loader2 } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 import NetworkGalaxy, { NetworkNode } from '@/components/heaven/NetworkGalaxy'; 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -45,6 +45,7 @@ export default function CustomersPage() {
   const [showNetworkModal, setShowNetworkModal] = useState(false);
   const [networkData, setNetworkData] = useState<NetworkNode | null>(null);
   const [loadingNetwork, setLoadingNetwork] = useState(false);
+  const [blockingUserId, setBlockingUserId] = useState<string | null>(null);
 
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [messageTarget, setMessageTarget] = useState<{ids: string[], name: string} | null>(null);
@@ -108,6 +109,7 @@ export default function CustomersPage() {
   };
 
   const handleToggleBlock = async (userId: string, currentlyBlocked: boolean) => {
+    setBlockingUserId(userId);
     try {
       const res = await axios.patch(`/api/v1/admin/customers/${userId}`, {
         isBlocked: !currentlyBlocked
@@ -119,6 +121,8 @@ export default function CustomersPage() {
     } catch (error) {
       console.error(error);
       toast.error('Failed to update user status');
+    } finally {
+      setBlockingUserId(null);
     }
   };
 
@@ -191,7 +195,14 @@ export default function CustomersPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                     {loading ? (
-                        <tr><td colSpan={6} className="text-center py-10">Loading...</td></tr>
+                        <tr>
+                            <td colSpan={6} className="text-center py-12">
+                                <div className="flex items-center justify-center gap-2 text-gray-500">
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    <span>Loading citizens...</span>
+                                </div>
+                            </td>
+                        </tr>
                     ) : filteredCustomers.map((customer) => (
                         <tr key={customer.id} className="hover:bg-gray-50/50 transition-colors cursor-pointer group" onClick={() => setSelectedProfile(customer)}>
                             <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
@@ -234,11 +245,18 @@ export default function CustomersPage() {
                             </td>
                             <td className="px-6 py-4 text-center">
                                 <button 
-                                    onClick={(e) => { e.stopPropagation(); handleOpenNetwork(customer); }}
-                                    className="group! relative! inline-flex! items-center! justify-center! px-3! py-1! rounded-full! bg-blue-50! text-blue-600! hover:bg-blue-100! transition-all! border! border-blue-100! font-bold! text-xs!"
+                                    onClick={(e) => { e.stopPropagation(); handleToggleBlock(customer.id, customer.isBlocked); }}
+                                    disabled={blockingUserId === customer.id}
+                                    className={`p-2 rounded-full transition-colors disabled:opacity-50 ${customer.isBlocked ? 'text-green-600 hover:bg-green-50' : 'text-red-400 hover:bg-red-50 hover:text-red-600'}`}
+                                    title={customer.isBlocked ? 'Unblock User' : 'Block User'}
                                 >
-                                    <TreeDeciduous size={14} className="mr-1.5" />
-                                    {customer.networkSize || 0}
+                                    {blockingUserId === customer.id ? (
+                                        <Loader2 size={18} className="animate-spin" />
+                                    ) : customer.isBlocked ? (
+                                        <CheckCircle size={18} />
+                                    ) : (
+                                        <Ban size={18} />
+                                    )}
                                 </button>
                             </td>
                             <td className="px-6 py-4 font-mono font-bold text-gray-800 text-xs">
