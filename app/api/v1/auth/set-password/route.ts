@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
+import { sendWelcomeEmail } from '@/lib/email';
 
 const setPasswordSchema = z.object({
   verificationToken: z.string(),
@@ -62,6 +63,14 @@ export async function POST(request: NextRequest) {
         ...(referrerId && !currentUser?.referrerId ? { referrerId } : {}),
       },
     });
+
+    if (user.email) {
+      try {
+        await sendWelcomeEmail(user.email, user.fullName);
+      } catch (emailError) {
+        console.error("Failed to send welcome email:", emailError);
+      }
+    }
 
     const sessionToken = jwt.sign(
       { userId: user.id, phone: user.phone, fullName: user.fullName, email: user.email },

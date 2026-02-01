@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { sendAccountStatusUpdate } from '@/lib/email';
 
 export async function PATCH(
   req: NextRequest,
@@ -13,6 +14,14 @@ export async function PATCH(
       where: { id },
       data: { isBlocked: body.isBlocked },
     });
+
+    if (updatedUser.email) {
+        try {
+            await sendAccountStatusUpdate(updatedUser.email, updatedUser.fullName, body.isBlocked);
+        } catch (emailError) {
+            console.error("Failed to send status email:", emailError);
+        }
+    }
 
     return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {

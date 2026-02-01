@@ -270,3 +270,39 @@ export async function sendTicketResponseEmail(
         html
     });
 }
+
+export async function sendAccountStatusUpdate(email: string, name: string, isBlocked: boolean) {
+    const statusText = isBlocked ? 'Suspended' : 'Reactivated';
+    const color = isBlocked ? '#ef4444' : '#22c55e';
+    const emoji = isBlocked ? '⛔' : '✅';
+    
+    const message = isBlocked 
+        ? 'Your account has been suspended due to policy violations or security concerns. You will not be able to login or place orders.'
+        : 'Good news! Your account has been reactivated. You can now login and access all features.';
+
+    const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9; padding: 20px;">
+      <div style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+        <h1 style="color: #ddb040; margin: 0; font-size: 28px;">Celsius</h1>
+        <p style="color: #fff; margin: 10px 0 0;">Account Status Update</p>
+      </div>
+      <div style="background: #fff; padding: 30px; border-radius: 0 0 10px 10px;">
+        <h2 style="color: #333; margin-top: 0;">Hi ${name},</h2>
+        
+        <div style="background: ${isBlocked ? '#fee2e2' : '#dcfce7'}; color: ${isBlocked ? '#991b1b' : '#166534'}; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0;">
+          <span style="font-size: 40px;">${emoji}</span>
+          <h3 style="margin: 10px 0 0; font-size: 24px;">Account ${statusText}</h3>
+        </div>
+        
+        <p style="color: #666; font-size: 16px; line-height: 1.6;">${message}</p>
+        
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="https://main.d28eoqxdlhl7na.amplifyapp.com/contact-us" style="background: #ddb040; color: #000; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Contact Support</a>
+        </div>
+      </div>
+      <p style="text-align: center; color: #999; font-size: 12px; margin-top: 20px;">© 2026 Celsius. All rights reserved.</p>
+    </div>
+  `;
+
+    return sendEmail({ to: email, subject: `Account Status Update - Celsius`, html });
+}
