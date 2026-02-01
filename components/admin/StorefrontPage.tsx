@@ -261,7 +261,7 @@ export default function StorefrontPage() {
                                         className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4 group transition-all hover:shadow-md hover:border-[#E6B422]/30"
                                     >
                                         {/* Order Badge */}
-                                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-50 text-gray-900 font-black flex items-center justify-center text-lg border border-gray-100">
+                                        <div className="shrink-0 w-10 h-10 rounded-lg bg-gray-50 text-gray-900 font-black flex items-center justify-center text-lg border border-gray-100">
                                             {index + 1}
                                         </div>
 
