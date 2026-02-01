@@ -18,6 +18,9 @@ export async function GET(req: NextRequest) {
         if (status === 'REFUND_PENDING') {
             where.status = 'CANCELLED';
             where.paymentStatus = 'PAID';
+        } else if (status === 'NEW_ORDERS') {
+            where.status = 'PENDING';
+            where.paymentStatus = 'PAID';
         } else if (status) {
             where.status = status;
         }
@@ -32,7 +35,7 @@ export async function GET(req: NextRequest) {
         }
 
         // Get orders, total count, AND special Refund Pending Count
-        const [orders, total, refundPendingCount] = await Promise.all([
+        const [orders, total, refundPendingCount, newOrdersCount] = await Promise.all([
             prisma.order.findMany({
                 where,
                 include: {
@@ -55,6 +58,12 @@ export async function GET(req: NextRequest) {
                     status: 'CANCELLED',
                     paymentStatus: 'PAID'
                 }
+            }),
+            prisma.order.count({
+                where: {
+                    status: 'PENDING',
+                    paymentStatus: 'PAID'
+                }
             })
         ]);
 
@@ -66,7 +75,8 @@ export async function GET(req: NextRequest) {
                 page,
                 limit,
                 totalPages: Math.ceil(total / limit),
-                refundPendingCount // Return this count
+                refundPendingCount,
+                newOrdersCount
             }
         });
 

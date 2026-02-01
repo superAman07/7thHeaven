@@ -1,7 +1,7 @@
 'use client'
 
 import axios from 'axios';
-import { ChevronLeft, ChevronRight, Eye, Search, X, Package, Truck, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Eye, Search, X, Package, Truck, CheckCircle, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDebounce } from 'use-debounce';
 
@@ -70,6 +70,8 @@ export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [refundPendingCount, setRefundPendingCount] = useState(0);
+  const [newOrdersCount, setNewOrdersCount] = useState(0);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   const itemsPerPage = 10;
 
@@ -87,6 +89,9 @@ export default function OrdersPage() {
       setMeta(response.data.meta);
       if (response.data.meta.refundPendingCount !== undefined) {
           setRefundPendingCount(response.data.meta.refundPendingCount);
+      }
+      if (response.data.meta.newOrdersCount !== undefined) {
+          setNewOrdersCount(response.data.meta.newOrdersCount);
       }
     } catch (err) {
       console.error('Failed to fetch orders', err);
@@ -130,6 +135,8 @@ export default function OrdersPage() {
       }
     } catch (error) {
       alert('Failed to update');
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -145,18 +152,34 @@ export default function OrdersPage() {
           <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
           
           {/* NEW: Quick Filter for Refund Pending */}
-          <button 
-            onClick={() => { setStatusFilter('REFUND_PENDING'); setCurrentPage(1); }}
-            className={`relative flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${statusFilter === 'REFUND_PENDING' ? 'bg-[#ddb040] text-white' : 'bg-red-50 text-red-700 hover:bg-red-100'}`}
-          >
-            <AlertCircle className="w-4 h-4 mr-2" />
-            Refunds Awaiting
-            {refundPendingCount > 0 && (
-                <span className="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
-                    {refundPendingCount}
-                </span>
-            )}
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => { setStatusFilter('NEW_ORDERS'); setCurrentPage(1); }}
+              className={`relative flex! items-center px-4 py-2 rounded-lg font-medium transition-colors ${statusFilter === 'NEW_ORDERS' ? 'bg-[#ddb040] text-white' : 'bg-green-50 text-green-700 hover:bg-green-100'}`}
+            >
+              <Package className="w-4 h-4 mr-2" />
+              New Orders
+              {newOrdersCount > 0 && (
+                  <span className="ml-2 bg-green-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
+                      {newOrdersCount}
+                  </span>
+              )}
+            </button>
+
+            {/* Refunds Awaiting Button */}
+            <button 
+              onClick={() => { setStatusFilter('REFUND_PENDING'); setCurrentPage(1); }}
+              className={`relative flex! items-center px-4 py-2 rounded-lg font-medium transition-colors ${statusFilter === 'REFUND_PENDING' ? 'bg-[#ddb040] text-white' : 'bg-red-50 text-red-700 hover:bg-red-100'}`}
+            >
+              <AlertCircle className="w-4 h-4 mr-2" />
+              Refunds Awaiting
+              {refundPendingCount > 0 && (
+                  <span className="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
+                      {refundPendingCount}
+                  </span>
+              )}
+            </button>
+          </div>
         </div>
 
         <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -260,6 +283,11 @@ export default function OrdersPage() {
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Status Control */}
               <div className="bg-gray-50 p-4 rounded-lg border">
+                {isUpdatingStatus && (
+                  <div className="absolute inset-0 bg-white/70 flex items-center justify-center rounded-lg z-10">
+                    <Loader2 className="w-5 h-5 animate-spin text-gray-600" />
+                  </div>
+                )}
                 <label className="block text-sm font-medium text-gray-700 mb-2">Update Order Status</label>
                 <select
                   value={currentOrder.status}

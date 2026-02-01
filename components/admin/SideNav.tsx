@@ -1,15 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, Bell, MessageSquare, Settings } from 'lucide-react';
 
-const navItems = [
+const getNavItems = (newOrdersCount: number) => [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/categories', label: 'Categories', icon: Tags },
   { href: '/admin/products', label: 'Products', icon: Package },
-  { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
+  { href: '/admin/orders', label: 'Orders', icon: ShoppingCart, badgeCount: newOrdersCount },
   { href: '/admin/customers', label: 'Customers', icon: Users },
   { href: '/admin/network', label: 'Network Settings', icon: Share2 },
   { href: '/admin/support-tickets', label: 'Support Tickets', icon: MessageSquare },
@@ -22,12 +22,12 @@ interface NavLinkProps {
   href: string;
   label: string;
   icon: React.ElementType;
+  badgeCount?: number;
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ href, label, icon: Icon }) => {
+const NavLink: React.FC<NavLinkProps> = ({ href, label, icon: Icon, badgeCount }) => {
   const pathname = usePathname();
   const isActive = pathname === href || (href === '/admin/dashboard' && pathname === '/admin/dashboard');
-
   return (
     <Link
       href={href}
@@ -39,6 +39,11 @@ const NavLink: React.FC<NavLinkProps> = ({ href, label, icon: Icon }) => {
     >
       <Icon className={`w-4 h-4 mr-2.5 shrink-0 ${isActive ? '' : 'group-hover:scale-105'}`} />
       <span className="truncate">{label}</span>
+      {badgeCount && badgeCount > 0 && (
+        <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center animate-pulse">
+          {badgeCount > 99 ? '99+' : badgeCount}
+        </span>
+      )}
     </Link>
   );
 };
@@ -49,6 +54,27 @@ interface SideNavProps {
 }
 
 const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
+
+  const [newOrdersCount, setNewOrdersCount] = useState(0);
+  useEffect(() => {
+    const fetchOrderCounts = async () => {
+      try {
+        const res = await fetch('/api/v1/admin/orders?limit=1');
+        const data = await res.json();
+        if (data.meta?.newOrdersCount) {
+          setNewOrdersCount(data.meta.newOrdersCount);
+        }
+      } catch (err) {
+        console.error('Failed to fetch order counts');
+      }
+    };
+    
+    fetchOrderCounts();
+    // Refresh every 60 seconds
+    const interval = setInterval(fetchOrderCounts, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       <nav 
@@ -71,7 +97,7 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
 
         {/* Navigation Links */}
         <div className="flex! flex-col! flex-1! overflow-y-auto! custom-scrollbar! gap-0.5!">
-          {navItems.map((item) => (
+          {getNavItems(newOrdersCount).map((item) => (
             <NavLink key={item.href} {...item} />
           ))}
         </div>
