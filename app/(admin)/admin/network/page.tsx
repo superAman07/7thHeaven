@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Search, Trophy, Users, Gift, Star, Crown, X, Phone, Mail, CheckCircle, Send, Network, Activity } from 'lucide-react';
+import { Search, Trophy, Users, Gift, Star, Crown, X, Phone, Mail, CheckCircle, Send, Network, Activity, Loader2} from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import NetworkGalaxy, { NetworkNode } from '@/components/heaven/NetworkGalaxy';
 
@@ -157,7 +157,14 @@ export default function NetworkLeadersPage() {
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {loading ? (
-                                <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500">Loading network data...</td></tr>
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                                        <div className="flex items-center justify-center gap-2">
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            <span>Loading network data...</span>
+                                        </div>
+                                    </td>
+                                </tr>
                             ) : filteredLeaders.length > 0 ? (
                                 filteredLeaders.map((leader) => (
                                     <tr key={leader.id} className="hover:bg-gray-50 transition-colors group">

@@ -11,7 +11,7 @@ const getNavItems = (newOrdersCount: number, openTicketsCount: number) => [
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart, badgeCount: newOrdersCount },
   { href: '/admin/customers', label: 'Customers', icon: Users },
-  { href: '/admin/network', label: 'Network Settings', icon: Share2 },
+  { href: '/admin/network', label: 'Network', icon: Share2 },
   { href: '/admin/support-tickets', label: 'Support Tickets', icon: MessageSquare, badgeCount: openTicketsCount },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell },
   { href: '/admin/storefront', label: 'Store Front Page', icon: LayoutDashboard },
