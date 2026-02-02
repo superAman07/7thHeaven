@@ -55,9 +55,20 @@ export async function POST(request: NextRequest) {
     });
 
 
-    sendOTPEmail(email, otp, user.fullName || 'Customer').catch(err => 
-      console.error('OTP email error:', err)
-    );
+    try {
+        console.log("Attempting to send email to:", email);
+        await sendOTPEmail(email, otp, user.fullName || 'Customer');
+        console.log("Email sent successfully!");
+    } catch (emailError: any) {
+        console.error('CRITICAL EMAIL FAIL:', emailError);
+        return NextResponse.json({ 
+            success: false, 
+            error: { 
+                message: 'EMAIL SEND FAILED', 
+                details: emailError.message || JSON.stringify(emailError) 
+            } 
+        }, { status: 500 });
+    }
 
     return NextResponse.json({ 
       success: true, 
