@@ -107,6 +107,9 @@ export default function SeventhHeavenPage() {
           setGraphData(response.data.data);
         }
       } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+            return;
+        }
         console.error('Failed to fetch galaxy graph', error);
       }
     };
