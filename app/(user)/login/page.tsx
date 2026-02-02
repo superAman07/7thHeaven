@@ -89,7 +89,7 @@ const AuthInput: React.FC<AuthInputProps> = ({ id, label, icon, endIcon, ...prop
                 id={id}
                 name={id}
                 {...props}
-                className={`w-full h-14 pl-12 ${endIcon ? 'pr-12' : 'pr-4'} py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E6B422]/50 focus:border-[#E6B422] transition-all duration-300`}
+                className={`w-full h-12 pl-12 ${endIcon ? 'pr-12' : 'pr-4'} py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E6B422]/50 focus:border-[#E6B422] transition-all duration-300`}
             />
             {endIcon && (
                 <div className="absolute inset-y-0 right-0 flex items-center pr-4">
@@ -398,14 +398,14 @@ export default function AuthPage() {
             case View.LOGIN:
                 return (
                     <>
-                        <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-4 border-2 border-[#E6B422]/20">
-                                <LockIcon className="w-8 h-8 text-[#E6B422]" />
+                        <div className="text-center mb-5">
+                            <div className="inline-flex items-center justify-center w-12 h-12 bg-[#E6B422]/10 rounded-full mb-3 border-2 border-[#E6B422]/20">
+                                <LockIcon className="w-6 h-6 text-[#E6B422]" />
                             </div>
-                            <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
+                            <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
                             <p className="text-gray-500 mt-1">Sign in to your account</p>
                         </div>
-                        <form onSubmit={handleLoginSubmit} className="space-y-6">
+                        <form onSubmit={handleLoginSubmit} className="space-y-4">
                             <AuthInput id="identifier" label="Email or Phone" icon={<MailIcon className="w-5 h-5" />} value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
                             <AuthInput
                                 id="password"
@@ -659,7 +659,7 @@ export default function AuthPage() {
             }}
         >
             <div className="w-full max-w-md mx-auto mt-30!">
-                <div className="bg-white border border-gray-200 rounded-2xl shadow-2xl p-8">
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-2xl p-6">
                     {error && (
                         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg text-sm animate-fade-in">
                             <p className="font-bold">Error</p>
