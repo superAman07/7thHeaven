@@ -398,11 +398,11 @@ export default function AuthPage() {
             case View.LOGIN:
                 return (
                     <>
-                        <div className="text-center mb-5">
-                            <div className="inline-flex items-center justify-center w-12 h-12 bg-[#E6B422]/10 rounded-full mb-3 border-2 border-[#E6B422]/20">
+                        <div className="text-center mb-8">
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E6B422]/10 rounded-full mb-3 border-2 border-[#E6B422]/20">
                                 <LockIcon className="w-6 h-6 text-[#E6B422]" />
                             </div>
-                            <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
+                            <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
                             <p className="text-gray-500 mt-1">Sign in to your account</p>
                         </div>
                         <form onSubmit={handleLoginSubmit} className="space-y-4">
