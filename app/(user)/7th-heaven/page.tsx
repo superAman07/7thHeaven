@@ -359,17 +359,17 @@ function MarketingView() {
             Unlock exclusive luxury rewards, build your influence, and ascend through 7 levels of prestige. Join the elite circle of fragrance connoisseurs.
           </p>
 
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-2 md:gap-4 justify-center items-center w-full sm:w-auto px-2 sm:px-0">
             <Link
               href="/login"
-              className="px-8 py-4 bg-[#E6B422] text-black font-bold uppercase tracking-wider hover:bg-white transition-colors"
+              className="px-4 py-3 md:px-8 md:py-4 bg-[#E6B422] text-black text-[10px] sm:text-xs md:text-base font-bold uppercase tracking-wider hover:bg-white transition-colors whitespace-nowrap flex-1 sm:flex-none text-center"
             >
               Join The Club
             </Link>
 
             <Link
               href="/collections/perfumes"
-              className="px-8 py-4 border border-white text-white font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors"
+              className="px-4 py-3 md:px-8 md:py-4 border border-white text-white text-[10px] sm:text-xs md:text-base font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors whitespace-nowrap flex-1 sm:flex-none text-center"
             >
               Shop Collection
             </Link>
