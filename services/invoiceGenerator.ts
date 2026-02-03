@@ -6,6 +6,7 @@ export interface InvoiceData {
     id: string;
     createdAt: string | Date;
     subtotal: number;
+    mlmOptInRequested?: boolean;
     user?: { // Make user optional
         fullName: string;
         email: string;
@@ -42,7 +43,7 @@ export const generateInvoice = (order: InvoiceData) => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(24);
     doc.setTextColor(...brandColor);
-    doc.text("7th Heaven", 14, 25);
+    doc.text("Celsius", 14, 25);
     
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);

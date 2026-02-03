@@ -364,7 +364,7 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
 
           <div className="flex gap-2 md:gap-4 justify-center items-center w-full sm:w-auto px-2 sm:px-0">
             <Link
-              href={isLoggedIn ? "/collections/perfumes" : "/login"}
+              href={isLoggedIn ? "/collections/perfumes?sort=price_asc" : "/login"}
               className="px-4 py-3 md:px-8 md:py-4 bg-[#E6B422] text-black text-[10px] sm:text-xs md:text-base font-bold uppercase tracking-wider hover:bg-white transition-colors whitespace-nowrap flex-1 sm:flex-none text-center"
             >
               {isLoggedIn ? "Start Your Journey" : "Join The Club"}

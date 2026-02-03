@@ -106,6 +106,34 @@ export default function PaymentStatusPage() {
     if (status === 'success' && order) {
         return (
             <div className="container text-center pt-100 pb-100">
+                {order.mlmOptInRequested && (
+                    <div className="mb-12 animate-fade-in-up">
+                        {/* Glowing Badge */}
+                        <div className="inline-block relative">
+                            <div className="absolute inset-0 bg-[#ddb040] blur-xl opacity-40 animate-pulse"></div>
+                            <div className="relative bg-black text-[#ddb040] px-8 py-3 rounded-full font-serif text-xl md:text-2xl font-bold tracking-widest border border-[#ddb040] shadow-2xl">
+                                👑 WELCOME TO THE CLUB
+                            </div>
+                        </div>
+                        <h2 className="text-3xl md:text-5xl font-serif text-gray-800 mt-8 mb-4">
+                            You have Ascended.
+                        </h2>
+                        <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+                            Your empire begins now. 
+                            <br className="hidden md:block"/>
+                            Your exclusive referral code has been activated.
+                        </p>
+                        <div className="mt-8 flex justify-center gap-4">
+                            <Link 
+                                href="/7th-heaven" 
+                                className="bg-[#1a1a1a] text-[#ddb040] px-8 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-[#ddb040] hover:text-black transition-all duration-300 shadow-lg"
+                            >
+                                Enter Dashboard
+                            </Link>
+                        </div>
+                        <hr className="my-12 border-gray-200 w-1/2 mx-auto" />
+                    </div>
+                )}
                 <div className="icon-success mb-4" style={{ fontSize: '80px', color: '#28a745' }}>✓</div>
                 <h1 className="mb-3">Payment Successful!</h1>
                 <p className="lead mb-4">Thank you for your purchase.</p>

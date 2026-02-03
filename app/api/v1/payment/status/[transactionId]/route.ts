@@ -20,6 +20,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                 items: true,
                 shippingAddress: true,
                 gatewayOrderId: true,
+                mlmOptInRequested: true,
                 userId: true,
                 user: {
                     select: {
@@ -128,6 +129,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                         shippingAddress: true,
                         gatewayOrderId: true,
                         userId: true,
+                        mlmOptInRequested: true,
                         user: { select: { fullName: true, email: true, phone: true } }
                     }
                 });
