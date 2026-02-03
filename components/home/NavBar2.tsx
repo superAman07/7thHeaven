@@ -157,7 +157,7 @@ export default function NavBar() {
                 id="main-navbar"
                 className={`fixed! top-0! left-0! right-0! z-1000! transition-all! duration-500! ease-in-out! ${
                     isSticky 
-                        ? 'bg-white/80! backdrop-blur-xl! shadow-lg! h-[80px]!' 
+                        ? 'bg-black/80! backdrop-blur-xl! shadow-lg! h-[80px]!' 
                         : 'bg-transparent! h-[140px]! md:h-[160px]!'
                 }`}
             >
@@ -173,7 +173,7 @@ export default function NavBar() {
                                     className={`text-[13px]! font-semibold! uppercase! tracking-widest! transition-colors! duration-300! hover:text-[#D4AF37]! ${
                                         l.label === '7th Heaven Club' 
                                             ? 'text-[#D4AF37]!' 
-                                            : isSticky ? 'text-gray-800!' : 'text-white!'
+                                            : isSticky ? 'text-white!' : 'text-white!'
                                     }`}
                                 >
                                     {l.label}
@@ -183,7 +183,7 @@ export default function NavBar() {
 
                         {/* --- MOBILE: LEFT SECTION (Hamburger) --- */}
                         <div className="xl:hidden! flex-1! flex! items-center!">
-                            <a href="/cart" className={`text-xl! hover:!text-[#D4AF37]! transition-colors! relative! ${isSticky ? 'text-gray-800!' : 'text-white!'}`}>
+                            <a href="/cart" className={`text-xl! hover:!text-[#D4AF37]! transition-colors! relative! ${isSticky ? 'text-white!' : 'text-white!'}`}>
                                 <i className="fa fa-shopping-bag"></i>
                                 {cartCount > 0 && (
                                     <span className="absolute! -top-2! -right-3! bg-[#D4AF37]! text-white! text-[10px]! font-bold! w-4! h-4! rounded-full! flex! items-center! justify-center!">
@@ -209,7 +209,7 @@ export default function NavBar() {
                             <div className="relative!" ref={searchRef}>
                                 <button 
                                     onClick={toggleSearch} 
-                                    className={`text-xl! hover:text-[#D4AF37]! transition-colors! ${isSticky ? 'text-gray-800!' : 'text-white!'}`}
+                                    className={`text-xl! hover:text-[#D4AF37]! transition-colors! ${isSticky ? 'text-white!' : 'text-white!'}`}
                                 >
                                     <i className={`fa ${isSearchOpen ? 'fa-times' : 'fa-search'}`}></i>
                                 </button>
@@ -246,7 +246,7 @@ export default function NavBar() {
                             </div>
                             {/* Cart */}
                             <div className="header-cart" style={{ position: 'relative' }}>
-                                <a href="/cart" className={`text-xl! hover:!text-[#D4AF37]! transition-colors! relative! ${isSticky ? 'text-gray-800!' : 'text-white!'}`}>
+                                <a href="/cart" className={`text-xl! hover:!text-[#D4AF37]! transition-colors! relative! ${isSticky ? 'text-white!' : 'text-white!'}`}>
                                     <i className="fa fa-shopping-bag"></i>
                                     {cartCount > 0 && (
                                         <span className="absolute! -top-2! -right-3! bg-[#D4AF37]! text-white! text-[10px]! font-bold! w-4! h-4! rounded-full! flex! items-center! justify-center!">
@@ -321,7 +321,7 @@ export default function NavBar() {
                             </div>
                             {/* Account */}
                             <div className="relative! group" style={{ display: 'flex', alignItems: 'center' }}>
-                                <a className="text-xl! hover:text-[#D4AF37]! transition-colors!" style={{ cursor: 'pointer', color: isSticky ? '#1f2937' : '#ffffff' }}>
+                                <a className="text-xl! hover:text-[#D4AF37]! transition-colors!" style={{ cursor: 'pointer', color: isSticky ? '#fffff' : '#ffffff' }}>
                                     <i className="fa fa-user"></i>
                                 </a>
                                 <div className="absolute! right-0! top-full! mt-2! w-[180px]! bg-white! shadow-xl! py-2! opacity-0! invisible! group-hover:opacity-100! group-hover:visible! transition-all! duration-200! z-100!">
@@ -340,7 +340,7 @@ export default function NavBar() {
                         <div className="xl:hidden! flex-1! flex! items-center! justify-end!">
                             <button 
                                 onClick={toggleMobile}
-                                className={`text-2xl! p-2! transition-colors! ${isSticky ? 'text-gray-800!' : 'text-white!'}`}
+                                className={`text-2xl! p-2! transition-colors! ${isSticky ? 'text-white!' : 'text-white!'}`}
                             >
                                 <i className="fa fa-bars"></i>
                             </button>
