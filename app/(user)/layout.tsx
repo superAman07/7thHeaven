@@ -7,7 +7,7 @@ import { getSiteContent, defaultGlobalSettings } from "@/lib/site-content";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "7th Heaven - Perfumes & Fragrances",
+  title: "Celsius - Perfumes & Fragrances",
   description: "Discover long-lasting perfumes, luxury collections, and exclusive signature scents.",
 };
 
