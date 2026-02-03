@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import crypto from 'crypto';
 import axios from 'axios';
 import { sendNotification } from '@/lib/notifications';
+import { sendOrderConfirmation, sendWelcomeEmail } from '@/lib/email';
 
 function generateReferralCode() {
     return '7H-' + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -188,6 +189,22 @@ export async function POST(req: NextRequest) {
                 await sendOrderConfirmationSMS(order.user.phone, order.id, amountPaid);
             }
 
+            if (order.user.email) {
+                const orderTotal = orderItems.reduce((sum, item) => sum + (item.priceAtPurchase || 0) * item.quantity, 0);
+                
+                 const emailItems = orderItems.map(item => ({
+                    name: item.name || item.product?.name || "Product",
+                    quantity: item.quantity,
+                    price: Number(item.priceAtPurchase || 0)
+                }));
+                await sendOrderConfirmation(order.user.email, {
+                    orderId: order.id,
+                    customerName: order.user.fullName,
+                    items: emailItems,
+                    total: Number(order.netAmountPaid) || orderTotal
+                });
+            }
+
             // MLM Logic
             if (order.mlmOptInRequested) {
                 let newReferralCode = order.user.referralCode;
@@ -197,6 +214,9 @@ export async function POST(req: NextRequest) {
                     where: { id: order.userId },
                     data: { is7thHeaven: true, referralCode: newReferralCode } 
                 });
+                if (order.user.email) {
+                    await sendWelcomeEmail(order.user.email, order.user.fullName, newReferralCode || undefined);
+                }
                 if (order.user.phone && newReferralCode) {
                     await sendReferralSMS(order.user.phone, newReferralCode, order.user.fullName);
                 }

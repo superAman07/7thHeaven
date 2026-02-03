@@ -163,7 +163,8 @@ export async function sendOTPEmail(email: string, otp: string, name: string = 'C
 }
 
 // Welcome email for new users
-export async function sendWelcomeEmail(email: string, name: string) {
+// Welcome email for new users
+export async function sendWelcomeEmail(email: string, name: string, referralCode?: string) {
     const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9; padding: 20px;">
       <div style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
@@ -174,6 +175,14 @@ export async function sendWelcomeEmail(email: string, name: string) {
         <h2 style="color: #333; margin-top: 0;">Hi ${name}! 🎉</h2>
         <p style="color: #666;">Thank you for joining the Celsius family. We're thrilled to have you!</p>
         
+        ${referralCode ? `
+        <div style="background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%); border: 2px dashed #ddb040; padding: 20px; border-radius: 10px; margin: 25px 0; text-align: center;">
+          <h3 style="color: #92400e; margin: 0 0 10px 0; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">Your Exclusive Referral Code</h3>
+          <div style="font-size: 32px; font-weight: 800; color: #1a1a1a; letter-spacing: 2px; font-family: monospace;">${referralCode}</div>
+          <p style="color: #92400e; margin: 10px 0 0 0; font-size: 13px;">Share this code to earn rewards!</p>
+        </div>
+        ` : ''}
+
         <div style="background: #f5f5f5; padding: 20px; border-radius: 10px; margin: 20px 0;">
           <h3 style="color: #333; margin-top: 0;">What's next?</h3>
           <ul style="color: #666; padding-left: 20px;">
@@ -184,7 +193,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
         </div>
         
         <div style="text-align: center; margin-top: 30px;">
-          <a href="https://main.d28eoqxdlhl7na.amplifyapp.com" style="background: #ddb040; color: #000; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Start Shopping</a>
+          <a href="https://www.celsiuspop.com" style="background: #ddb040; color: #000; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Start Shopping</a>
         </div>
       </div>
       <p style="text-align: center; color: #999; font-size: 12px; margin-top: 20px;">© 2026 Celsius. All rights reserved.</p>
