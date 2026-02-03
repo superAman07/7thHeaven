@@ -126,6 +126,20 @@ export default function CustomersPage() {
     }
   };
 
+  const handleUpgradeToVIP = async (userId: string) => {
+    if(!confirm("Are you sure you want to upgrade this user to 7th Heaven Club?")) return;
+    
+    try {
+        const res = await axios.patch(`/api/v1/admin/customers/${userId}`, { is7thHeaven: true });
+        if (res.data.success) {
+            toast.success("User upgraded to VIP!");
+            fetchCustomers();
+            setSelectedProfile(null);
+        }
+    } catch (error) {
+        toast.error("Failed to upgrade user");
+    }
+  };
 
   return (
     <div className="p-6 relative min-h-screen">
@@ -376,6 +390,14 @@ export default function CustomersPage() {
                              <button onClick={() => { setMessageTarget({ ids: [selectedProfile.id], name: selectedProfile.fullName }); setShowMessageModal(true); }} className="w-full py-3 rounded-lg bg-gray-900 text-white font-bold text-sm hover:bg-black transition-colors flex! items-center! justify-center! gap-2!">
                                 <Send size={16} /> Send Message
                              </button>
+                             {!selectedProfile.is7thHeaven && (
+                                <button 
+                                    onClick={() => handleUpgradeToVIP(selectedProfile.id)}
+                                    className="col-span-2 w-full py-3 rounded-lg bg-linear-to-r from-[#ddb040] to-amber-500 text-white font-bold text-sm hover:opacity-90 transition-opacity flex! items-center! justify-center! gap-2! shadow-lg"
+                                >
+                                    <Zap size={16} fill="currentColor" /> Grant 7th Heaven Access
+                                </button>
+                            )}
                         </div>
                     </div>
                 </motion.div>
