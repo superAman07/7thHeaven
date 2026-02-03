@@ -145,7 +145,7 @@ export default function SeventhHeavenPage() {
   }
 
   if (isGuest || (data && !data.isMember)) {
-    return <MarketingView />;
+    return <MarketingView isLoggedIn={!isGuest} />; 
   }
 
   if (!data) return null;
@@ -342,7 +342,7 @@ export default function SeventhHeavenPage() {
 /* ----------------
    Marketing / Guest view
    ---------------- */
-function MarketingView() {
+function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
     <div className="bg-[#252525] min-h-screen text-white">
       {/* Hero */}
@@ -364,10 +364,10 @@ function MarketingView() {
 
           <div className="flex gap-2 md:gap-4 justify-center items-center w-full sm:w-auto px-2 sm:px-0">
             <Link
-              href="/login"
+              href={isLoggedIn ? "/collections/perfumes" : "/login"}
               className="px-4 py-3 md:px-8 md:py-4 bg-[#E6B422] text-black text-[10px] sm:text-xs md:text-base font-bold uppercase tracking-wider hover:bg-white transition-colors whitespace-nowrap flex-1 sm:flex-none text-center"
             >
-              Join The Club
+              {isLoggedIn ? "Start Your Journey" : "Join The Club"}
             </Link>
 
             <Link
