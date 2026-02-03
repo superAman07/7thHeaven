@@ -9,6 +9,9 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: "Celsius - Perfumes & Fragrances",
   description: "Discover long-lasting perfumes, luxury collections, and exclusive signature scents.",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default async function UserPagesLayout({

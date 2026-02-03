@@ -37,8 +37,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
       <head>
-        {/* Fav icon */}
-        <link rel="icon" href="/next.svg" />
 
         <link
           rel="stylesheet"
