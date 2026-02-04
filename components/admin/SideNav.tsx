@@ -6,16 +6,16 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, Bell, MessageSquare, Settings } from 'lucide-react';
 
 const getNavItems = (newOrdersCount: number, openTicketsCount: number) => [
-  { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/categories', label: 'Categories', icon: Tags },
-  { href: '/admin/products', label: 'Products', icon: Package },
-  { href: '/admin/orders', label: 'Orders', icon: ShoppingCart, badgeCount: newOrdersCount },
-  { href: '/admin/customers', label: 'Customers', icon: Users },
-  { href: '/admin/network', label: 'Network', icon: Share2 },
-  { href: '/admin/support-tickets', label: 'Support Tickets', icon: MessageSquare, badgeCount: openTicketsCount },
-  { href: '/admin/notifications', label: 'Notifications', icon: Bell },
-  { href: '/admin/storefront', label: 'Store Front Page', icon: LayoutDashboard },
-  { href: '/admin/site-settings', label: 'Site Settings', icon: Settings },
+  { href: '/celsius-7th-heaven/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/celsius-7th-heaven/categories', label: 'Categories', icon: Tags },
+  { href: '/celsius-7th-heaven/products', label: 'Products', icon: Package },
+  { href: '/celsius-7th-heaven/orders', label: 'Orders', icon: ShoppingCart, badgeCount: newOrdersCount },
+  { href: '/celsius-7th-heaven/customers', label: 'Customers', icon: Users },
+  { href: '/celsius-7th-heaven/network', label: 'Network', icon: Share2 },
+  { href: '/celsius-7th-heaven/support-tickets', label: 'Support Tickets', icon: MessageSquare, badgeCount: openTicketsCount },
+  { href: '/celsius-7th-heaven/notifications', label: 'Notifications', icon: Bell },
+  { href: '/celsius-7th-heaven/storefront', label: 'Store Front Page', icon: LayoutDashboard },
+  { href: '/celsius-7th-heaven/site-settings', label: 'Site Settings', icon: Settings },
 ];
 
 interface NavLinkProps {
@@ -27,7 +27,7 @@ interface NavLinkProps {
 
 const NavLink: React.FC<NavLinkProps> = ({ href, label, icon: Icon, badgeCount }) => {
   const pathname = usePathname();
-  const isActive = pathname === href || (href === '/admin/dashboard' && pathname === '/admin/dashboard');
+  const isActive = pathname === href || (href === '/celsius-7th-heaven/dashboard' && pathname === '/celsius-7th-heaven/dashboard');
   return (
     <Link
       href={href}
@@ -94,7 +94,7 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
       >
         {/* Header Section with Logo */}
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-          <Link href="/admin" className="flex items-center gap-2">
+          <Link href="/celsius-7th-heaven/dashboard" className="flex items-center gap-2">
             <img 
               src="/assets/images/logo.png" 
               alt="Celsius" 

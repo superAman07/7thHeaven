@@ -25,6 +25,13 @@ export async function middleware(request: NextRequest) {
   // }
 // admin protected routes
 
+  if (path.startsWith('/celsius-7th-heaven') && !path.startsWith('/celsius-7th-heaven/login')) {
+    const adminToken = request.cookies.get('admin_session')?.value;
+    if (!adminToken) {
+      return NextResponse.redirect(new URL('/celsius-7th-heaven/login', request.url));
+    }
+  }
+
   if (path.startsWith('/api/v1/payment/callback')) {
     return NextResponse.next();
   }

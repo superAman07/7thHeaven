@@ -22,7 +22,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
 
   useEffect(() => {
-    if (pathname === '/admin/login') {
+    if (pathname === '/celsius-7th-heaven/login') {
       setIsLoading(false);
       return;
     }
@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         setUser(response.data.data); 
         setIsLoading(false);
       } catch (error) {
-        router.push('/admin/login');
+        router.push('/celsius-7th-heaven/login');
       }
     };
     checkAuth();
@@ -46,14 +46,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const handleLogout = async () => {
     try {
       await axios.post('/api/v1/admin/logout');
-      router.push('/admin/login');
+      router.push('/celsius-7th-heaven/login');
     } catch (error) {
       console.error('Failed to logout:', error);
       alert('Logout failed. Please try again.');
     }
   };
 
-  if (pathname === '/admin/login') {
+  if (pathname === '/celsius-7th-heaven/login') {
     return <>{children}</>;
   }
 

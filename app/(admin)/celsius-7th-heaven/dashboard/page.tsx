@@ -154,7 +154,7 @@ export default function DashboardPage() {
                   <div className="w-1.5 h-8 bg-linear-to-b from-[#E6B422] to-[#F4D03F] rounded-full shadow-lg shadow-[#E6B422]/30"></div>
                   <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Recent Transactions</h2>
                 </div>
-                <Link href="/admin/orders" className="text-xs font-black text-[#E6B422] hover:text-purple-600 transition-colors flex items-center gap-2 uppercase tracking-widest group px-4 py-2 rounded-lg hover:bg-[#E6B422]/10">
+                <Link href="/celsius-7th-heaven/orders" className="text-xs font-black text-[#E6B422] hover:text-purple-600 transition-colors flex items-center gap-2 uppercase tracking-widest group px-4 py-2 rounded-lg hover:bg-[#E6B422]/10">
                     View All <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
             </div>
