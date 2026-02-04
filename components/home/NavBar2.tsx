@@ -138,7 +138,7 @@ export default function NavBar() {
         { href: '/', label: 'Home' },
         { href: '/collections/perfumes', label: 'Collections' },
         { href: '/contact', label: 'Contact Us' },
-        { href: '/7th-heaven', label: '7th Heaven Club' },
+        { href: '/7th-heaven', label: 'EXCLUSIVE' },
     ];
 
     const mobileLinks = [
@@ -147,7 +147,7 @@ export default function NavBar() {
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact Us' },
         { href: '/track-order', label: 'Track Order' },
-        { href: '/7th-heaven', label: '7th Heaven Club' },
+        { href: '/7th-heaven', label: 'EXCLUSIVE' },
     ];
 
     return (
@@ -170,13 +170,16 @@ export default function NavBar() {
                                 <a 
                                     key={l.label}
                                     href={l.href}
-                                    className={`text-[13px]! font-semibold! uppercase! tracking-widest! transition-colors! duration-300! hover:text-[#D4AF37]! ${
-                                        l.label === '7th Heaven Club' 
-                                            ? 'text-[#D4AF37]!' 
-                                            : isSticky ? 'text-white!' : 'text-white!'
+                                    className={`relative group text-[13px]! font-semibold! uppercase! transition-colors! duration-300! hover:text-[#D4AF37]! ${
+                                        l.label === 'EXCLUSIVE'
+                                            ? 'text-[#D4AF37]! tracking-[0.2em]!'
+                                            : `tracking-widest! ${isSticky ? 'text-white!' : 'text-white!'}`
                                     }`}
                                 >
                                     {l.label}
+                                    {l.label === 'EXCLUSIVE' && (
+                                        <span className="absolute -bottom-2 left-0 w-full h-[1.5px] bg-[#D4AF37] shadow-[0_0_10px_#D4AF37] scale-x-100 transition-transform duration-500 ease-out origin-left group-hover:scale-x-100"></span>
+                                    )}
                                 </a>
                             ))}
                         </nav>
