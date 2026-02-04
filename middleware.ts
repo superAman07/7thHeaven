@@ -79,6 +79,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // '/cart/checkout/:path*',
+    '/celsius-7th-heaven/:path*',
     '/my-account/:path*',
     '/api/v1/admin/((?!login).*)',
     '/((?!_next/static|_next/image|favicon.ico|api/v1/payment/callback).*)',
