@@ -19,7 +19,7 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
   const searchParams = useSearchParams();
   
   // State
-  const [debouncedPriceRange, setDebouncedPriceRange] = useState([0, 57500]);
+  const [debouncedPriceRange, setDebouncedPriceRange] = useState([0, 200000]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
   const [products, setProducts] = useState<PublicProduct[]>([]);
@@ -27,7 +27,7 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [priceRange, setPriceRange] = useState([0, 57500]);
+  const [priceRange, setPriceRange] = useState([0, 200000]);
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('newest');
