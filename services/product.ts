@@ -38,26 +38,31 @@ export async function getProducts(params: ProductFilterParams) {
     }
 
     let categoryFilter: any = {};
+    const filterConditions: any[] = [];
+    
     if (collectionSlug) {
-        categoryFilter = {
-            category: {
-                collection: {
-                    slug: collectionSlug
-                }
-            }
-        };
-    } 
-    else if (category) {
+         filterConditions.push({
+            OR: [
+                { category: { collection: { slug: collectionSlug } } }, 
+                { category: { slug: collectionSlug } }                  
+            ]
+         });
+    }
+    if (category) {
         if (category.includes(',')) {
-             categoryFilter = { categoryId: { in: category.split(',') } };
+             filterConditions.push({ categoryId: { in: category.split(',') } });
         } else {
-             categoryFilter = {
+             filterConditions.push({
                 OR: [
                     { category: { slug: category } },
                     { categoryId: category }
                 ]
-             };
+             });
         }
+    }
+    
+    if (filterConditions.length > 0) {
+        categoryFilter = { AND: filterConditions };
     }
 
     let priceFilter: any = {};

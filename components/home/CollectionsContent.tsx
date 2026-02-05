@@ -124,10 +124,12 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
       // Logic: If we are on specifics (e.g. /collections/skyline), use that. 
       // If on /collections/perfumes, use the checkboxes.
       if (categorySlug && categorySlug !== 'perfumes') {
-        params.append('category', categorySlug);
+         params.append('collectionSlug', categorySlug); 
       } 
-      else if (selectedCategories.length > 0) {
-        params.append('category', selectedCategories.join(','));
+      
+      // 2. User Filters (Checkboxes) - Always apply if selected
+      if (selectedCategories.length > 0) {
+         params.append('category', selectedCategories.join(','));
       }
       
       params.append('sort', sortBy);

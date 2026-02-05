@@ -85,7 +85,9 @@ export default async function HeroPage() {
                 <Suspense key={section.id} fallback={<ProductSectionSkeleton />}>
                     <CollectionRow 
                         title={section.title} 
+                        type={section.type}
                         categorySlug={section.categorySlug} 
+                        collectionSlug={section.collectionSlug}
                         bgClass={section.bgClass} 
                     />
                 </Suspense>
