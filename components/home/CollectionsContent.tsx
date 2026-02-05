@@ -500,7 +500,21 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
                                 </div>
                               ))
                             ) : (
-                              <div className="col-12 text-center py-5">No products found matching your filters.</div>
+                              <div className="col-12 text-center py-20">
+                                  <div className="mb-4">
+                                      <span className="inline-block p-4 rounded-full bg-yellow-50 text-[#B6902E]">
+                                          <i className="fa fa-gem text-4xl"></i>
+                                      </span>
+                                  </div>
+                                  <h3 className="font-serif text-2xl text-gray-900 mb-2">Coming Soon</h3>
+                                  <p className="text-gray-500 max-w-md mx-auto">
+                                      We are curating an exclusive selection of <strong>{formatCategoryName(categorySlug)}</strong> for you. 
+                                      Stay tuned for the launch.
+                                  </p>
+                                  <Link href="/collections" className="inline-block mt-6 px-6 py-2 bg-black text-white rounded-full text-sm font-bold tracking-wider hover:bg-gray-800 transition-colors">
+                                      BROWSE OTHER COLLECTIONS
+                                  </Link>
+                              </div>
                             )}
                           </div>
                         </div>

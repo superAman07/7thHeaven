@@ -18,7 +18,7 @@ export async function GET() {
         _count: { select: { categories: true } }, // Count how many categories inside
         categories: true, // Return the categories too
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'asc' },
     });
     return NextResponse.json({ success: true, data: collections });
   } catch (error) {
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('POST /collections Error:', error);
     if (error.code === 'P2002') {
-       return NextResponse.json({ success: false, error: 'A collection with this name or slug already exists.' }, { status: 409 });
+      return NextResponse.json({ success: false, error: 'A collection with this name or slug already exists.' }, { status: 409 });
     }
     return NextResponse.json({ success: false, error: 'Failed to create collection' }, { status: 500 });
   }
