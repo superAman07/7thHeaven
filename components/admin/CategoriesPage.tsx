@@ -23,6 +23,8 @@ const CategoriesPage: React.FC = () => {
   const [image, setImage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [collections, setCollections] = useState<any[]>([]);
+  const [collectionId, setCollectionId] = useState(''); 
 
   const fetchCategories = async () => {
     setIsLoading(true);
@@ -44,8 +46,15 @@ const CategoriesPage: React.FC = () => {
       setIsLoading(false);
     }
   };
+  
+  const fetchCollections = async () => {
+    const res = await fetch('/api/v1/collections');
+    const data = await res.json();
+    if(data.success) setCollections(data.data);
+  };
 
   useEffect(() => {
+    fetchCollections(); 
     fetchCategories();
   }, []);
 
@@ -118,7 +127,7 @@ const CategoriesPage: React.FC = () => {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, slug, image }),
+        body: JSON.stringify({ name, slug, image, collectionId }),
       });
 
       const data = await response.json();
@@ -271,6 +280,19 @@ const CategoriesPage: React.FC = () => {
                         <p className="mt-1 text-xs text-gray-500">Optional. Recommended size: 500x500px.</p>
                     </div>
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Parent Collection</label>
+                <select 
+                    value={collectionId}
+                    onChange={(e) => setCollectionId(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500"
+                >
+                    <option value="">-- No Parent (Root) --</option>
+                    {collections.map(c => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                </select>
               </div>
               <div>
                 <label htmlFor="category-name" className="block text-sm font-medium text-gray-700 mb-1">

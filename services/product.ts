@@ -171,12 +171,20 @@ export async function getProductById(productId: string) {
     return formattedProduct;
 }
 
-export async function getCategories() {
+export async function getCategories(collectionSlug?: string) { 
+    const whereClause: any = {};
+    
+    if (collectionSlug) {
+        whereClause.collection = { slug: collectionSlug };
+    }
+
     return await prisma.category.findMany({
+        where: whereClause,
         include: {
             _count: {
                 select: { products: true }
-            }
+            },
+            collection: { select: { name: true, slug: true } }
         },
         orderBy: { name: 'asc' }
     });

@@ -42,11 +42,26 @@ model User {
   tickets          SupportTicket[]
 }
 
+model Collection {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique // e.g. "perfumes", "leather"
+  image       String?
+  description String?
+  isActive    Boolean    @default(true)
+  categories  Category[] // A collection has many categories
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+
 model Category {
   id        String    @id @default(cuid())
   name      String    @unique
   slug      String    @unique
   image     String?
+  collectionId String?     
+  collection   Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
   products  Product[]
   createdAt DateTime  @default(now())
 }
