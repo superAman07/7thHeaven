@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
       limit: parseInt(searchParams.get('limit') || '3'),
       search: searchParams.get('search') || undefined,
       category: searchParams.get('category') || undefined,
+      collectionSlug: searchParams.get('collectionSlug') || undefined,
       gender: searchParams.get('gender') || undefined,
       sort: searchParams.get('sort') || undefined,
       minPrice: searchParams.get('minPrice') ? parseInt(searchParams.get('minPrice')!) : undefined,
