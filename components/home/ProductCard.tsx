@@ -332,7 +332,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                                 >
                                     {product.variants.map(v => (
                                         <option key={v.id} value={v.id}>
-                                            {v.size} {/[a-zA-Z]/.test(v.size) ? '' : 'ml'}
+                                            {v.size}
                                         </option>
                                     ))}
                                 </select>

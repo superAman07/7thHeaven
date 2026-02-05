@@ -607,11 +607,23 @@ export default function ProductsPage() {
                   <div key={variant.id || index} className="flex items-end gap-4 p-3 bg-gray-50 rounded-lg">
                     <div className="flex-1">
                       <label className="block text-xs font-medium text-gray-600 mb-1">Size</label>
-                      <input type="text" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} placeholder="e.g., 50ml" className="w-full px-3 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" />
+                      <input 
+                        type="text" 
+                        value={variant.size} 
+                        onChange={e => handleVariantChange(index, 'size', e.target.value)} 
+                        placeholder="e.g. 50ml, Size 32, or One Size" 
+                        className="w-full px-3 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" 
+                      />
                     </div>
                     <div className="flex-1">
                       <label className="block text-xs font-medium text-gray-600 mb-1">Price (₹)</label>
-                      <input type="number" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} placeholder="e.g., 2500" className="w-full px-3 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" />
+                      <input 
+                        type="number" 
+                        value={variant.price} 
+                        onChange={e => handleVariantChange(index, 'price', e.target.value)} 
+                        placeholder="e.g., 2500" 
+                        className="w-full px-3 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" 
+                      />
                     </div>
                     <div className="flex-1">
                       <label className="block text-xs font-medium text-gray-600 mb-1">Stock Qty</label>
@@ -631,12 +643,12 @@ export default function ProductsPage() {
               </div>
             </div>
           </div>
-          <div className="flex justify-end p-4 border-t bg-gray-50 space-x-2">
+          <div className="flex! justify-end! p-4! border-t! bg-gray-50! space-x-2!">
             <button type="button" onClick={closePanel} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer">Cancel</button>
             <button 
               type="submit"
               disabled={isUploading || isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-gray-800 border border-transparent rounded-lg shadow-sm hover:bg-gray-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 text-sm font-medium text-white bg-gray-800 border border-transparent rounded-lg shadow-sm hover:bg-gray-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex! items-center gap-2"
             >
               {isSubmitting ? (
                 <>
