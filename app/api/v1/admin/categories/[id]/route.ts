@@ -6,6 +6,7 @@ const updateCategorySchema = z.object({
     name: z.string().min(1, "Name is required").optional(),
     slug: z.string().min(1, "Slug is required").regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).optional(),
     image: z.string().optional(),
+    collectionId: z.string().optional().nullable(),
 });
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
