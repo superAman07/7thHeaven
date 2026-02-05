@@ -6,6 +6,7 @@ export type ProductFilterParams = {
     limit?: number;
     search?: string;
     category?: string;
+    collectionSlug?: string;
     gender?: string;
     sort?: string;
     onSale?: boolean;
@@ -14,7 +15,7 @@ export type ProductFilterParams = {
 };
 
 export async function getProducts(params: ProductFilterParams) {
-    const { page = 1, limit = 10, search, category, gender, sort, onSale, minPrice, maxPrice } = params;
+    const { page = 1, limit = 10, search, category, collectionSlug, gender, sort, onSale, minPrice, maxPrice } = params;
     const skip = (page - 1) * limit;
 
     const genderMap: Record<string, string> = {
@@ -37,13 +38,19 @@ export async function getProducts(params: ProductFilterParams) {
     }
 
     let categoryFilter: any = {};
-    if (category) {
+    if (collectionSlug) {
+        categoryFilter = {
+            category: {
+                collection: {
+                    slug: collectionSlug
+                }
+            }
+        };
+    } 
+    else if (category) {
         if (category.includes(',')) {
-            // Multiple IDs passed (from checkboxes)
              categoryFilter = { categoryId: { in: category.split(',') } };
         } else {
-             // Single value: Could be Slug (from URL) or ID (from single checkbox)
-             // We try to match either Slug OR ID to be safe
              categoryFilter = {
                 OR: [
                     { category: { slug: category } },

@@ -38,7 +38,9 @@ export interface PageContent {
 export interface HomeSection {
   id: string;
   title: string;
-  categorySlug: string;
+  type?: 'CATEGORY' | 'COLLECTION';
+  categorySlug?: string;
+  collectionSlug?: string;
   bgClass?: string;
   order: number;
 }

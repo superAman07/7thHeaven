@@ -5,21 +5,24 @@ import Link from 'next/link';
 
 type Props = {
     title: string;
-    categorySlug: string; // The slug to fetch (e.g., 'skyline-series')
-    bgClass?: string; // Optional background color
+    type?: 'CATEGORY' | 'COLLECTION';
+    categorySlug?: string;
+    collectionSlug?: string;
+    bgClass?: string; 
 };
 
-export default async function CollectionRow({ title, categorySlug, bgClass = "bg-white" }: Props) {
-    // 1. Fetch products for this specific collection
-    const result = await getProducts({ 
-        category: categorySlug, 
-        limit: 20 // Fetch enough to cover the large collections like Skyline
-    });
-
-    const products = result.data || [];
-
-    // If no products found for this category (e.g., admin hasn't created it yet),
-    // we return null so the section doesn't show empty.
+export default async function CollectionRow({ title, type, categorySlug, collectionSlug, bgClass = "bg-white" }: Props) {
+    let products: any[] = [];
+    // SMART FETCHING 🧠
+    if (type === 'COLLECTION' && collectionSlug) {
+        // Fetch by Collection Slug
+        const result = await getProducts({ collectionSlug: collectionSlug, limit: 12 });
+        products = result.data || [];
+    } else if (categorySlug) {
+        // Fetch by Category Slug (Old way)
+        const result = await getProducts({ category: categorySlug, limit: 12 });
+        products = result.data || [];
+    }
     if (products.length === 0) return null;
 
     return (

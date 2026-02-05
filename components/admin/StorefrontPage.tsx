@@ -25,7 +25,9 @@ interface Category {
 interface HomeSection {
     id: string;
     title: string;
+    type?: 'CATEGORY' | 'COLLECTION';
     categorySlug: string;
+    collectionSlug?: string;         
     bgClass?: string;
     order: number;
 }
@@ -35,6 +37,9 @@ export default function StorefrontPage() {
     const [sections, setSections] = useState<HomeSection[]>([]);
     const [originalSections, setOriginalSections] = useState<HomeSection[]>([]); // To track changes
     const [categories, setCategories] = useState<Category[]>([]);
+    const [collections, setCollections] = useState<any[]>([]);
+    const [contentType, setContentType] = useState<'CATEGORY' | 'COLLECTION'>('CATEGORY');
+    const [selectedColId, setSelectedColId] = useState('');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -48,9 +53,10 @@ export default function StorefrontPage() {
 
     const fetchData = async () => {
         try {
-            const [sectRes, catRes] = await Promise.all([
+            const [sectRes, catRes, colRes] = await Promise.all([
                 axios.get('/api/v1/content/home_sections'),
-                axios.get('/api/v1/admin/categories')
+                axios.get('/api/v1/admin/categories'),
+                axios.get('/api/v1/collections')
             ]);
             
             if (sectRes.data.success) {
@@ -61,6 +67,7 @@ export default function StorefrontPage() {
             if (catRes.data.success) {
                 setCategories(catRes.data.data);
             }
+            if (colRes.data.success) setCollections(colRes.data.data);
         } catch (error) {
             toast.error("Failed to load storefront data");
         } finally {
@@ -71,18 +78,23 @@ export default function StorefrontPage() {
     const hasChanges = JSON.stringify(sections) !== JSON.stringify(originalSections);
 
     const handleAddSection = () => {
-        if (!selectedCatId || !customTitle) {
-            toast.error("Please select a category and enter a display title");
-            return;
+        if (!customTitle) { toast.error("Enter a title"); return; }
+        let targetSlug = '';
+        if (contentType === 'CATEGORY') {
+            const cat = categories.find(c => c.id === selectedCatId);
+            if (!cat) return;
+            targetSlug = cat.slug;
+        } else {
+            const col = collections.find(c => c.id === selectedColId);
+            if (!col) return;
+            targetSlug = col.slug;
         }
-
-        const category = categories.find(c => c.id === selectedCatId);
-        if (!category) return;
-
         const newSection: HomeSection = {
             id: Date.now().toString(),
             title: customTitle,
-            categorySlug: category.slug, 
+            type: contentType, // SAVE THE TYPE
+            categorySlug: contentType === 'CATEGORY' ? targetSlug : '',
+            collectionSlug: contentType === 'COLLECTION' ? targetSlug : '',
             order: sections.length + 1,
             bgClass: 'bg-[#fcfaf7]' // Default standard background
         };
@@ -176,7 +188,7 @@ export default function StorefrontPage() {
                             onClick={handleSave}
                             disabled={!hasChanges || saving}
                             className={`
-                                px-6 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 transition-all
+                                px-6 py-2 rounded-lg font-bold shadow-lg flex! items-center! gap-2 transition-all
                                 ${hasChanges 
                                     ? 'bg-[#E6B422] text-white shadow-[#E6B422]/20 hover:scale-105 active:scale-95' 
                                     : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'}
@@ -200,18 +212,28 @@ export default function StorefrontPage() {
                             
                             <div className="space-y-5">
                                 <div>
-                                    <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">1. Select Category</label>
-                                    <select 
-                                        value={selectedCatId}
-                                        onChange={(e) => setSelectedCatId(e.target.value)}
-                                        className="w-full p-3 bg-gray-50 rounded-lg outline-none border border-gray-200 focus:border-[#E6B422] transition-colors"
-                                    >
-                                        <option value="">-- Choose Category --</option>
-                                        {categories.map(cat => (
-                                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                        ))}
-                                    </select>
-                                    <p className="text-[10px] text-gray-400 mt-1">This determines which products are shown.</p>
+                                    <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">1. Select Source</label>
+                                    <div className="flex gap-4 mb-3">
+                                        <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                            <input type="radio" checked={contentType === 'CATEGORY'} onChange={() => setContentType('CATEGORY')} /> 
+                                            Specific Category
+                                        </label>
+                                        <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                            <input type="radio" checked={contentType === 'COLLECTION'} onChange={() => setContentType('COLLECTION')} /> 
+                                            Whole Collection
+                                        </label>
+                                    </div>
+                                    {contentType === 'CATEGORY' ? (
+                                        <select value={selectedCatId} onChange={(e) => setSelectedCatId(e.target.value)} className="w-full p-3 bg-gray-50 rounded-lg outline-none border border-gray-200">
+                                            <option value="">-- Choose Category --</option>
+                                            {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                                        </select>
+                                    ) : (
+                                        <select value={selectedColId} onChange={(e) => setSelectedColId(e.target.value)} className="w-full p-3 bg-gray-50 rounded-lg outline-none border border-gray-200">
+                                            <option value="">-- Choose Collection --</option>
+                                            {collections.map(col => <option key={col.id} value={col.id}>{col.name}</option>)}
+                                        </select>
+                                    )}
                                 </div>
                                 
                                 <div>
@@ -228,7 +250,7 @@ export default function StorefrontPage() {
 
                                 <button 
                                     onClick={handleAddSection}
-                                    className="w-full py-3 bg-black text-white rounded-xl font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors mt-4"
+                                    className="w-full py-3 bg-black text-white rounded-xl font-bold uppercase tracking-wider flex! items-center! justify-center! gap-2 hover:bg-gray-800 transition-colors mt-4"
                                 >
                                     Add to Feed <ArrowDown className="w-4 h-4" />
                                 </button>
