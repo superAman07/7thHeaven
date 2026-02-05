@@ -102,7 +102,7 @@ export default function CollectionsPage() {
                       <p className="text-xs font-bold tracking-widest uppercase text-yellow-500 mb-2">
                         {col._count?.categories || 0} Categories
                       </p>
-                      <h3 className="text-3xl font-serif font-medium mb-3 group-hover:text-yellow-100 transition-colors">
+                      <h3 className="text-3xl! font-serif! font-medium! mb-3! group-hover:text-yellow-100! transition-colors!">
                         {col.name}
                       </h3>
                       {col.description && (
