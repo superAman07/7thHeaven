@@ -200,6 +200,16 @@ export default function ProductsPage() {
     return () => { document.body.style.overflow = 'auto'; };
   }, [isPanelOpen]);
 
+  useEffect(() => {
+    if (name && !currentProduct) {
+       const generatedSlug = name.toLowerCase()
+        .trim()
+        .replace(/ /g, '-')       
+        .replace(/[^\w-]+/g, ''); 
+       setSlug(generatedSlug);
+    }
+  }, [name, currentProduct]);
+
   const resetForm = () => {
     setName('');
     setSlug('');

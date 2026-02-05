@@ -9,6 +9,7 @@ interface Category {
   slug: string;
   image?: string;
   createdAt: string;
+  collectionId?: string;
 }
 
 const CategoriesPage: React.FC = () => {
@@ -69,6 +70,16 @@ const CategoriesPage: React.FC = () => {
     };
   }, [isPanelOpen]);
 
+  useEffect(() => {
+    if (name && !currentCategory) {
+       const generatedSlug = name.toLowerCase()
+        .trim()
+        .replace(/ /g, '-')      
+        .replace(/[^\w-]+/g, '');
+       setSlug(generatedSlug);
+    }
+  }, [name, currentCategory]);
+
   const openPanelForNew = () => {
     setCurrentCategory(null);
     setName('');
@@ -82,6 +93,7 @@ const CategoriesPage: React.FC = () => {
     setName(category.name);
     setSlug(category.slug);
     setImage(category.image || '');
+    setCollectionId(category.collectionId || '');
     setIsPanelOpen(true);
   };
 
