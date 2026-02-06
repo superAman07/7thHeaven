@@ -138,7 +138,7 @@ export default function NavBar() {
         { href: '/', label: 'Home' },
         { href: '/collections', label: 'Collections' },
         { href: '/contact', label: 'Contact Us' },
-        { href: '/7th-heaven', label: 'EXCLUSIVE' },
+        { href: '/7th-heaven', label: '7th Heaven' },
     ];
 
     const mobileLinks = [
@@ -147,7 +147,7 @@ export default function NavBar() {
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact Us' },
         { href: '/track-order', label: 'Track Order' },
-        { href: '/7th-heaven', label: 'EXCLUSIVE' },
+        { href: '/7th-heaven', label: '7th Heaven' },
     ];
 
     return (
@@ -170,15 +170,28 @@ export default function NavBar() {
                                 <a 
                                     key={l.label}
                                     href={l.href}
-                                    className={`relative group text-[13px]! font-semibold! uppercase! transition-colors! duration-300! hover:text-[#D4AF37]! ${
-                                        l.label === 'EXCLUSIVE'
-                                            ? 'text-[#D4AF37]! tracking-[0.2em]!'
-                                            : `tracking-widest! ${isSticky ? 'text-white!' : 'text-white!'}`
+                                    className={`relative group font-bold! uppercase! transition-all! duration-300! flex! items-center! justify-center! ${
+                                        l.label === '7th Heaven'
+                                            ? `px-4! py-3! rounded-md! shadow-md! overflow-hidden! leading-none! ${
+                                                isSticky 
+                                                    ? 'bg-white! text-[#D4AF37]!'
+                                                    : 'bg-[#D4AF37]! text-white!'
+                                            }`
+                                            : `text-[13px]! tracking-widest! hover:text-[#D4AF37]! ${isSticky ? 'text-white!' : 'text-white!'}`
                                     }`}
                                 >
-                                    {l.label}
-                                    {l.label === 'EXCLUSIVE' && (
-                                        <span className="absolute -bottom-2 left-0 w-full h-[1.5px] bg-[#D4AF37] shadow-[0_0_10px_#D4AF37] scale-x-100 transition-transform duration-500 ease-out origin-left group-hover:scale-x-100"></span>
+                                    {l.label === '7th Heaven' ? (
+                                        <>
+                                            <span className="text-[14px]! tracking-[0.15em] relative z-10 pl-2">7TH HEAVEN</span>  
+                                            <span className="absolute! top-[8px]! -left-[22px]! w-[70px]! rotate-[-45deg]! bg-red-600! text-white! text-[7px]! font-bold! tracking-wider! text-center! py-[1.5px]! shadow-sm! z-20! pointer-events-none!">
+                                                EXCLUSIVE
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {l.label}
+                                            <span className="absolute -bottom-2 left-0 w-full h-[1.5px] bg-[#D4AF37] shadow-[0_0_10px_#D4AF37] scale-x-0 transition-transform duration-500 ease-out origin-left group-hover:scale-x-100"></span>
+                                        </>
                                     )}
                                 </a>
                             ))}
