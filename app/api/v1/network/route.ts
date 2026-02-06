@@ -2,6 +2,57 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserIdFromToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 
+/**
+ * @swagger
+ * /api/v1/network:
+ *   get:
+ *     summary: Get Network Dashboard
+ *     description: >
+ *       Returns the user's MLM dashboard data, including level progress (1-7), total team size, 
+ *       and direct referral list.
+ *     tags:
+ *       - Network
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dashboard statistics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 fullName:
+ *                   type: string
+ *                 referralCode:
+ *                   type: string
+ *                 totalTeamSize:
+ *                   type: integer
+ *                 levels:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       level:
+ *                         type: integer
+ *                       count:
+ *                         type: integer
+ *                       target:
+ *                         type: integer
+ *                       isCompleted:
+ *                         type: boolean
+ *                 directReferrals:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                       joinedAt:
+ *                         type: string
+ *                         format: date
+ */
+
 export async function GET(req: NextRequest) {
     try {
         const userId = await getUserIdFromToken(req);

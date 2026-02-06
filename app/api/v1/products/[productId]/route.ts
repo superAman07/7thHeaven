@@ -1,6 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProductById } from '@/services/product';
 
+/**
+ * @swagger
+ * /api/v1/products/{id}:
+ *   get:
+ *     summary: Get Product by ID
+ *     tags:
+ *       - Products
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Product details
+ */
+
 export async function GET(
     req: NextRequest,
     { params }: { params: Promise<{ productId: string }> }

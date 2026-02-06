@@ -2,6 +2,46 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserIdFromToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 
+/**
+ * @swagger
+ * /api/v1/network/graph:
+ *   get:
+ *     summary: Get Network Galaxy Graph
+ *     description: >
+ *       Returns a recursive tree structure for D3.js or React Flow visualization.
+ *       **Structure:** Node -> Children[] -> Children[] (up to 7 levels deep).
+ *     tags:
+ *       - Network
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - name: targetUserId
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: (Admin Only) View a specific user's galaxy.
+ *     responses:
+ *       200:
+ *         description: Recursive tree object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 level:
+ *                   type: integer
+ *                 children:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     description: Recursive Order Node
+ */
+
 const formatNode = (user: any, level: number = 0): any => {
     const children = user.children ? user.children.map((c: any) => formatNode(c, level + 1)) : [];
     const teamSize = children.reduce((acc: number, child: any) => {

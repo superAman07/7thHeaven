@@ -4,6 +4,35 @@ import { getUserIdFromToken } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * @swagger
+ * /api/v1/products/club:
+ *   get:
+ *     summary: Get Club Products (7th Heaven Scheme)
+ *     description: >
+ *       Returns a curated list of products eligible for the 7th Heaven Scheme. 
+ *       **Logic:** Fetches products with price <= Admin Configured Limit (Default: 4000).
+ *     tags:
+ *       - Products
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of eligible club products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 maxPriceLimit:
+ *                   type: number
+ *                   description: The current price cap set by admin
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ */
+
 export async function GET(req: NextRequest) {
     try {
         // 1. Authorization Check (Optional: If you only want Members to see this)

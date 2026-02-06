@@ -6,6 +6,85 @@ import uniqid from 'uniqid';
 import { sendNotification } from '@/lib/notifications';
 import { sendOrderConfirmation } from '@/lib/email';
 
+/**
+ * @swagger
+ * /api/v1/orders:
+ *   get:
+ *     summary: Get Order History
+ *     description: Returns a list of past orders for the logged-in user.
+ *     tags:
+ *       - Orders
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of orders with items
+ *   post:
+ *     summary: Place Order (Checkout)
+ *     description: Creates a new order. This is the **Checkout** endpoint.
+ *     tags:
+ *       - Orders
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - items
+ *               - shippingDetails
+ *             properties:
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     productId:
+ *                       type: string
+ *                     quantity:
+ *                       type: integer
+ *                     variantId:
+ *                       type: string
+ *               shippingDetails:
+ *                 type: object
+ *                 properties:
+ *                   fullName:
+ *                     type: string
+ *                   phone:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   fullAddress:
+ *                     type: string
+ *                   city:
+ *                     type: string
+ *                   state:
+ *                     type: string
+ *                   pincode:
+ *                     type: string
+ *                   country:
+ *                     type: string
+ *               mlmOptIn:
+ *                 type: boolean
+ *                 description: "If true, user becomes a 7th Heaven Member"
+ *     responses:
+ *       200:
+ *         description: Order placed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 orderId:
+ *                   type: string
+ *                 totalAmount:
+ *                   type: number
+ */
+
 function generateReferralCode() {
     return '7H-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 }

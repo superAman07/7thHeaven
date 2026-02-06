@@ -2,6 +2,42 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromToken } from '@/lib/auth';
 
+/**
+ * @swagger
+ * /api/v1/wishlist:
+ *   get:
+ *     summary: Get Wishlist
+ *     tags:
+ *       - Wishlist
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of wishlist items
+ *   post:
+ *     summary: Add to Wishlist
+ *     tags:
+ *       - Wishlist
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *             properties:
+ *               productId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Added to wishlist
+ *       400:
+ *         description: Already in wishlist
+ */
+
 export async function GET(req: NextRequest) {
     try {
         const userId = await getUserIdFromToken(req);

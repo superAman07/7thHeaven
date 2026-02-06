@@ -3,6 +3,37 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromToken } from '@/lib/auth';
 
+/**
+ * @swagger
+ * /api/v1/orders/cancel:
+ *   post:
+ *     summary: Cancel Order
+ *     description: Cancels an active order if it is not yet delivered/shipped.
+ *     tags:
+ *       - Orders
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - orderId
+ *             properties:
+ *               orderId:
+ *                 type: string
+ *               reason:
+ *                 type: string
+ *                 example: "Changed my mind"
+ *     responses:
+ *       200:
+ *         description: Order cancelled successfully
+ *       400:
+ *         description: Order cannot be cancelled (e.g. already delivered)
+ */
+
 export async function POST(req: NextRequest) {
     try {
         const userId = await getUserIdFromToken(req);

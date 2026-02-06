@@ -2,6 +2,35 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
+/**
+ * @swagger
+ * /api/v1/orders/track:
+ *   post:
+ *     summary: Track Order (Guest)
+ *     description: Track an order using Order ID and Phone Number (without login).
+ *     tags:
+ *       - Orders
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - orderId
+ *               - phone
+ *             properties:
+ *               orderId:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Order details found
+ *       404:
+ *         description: Order not found
+ */
+
 const trackSchema = z.object({
     orderId: z.string().min(1, "Order ID is required"),
     phone: z.string().min(10, "Valid phone number is required"),

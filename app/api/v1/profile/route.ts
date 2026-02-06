@@ -4,6 +4,90 @@ import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs'; 
 import { sendOTPEmail } from '@/lib/email';
 
+/**
+ * @swagger
+ * /api/v1/profile:
+ *   get:
+ *     summary: Get Full Profile
+ *     description: Returns detailed profile info including address and referral code.
+ *     tags:
+ *       - Profile
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile data
+ *   post:
+ *     summary: Request Profile Update OTP
+ *     description: Request OTP to verify phone/email change.
+ *     tags:
+ *       - Profile
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - type
+ *               - value
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [email, phone]
+ *               value:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: OTP sent
+ *   put:
+ *     summary: Update Profile
+ *     description: >
+ *       Update profile details. 
+ *       **Note:** Changing Phone/Email requires `otp`. 
+ *       Changing Password requires `currentPassword`.
+ *     tags:
+ *       - Profile
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *               fullAddress:
+ *                 type: string
+ *               city:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *               pincode:
+ *                 type: string
+ *               country:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               otp:
+ *                 type: string
+ *                 description: Required if changing phone/email
+ *               newPassword:
+ *                 type: string
+ *               currentPassword:
+ *                 type: string
+ *                 description: Required if setting newPassword
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ */
+
 export async function GET(req: NextRequest) {
     try {
         const userId = await getUserIdFromToken(req);

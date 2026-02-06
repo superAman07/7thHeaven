@@ -2,6 +2,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
+/**
+ * @swagger
+ * /api/v1/products/slug/{slug}:
+ *   get:
+ *     summary: Get Product by Slug
+ *     description: Fetch detailed product info including variants and related products via URL slug.
+ *     tags:
+ *       - Products
+ *     parameters:
+ *       - name: slug
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: "midnight-rose-perfume"
+ *     responses:
+ *       200:
+ *         description: Product details + Related Products
+ */
+
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ slug: string }> }
