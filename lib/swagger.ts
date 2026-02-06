@@ -1,8 +1,9 @@
 import { createSwaggerSpec } from 'next-swagger-doc';
+import path from 'path';
 
 export const getApiDocs = async () => {
   const spec = createSwaggerSpec({
-    apiFolder: 'app/api', // 👈 This scans your API folder for docs!
+    apiFolder: path.join(process.cwd(), 'app/api'), 
     definition: {
       openapi: '3.0.0',
       info: {
@@ -27,6 +28,7 @@ export const getApiDocs = async () => {
             - **Colors:** Gold (Active), Gray (Inactive)
             ## 🔐 Authentication
             All endpoints (except Login/Register) require a Bearer Token.
+            
             Header: \`Authorization: Bearer <token>\`
             `,
       },
