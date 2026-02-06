@@ -10,6 +10,26 @@ import { getUserIdFromToken } from '@/lib/auth';
 import * as jose from 'jose';
 import prisma from '@/lib/prisma';
 
+/**
+ * @swagger
+ * /api/v1/content/{section}:
+ *   get:
+ *     summary: Get Site Content (Banners)
+ *     description: Fetch dynamic content like Home Banners or About Us text.
+ *     tags:
+ *       - Content
+ *     parameters:
+ *       - name: section
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [home_sections, home_about, global_settings]
+ *     responses:
+ *       200:
+ *         description: JSON content object
+ */
+
 const getDefaultForSection = (section: string) => {
     switch (section) {
         case 'global_settings':

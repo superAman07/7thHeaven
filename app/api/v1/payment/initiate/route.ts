@@ -3,6 +3,44 @@ import prisma from '@/lib/prisma';
 import crypto from 'crypto';
 import uniqid from 'uniqid';
 
+/**
+ * @swagger
+ * /api/v1/payment/initiate:
+ *   post:
+ *     summary: Initiate Payment (Generic/PayU)
+ *     description: >
+ *       Initiates a payment transaction. 
+ *       **Note:** Currently pending final integration with PayU/Gateway.
+ *     tags:
+ *       - Payment
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - orderId
+ *             properties:
+ *               orderId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Payment initialized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 paymentUrl:
+ *                   type: string
+ *                   description: "Gateway URL (Pending)"
+ */
+
 export async function POST(req: NextRequest) {
     try {
         const { orderId } = await req.json();
@@ -23,7 +61,7 @@ export async function POST(req: NextRequest) {
 
         // 2. Prepare the payment payload for PhonePe
         const amountInPaise = order.subtotal.toNumber() * 100;
-        const merchantTransactionId = uniqid(); 
+        const merchantTransactionId = uniqid();
 
         await prisma.order.update({
             where: { id: orderId },
@@ -49,7 +87,7 @@ export async function POST(req: NextRequest) {
         const base64Payload = Buffer.from(payloadString).toString('base64');
         const saltKey = process.env.PHONEPE_SALT_KEY;
         const saltIndex = process.env.PHONEPE_SALT_INDEX;
-        
+
         const stringToHash = `${base64Payload}/pg/v1/pay${saltKey}`;
         const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
         const checksum = `${sha256}###${saltIndex}`;

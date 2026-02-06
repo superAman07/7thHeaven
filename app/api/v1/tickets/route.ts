@@ -3,6 +3,47 @@ import { getUserIdFromToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { sendTicketConfirmationEmail } from '@/lib/email';
 
+/**
+ * @swagger
+ * /api/v1/tickets:
+ *   get:
+ *     summary: Get Support Tickets
+ *     tags:
+ *       - Support
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of tickets
+ *   post:
+ *     summary: Create Support Ticket
+ *     tags:
+ *       - Support
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - subject
+ *               - category
+ *               - message
+ *             properties:
+ *               subject:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *                 enum: [Order Issue, Payment, Product, Other]
+ *               message:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Ticket created
+ */
+
 // GET - Fetch user's tickets
 export async function GET(req: NextRequest) {
     try {

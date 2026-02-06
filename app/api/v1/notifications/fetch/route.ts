@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromToken } from '@/lib/auth';
 
+/**
+ * @swagger
+ * /api/v1/notifications/fetch:
+ *   get:
+ *     summary: Get Notifications
+ *     description: Fetch last 50 notifications for the user.
+ *     tags:
+ *       - Notifications
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of notifications + unread count
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const userId = await getUserIdFromToken(req);

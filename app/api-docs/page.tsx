@@ -13,7 +13,7 @@ const SwaggerUI = dynamic<{ url: string }>(
 
 export default function ApiDocPage() {
   return (
-    <div className="bg-white min-h-screen">
+    <div className=" min-h-screen">
        <SwaggerUI url="/api/v1/doc" />
     </div>
   );
