@@ -68,26 +68,33 @@ export default function WishlistPage() {
     return (
         <div id="main-wrapper">
             <div 
-                className="page-banner-section section min-h-[30vh]! lg:min-h-[45vh]! flex! items-end! pb-[30px]! lg:pb-[40px]!" 
+                className="page-banner-section section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]!" 
                 style={{ 
                     background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)',
                 }}
             >
-                <div className="container">
+                <div className="container-fluid px-4 px-md-5">
                     <div className="row">
-                        <div className="col">
-                            <div className="page-banner text-center">
-                                <h1>Wishlist</h1>
-                                <ul className="page-breadcrumb">
-                                    <li><Link href="/">Home</Link></li>
-                                    <li>Wishlist</li>
-                                </ul>
+                        <div className="col-12 p-0">
+                            <div className="page-banner w-100 d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-end">
+                                <div className="order-2 order-md-1 mt-2 mt-md-0">
+                                    <ul className="page-breadcrumb justify-content-center justify-content-md-start mb-0!" style={{ fontSize: '14px' }}>
+                                        <li><Link href="/" className="hover:text-[#D4AF37] transition-colors">Home</Link></li>
+                                        <li className="text-white/80">Wishlist</li>
+                                    </ul>
+                                </div>
+
+                                <div className="order-1 order-md-2 text-center text-md-end">
+                                    <h1 className="text-white! mb-0!" style={{ fontSize: 'clamp(22px, 3vw, 36px)', lineHeight: 1.1, letterSpacing: '0.05em' }}>
+                                        Wishlist
+                                    </h1>
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {/* Page Banner Section End */}
 
             {/* Wishlist section start */}
             <div className="wishlist-section section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-70 pb-lg-50 pb-md-40 pb-sm-30 pb-xs-20">
