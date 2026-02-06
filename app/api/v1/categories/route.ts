@@ -3,6 +3,18 @@ import { getCategories } from '@/services/product';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
+/**
+ * @swagger
+ * /api/v1/categories:
+ *   get:
+ *     summary: List all Categories
+ *     tags:
+ *       - Categories
+ *     responses:
+ *       200:
+ *         description: A list of categories
+ */
+
 const categorySchema = z.object({
     name: z.string().min(1),
     slug: z.string().min(1),

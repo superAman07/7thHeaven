@@ -6,6 +6,40 @@ import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import { sendWelcomeEmail } from '@/lib/email';
 
+/**
+ * @swagger
+ * /api/v1/auth/set-password:
+ *   post:
+ *     summary: Register - Step 3 (Set Password)
+ *     description: Finalize registration by setting the password using the verification token from Step 2.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - verificationToken
+ *               - password
+ *             properties:
+ *               verificationToken:
+ *                 type: string
+ *                 description: The JWT token received from /verify-otp
+ *               password:
+ *                 type: string
+ *                 description: New password (min 8 chars, 1 upper, 1 lower, 1 number, 1 special)
+ *                 example: "SecurePass123!"
+ *     responses:
+ *       200:
+ *         description: Account created and logged in successfully
+ *       400:
+ *         description: Password requirements not met
+ *       401:
+ *         description: Invalid or expired token
+ */
+
 const setPasswordSchema = z.object({
   verificationToken: z.string(),
   password: z.string()

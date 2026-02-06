@@ -4,6 +4,33 @@ import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { sendOTPEmail } from '@/lib/email';
 
+/**
+ * @swagger
+ * /api/v1/auth/request-login-otp:
+ *   post:
+ *     summary: Request Login OTP (Passwordless)
+ *     description: Sends an OTP to the registered email for passwordless login.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "user@example.com"
+ *     responses:
+ *       200:
+ *         description: OTP sent successfully
+ *       404:
+ *         description: User not found
+ */
+
 const requestLoginOtpSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
 });

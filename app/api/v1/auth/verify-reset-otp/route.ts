@@ -2,6 +2,37 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 
+/**
+ * @swagger
+ * /api/v1/auth/verify-reset-otp:
+ *   post:
+ *     summary: Forgot Password - Step 2 (Verify OTP)
+ *     description: Verifies the OTP sent to the email during password recovery.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - otp
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "user@example.com"
+ *               otp:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: OTP verified successfully
+ *       400:
+ *         description: Invalid OTP
+ */
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();

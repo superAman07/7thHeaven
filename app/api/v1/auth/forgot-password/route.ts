@@ -3,6 +3,31 @@ import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { sendOTPEmail } from '@/lib/email';
 
+/**
+ * @swagger
+ * /api/v1/auth/forgot-password:
+ *   post:
+ *     summary: Forgot Password
+ *     description: Sends a generic 6-digit OTP to the email if it exists.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "user@example.com"
+ *     responses:
+ *       200:
+ *         description: OTP sent (always returns 200 for security)
+ */
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();

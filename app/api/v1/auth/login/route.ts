@@ -5,6 +5,39 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 
+/**
+ * @swagger
+ * /api/v1/auth/login:
+ *   post:
+ *     summary: User Login (Password)
+ *     description: Authenticate using Email or Phone + Password.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - identifier
+ *               - password
+ *             properties:
+ *               identifier:
+ *                 type: string
+ *                 description: Registered Email OR Phone Number
+ *                 example: "user@example.com"
+ *               password:
+ *                 type: string
+ *                 description: User's password
+ *                 example: "securePass123"
+ *     responses:
+ *       200:
+ *         description: Login successful. Returns User object and sets 'session_token' cookie.
+ *       401:
+ *         description: Invalid credentials
+ */
+
 const loginSchema = z.object({
   identifier: z.string().min(1, 'Email or phone number is required'),
   password: z.string().min(1, 'Password is required'),

@@ -2,7 +2,18 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
-// Validation Schema
+/**
+ * @swagger
+ * /api/v1/collections:
+ *   get:
+ *     summary: List all Collections
+ *     description: Returns top-level collections (e.g. Gift Sets, Perfumes)
+ *     tags:
+ *       - Collections
+ *     responses:
+ *       200:
+ *         description: A list of collections
+ */
 const collectionSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   slug: z.string().min(1, 'Slug is required'),
@@ -15,8 +26,8 @@ export async function GET() {
   try {
     const collections = await prisma.collection.findMany({
       include: {
-        _count: { select: { categories: true } }, // Count how many categories inside
-        categories: true, // Return the categories too
+        _count: { select: { categories: true } },
+        categories: true,
       },
       orderBy: { createdAt: 'asc' },
     });
@@ -29,7 +40,6 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    // 🛡️ Admin Check Logic (Skipped for brevity, assume Middleware handles it)
     const body = await req.json();
     const validation = collectionSchema.safeParse(body);
 

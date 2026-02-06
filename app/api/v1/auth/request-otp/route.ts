@@ -4,6 +4,38 @@ import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { sendOTPEmail } from '@/lib/email';
 
+/**
+ * @swagger
+ * /api/v1/auth/request-otp:
+ *   post:
+ *     summary: Register - Step 1 (Request OTP)
+ *     description: >
+ *       Initiates registration by sending an OTP.
+ *       **IMPORTANT:** Currently, OTPs are sent ONLY via Email. 
+ *       Do not expect SMS even if phone number is collected later.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: The user's email address (OTP will be sent here)
+ *                 example: "newuser@example.com"
+ *     responses:
+ *       200:
+ *         description: OTP sent successfully
+ *       400:
+ *         description: Email is already registered
+ */
+
 const requestOtpSchema = z.object({
   fullName: z.string().min(3, { message: 'Full name must be at least 3 characters long' }),
   email: z.string().email({ message: 'Please enter a valid email address' }),

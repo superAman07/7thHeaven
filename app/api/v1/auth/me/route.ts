@@ -2,6 +2,37 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromToken } from '@/lib/auth';
 
+/**
+ * @swagger
+ * /api/v1/auth/me:
+ *   get:
+ *     summary: Get Current User Profile
+ *     description: Returns the currently logged-in user's details based on the session cookie.
+ *     tags:
+ *       - Auth
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     fullName:
+ *                       type: string
+ *       401:
+ *         description: Not authenticated
+ */
+
 export async function GET(req: NextRequest) {
     try {
         const userId = await getUserIdFromToken(req);

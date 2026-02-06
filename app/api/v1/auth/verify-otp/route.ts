@@ -5,6 +5,38 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 
+/**
+ * @swagger
+ * /api/v1/auth/verify-otp:
+ *   post:
+ *     summary: Register - Step 2 (Verify OTP)
+ *     description: Verify the code sent to the user's email.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - otp
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "newuser@example.com"
+ *               otp:
+ *                 type: string
+ *                 description: The 6-digit code received via Email
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Email verified successfully
+ *       400:
+ *         description: Invalid or expired OTP
+ */
+
 const verifyOtpSchema = z.object({
   phone: z.string().regex(/^\d{10}$/, { message: 'Phone number must be 10 digits' }),
   otp: z.string().length(6, { message: 'OTP must be 6 digits' }),
