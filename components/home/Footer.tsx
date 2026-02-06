@@ -71,11 +71,16 @@ export default function FooterPage({
             <div className="row row-25">            
               
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
-                <h4 className="title">
-                  <span className="text">The Celsius Story</span>
-                </h4>
-                <p>{aboutText}</p>
-              </div>
+                <div className="footer-logo w-full! flex! justify-center! md:justify-start!">
+                    <Link href="/">
+                        <img 
+                            src="/celsius-logo.png" 
+                            alt="7th Heaven" 
+                            className="w-full! max-w-[220px]! object-contain! h-auto!" 
+                        />
+                    </Link>
+                </div>
+            </div>
 
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 
@@ -157,12 +162,16 @@ export default function FooterPage({
                 </div>
               </div>
               <div className="col-lg-6 col-md-6 col-sm-4">
-                <div className="footer-logo text-end">
-                  <Link href="/">
-                    <img src={displayLogo} alt="logo" style={{ height: 30 }} />
-                  </Link>
+                <div className="footer-payment w-full! flex! justify-center! md:justify-end! mt-4! md:mt-0!">
+                    <div className="payment-icons flex! items-center! gap-4! text-[24px]! text-[#888]!">
+                        <i className="fa fa-cc-visa hover:text-white! transition-colors!" title="Visa"></i>
+                        <i className="fa fa-cc-mastercard hover:text-white! transition-colors!" title="MasterCard"></i>
+                        <i className="fa fa-cc-amex hover:text-white! transition-colors!" title="Amex"></i>
+                        <i className="fa fa-cc-paypal hover:text-white! transition-colors!" title="PayPal"></i>
+                        <i className="fa fa-credit-card hover:text-white! transition-colors!" title="UPI / Others"></i>
+                    </div>
                 </div>
-              </div>
+            </div>
             </div>
           </div>
         </div>
