@@ -14,10 +14,16 @@ const SliderSection = () => {
             .hero-text-overlay {
                 padding-top: 20px;
             }
+            .hero-btn {
+                margin-top: 70px !important; 
+            }
         }
         @media (min-width: 768px) {
             .hero-text-overlay {
-                margin-top: 70vh !important; 
+                margin-top: 70vh !important;
+            }
+            .hero-btn {
+                margin-top: 1.5rem !important; 
             }
         }
       `}</style>
@@ -31,9 +37,9 @@ const SliderSection = () => {
               <div className="col-lg-10 col-12">
                 <div className="hero-text-overlay d-flex flex-column align-items-center justify-content-end" 
                   style={{ 
-                      marginTop: '70vh', // Default (Mobile): Push 60% down
-                      minHeight: '200px', // Ensure container has size
-                      paddingBottom: '50px' // Add cushion from bottom
+                      marginTop: '60vh',
+                      minHeight: '200px',
+                      paddingBottom: '50px'
                   }}>
                 <h1 className="text-center mb-0" 
                     style={{ 
@@ -48,7 +54,7 @@ const SliderSection = () => {
                 
                 <a 
                   href="/collections/perfumes" 
-                  className="hero-btn mt-4" 
+                  className="hero-btn" 
                   style={{ position: 'static', transform: 'none' }} 
                 >
                   Shop The Collection
