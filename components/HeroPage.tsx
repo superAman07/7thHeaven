@@ -1,17 +1,9 @@
 import prisma from "@/lib/prisma";
 import AboutUsAreaSection from "./home/AboutUsArea";
-// import CategoryGender from "./home/CategoryGender";
 import FeatureSectionPage from "./home/FeatureSection";
-import FooterPage from "./home/Footer";
-import HowItWorksPage from "./home/HowItWorks";
-import NavBar from "./home/NavBar";
-// import ProductSection2 from "./home/ProductSection2";
 import SliderSection from "./home/SliderSection";
 import { Suspense } from "react";
 import { ProductCardSkeleton } from './home/ProductCardSkeleton';
-// import BestSellersSection from "./home/BestSellersSection";
-import { ProductSection2Skeleton } from "./home/ProductSection2Skeleton";
-// import TabbedProductsSection from "./home/TabbedProductsSection";
 import { GenderTags } from "@prisma/client";
 import CollectionRow from "./home/CollectionRow";
 import FloatingHeavenButton from "./home/FloatingHeavenButton";
@@ -92,7 +84,6 @@ export default async function HeroPage() {
                     />
                 </Suspense>
             ))}
-            <HowItWorksPage />
             <AboutUsAreaSection data={aboutContent} />
             <FeatureSectionPage />
         </div>
