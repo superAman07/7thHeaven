@@ -215,7 +215,11 @@ export default function NavBar() {
                                 <img 
                                     src="/celsius-logo.png" 
                                     alt="logo" 
-                                    className={`transition-all! duration-500! object-contain! ${isSticky ? 'h-[50px]! md:h-[60px]!' : 'h-[90px]! md:h-[120px]!'}`}
+                                    className={`transition-all! duration-500! ease-in-out! object-contain! ${
+                                        isSticky 
+                                            ? 'h-[50px]! md:h-[60px]!'
+                                            : 'h-[160px]! md:h-[280px]! mt-[140px]!'
+                                    }`}
                                 />
                             </a>
                         </div>
