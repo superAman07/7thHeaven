@@ -3,7 +3,7 @@
   "info": {
     "title": "Celsius API",
     "version": "1.0",
-    "description": "\n            # Celsius Mobile API\n            ## 🌟 The 7th Heaven Scheme (Business Logic)\n            The core of the app is the \"7th Heaven\" MLM structure.\n            - **Goal:** Users must unlock **7 Levels** of referrals.\n            - **Structure:** 5x5 Matrix (Target grows by power of 5).\n            - **Active Status:** A user is ONLY 'Active' if they have purchased a **Club Essential** product (Price < Limit, default 4000).\n            ### 🏆 Level Targets\n            1. **Level 1:** 5 Direct Referrals\n            2. **Level 2:** 25 Team Members\n            3. **Level 3:** 125 Team Members\n            ... and so on up to Level 7 (78,125).\n            ### 🌌 Visualizing the Galaxy\n            Use the `/network/graph` endpoint to render the tree.\n            - **Nodes:** Users\n            - **Links:** Referral connections\n            - **Colors:** Gold (Active), Gray (Inactive)\n            ## 🔐 Authentication\n            All endpoints (except Login/Register) require a Bearer Token.\n            \n            Header: `Authorization: Bearer <token>`\n            "
+    "description": "Celsius Mobile API Documentation"
   },
   "components": {
     "securitySchemes": {
@@ -14,7 +14,1458 @@
       }
     }
   },
-  "security": [],
-  "paths": {},
+  "paths": {
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "summary": "Forgot Password",
+        "description": "Sends a generic 6-digit OTP to the email if it exists.",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP sent (always returns 200 for security)"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "User Login (Password)",
+        "description": "Authenticate using Email or Phone + Password.",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "identifier",
+                  "password"
+                ],
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "description": "Registered Email OR Phone Number",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "User's password",
+                    "example": "securePass123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful. Returns User object and sets 'session_token' cookie."
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "summary": "Logout",
+        "description": "Clears the session cookie.",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged out successfully"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "summary": "Get Current User Profile",
+        "description": "Returns the currently logged-in user's details based on the session cookie.",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "fullName": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/request-login-otp": {
+      "post": {
+        "summary": "Request Login OTP (Passwordless)",
+        "description": "Sends an OTP to the registered email for passwordless login.",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP sent successfully"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/request-otp": {
+      "post": {
+        "summary": "Register - Step 1 (Request OTP)",
+        "description": "Initiates registration by sending an OTP. **IMPORTANT:** Currently, OTPs are sent ONLY via Email.  Do not expect SMS even if phone number is collected later.\n",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "The user's email address (OTP will be sent here)",
+                    "example": "newuser@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP sent successfully"
+          },
+          "400": {
+            "description": "Email is already registered"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "summary": "Forgot Password - Step 3 (Reset)",
+        "description": "Resets the user's password using the verified OTP.",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "otp",
+                  "newPassword"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "description": "The valid OTP is required again for security",
+                    "example": "123456"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "example": "NewSecurePass123!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/set-password": {
+      "post": {
+        "summary": "Register - Step 3 (Set Password)",
+        "description": "Finalize registration by setting the password using the verification token from Step 2.",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "verificationToken",
+                  "password"
+                ],
+                "properties": {
+                  "verificationToken": {
+                    "type": "string",
+                    "description": "The JWT token received from /verify-otp"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "New password (min 8 chars, 1 upper, 1 lower, 1 number, 1 special)",
+                    "example": "SecurePass123!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account created and logged in successfully"
+          },
+          "400": {
+            "description": "Password requirements not met"
+          },
+          "401": {
+            "description": "Invalid or expired token"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify-otp": {
+      "post": {
+        "summary": "Register - Step 2 (Verify OTP)",
+        "description": "Verify the code sent to the user's email.",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "otp"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "newuser@example.com"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "description": "The 6-digit code received via Email",
+                    "example": "123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified successfully"
+          },
+          "400": {
+            "description": "Invalid or expired OTP"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify-reset-otp": {
+      "post": {
+        "summary": "Forgot Password - Step 2 (Verify OTP)",
+        "description": "Verifies the OTP sent to the email during password recovery.",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "otp"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "example": "123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP verified successfully"
+          },
+          "400": {
+            "description": "Invalid OTP"
+          }
+        }
+      }
+    },
+    "/api/v1/cart": {
+      "get": {
+        "summary": "Get Cart Items",
+        "description": "Retrieves the current user's cart with details (images, variants, stock).",
+        "tags": [
+          "Cart"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cart details"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add Item to Cart",
+        "description": "Adds a product (and optional variant) to the cart.",
+        "tags": [
+          "Cart"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "productId",
+                  "quantity"
+                ],
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "description": "CUID of the product"
+                  },
+                  "variantId": {
+                    "type": "string",
+                    "description": "(Optional) CUID of the specific variant (size/color)"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "default": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item added successfully and returns updated cart"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Cart Quantity",
+        "tags": [
+          "Cart"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "productId",
+                  "quantity"
+                ],
+                "properties": {
+                  "productId": {
+                    "type": "string"
+                  },
+                  "variantId": {
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "description": "New total quantity (must be > 0)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cart updated"
+          },
+          "400": {
+            "description": "Stock limit exceeded or invalid quantity"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove Item from Cart",
+        "tags": [
+          "Cart"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "productId"
+                ],
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "description": "The 'productId' or 'productId-variantId' composite ID"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item removed"
+          }
+        }
+      }
+    },
+    "/api/v1/categories": {
+      "get": {
+        "summary": "List all Categories",
+        "tags": [
+          "Categories"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of categories"
+          }
+        }
+      }
+    },
+    "/api/v1/collections": {
+      "get": {
+        "summary": "List all Collections",
+        "description": "Returns top-level collections (e.g. Gift Sets, Perfumes)",
+        "tags": [
+          "Collections"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of collections"
+          }
+        }
+      }
+    },
+    "/api/v1/content/{section}": {
+      "get": {
+        "summary": "Get Site Content (Banners)",
+        "description": "Fetch dynamic content like Home Banners or About Us text.",
+        "tags": [
+          "Content"
+        ],
+        "parameters": [
+          {
+            "name": "section",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "home_sections",
+                "home_about",
+                "global_settings"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON content object"
+          }
+        }
+      }
+    },
+    "/api/v1/network/graph": {
+      "get": {
+        "summary": "Get Network Galaxy Graph",
+        "description": "Returns a recursive tree structure for D3.js or React Flow visualization. **Structure:** Node -> Children[] -> Children[] (up to 7 levels deep).\n",
+        "tags": [
+          "Network"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "targetUserId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "(Admin Only) View a specific user's galaxy."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recursive tree object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "level": {
+                      "type": "integer"
+                    },
+                    "children": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "Recursive Order Node"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/network": {
+      "get": {
+        "summary": "Get Network Dashboard",
+        "description": "Returns the user's MLM dashboard data, including level progress (1-7), total team size,  and direct referral list.\n",
+        "tags": [
+          "Network"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fullName": {
+                      "type": "string"
+                    },
+                    "referralCode": {
+                      "type": "string"
+                    },
+                    "totalTeamSize": {
+                      "type": "integer"
+                    },
+                    "levels": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "level": {
+                            "type": "integer"
+                          },
+                          "count": {
+                            "type": "integer"
+                          },
+                          "target": {
+                            "type": "integer"
+                          },
+                          "isCompleted": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    },
+                    "directReferrals": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "joinedAt": {
+                            "type": "string",
+                            "format": "date"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/fetch": {
+      "get": {
+        "summary": "Get Notifications",
+        "description": "Fetch last 50 notifications for the user.",
+        "tags": [
+          "Notifications"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of notifications + unread count"
+          }
+        }
+      }
+    },
+    "/api/v1/orders/cancel": {
+      "post": {
+        "summary": "Cancel Order",
+        "description": "Cancels an active order if it is not yet delivered/shipped.",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "orderId"
+                ],
+                "properties": {
+                  "orderId": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "example": "Changed my mind"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order cancelled successfully"
+          },
+          "400": {
+            "description": "Order cannot be cancelled (e.g. already delivered)"
+          }
+        }
+      }
+    },
+    "/api/v1/orders": {
+      "get": {
+        "summary": "Get Order History",
+        "description": "Returns a list of past orders for the logged-in user.",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of orders with items"
+          }
+        }
+      },
+      "post": {
+        "summary": "Place Order (Checkout)",
+        "description": "Creates a new order. This is the **Checkout** endpoint.",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "items",
+                  "shippingDetails"
+                ],
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "productId": {
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "type": "integer"
+                        },
+                        "variantId": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "shippingDetails": {
+                    "type": "object",
+                    "properties": {
+                      "fullName": {
+                        "type": "string"
+                      },
+                      "phone": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "fullAddress": {
+                        "type": "string"
+                      },
+                      "city": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string"
+                      },
+                      "pincode": {
+                        "type": "string"
+                      },
+                      "country": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "mlmOptIn": {
+                    "type": "boolean",
+                    "description": "If true, user becomes a 7th Heaven Member"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order placed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "orderId": {
+                      "type": "string"
+                    },
+                    "totalAmount": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/track": {
+      "post": {
+        "summary": "Track Order (Guest)",
+        "description": "Track an order using Order ID and Phone Number (without login).",
+        "tags": [
+          "Orders"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "orderId",
+                  "phone"
+                ],
+                "properties": {
+                  "orderId": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order details found"
+          },
+          "404": {
+            "description": "Order not found"
+          }
+        }
+      }
+    },
+    "/api/v1/payment/initiate": {
+      "post": {
+        "summary": "Initiate Payment (Generic/PayU)",
+        "description": "Initiates a payment transaction.  **Note:** Currently pending final integration with PayU/Gateway.\n",
+        "tags": [
+          "Payment"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "orderId"
+                ],
+                "properties": {
+                  "orderId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment initialized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "paymentUrl": {
+                      "type": "string",
+                      "description": "Gateway URL (Pending)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{id}": {
+      "get": {
+        "summary": "Get Product by ID",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product details"
+          }
+        }
+      }
+    },
+    "/api/v1/products/club": {
+      "get": {
+        "summary": "Get Club Products (7th Heaven Scheme)",
+        "description": "Returns a curated list of products eligible for the 7th Heaven Scheme.  **Logic:** Fetches products with price <= Admin Configured Limit (Default: 4000).\n",
+        "tags": [
+          "Products"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of eligible club products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "maxPriceLimit": {
+                      "type": "number",
+                      "description": "The current price cap set by admin"
+                    },
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products": {
+      "get": {
+        "summary": "Fetch all products with filters",
+        "description": "Retrieve a paginated list of products. Supports filtering by collection (e.g., Gift Sets), category (e.g., For Him), gender, and price.",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search term for product name or description"
+          },
+          {
+            "name": "collectionSlug",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by Parent Collection Slug (e.g., 'gift-sets'). Use this for the main listing page."
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by Category Slug (e.g., 'for-him') or ID. Can be comma-separated."
+          },
+          {
+            "name": "gender",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Men",
+                "Women",
+                "Unisex"
+              ]
+            },
+            "description": "Filter by gender tag"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "newest",
+                "price_asc",
+                "price_desc",
+                "name_asc"
+              ]
+            },
+            "description": "Sorting order"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "price": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "page": {
+                          "type": "integer"
+                        },
+                        "totalPages": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/slug/{slug}": {
+      "get": {
+        "summary": "Get Product by Slug",
+        "description": "Fetch detailed product info including variants and related products via URL slug.",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "midnight-rose-perfume"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product details + Related Products"
+          }
+        }
+      }
+    },
+    "/api/v1/profile": {
+      "get": {
+        "summary": "Get Full Profile",
+        "description": "Returns detailed profile info including address and referral code.",
+        "tags": [
+          "Profile"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile data"
+          }
+        }
+      },
+      "post": {
+        "summary": "Request Profile Update OTP",
+        "description": "Request OTP to verify phone/email change.",
+        "tags": [
+          "Profile"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "value"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "email",
+                      "phone"
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP sent"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Profile",
+        "description": "Update profile details.  **Note:** Changing Phone/Email requires `otp`.  Changing Password requires `currentPassword`.\n",
+        "tags": [
+          "Profile"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fullName": {
+                    "type": "string"
+                  },
+                  "fullAddress": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string"
+                  },
+                  "pincode": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "description": "Required if changing phone/email"
+                  },
+                  "newPassword": {
+                    "type": "string"
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "description": "Required if setting newPassword"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully"
+          }
+        }
+      }
+    },
+    "/api/v1/tickets": {
+      "get": {
+        "summary": "Get Support Tickets",
+        "tags": [
+          "Support"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of tickets"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Support Ticket",
+        "tags": [
+          "Support"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "subject",
+                  "category",
+                  "message"
+                ],
+                "properties": {
+                  "subject": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "Order Issue",
+                      "Payment",
+                      "Product",
+                      "Other"
+                    ]
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ticket created"
+          }
+        }
+      }
+    },
+    "/api/v1/wishlist": {
+      "get": {
+        "summary": "Get Wishlist",
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of wishlist items"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add to Wishlist",
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "productId"
+                ],
+                "properties": {
+                  "productId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Added to wishlist"
+          },
+          "400": {
+            "description": "Already in wishlist"
+          }
+        }
+      }
+    }
+  },
   "tags": []
 }
