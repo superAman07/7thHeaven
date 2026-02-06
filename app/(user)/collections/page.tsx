@@ -85,13 +85,13 @@ export default function CollectionsPage() {
                     key={col.id} 
                     className="group block relative overflow-hidden rounded-2xl aspect-4/5 md:aspect-3/4 lg:aspect-4/5 shadow-lg hover:shadow-2xl transition-all duration-500"
                   >
-                    {/* Background Image */}
+                    {/* Background Image - Added group-active:scale-110 for Tap Effect */}
                     <div className="absolute inset-0 bg-gray-200">
                       {col.image ? (
                         <img 
                           src={col.image} 
                           alt={col.name} 
-                          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 text-gray-300"
+                          className="w-full h-full object-cover transform group-hover:scale-110 group-active:scale-110 transition-transform duration-700 text-gray-300"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-300">
@@ -100,23 +100,26 @@ export default function CollectionsPage() {
                       )}
                     </div>
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
+                    {/* Gradient Overlay - Added group-active:opacity-90 */}
+                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 group-active:opacity-90 transition-opacity duration-300"></div>
 
-                    {/* Content */}
-                    <div className="absolute bottom-0 left-0 w-full p-8 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                    {/* Content - Responsive Visibility:
+                        - Mobile: Translate-y-0 (Visible), Opacity-100 (Visible)
+                        - Desktop (lg): Translate-y-2 (Hidden), Opacity-0 (Hidden) -> Hover: Visible
+                    */}
+                    <div className="absolute bottom-0 left-0 w-full p-8 text-white transform translate-y-2 group-hover:translate-y-0 group-active:translate-y-0 group-focus:translate-y-0 transition-transform duration-300">
                       <p className="text-xs font-bold tracking-widest uppercase text-yellow-500 mb-2">
                         {col._count?.categories || 0} Categories
                       </p>
-                      <h3 className="text-3xl! font-serif! font-medium! mb-3! group-hover:text-yellow-100! transition-colors!">
+                      <h3 className="text-3xl! font-serif! font-medium! mb-3! group-hover:text-yellow-100! group-active:text-yellow-100! transition-colors!">
                         {col.name}
                       </h3>
                       {col.description && (
-                        <p className="text-gray-300 text-sm line-clamp-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                           {col.description}
+                        <p className="text-gray-300 text-sm line-clamp-2 mb-4 opacity-0 group-hover:opacity-100 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300 delay-100">
+                          {col.description}
                         </p>
                       )}
-                      <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white border-b border-transparent group-hover:border-yellow-500 w-fit pb-1 transition-all">
+                      <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white border-b border-transparent group-hover:border-yellow-500 group-active:border-yellow-500 w-fit pb-1 transition-all">
                         View Collection <ArrowRight className="w-4 h-4" />
                       </div>
                     </div>
