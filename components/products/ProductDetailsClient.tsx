@@ -190,45 +190,35 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
     return (
         <>
             <div 
-                className="page-banner-section"
-                style={{
-                    background: 'linear-gradient(135deg, #0d0b09 0%, #1a1511 50%, #0d0b09 100%)',
-                    padding: '140px 0 25px 0',
+                className="page-banner-section section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]!" 
+                style={{ 
+                    background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)',
                 }}
             >
-                <div className="container">
-                    {/* Desktop: Flex row | Mobile: Center stacked */}
-                    <div style={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
-                        alignItems: 'flex-end',
-                        flexWrap: 'wrap',
-                        gap: '10px'
-                    }}>
-                        {/* Breadcrumb - Left */}
-                        <nav className="banner-breadcrumb">
-                            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', letterSpacing: '1px' }}>
-                                <Link href="/" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Home</Link>
-                                {' / '}
-                                <Link href="/collections" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Collections</Link>
-                                {' / '}
-                                <Link href={`/collections/${product.category.slug}`} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
-                                    {product.category.name}
-                                </Link>
-                            </span>
-                        </nav>
-                        
-                        {/* Product Name - Right */}
-                        <h1 className="banner-product-name" style={{ 
-                            color: '#fff', 
-                            fontSize: '24px', 
-                            fontWeight: '600',
-                            textTransform: 'uppercase',
-                            letterSpacing: '2px',
-                            margin: 0
-                        }}>
-                            {product.name}
-                        </h1>
+                <div className="container-fluid px-4 px-md-5">
+                    <div className="row">
+                        <div className="col-12 p-0">
+                            <div className="page-banner w-100 d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-end">
+                                <div className="order-2 order-md-1 mt-2 mt-md-0">
+                                    <nav className="page-breadcrumb justify-content-center justify-content-md-start mb-0!" style={{ fontSize: '14px' }}>
+                                        <span style={{ color: 'rgba(255,255,255,0.6)', letterSpacing: '1px' }}>
+                                            <Link href="/" className="hover:text-[#D4AF37] transition-colors" style={{ color: 'inherit', textDecoration: 'none' }}>Home</Link>
+                                            {' / '}
+                                            <Link href="/collections" className="hover:text-[#D4AF37] transition-colors" style={{ color: 'inherit', textDecoration: 'none' }}>Collections</Link>
+                                            {' / '}
+                                            <Link href={`/collections/${product.category.slug}`} className="hover:text-[#D4AF37] transition-colors" style={{ color: 'inherit', textDecoration: 'none' }}>
+                                                {product.category.name}
+                                            </Link>
+                                        </span>
+                                    </nav>
+                                </div>
+                                <div className="order-1 order-md-2 text-center text-md-end">
+                                    <h1 className="text-white! mb-0!" style={{ fontSize: 'clamp(20px, 2.5vw, 32px)', lineHeight: 1.1, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                                        {product.name}
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
