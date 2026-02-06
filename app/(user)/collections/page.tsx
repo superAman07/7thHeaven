@@ -91,14 +91,10 @@ export default function CollectionsPage() {
     </div>
   );
 }
-
 // ==========================================
 // 1. DESKTOP CARD (Standard Hover Logic)
 // ==========================================
 function DesktopCard({ col, className = '' }: { col: Collection, className?: string }) {
-  // Logic: 
-  // - Default: Text is hidden (opacity-0) and pushed down (translate-y-4)
-  // - Group Hover: Text becomes visible (opacity-100) and slides up (translate-y-0)
   return (
     <Link 
       href={`/collections/${col.slug}`} 
@@ -121,7 +117,8 @@ function DesktopCard({ col, className = '' }: { col: Collection, className?: str
       <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 opacity-80 group-hover:opacity-90"></div>
 
       {/* Content: Slide Up & Fade In on Hover */}
-      <div className="absolute bottom-0 left-0 w-full p-8 text-white transition-all duration-300 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
+      {/* Added '!' to opacity-0 and translate-y-4 to FORCE hidden state */}
+      <div className="absolute bottom-0 left-0 w-full p-8 text-white transition-all duration-300 transform translate-y-4! opacity-0! group-hover:translate-y-0! group-hover:opacity-100!">
         
         <p className="text-xs font-bold tracking-widest uppercase text-yellow-500 mb-2">
           {col._count?.categories || 0} Categories
@@ -130,9 +127,8 @@ function DesktopCard({ col, className = '' }: { col: Collection, className?: str
           {col.name}
         </h3>
         
-        {/* Description: slightly delayed fade-in */}
         {col.description && (
-          <p className="text-gray-300 text-sm line-clamp-2 mb-4 transition-opacity duration-300 delay-100 opacity-0 group-hover:opacity-100">
+          <p className="text-gray-300 text-sm line-clamp-2 mb-4 transition-opacity duration-300 delay-100 opacity-0! group-hover:opacity-100!">
              {col.description}
           </p>
         )}
