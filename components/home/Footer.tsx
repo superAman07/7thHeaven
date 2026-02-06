@@ -4,11 +4,12 @@ import React, { useState } from "react";
 import ScrollToTopButton from "./ScrollToTopButton";
 import Link from "next/link";
 import type { GlobalSettings } from "@/lib/site-content";
+import { SiteSettings } from "@/lib/site-settings";
 
 type LinkItem = { label: string; href: string };
 
 type Props = {
-  settings?: GlobalSettings;  
+  settings?: SiteSettings | null; 
   aboutText?: string;
   quickLinks?: LinkItem[];
   collectionLinks?: LinkItem[];
@@ -36,12 +37,23 @@ const defaultCollectionLinks: LinkItem[] = [
   { label: "Unisex Perfumes", href: "/collections/perfumes?gender=Unisex" },
   { label: "New Arrivals", href: "/collections/perfumes?sort=newest" },
 ];
-
 export default function FooterPage({
   settings,
   aboutText = "Experience the essence of 'Make in Bharat' luxury. The Celsius Collection offers premium, long-lasting fragrances crafted with the world's best oils—luxury within reach.",
-  quickLinks = defaultQuickLinks,
-  collectionLinks = defaultCollectionLinks,
+  quickLinks = [
+    { label: "About Us", href: "/about" },
+    { label: "Contact Us", href: "/contact" },
+    { label: "Track Order", href: "/track-order" },
+    { label: "My Account", href: "/my-account" },
+    { label: "Privacy Policy", href: "#" },
+    { label: "Terms & Conditions", href: "#" },
+  ],
+  collectionLinks = [
+    { label: "Men's Perfumes", href: "/collections/perfumes?gender=Male" },
+    { label: "Women's Perfumes", href: "/collections/perfumes?gender=Female" },
+    { label: "Unisex Perfumes", href: "/collections/perfumes?gender=Unisex" },
+    { label: "New Arrivals", href: "/collections/perfumes?sort=newest" },
+  ],
   contact = {
     address: "Celsius HQ, Business Bay, India",
     phone: "+91 98765 43210",
@@ -50,19 +62,23 @@ export default function FooterPage({
   copyrightOwner = "Celsius",
   logoSrc = "/assets/images/logo.png",
 }: Props) {
-
   const [openSection, setOpenSection] = useState<string | null>(null);
-
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
   };
-
-  const displayAddress = settings?.supportAddress || contact.address;
-  const displayPhone = settings?.supportPhone || contact.phone;
-  const displayEmail = settings?.supportEmail || contact.email;
-  const displaySiteName = settings?.siteName || copyrightOwner;
-  const displayLogo = settings?.logoUrl || logoSrc;
-
+  // Map the new Settings fields to display variables
+  // Note the new field names (e.g. settings.address instead of settings.supportAddress)
+  const displayAddress = settings?.address ? `${settings.address}, ${settings.city}, ${settings.country}` : contact.address;
+  const displayPhone = settings?.phone || contact.phone;
+  const displayEmail = settings?.email || contact.email;
+  const displaySiteName = settings?.companyName || copyrightOwner;
+  const displayFooterText = settings?.footerText; // New footer text if you want to use it
+  
+  // Use social links from settings if available
+  const instagram = settings?.instagram;
+  const facebook = settings?.facebook;
+  const twitter = settings?.twitter;
+  const youtube = settings?.youtube;
   return (
     <>
       <footer className="footer-section section bg-dark">
@@ -77,11 +93,11 @@ export default function FooterPage({
                             src="/celsius-logo.png" 
                             alt="7th Heaven" 
                             className="w-full! max-w-[220px]! object-contain! h-auto!" 
+                            style={{ filter: 'brightness(0) invert(1)' }} 
                         />
                     </Link>
                 </div>
-            </div>
-
+              </div>
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default" 
@@ -99,7 +115,6 @@ export default function FooterPage({
                   ))}
                 </ul>
               </div>
-
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
@@ -117,7 +132,6 @@ export default function FooterPage({
                   ))}
                 </ul>
               </div>
-
               <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
                  <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
@@ -144,20 +158,24 @@ export default function FooterPage({
                       <a href={`mailto:${displayEmail}`}>{displayEmail}</a>
                     </span>
                   </li>
+                  {/* Optional: Add Social Icons below contact details if desired */}
                 </ul>
               </div>
             </div>
           </div>
         </div>
-
         <div className="footer-bottom section">
           <div className="container ft-border pt-40 pb-40 pt-xs-20 pb-xs-20">
             <div className="row justify-content-between align-items-center">
               <div className="col-lg-6 col-md-6 col-sm-8">
                 <div className="copyright text-start">
                   <p>
-                    Copyright &copy; {new Date().getFullYear()}{" "}
-                    <a href="#">{displaySiteName}</a>. <span className="d-none d-sm-inline">All rights reserved.</span>
+                    {/* Use dynamic Footer Text if available, else default */}
+                    {displayFooterText ? (
+                        displayFooterText
+                    ) : (
+                        <>Copyright &copy; {new Date().getFullYear()} <a href="#">{displaySiteName}</a>. <span className="d-none d-sm-inline">All rights reserved.</span></>
+                    )}
                   </p>
                 </div>
               </div>

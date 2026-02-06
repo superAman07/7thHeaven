@@ -4,6 +4,7 @@ import { WishlistProvider } from "@/components/WishlistContext";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getSiteContent, defaultGlobalSettings } from "@/lib/site-content";
+import { getSiteSettings } from "@/lib/site-settings";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default async function UserPagesLayout({
   children: React.ReactNode;
 }>) {
   const globalSettings = await getSiteContent('global_settings', defaultGlobalSettings);
+  const siteSettings = await getSiteSettings();
   return (
     <div id="main-wrapper">
       <Suspense fallback={<div style={{ height: '90px', backgroundColor: '#000' }}></div>}>
@@ -30,7 +32,7 @@ export default async function UserPagesLayout({
           {children}
         </WishlistProvider>
       </main>
-      <FooterPage settings={globalSettings} />
+      <FooterPage settings={siteSettings} />
     </div>
   );
 }
