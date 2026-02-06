@@ -92,8 +92,7 @@ export default function FooterPage({
                         <img 
                             src="/celsius-logo.png" 
                             alt="7th Heaven" 
-                            className="w-full! max-w-[220px]! object-contain! h-auto!" 
-                            style={{ filter: 'brightness(0) invert(1)' }} 
+                            className="w-full! max-w-[220px]! object-contain! h-auto!"
                         />
                     </Link>
                 </div>
