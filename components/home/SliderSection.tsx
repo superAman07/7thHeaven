@@ -53,7 +53,7 @@ const SliderSection = () => {
                 </h1>
                 
                 <a 
-                  href="/collections/perfumes" 
+                  href="/collections" 
                   className="hero-btn" 
                   style={{ position: 'static', transform: 'none' }} 
                 >
