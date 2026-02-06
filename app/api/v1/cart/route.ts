@@ -5,6 +5,99 @@ import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * @swagger
+ * /api/v1/cart:
+ *   get:
+ *     summary: Get Cart Items
+ *     description: Retrieves the current user's cart with details (images, variants, stock).
+ *     tags:
+ *       - Cart
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Cart details
+ *   post:
+ *     summary: Add Item to Cart
+ *     description: Adds a product (and optional variant) to the cart.
+ *     tags:
+ *       - Cart
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *               - quantity
+ *             properties:
+ *               productId:
+ *                 type: string
+ *                 description: CUID of the product
+ *               variantId:
+ *                 type: string
+ *                 description: (Optional) CUID of the specific variant (size/color)
+ *               quantity:
+ *                 type: integer
+ *                 default: 1
+ *     responses:
+ *       200:
+ *         description: Item added successfully and returns updated cart
+ *   put:
+ *     summary: Update Cart Quantity
+ *     tags:
+ *       - Cart
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *               - quantity
+ *             properties:
+ *               productId:
+ *                 type: string
+ *               variantId:
+ *                 type: string
+ *               quantity:
+ *                 type: integer
+ *                 description: New total quantity (must be > 0)
+ *     responses:
+ *       200:
+ *         description: Cart updated
+ *       400:
+ *         description: Stock limit exceeded or invalid quantity
+ *   delete:
+ *     summary: Remove Item from Cart
+ *     tags:
+ *       - Cart
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *             properties:
+ *               productId:
+ *                 type: string
+ *                 description: The 'productId' or 'productId-variantId' composite ID
+ *     responses:
+ *       200:
+ *         description: Item removed
+ */
+
 const cartItemSyncSchema = z.array(
     z.object({
         productId: z.string().cuid(),
