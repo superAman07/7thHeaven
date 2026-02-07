@@ -139,26 +139,15 @@ export default function SeventhHeavenPage() {
     return <MarketingView isLoggedIn={false} />; 
   }
   
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#ddb040] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-500 font-medium">Loading your empire...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  if (data && !data.isMember) {
+  if (!loading && data && !data.isMember) {
     return <MarketingView isLoggedIn={true} />; 
   }
-  if (!data) return null;
+  if (!loading && !data && !isGuest) return null;
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="w-full bg-[#1a1a1a] pt-36 md:pt-44 pb-32 md:pb-36 relative">
-        <div className="container mx-auto px-4 text-center">
+      <div className="w-full bg-[#1a1a1a] pt-[200px] md:pt-[220px] lg:pt-[260px] pb-24 md:pb-24 relative">
+        <div className="container mx-auto px-4 pt-3 text-center">
           <h1 className="text-white font-serif text-4xl mb-2">7th Heaven Club</h1>
           <p className="text-[#ddb040] text-lg tracking-wider uppercase">Your Empire Dashboard</p>
         </div>
@@ -167,9 +156,9 @@ export default function SeventhHeavenPage() {
       <div className="container mx-auto px-4 relative z-10 -mt-16">
         {/* 1. STATUS CARD */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-12 border-t-4 border-[#ddb040] relative overflow-hidden">
-          {loading ? (
+          {!data ? (
             <div className="flex items-center justify-center py-8">
-              <div className="w-10 h-10 border-3 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
+                <div className="w-10 h-10 border-3 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center relative z-10">
@@ -250,9 +239,9 @@ export default function SeventhHeavenPage() {
         {/* 3. LEVELS GRID */}
         <div className="mb-12">
             <h3 className="text-3xl! font-serif! text-gray-900 mb-8 pl-4 border-l-4 border-[#ddb040]">Heaven Progress</h3>
-            {loading ? (
+            {!data ? (
               <div className="flex items-center justify-center py-12">
-                <div className="w-10 h-10 border-3 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
+                  <div className="w-10 h-10 border-3 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -295,9 +284,9 @@ export default function SeventhHeavenPage() {
             <h3 className="text-xl! md:text-3xl! font-serif! text-gray-900">Direct Referrals</h3>
           </div>
 
-          {loading ? (
+          {!data ? (
             <div className="flex items-center justify-center py-12">
-              <div className="w-10 h-10 border-3 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
+                <div className="w-10 h-10 border-3 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : data?.directReferrals?.length > 0 ? (
             <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
