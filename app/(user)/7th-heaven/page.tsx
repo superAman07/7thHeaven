@@ -10,6 +10,7 @@ import ProductQuickViewModal from '@/components/home/QuickViewModal';
 import { PublicProduct } from '@/components/HeroPage';
 import ShareButton from '@/components/ShareButton';
 import NetworkGalaxy from '@/components/heaven/NetworkGalaxy';
+import HowItWorks from '@/components/heaven/HowItWorks';
 
 interface LevelData {
   level: number;
@@ -343,14 +344,28 @@ export default function SeventhHeavenPage() {
    Marketing / Guest view
    ---------------- */
 function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
+  const [minAmount, setMinAmount] = useState(2000);
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await axios.get('/api/v1/settings');
+        if (res.data.success && res.data.value) {
+          setMinAmount(res.data.value);
+        }
+      } catch (error) {
+        console.error('Failed to fetch settings', error);
+      }
+    };
+    fetchSettings();
+  }, []);
   return (
-    <div className="bg-[#252525] min-h-screen text-white">
+    <div className="bg-linear-to-b from-[#1a1a1a] to-[#252525] min-h-screen text-white">
       {/* Hero */}
-      <div className="relative h-[80vh] flex items-center justify-center overflow-hidden pt-20! md:pt-40! lg:pt-20">
+      <div className="relative h-[75vh] sm:h-screen flex items-center justify-center overflow-hidden pt-20! md:pt-40! lg:pt-20">
         <div className="absolute inset-0 bg-[url('/assets/images/hero/slider-1.jpg')] bg-cover bg-center opacity-40" />
         <div className="relative z-10 text-center px-4">
           <h1
-            className="text-3xl! md:text-5xl! font-serif! mb-6! text-[#E6B422]! font-bold!"
+            className="text-2xl! md:text-4xl! font-serif! mb-6! text-[#E6B422]! font-bold!"
             style={{ fontFamily: '"Cormorant Garamond", serif' }}
           >
             7th Heaven Club
@@ -379,6 +394,8 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
           </div>
         </div>
       </div>
+
+      <HowItWorks minPurchaseAmount={minAmount} />
 
       {/* Features */}
       <div className="py-20 container mx-auto px-4">
