@@ -60,6 +60,31 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return Array.from(itemMap.values());
     };
 
+    const validateCartItems = async (items: CartItem[]): Promise<CartItem[]> => {
+        if (items.length === 0) return [];
+        const productIds = [...new Set(items.map(item => item.originalProductId || item.id.split('-')[0]))];
+        try {
+            const res = await axios.post('/api/v1/cart/validate', { productIds });
+            
+            if (res.data.success && res.data.invalidItems?.length > 0) {
+                const invalidIds = new Set(res.data.invalidItems.map((i: any) => i.productId));
+                
+                res.data.invalidItems.forEach((item: any) => {
+                    toast.error(item.message || 'An item was removed from your cart', { duration: 4000 });
+                });
+                
+                return items.filter(item => {
+                    const baseId = item.originalProductId || item.id.split('-')[0];
+                    return !invalidIds.has(baseId);
+                });
+            }
+            return items;
+        } catch (error) {
+            console.error('Cart validation failed', error);
+            return items;
+        }
+    };
+
     // 1. Initialize Cart (Load Local + Fetch Server)
     useEffect(() => {
         const initializeCart = async () => {
@@ -90,13 +115,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                     const uniqueServerItems = deduplicateItems(serverItems);
 
                     if (uniqueServerItems.length > 0) {
-                        setCartItems(uniqueServerItems);
+                        const validatedItems = await validateCartItems(uniqueServerItems);
+                        setCartItems(validatedItems);
+                    } else if (localItems.length > 0) {
+                        const validatedItems = await validateCartItems(localItems);
+                        setCartItems(validatedItems);
                     } else {
-                        if (localItems.length > 0) {
-                            setCartItems(localItems); 
-                        } else {
-                            setCartItems([]);
-                        }
+                        setCartItems([]);
                     }
                 } else {
                     setIsLoggedIn(false);

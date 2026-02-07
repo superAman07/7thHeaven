@@ -1,8 +1,9 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '../CartContext';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 const CartPageComponent: React.FC = () => {
     // FIX: Removed 'saveCart' as it is no longer needed (updates are real-time)
@@ -10,6 +11,35 @@ const CartPageComponent: React.FC = () => {
     const router = useRouter();
     
     const [couponCode, setCouponCode] = useState('');
+    const [unavailableItems, setUnavailableItems] = useState<Set<string>>(new Set());
+    const [validating, setValidating] = useState(true);
+
+    useEffect(() => {
+        const validateCart = async () => {
+            if (cartItems.length === 0) {
+                setValidating(false);
+                return;
+            }
+            
+            const productIds = [...new Set(cartItems.map(item => 
+                item.originalProductId || item.id.split('-')[0]
+            ))];
+            
+            try {
+                const res = await axios.post('/api/v1/cart/validate', { productIds });
+                if (res.data.success && res.data.invalidItems?.length > 0) {
+                    const invalidSet = new Set<string>(res.data.invalidItems.map((i: any) => i.productId));
+                    setUnavailableItems(invalidSet);
+                }
+            } catch (err) {
+                console.error('Validation failed', err);
+            }
+            setValidating(false);
+        };
+        
+        validateCart();
+    }, [cartItems]);
+
 
     const subTotal = cartTotal;
     const shippingCost = 0;
@@ -49,7 +79,26 @@ const CartPageComponent: React.FC = () => {
             alert("Your cart is empty.");
             return;
         }
-        // FIX: Removed await saveCart();
+        
+        // Check for unavailable items
+        if (unavailableItems.size > 0) {
+            const confirmed = window.confirm(
+                "Some items in your cart are no longer available. " +
+                "They will be removed before checkout. Continue?"
+            );
+            if (confirmed) {
+                // Remove unavailable items
+                cartItems.forEach(item => {
+                    const baseId = item.originalProductId || item.id.split('-')[0];
+                    if (unavailableItems.has(baseId)) {
+                        removeFromCart(item.id);
+                    }
+                });
+                setTimeout(() => router.push('/cart/checkout'), 100);
+            }
+            return;
+        }
+        
         router.push('/cart/checkout');
     };
 
@@ -108,6 +157,8 @@ const CartPageComponent: React.FC = () => {
                                     </thead>
                                     <tbody>
                                         {cartItems.map((item) => {
+                                            const baseProductId = item.originalProductId || item.id.split('-')[0];
+                                            const isUnavailable = unavailableItems.has(baseProductId);
                                             const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
                                             const discount = item.discountPercentage || 0;
                                             const currentPrice = price * (1 - discount / 100);
@@ -121,6 +172,20 @@ const CartPageComponent: React.FC = () => {
                                                     </td>
                                                     <td className="pro-title">
                                                         <Link href={`/products/${item.slug}`}>{item.name}</Link>
+                                                        {isUnavailable && (
+                                                            <span style={{
+                                                                display: 'inline-block',
+                                                                background: '#dc3545',
+                                                                color: 'white',
+                                                                padding: '2px 8px',
+                                                                borderRadius: '4px',
+                                                                fontSize: '11px',
+                                                                marginLeft: '8px',
+                                                                fontWeight: '600'
+                                                            }}>
+                                                                UNAVAILABLE
+                                                            </span>
+                                                        )}
                                                         {item.selectedVariant && (
                                                             <div style={{ fontSize: '13px', color: '#777', marginTop: '4px' }}>
                                                                 Size: {item.selectedVariant.size}ml
@@ -157,6 +222,8 @@ const CartPageComponent: React.FC = () => {
                                     </div>
                                 ) : (
                                     cartItems.map((item) => {
+                                        const baseProductId = item.originalProductId || item.id.split('-')[0];
+                                        const isUnavailable = unavailableItems.has(baseProductId);
                                         const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
                                         const discount = item.discountPercentage || 0;
                                         const currentPrice = price * (1 - discount / 100);
@@ -195,6 +262,21 @@ const CartPageComponent: React.FC = () => {
                                                         }}
                                                     >
                                                         {item.name}
+                                                        {isUnavailable && (
+                                                            <span style={{
+                                                                display: 'inline-block',
+                                                                background: '#dc3545',
+                                                                color: 'white',
+                                                                padding: '2px 6px',
+                                                                borderRadius: '4px',
+                                                                fontSize: '10px',
+                                                                marginLeft: '6px',
+                                                                fontWeight: '600',
+                                                                verticalAlign: 'middle'
+                                                            }}>
+                                                                UNAVAILABLE
+                                                            </span>
+                                                        )}
                                                     </Link>
                                                     {item.selectedVariant && (
                                                         <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#777' }}>
