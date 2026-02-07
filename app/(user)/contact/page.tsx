@@ -6,15 +6,18 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 interface SiteSettings {
+    id: string;
     companyName: string;
-    phone: string;
-    email: string;
-    whatsapp: string;
-    address: string;
-    city: string;
-    state: string;
+    tagline: string | null;
+    phone: string | null;
+    email: string | null;
+    whatsapp: string | null;
+    address: string | null;
+    city: string | null;
+    state: string | null;
     country: string;
-    businessHours: string;
+    pincode: string | null;
+    businessHours: string | null;
 }
 
 interface TicketResponse {
@@ -65,6 +68,7 @@ export default function ContactPage() {
         
         const init = async () => {
             try {
+                // Fetch dynamic settings
                 const settingsRes = await axios.get('/api/v1/site-settings');
                 if (settingsRes.data.success && isMounted) {
                     setSiteSettings(settingsRes.data.data);
@@ -152,27 +156,18 @@ export default function ContactPage() {
         });
     };
 
-    // Get display values with fallbacks
-    const displayLocation = siteSettings?.city && siteSettings?.state 
-        ? `${siteSettings.city}, ${siteSettings.state}, ${siteSettings.country || 'India'}`
-        : 'Mumbai, Maharashtra, India';
-    const displayPhone = siteSettings?.phone || '+91 xxxxx xxxxx';
-    const displayEmail = siteSettings?.email || 'support@celsius.com';
-    const displayHours = siteSettings?.businessHours || 'Mon - Sat: 10AM - 7PM';
+    // Construct Address dynamically
+    const parts = [
+        siteSettings?.address,
+        siteSettings?.city,
+        siteSettings?.state ? `${siteSettings.state} - ${siteSettings.pincode || ''}` : siteSettings?.pincode,
+        siteSettings?.country
+    ].filter(Boolean);
+    const displayAddress = parts.join(', ');
 
-    if (loading) {
         return (
-            <div className="min-h-screen flex! items-center! justify-center! bg-gray-50">
-                <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-[#ddb040] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-500 font-medium">Loading...</p>
-                </div>
-            </div>
-        );
-    }
-
-    return (
         <div id="main-wrapper">
+            {/* Banner - Always Visible */}
             <div 
                 className="page-banner-section section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]!" 
                 style={{ 
@@ -195,173 +190,206 @@ export default function ContactPage() {
                                         Contact Us
                                     </h1>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Contact Section */}
+            {/* Contact Section - Handles Loading Internally */}
             <div className="contact-section section" style={{ padding: '60px 0' }}>
                 <div className="container">
-                    <div className="row">
-                        {/* Contact Info - Dynamic Data */}
-                        <div className="col-lg-4 col-12" style={{ marginBottom: '30px' }}>
-                            <div className="contact-info" style={{ background: '#fff', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(45,42,38,0.08)' }}>
-                                <h3 style={{ color: '#2D2A26', marginBottom: '20px', fontSize: '20px', fontWeight: '600' }}>Get In Touch</h3>
-                                
-                                <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '18px' }}>
-                                    <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                        <i className="fa fa-map-marker" style={{ color: 'white', fontSize: '16px' }}></i>
-                                    </div>
-                                    <div>
-                                        <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Our Location</h5>
-                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{displayLocation}</p>
-                                    </div>
-                                </div>
-
-                                <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '18px' }}>
-                                    <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                        <i className="fa fa-phone" style={{ color: 'white', fontSize: '16px' }}></i>
-                                    </div>
-                                    <div>
-                                        <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Phone</h5>
-                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{displayPhone}</p>
-                                    </div>
-                                </div>
-
-                                <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '18px' }}>
-                                    <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                        <i className="fa fa-envelope" style={{ color: 'white', fontSize: '14px' }}></i>
-                                    </div>
-                                    <div>
-                                        <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Email</h5>
-                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{displayEmail}</p>
-                                    </div>
-                                </div>
-
-                                <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                                    <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                        <i className="fa fa-clock-o" style={{ color: 'white', fontSize: '16px' }}></i>
-                                    </div>
-                                    <div>
-                                        <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Hours</h5>
-                                        <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{displayHours}</p>
-                                    </div>
-                                </div>
+                    {loading ? (
+                        <div className="flex justify-center items-center py-20">
+                             <div className="text-center">
+                                <div className="w-12 h-12 border-4 border-[#ddb040] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                <p className="text-gray-500 font-medium">Loading contact details...</p>
                             </div>
                         </div>
-
-                        {/* Contact Form - Same as before */}
-                        <div className="col-lg-8 col-12">
-                            <div style={{ background: '#fff', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(45,42,38,0.08)' }}>
-                                <h3 style={{ marginBottom: '8px', color: '#2D2A26', fontSize: '20px', fontWeight: '600' }}>Submit a Support Ticket</h3>
-                                <p style={{ color: '#5C5550', marginBottom: '20px', fontSize: '14px' }}>We'll respond within 24-48 hours.</p>
-                                
-                                <form onSubmit={handleSubmit}>
-                                    {/* Guest Fields */}
-                                    {isLoggedIn === false && (
-                                        <div style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px', marginBottom: '15px' }}>
-                                            <p style={{ margin: '0 0 12px', color: '#5C5550', fontSize: '13px' }}>
-                                                <i className="fa fa-info-circle" style={{ color: '#C9A227', marginRight: '6px' }}></i>
-                                                Please provide your contact details.
-                                            </p>
-                                            <div className="row">
-                                                <div className="col-md-4 col-12" style={{ marginBottom: '12px' }}>
-                                                    <input 
-                                                        type="text" 
-                                                        placeholder="Your Name *"
-                                                        value={guestName}
-                                                        onChange={(e) => setGuestName(e.target.value)}
-                                                        style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px' }}
-                                                        required
-                                                    />
-                                                </div>
-                                                <div className="col-md-4 col-12" style={{ marginBottom: '12px' }}>
-                                                    <input 
-                                                        type="email" 
-                                                        placeholder="Email *"
-                                                        value={guestEmail}
-                                                        onChange={(e) => setGuestEmail(e.target.value)}
-                                                        style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px' }}
-                                                        required
-                                                    />
-                                                </div>
-                                                <div className="col-md-4 col-12" style={{ marginBottom: '12px' }}>
-                                                    <input 
-                                                        type="tel" 
-                                                        placeholder="Phone *"
-                                                        value={guestPhone}
-                                                        onChange={(e) => setGuestPhone(e.target.value)}
-                                                        style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px' }}
-                                                        required
-                                                    />
-                                                </div>
+                    ) : (
+                        <div className="row">
+                            {/* Dynamic Contact Info */}
+                            <div className="col-lg-4 col-12" style={{ marginBottom: '30px' }}>
+                                <div className="contact-info" style={{ background: '#fff', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(45,42,38,0.08)' }}>
+                                    <h3 style={{ color: '#2D2A26', marginBottom: '20px', fontSize: '20px', fontWeight: '600' }}>Get In Touch</h3>
+                                    
+                                    {/* 1. Legal Name */}
+                                    {siteSettings?.companyName && (
+                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '18px' }}>
+                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                <i className="fa fa-briefcase" style={{ color: 'white', fontSize: '16px' }}></i>
+                                            </div>
+                                            <div>
+                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Company Name</h5>
+                                                <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{siteSettings.companyName}</p>
                                             </div>
                                         </div>
                                     )}
 
-                                    <div className="row">
-                                        <div className="col-md-6 col-12" style={{ marginBottom: '12px' }}>
-                                            <select 
-                                                value={category}
-                                                onChange={(e) => setCategory(e.target.value)}
-                                                style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px', background: 'white' }}
-                                                required
-                                            >
-                                                <option value="">Select Category *</option>
-                                                {CATEGORIES.map(cat => (
-                                                    <option key={cat.value} value={cat.value}>{cat.label}</option>
-                                                ))}
-                                            </select>
+                                    {/* 2. Address */}
+                                    {displayAddress && (
+                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '18px' }}>
+                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                <i className="fa fa-map-marker" style={{ color: 'white', fontSize: '16px' }}></i>
+                                            </div>
+                                            <div>
+                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Our Location</h5>
+                                                <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{displayAddress}</p>
+                                            </div>
                                         </div>
-                                        <div className="col-md-6 col-12" style={{ marginBottom: '12px' }}>
-                                            <input 
-                                                type="text" 
-                                                placeholder="Subject *"
-                                                value={subject}
-                                                onChange={(e) => setSubject(e.target.value)}
-                                                style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px' }}
-                                                required
-                                            />
+                                    )}
+
+                                    {/* 3. Phone */}
+                                    {siteSettings?.phone && (
+                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '18px' }}>
+                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                <i className="fa fa-phone" style={{ color: 'white', fontSize: '16px' }}></i>
+                                            </div>
+                                            <div>
+                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Phone</h5>
+                                                <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{siteSettings.phone}</p>
+                                            </div>
                                         </div>
-                                        <div className="col-12" style={{ marginBottom: '15px' }}>
-                                            <textarea 
-                                                placeholder="Describe your issue in detail... *"
-                                                value={message}
-                                                onChange={(e) => setMessage(e.target.value)}
-                                                rows={4}
-                                                style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px', resize: 'vertical' }}
-                                                required
-                                            />
+                                    )}
+
+                                    {/* 4. Email */}
+                                    {siteSettings?.email && (
+                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '18px' }}>
+                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                <i className="fa fa-envelope" style={{ color: 'white', fontSize: '14px' }}></i>
+                                            </div>
+                                            <div>
+                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Email</h5>
+                                                <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{siteSettings.email}</p>
+                                            </div>
                                         </div>
-                                        <div className="col-12">
-                                            <button 
-                                                type="submit" 
-                                                disabled={submitting}
-                                                style={{ 
-                                                    background: 'linear-gradient(135deg, #C9A227, #B8860B)', 
-                                                    color: 'white', 
-                                                    border: 'none', 
-                                                    padding: '12px 30px', 
-                                                    borderRadius: '6px', 
-                                                    fontSize: '14px', 
-                                                    fontWeight: '600', 
-                                                    cursor: submitting ? 'not-allowed' : 'pointer',
-                                                    opacity: submitting ? 0.7 : 1
-                                                }}
-                                            >
-                                                {submitting ? 'Submitting...' : '✈ Submit Ticket'}
-                                            </button>
+                                    )}
+
+                                    {/* 5. Hours */}
+                                    {siteSettings?.businessHours && (
+                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                <i className="fa fa-clock-o" style={{ color: 'white', fontSize: '16px' }}></i>
+                                            </div>
+                                            <div>
+                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Hours</h5>
+                                                <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{siteSettings.businessHours}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Contact Form */}
+                            <div className="col-lg-8 col-12">
+                                <div style={{ background: '#fff', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(45,42,38,0.08)' }}>
+                                    <h3 style={{ marginBottom: '8px', color: '#2D2A26', fontSize: '20px', fontWeight: '600' }}>Submit a Support Ticket</h3>
+                                    <p style={{ color: '#5C5550', marginBottom: '20px', fontSize: '14px' }}>We'll respond within 24-48 hours.</p>
+                                    
+                                    <form onSubmit={handleSubmit}>
+                                        {/* Guest Fields - Rendered if Not Logged In */}
+                                        {isLoggedIn === false && (
+                                            <div style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px', marginBottom: '15px' }}>
+                                                <p style={{ margin: '0 0 12px', color: '#5C5550', fontSize: '13px' }}>
+                                                    <i className="fa fa-info-circle" style={{ color: '#C9A227', marginRight: '6px' }}></i>
+                                                    Please provide your contact details.
+                                                </p>
+                                                <div className="row">
+                                                    <div className="col-md-4 col-12" style={{ marginBottom: '12px' }}>
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder="Your Name *"
+                                                            value={guestName}
+                                                            onChange={(e) => setGuestName(e.target.value)}
+                                                            style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px' }}
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div className="col-md-4 col-12" style={{ marginBottom: '12px' }}>
+                                                        <input 
+                                                            type="email" 
+                                                            placeholder="Email *"
+                                                            value={guestEmail}
+                                                            onChange={(e) => setGuestEmail(e.target.value)}
+                                                            style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px' }}
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div className="col-md-4 col-12" style={{ marginBottom: '12px' }}>
+                                                        <input 
+                                                            type="tel" 
+                                                            placeholder="Phone *"
+                                                            value={guestPhone}
+                                                            onChange={(e) => setGuestPhone(e.target.value)}
+                                                            style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px' }}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="row">
+                                            <div className="col-md-6 col-12" style={{ marginBottom: '12px' }}>
+                                                <select 
+                                                    value={category}
+                                                    onChange={(e) => setCategory(e.target.value)}
+                                                    style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px', background: 'white' }}
+                                                    required
+                                                >
+                                                    <option value="">Select Category *</option>
+                                                    {CATEGORIES.map(cat => (
+                                                        <option key={cat.value} value={cat.value}>{cat.label}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="col-md-6 col-12" style={{ marginBottom: '12px' }}>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Subject *"
+                                                    value={subject}
+                                                    onChange={(e) => setSubject(e.target.value)}
+                                                    style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px' }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="col-12" style={{ marginBottom: '15px' }}>
+                                                <textarea 
+                                                    placeholder="Describe your issue in detail... *"
+                                                    value={message}
+                                                    onChange={(e) => setMessage(e.target.value)}
+                                                    rows={4}
+                                                    style={{ width: '100%', padding: '10px 12px', border: '1px solid #E5DFD5', borderRadius: '6px', fontSize: '13px', resize: 'vertical' }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="col-12">
+                                                <button 
+                                                    type="submit" 
+                                                    disabled={submitting}
+                                                    style={{ 
+                                                        background: 'linear-gradient(135deg, #C9A227, #B8860B)', 
+                                                        color: 'white', 
+                                                        border: 'none', 
+                                                        padding: '12px 30px', 
+                                                        borderRadius: '6px', 
+                                                        fontSize: '14px', 
+                                                        fontWeight: '600', 
+                                                        cursor: submitting ? 'not-allowed' : 'pointer',
+                                                        opacity: submitting ? 0.7 : 1
+                                                    }}
+                                                >
+                                                    {submitting ? 'Submitting...' : '✈ Submit Ticket'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* User's Tickets Section - Same as before */}
+                    {/* User's Tickets Section */}
                     {isLoggedIn && tickets.length > 0 && (
                         <div className="row" style={{ marginTop: '40px' }}>
                             <div className="col-12">
