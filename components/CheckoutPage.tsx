@@ -418,7 +418,7 @@ const CheckoutPageComponent: React.FC = () => {
                                                         {cartItems.map(item => {
                                                             const price = item.variants?.[0]?.price || 0;
                                                             const discount = item.discountPercentage || 0;
-                                                            const currentPrice = price * (1 - discount / 100);
+                                                            const currentPrice = Math.round(price * (1 - discount / 100));
                                                             return (
                                                                 <li key={item.id}>
                                                                     {item.name} X {item.quantity}

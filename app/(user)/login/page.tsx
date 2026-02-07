@@ -658,7 +658,7 @@ export default function AuthPage() {
                 background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)',
             }}
         >
-            <div className="w-full max-w-md mx-auto mt-30!">
+            <div className="w-full max-w-md mx-auto mt-30! sm:mt-70!">
                 <div className="bg-white border border-gray-200 rounded-2xl shadow-2xl p-6">
                     {error && (
                         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg text-sm animate-fade-in">

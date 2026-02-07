@@ -161,7 +161,7 @@ const CartPageComponent: React.FC = () => {
                                             const isUnavailable = unavailableItems.has(baseProductId);
                                             const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
                                             const discount = item.discountPercentage || 0;
-                                            const currentPrice = price * (1 - discount / 100);
+                                            const currentPrice = Math.round(price * (1 - discount / 100));
 
                                             return (
                                                 <tr key={item.id}>
@@ -226,7 +226,7 @@ const CartPageComponent: React.FC = () => {
                                         const isUnavailable = unavailableItems.has(baseProductId);
                                         const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
                                         const discount = item.discountPercentage || 0;
-                                        const currentPrice = price * (1 - discount / 100);
+                                        const currentPrice = Math.round(price * (1 - discount / 100));
 
                                         return (
                                             <div 
@@ -373,7 +373,7 @@ const CartPageComponent: React.FC = () => {
                                             <p>Sub Total <span>Rs.{subTotal.toFixed(2)}</span></p>
                                             <p>Shipping Cost <span>Rs.{shippingCost.toFixed(2)}</span></p>
                                             <p>Discount <span>- Rs.0.00</span></p>
-                                            <h2>Grand Total <span>Rs.{grandTotal.toFixed(2)}</span></h2>
+                                            <h2>Grand Total <span>Rs.{Math.round(grandTotal.toFixed(2))}</span></h2>
                                         </div>
                                         <div className="cart-summary-button">
                                             <button className="btn" onClick={handleProceedToCheckout}>Checkout</button>
