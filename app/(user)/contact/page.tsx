@@ -220,7 +220,7 @@ export default function ContactPage() {
                                                 <i className="fa fa-briefcase" style={{ color: 'white', fontSize: '16px' }}></i>
                                             </div>
                                             <div>
-                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Company Name</h5>
+                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Our Company</h5>
                                                 <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{siteSettings.companyName}</p>
                                             </div>
                                         </div>
