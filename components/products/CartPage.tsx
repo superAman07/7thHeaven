@@ -43,7 +43,7 @@ const CartPageComponent: React.FC = () => {
 
     const subTotal = cartTotal;
     const shippingCost = 0;
-    const grandTotal = subTotal + shippingCost;
+    const grandTotal = Math.round(subTotal + shippingCost);
 
     const handleIncrement = (id: string) => {
         const item = cartItems.find(item => item.id === id);
@@ -373,7 +373,7 @@ const CartPageComponent: React.FC = () => {
                                             <p>Sub Total <span>Rs.{subTotal.toFixed(2)}</span></p>
                                             <p>Shipping Cost <span>Rs.{shippingCost.toFixed(2)}</span></p>
                                             <p>Discount <span>- Rs.0.00</span></p>
-                                            <h2>Grand Total <span>Rs.{Math.round(grandTotal.toFixed(2))}</span></h2>
+                                            <h2>Grand Total <span>Rs.{grandTotal.toFixed(2)}</span></h2>
                                         </div>
                                         <div className="cart-summary-button">
                                             <button className="btn" onClick={handleProceedToCheckout}>Checkout</button>

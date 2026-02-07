@@ -297,7 +297,7 @@ export default function NavBar() {
                                                                 <h4 className="product-name"><a href={`/products/${item.slug}`}>{item.name}</a></h4>
                                                                 {item.selectedVariant && (
                                                                     <span style={{ display: 'block', fontSize: '12px', color: '#888', marginBottom: '3px' }}>
-                                                                        Size: {item.selectedVariant.size}ml
+                                                                        Size: {item.selectedVariant.size}
                                                                     </span>
                                                                 )}
                                                                 <div className="d-flex align-items-center mb-1" style={{ gap: '6px' }}>

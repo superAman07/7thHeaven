@@ -145,58 +145,61 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('CelciusCart', JSON.stringify(cartItems));
     }, [cartItems, isLoaded]);
 
-    // 3. Add to Cart (Optimistic + API)
     const addToCart = useCallback(async(product: PublicProduct, quantity: number) => {
-        setCartItems(prevItems => {
-            const uniqueCartId = product.selectedVariant 
-                ? `${product.id}-${product.selectedVariant.id}` 
-                : product.id;
-
-            const maxStock = product.selectedVariant?.stock ?? product.stock ?? 0;
-
-            // Calculate current quantity including "ghost" items
-            const currentTotalQty = prevItems
-                .filter(item => 
-                    item.id === uniqueCartId || 
-                    (item.originalProductId === product.id && (!item.selectedVariant || item.selectedVariant.id === product.selectedVariant?.id))
-                )
-                .reduce((sum, item) => sum + item.quantity, 0);
-
-            if (currentTotalQty + quantity > maxStock) {
-                if (maxStock === 0) {
-                    alert("Sorry, this item is currently out of stock.");
-                } else {
-                    alert(`Sorry, you cannot add more. Only ${maxStock} unit(s) available.`);
-                }
-                return prevItems;
-            }
-
-            const existingItemIndex = prevItems.findIndex(item => item.id === uniqueCartId);
-
-            if (existingItemIndex > -1) {
-                const newItems = [...prevItems];
-                newItems[existingItemIndex].quantity += quantity;
-                return newItems;
+        const uniqueCartId = product.selectedVariant 
+            ? `${product.id}-${product.selectedVariant.id}` 
+            : product.id;
+        const maxStock = product.selectedVariant?.stock ?? product.stock ?? 0;
+        // Calculate current quantity
+        const currentTotalQty = cartItems
+            .filter(item => 
+                item.id === uniqueCartId || 
+                (item.originalProductId === product.id && (!item.selectedVariant || item.selectedVariant.id === product.selectedVariant?.id))
+            )
+            .reduce((sum, item) => sum + item.quantity, 0);
+        if (currentTotalQty + quantity > maxStock) {
+            if (maxStock === 0) {
+                alert("Sorry, this item is currently out of stock.");
             } else {
-                return [...prevItems, { 
-                    ...product, 
-                    id: uniqueCartId, 
-                    originalProductId: product.id, 
-                    quantity 
-                }];
+                alert(`Sorry, you cannot add more. Only ${maxStock} unit(s) available.`);
             }
-        });
-
+            return;
+        }
         if (isLoggedIn) {
+            // For logged-in users, let server handle it and then update state from response
             try {
-                await axios.post('/api/v1/cart', {
+                const response = await axios.post('/api/v1/cart', {
                     productId: product.id,
                     variantId: product.selectedVariant?.id,
                     quantity: quantity
                 });
-            } catch (error) { console.error("Add to cart failed", error); }
+                
+                // Update cart from server response
+                if (response.data.cartItems) {
+                    setCartItems(response.data.cartItems);
+                }
+            } catch (error) { 
+                console.error("Add to cart failed", error); 
+            }
+        } else {
+            // For guests, use optimistic update
+            setCartItems(prevItems => {
+                const existingItemIndex = prevItems.findIndex(item => item.id === uniqueCartId);
+                if (existingItemIndex > -1) {
+                    const newItems = [...prevItems];
+                    newItems[existingItemIndex].quantity += quantity;
+                    return newItems;
+                } else {
+                    return [...prevItems, { 
+                        ...product, 
+                        id: uniqueCartId, 
+                        originalProductId: product.id, 
+                        quantity 
+                    }];
+                }
+            });
         }
-    }, [isLoggedIn]);
+    }, [isLoggedIn, cartItems]);
 
     // 4. Remove from Cart
     const removeFromCart = useCallback(async (cartItemId: string) => {

@@ -12,13 +12,16 @@ interface WishlistItem {
         name: string;
         slug: string;
         images: string[];
-        variants: { price: number }[];
+        variants: { id: string; price: number; size: string; stock: number }[];
+        discountPercentage?: number;
+        inStock?: boolean;
     };
 }
 
 export default function WishlistPage() {
     const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [addingProductId, setAddingProductId] = useState<string | null>(null);
     const { addToCart } = useCart();
 
     useEffect(() => {
@@ -52,17 +55,23 @@ export default function WishlistPage() {
     };
 
     const handleAddToCart = (product: any) => {
+        if (addingProductId === product.id) return;
+        
+        setAddingProductId(product.id);
+        
         const selectedVariant = product.variants?.[0] || null;
         
         const cartProduct = {
             ...product,
             variants: product.variants || [],
             selectedVariant: selectedVariant,
-            stock: selectedVariant?.stock || 99
+            stock: selectedVariant?.stock || 99,
+            discountPercentage: product.discountPercentage ?? 0,
+            price: selectedVariant?.price || 0
         };
-        
         addToCart(cartProduct, 1);
         toast.success('Added to cart');
+        setTimeout(() => setAddingProductId(null), 1000);
     };
 
     return (
@@ -133,7 +142,9 @@ export default function WishlistPage() {
                                             <tbody>
                                                 {wishlistItems.map((item) => {
                                                     const product = item.product;
-                                                    const price = Number(product.variants?.[0]?.price) || 0;
+                                                    const basePrice = Number(product.variants?.[0]?.price) || 0;
+                                                    const discount = Number(product.discountPercentage) || 0;
+                                                    const finalPrice = Math.round(basePrice * (1 - discount / 100));
 
                                                     return (
                                                         <tr key={product.id}>
@@ -149,14 +160,22 @@ export default function WishlistPage() {
                                                             <td className="pro-title">
                                                                 <Link href={`/products/${product.slug}`}>{product.name}</Link>
                                                             </td>
-                                                            <td className="pro-price"><span>Rs. {price.toFixed(2)}</span></td>
+                                                            <td className="pro-price">
+                                                                <span style={{ color: '#B6902E', fontWeight: '600' }}>Rs. {finalPrice.toFixed(2)}</span>
+                                                                {discount > 0 && (
+                                                                    <span style={{ textDecoration: 'line-through', color: '#888', marginLeft: '8px', fontSize: '14px' }}>
+                                                                        Rs. {basePrice.toFixed(2)}
+                                                                    </span>
+                                                                )}
+                                                            </td>
                                                             <td className="pro-stock"><span className="in-stock">In Stock</span></td>
                                                             <td className="pro-addtocart">
                                                                 <button
                                                                     className="btn"
                                                                     onClick={() => handleAddToCart(product)}
+                                                                    disabled={addingProductId === product.id}
                                                                 >
-                                                                    Add to cart
+                                                                    {addingProductId === product.id ? 'Adding...' : 'Add to cart'}
                                                                 </button>
                                                             </td>
                                                             <td className="pro-remove">
@@ -179,7 +198,9 @@ export default function WishlistPage() {
                                     <div className="d-block d-md-none">
                                         {wishlistItems.map((item) => {
                                             const product = item.product;
-                                            const price = Number(product.variants?.[0]?.price) || 0;
+                                            const basePrice = Number(product.variants?.[0]?.price) || 0;
+                                            const discount = Number(product.discountPercentage) || 0;
+                                            const finalPrice = Math.round(basePrice * (1 - discount / 100));
 
                                             return (
                                                 <div 
@@ -218,7 +239,7 @@ export default function WishlistPage() {
                                                             {product.name}
                                                         </Link>
                                                         <p style={{ margin: '0 0 8px 0', color: '#B6902E', fontWeight: '600', fontSize: '14px' }}>
-                                                            Rs. {price.toFixed(2)}
+                                                            Rs. {finalPrice.toFixed(2)}
                                                         </p>
                                                         <button
                                                             className="btn btn-sm"

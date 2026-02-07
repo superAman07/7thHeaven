@@ -56,9 +56,15 @@ export async function GET(req: NextRequest) {
                                 name: true,
                                 slug: true,
                                 images: true,
+                                discountPercentage: true,
+                                inStock: true,
                                 variants: {
-                                    take: 1,
-                                    select: { price: true }
+                                    select: {
+                                        id: true,
+                                        price: true,
+                                        size: true,
+                                        stock: true
+                                    }
                                 }
                             }
                         }
