@@ -201,13 +201,13 @@ export default function SeventhHeavenPage() {
                     <div className="text-2xl font-bold text-[#ddb040] mb-1 group-hover:text-[#b6902e] transition-colors">
                       {data?.totalTeamSize || 0}
                     </div>
-                    <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold group-hover:text-gray-600">
-                      Heaven Size <i className="fa fa-external-link ml-1 text-[9px]" />
+                    <div className="text-[8px]! md:text-[10px]! text-gray-400 uppercase tracking-widest font-bold whitespace-nowrap">
+                      Heaven Size <i className="fa fa-external-link ml-1 text-[8px] md:text-[9px]" />
                     </div>
                   </div>
                   <div className="px-4">
                     <div className="text-2xl font-bold text-gray-800 mb-1">{data?.levels?.filter((l) => l.isCompleted).length || 0} / 7</div>
-                    <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Heaven Unlocked</div>
+                    <div className="text-[8px] md:text-[10px] text-gray-400 uppercase tracking-widest font-bold">Heaven Unlocked</div>
                   </div>
                 </div>
               </div>
