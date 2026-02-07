@@ -1,6 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+/**
+ * @swagger
+ * /api/v1/cart/validate:
+ *   post:
+ *     summary: Validate Cart Items
+ *     description: |
+ *       Validates a list of product IDs to check if they still exist, 
+ *       are not archived, and are in stock. Use this before checkout 
+ *       to ensure all cart items are still available for purchase.
+ *       
+ *       **Use Case:** Mobile app should call this on Cart Screen load and before checkout.
+ *     tags:
+ *       - Cart
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productIds
+ *             properties:
+ *               productIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of product IDs to validate
+ *                 example: ["clk1234abcd", "clk5678efgh"]
+ *     responses:
+ *       200:
+ *         description: Validation results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 validItems:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: Product IDs that are valid and available
+ *                 invalidItems:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       productId:
+ *                         type: string
+ *                       reason:
+ *                         type: string
+ *                         enum: [DELETED, ARCHIVED, OUT_OF_STOCK]
+ *                       message:
+ *                         type: string
+ *       400:
+ *         description: Invalid request (missing or invalid productIds array)
+ *       500:
+ *         description: Server error during validation
+ */
+
 export async function POST(req: NextRequest) {
     try {
         const { productIds } = await req.json();
