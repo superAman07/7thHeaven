@@ -76,13 +76,7 @@ export default function CollectionsPage() {
           ) : (
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {collections.map((col) => (
-                  <React.Fragment key={col.id}>
-                      {/* DESKTOP CARD: Hidden on mobile, Visible on Large screens */}
-                      <DesktopCard col={col} className="hidden lg:block h-full w-full" />
-                      
-                      {/* MOBILE CARD: Visible on mobile, Hidden on Large screens */}
-                      <MobileCard col={col} className="block lg:hidden h-full w-full" />
-                  </React.Fragment>
+                  <UnifiedCollectionCard key={col.id} col={col} />
                 ))}
              </div>
           )}
@@ -91,117 +85,122 @@ export default function CollectionsPage() {
     </div>
   );
 }
-// ==========================================
-// 1. DESKTOP CARD (Standard Hover Logic)
-// ==========================================
-function DesktopCard({ col, className = '' }: { col: Collection, className?: string }) {
-  return (
-    <Link 
-      href={`/collections/${col.slug}`} 
-      className={`group block relative overflow-hidden rounded-2xl aspect-4/5 md:aspect-3/4 lg:aspect-4/5 shadow-lg hover:shadow-2xl transition-all duration-500 ${className}`}
-    >
-      {/* Background Image: Scales Up on Hover */}
-      <div className="absolute inset-0 bg-gray-200">
-        {col.image ? (
-          <img 
-            src={col.image} 
-            alt={col.name} 
-            className="w-full h-full object-cover transform transition-transform duration-700 text-gray-300 group-hover:scale-110" 
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-300">No Image</div>
-        )}
-      </div>
 
-      {/* Overlay: Darken on Hover */}
-      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 opacity-80 group-hover:opacity-90"></div>
-
-      {/* Content: Slide Up & Fade In on Hover */}
-      {/* Added '!' to opacity-0 and translate-y-4 to FORCE hidden state */}
-      <div className="absolute bottom-0 left-0 w-full p-8 text-white transition-all duration-300 transform translate-y-4! opacity-0! group-hover:translate-y-0! group-hover:opacity-100!">
-        
-        <p className="text-xs font-bold tracking-widest uppercase text-yellow-500 mb-2">
-          {col._count?.categories || 0} Categories
-        </p>
-        <h3 className="text-3xl! font-serif! font-medium! mb-3! transition-colors! group-hover:text-yellow-100!">
-          {col.name}
-        </h3>
-        
-        {col.description && (
-          <p className="text-gray-300 text-sm line-clamp-2 mb-4 transition-opacity duration-300 delay-100 opacity-0! group-hover:opacity-100!">
-             {col.description}
-          </p>
-        )}
-        
-        <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white border-b border-transparent w-fit pb-1 transition-all group-hover:border-yellow-500">
-          View Collection <ArrowRight className="w-4 h-4" />
-        </div>
-
-      </div>
-    </Link>
-  );
-}
-
-// ==========================================
-// 2. MOBILE CARD (Auto-Scroll Logic)
-// ==========================================
-function MobileCard({ col, className = '' }: { col: Collection, className?: string }) {
+function UnifiedCollectionCard({ col }: { col: Collection }) {
   const cardRef = useRef<HTMLAnchorElement>(null);
-  const [isActive, setIsActive] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Safety check
-    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return;
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia('(max-width: 1023px)').matches);
+    };
+    
+    checkMobile();
+    
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  useEffect(() => {
+    if (!isMobile) return;
+
+    if (!('IntersectionObserver' in window)) {
+        setIsFocused(true);
+        return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsActive(entry.isIntersecting);
+        setIsFocused(entry.isIntersecting);
       },
-      { threshold: 0.5 } // 50% Visible
+      { threshold: 0.5 }
     );
 
-    if (cardRef.current) observer.observe(cardRef.current);
-    return () => observer.disconnect();
-  }, []);
+    const currentRef = cardRef.current;
+    if (currentRef) observer.observe(currentRef);
+
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+      observer.disconnect();
+    };
+  }, [isMobile]);
+
+  const handleMouseEnter = () => {
+    if (!isMobile) setIsFocused(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isMobile) setIsFocused(false);
+  };
+  
+  const overlayStyle: React.CSSProperties = {
+    opacity: isFocused ? 0.9 : 0.8,
+    transition: 'opacity 0.5s ease'
+  };
+
+  const contentStyle: React.CSSProperties = {
+    opacity: isFocused ? 1 : 0,
+    transform: isFocused ? 'translateY(0)' : 'translateY(20px)',
+    transition: 'all 0.5s ease'
+  };
+
+  const imageStyle: React.CSSProperties = {
+    transform: isFocused ? 'scale(1.1)' : 'scale(1)',
+    transition: 'transform 0.7s ease'
+  };
 
   return (
     <Link 
       ref={cardRef}
       href={`/collections/${col.slug}`} 
-      className={`group block relative overflow-hidden rounded-2xl aspect-4/5 shadow-lg transition-all duration-500 ${className}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="block relative overflow-hidden rounded-2xl aspect-4/5 shadow-lg transition-all duration-500"
     >
-      {/* Background Image */}
       <div className="absolute inset-0 bg-gray-200">
         {col.image ? (
           <img 
             src={col.image} 
             alt={col.name} 
-            className={`w-full h-full object-cover transform transition-transform duration-700 text-gray-300 ${isActive ? 'scale-110' : 'scale-100'}`} 
+            className="w-full h-full object-cover text-gray-300"
+            style={imageStyle}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-300">No Image</div>
         )}
       </div>
 
-      {/* Gradient Overlay */}
-      <div className={`absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 ${isActive ? 'opacity-90' : 'opacity-80'}`}></div>
+      <div 
+        className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"
+        style={overlayStyle}
+      ></div>
 
-      {/* Content - Controlled by isActive state */}
-      <div className={`absolute bottom-0 left-0 w-full p-8 text-white transition-all duration-300 transform ${isActive ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}`}>
+      <div className="absolute bottom-0 left-0 w-full p-8 text-white" style={contentStyle}>
+        
         <p className="text-xs font-bold tracking-widest uppercase text-yellow-500 mb-2">
           {col._count?.categories || 0} Categories
         </p>
-        <h3 className={`text-3xl! font-serif! font-medium! mb-3! transition-colors! ${isActive ? 'text-yellow-100!' : 'text-white'}`}>
+        
+        <h3 
+            className="text-3xl! font-serif! font-medium! mb-3! transition-colors!"
+            style={{ color: isFocused ? '#FEF3C7' : '#FFF' }}
+        >
           {col.name}
         </h3>
+        
         {col.description && (
-          <p className={`text-gray-300 text-sm line-clamp-2 mb-4 transition-opacity duration-300 delay-100 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
+          <p className="text-gray-300 text-sm line-clamp-2 mb-4">
              {col.description}
           </p>
         )}
-        <div className={`flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white border-b border-transparent w-fit pb-1 transition-all ${isActive ? 'border-yellow-500' : 'border-transparent'}`}>
+        
+        <div 
+            className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white border-b w-fit pb-1 transition-all"
+            style={{ borderColor: isFocused ? '#EAB308' : 'transparent' }} // Yellow-500 border on focus
+        >
           View Collection <ArrowRight className="w-4 h-4" />
         </div>
+
       </div>
     </Link>
   );
