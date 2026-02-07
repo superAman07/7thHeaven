@@ -173,7 +173,7 @@ export default function FooterPage({
                     {displayFooterText ? (
                         displayFooterText
                     ) : (
-                        <>Copyright &copy; {new Date().getFullYear()} <a href="#">{displaySiteName}</a>. <span className="d-none d-sm-inline">All rights reserved.</span></>
+                        <>Copyright &copy; {new Date().getFullYear()} <a href="#">www.celsiuspop.com</a>. <span className="d-none d-sm-inline">All rights reserved.</span></>
                     )}
                   </p>
                 </div>
