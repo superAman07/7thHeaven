@@ -134,6 +134,11 @@ export default function SeventhHeavenPage() {
     }
   };
 
+
+  if (isGuest) {
+    return <MarketingView isLoggedIn={false} />; 
+  }
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -144,11 +149,10 @@ export default function SeventhHeavenPage() {
       </div>
     );
   }
-
-  if (isGuest || (data && !data.isMember)) {
-    return <MarketingView isLoggedIn={!isGuest} />; 
+  
+  if (data && !data.isMember) {
+    return <MarketingView isLoggedIn={true} />; 
   }
-
   if (!data) return null;
 
   return (
@@ -163,55 +167,56 @@ export default function SeventhHeavenPage() {
       <div className="container mx-auto px-4 relative z-10 -mt-16">
         {/* 1. STATUS CARD */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-12 border-t-4 border-[#ddb040] relative overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center relative z-10">
-            <div>
-              {/* Personalized Greeting */}
-              <h2 className="text-2xl font-serif text-gray-800 mb-2">
-                Welcome, <span className="text-[#ddb040] ">{data.fullName?.split(' ')[0] || 'Member'}</span>
-              </h2>
-              <p className="text-gray-600 mb-4 flex items-center gap-2">
-                Status: <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">ACTIVE</span>
-              </p>
-
-              {/* Referral Code Box */}
-              <div className="flex items-center gap-3 flex-wrap">
-                <div className="bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200 font-mono text-base font-bold text-gray-800 tracking-wider">
-                  {data.referralCode || 'NO CODE'}
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="w-10 h-10 border-3 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center relative z-10">
+              <div>
+                {/* Personalized Greeting */}
+                <h2 className="text-2xl font-serif text-gray-800 mb-2">
+                  Welcome, <span className="text-[#ddb040] ">{data?.fullName?.split(' ')[0] || 'Member'}</span>
+                </h2>
+                <p className="text-gray-600 mb-4 flex items-center gap-2">
+                  Status: <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">ACTIVE</span>
+                </p>
+                {/* Referral Code Box */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200 font-mono text-base font-bold text-gray-800 tracking-wider">
+                    {data?.referralCode || 'NO CODE'}
+                  </div>
+                  <button
+                    onClick={copyToClipboard}
+                    className="bg-[#1a1a1a] hover:bg-[#333] text-white h-[42px] px-4 rounded-lg shadow-sm flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors"
+                  >
+                    <i className={`fa ${copySuccess ? 'fa-check text-[#ddb040]' : 'fa-copy'}`} />
+                    {copySuccess ? 'Copied' : 'Copy'}
+                  </button>
+                  <ShareButton referralCode={data?.referralCode || ''} variant="icon" />
                 </div>
-
-                <button
-                  onClick={copyToClipboard}
-                  className="bg-[#1a1a1a] hover:bg-[#333] text-white h-[42px] px-4 rounded-lg shadow-sm flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors"
+              </div>
+              {/* Stats */}
+              <div className="flex justify-center lg:justify-end gap-8 text-center divide-x divide-gray-100">
+                <div
+                  className="px-4 cursor-pointer hover:scale-105 transition-transform duration-300 group"
+                  onClick={() => setIsGalaxyOpen(true)}
+                  title="View Galaxy Map"
                 >
-                  <i className={`fa ${copySuccess ? 'fa-check text-[#ddb040]' : 'fa-copy'}`} />
-                  {copySuccess ? 'Copied' : 'Copy'}
-                </button>
-
-                <ShareButton referralCode={data.referralCode} variant="icon" />
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="flex justify-center lg:justify-end gap-8 text-center divide-x divide-gray-100">
-              <div
-                className="px-4 cursor-pointer hover:scale-105 transition-transform duration-300 group"
-                onClick={() => setIsGalaxyOpen(true)}
-                title="View Galaxy Map"
-              >
-                <div className="text-2xl font-bold text-[#ddb040] mb-1 group-hover:text-[#b6902e] transition-colors">
-                  {data.totalTeamSize}
+                  <div className="text-2xl font-bold text-[#ddb040] mb-1 group-hover:text-[#b6902e] transition-colors">
+                    {data?.totalTeamSize || 0}
+                  </div>
+                  <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold group-hover:text-gray-600">
+                    Heaven Size <i className="fa fa-external-link ml-1 text-[9px]" />
+                  </div>
                 </div>
-                <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold group-hover:text-gray-600">
-                  Heaven Size <i className="fa fa-external-link ml-1 text-[9px]" />
+                <div className="px-4">
+                  <div className="text-2xl font-bold text-gray-800 mb-1">{data?.levels?.filter((l) => l.isCompleted).length || 0} / 7</div>
+                  <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Heaven Unlocked</div>
                 </div>
               </div>
-
-              <div className="px-4">
-                <div className="text-2xl font-bold text-gray-800 mb-1">{data.levels.filter((l) => l.isCompleted).length} / 7</div>
-                <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Heaven Unlocked</div>
-              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* 2. CLUB ESSENTIALS (Affordable Products) */}
@@ -245,7 +250,12 @@ export default function SeventhHeavenPage() {
         {/* 3. LEVELS GRID */}
         <div className="mb-12">
             <h3 className="text-3xl! font-serif! text-gray-900 mb-8 pl-4 border-l-4 border-[#ddb040]">Heaven Progress</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="w-10 h-10 border-3 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {data.levels.map((level) => {
                   const previousLevel = data.levels.find(l => l.level === level.level - 1);
                   const isUnlocked = level.level === 1 || previousLevel?.isCompleted;
@@ -275,7 +285,8 @@ export default function SeventhHeavenPage() {
                     </div>
                   );
                 })}
-            </div>
+              </div>
+            )}
         </div>
 
         {/* 4. DIRECT REFERRALS (Improved Empty State) */}
@@ -284,7 +295,11 @@ export default function SeventhHeavenPage() {
             <h3 className="text-xl! md:text-3xl! font-serif! text-gray-900">Direct Referrals</h3>
           </div>
 
-          {data.directReferrals.length > 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-10 h-10 border-3 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : data?.directReferrals?.length > 0 ? (
             <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
               <table className="w-full text-left relative border-collapse">
                 <thead className="bg-white text-gray-400 text-[10px] uppercase tracking-wider border-b border-gray-100 sticky top-0 z-10 shadow-sm">
