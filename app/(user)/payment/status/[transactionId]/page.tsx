@@ -169,7 +169,7 @@ export default function PaymentStatusPage() {
                     <div className="container text-center relative z-10 py-8">
                         {/* Success Icon */}
                         <div className="mb-6 animate-bounce">
-                            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-green-400 to-green-600 shadow-2xl">
+                            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-linear-to-br from-green-400 to-green-600 shadow-2xl">
                                 <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
                                 </svg>
@@ -248,7 +248,7 @@ export default function PaymentStatusPage() {
 
                             {/* Info Alert */}
                             <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3">
-                                <svg className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                                 <p className="text-amber-800 text-sm">
