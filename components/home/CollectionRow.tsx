@@ -2,6 +2,7 @@ import React from 'react';
 import { getProducts } from '@/services/product';
 import ProductSlider from './ProductSlider';
 import Link from 'next/link';
+import { ComingSoonCard } from './ComingSoonCard';
 
 type Props = {
     title: string;
@@ -23,7 +24,7 @@ export default async function CollectionRow({ title, type, categorySlug, collect
         const result = await getProducts({ category: categorySlug, limit: 12 });
         products = result.data || [];
     }
-    if (products.length === 0) return null;
+    const showComingSoon = products.length === 0;
 
     return (
         <section className={`shop-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45 pb-70 pb-lg-50 pb-md-40 pb-sm-60 pb-xs-50 ${bgClass}`}>
@@ -44,7 +45,13 @@ export default async function CollectionRow({ title, type, categorySlug, collect
                                     <div className="tab-content">
                                         <div className="tab-pane fade active show">
                                             <div className="product-slider tf-element-carousel">
-                                                <ProductSlider products={products as any[]} />
+                                                {showComingSoon ? (
+                                                    <div className="row justify-content-center">
+                                                        <ComingSoonCard />
+                                                    </div>
+                                                ) : (
+                                                    <ProductSlider products={products as any[]} />
+                                                )}
                                             </div>
                                         </div>
                                     </div>
