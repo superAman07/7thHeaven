@@ -236,7 +236,7 @@ export async function POST(req: NextRequest) {
             const basePrice = selectedVariant.price.toNumber();
             const discountPercentage = product.discountPercentage ? product.discountPercentage.toNumber() : 0;
             
-            const price = basePrice * (1 - discountPercentage / 100);
+            const price = Math.round(basePrice * (1 - discountPercentage / 100));
             subtotal += price * item.quantity;
             return {
                 productId: item.productId,
@@ -251,10 +251,10 @@ export async function POST(req: NextRequest) {
         const newOrder = await prisma.order.create({
             data: {
                 userId: userId!,
-                subtotal: subtotal,
+                subtotal: Math.round(subtotal),
                 discount: discountAmount || 0,
                 couponCode: couponCode || null,
-                netAmountPaid: subtotal - (discountAmount || 0),
+                netAmountPaid: Math.round(subtotal - (discountAmount || 0)),
                 paymentStatus: 'PENDING',
                 shippingAddress: shippingDetails as any,
                 mlmOptInRequested: mlmOptIn || false,
@@ -272,7 +272,7 @@ export async function POST(req: NextRequest) {
                 data: {
                     paymentStatus: 'PAID',
                     status: 'PROCESSING',
-                    netAmountPaid: subtotal - (discountAmount || 0),
+                    netAmountPaid: Math.round(subtotal - (discountAmount || 0)),
                     gatewayOrderId: merchantTransactionId
                 }
              });
@@ -356,7 +356,7 @@ export async function POST(req: NextRequest) {
                              userId: userId,
                              userName: user?.fullName || shippingDetails.fullName,
                              discountAmount: discountAmount || 0,
-                             orderTotal: subtotal - (discountAmount || 0)
+                             orderTotal: Math.round(subtotal - (discountAmount || 0))
                          }
                      });
                  }
@@ -365,7 +365,7 @@ export async function POST(req: NextRequest) {
              return NextResponse.json({
                 success: true,
                 orderId: newOrder.id,
-                totalAmount: subtotal - (discountAmount || 0),
+                totalAmount: Math.round(subtotal - (discountAmount || 0)),
                 bypassed: true, 
                 transactionId: merchantTransactionId
             });
