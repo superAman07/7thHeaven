@@ -16,6 +16,9 @@ interface Order {
   user: OrderUser;
   items: any;
   subtotal: string;
+  netAmountPaid?: string;
+  discount?: string;
+  couponCode?: string;
   paymentStatus: string;
   status: string;
   shippingAddress: any;
@@ -238,7 +241,14 @@ export default function OrdersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">{new Date(order.createdAt).toLocaleDateString()}</td>
-                    <td className="px-6 py-4">₹{order.subtotal}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span>₹{order.netAmountPaid || order.subtotal}</span>
+                        {order.couponCode && (
+                          <span className="text-xs text-green-600 font-medium">🎟️ {order.couponCode}</span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-6 py-4"><StatusBadge status={order.paymentStatus} type="payment" /></td>
                     <td className="px-6 py-4"><StatusBadge status={order.status} type="order" /></td>
                     <td className="px-6 py-4 text-right">
@@ -404,9 +414,20 @@ export default function OrdersPage() {
                   <span className="text-gray-600">Subtotal</span>
                   <span>₹{currentOrder.subtotal}</span>
                 </div>
+                {currentOrder.couponCode && (
+                  <div className="flex justify-between mb-2 text-green-600">
+                    <span className="flex items-center gap-1">
+                      🎟️ Coupon Applied
+                      <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded">
+                        {currentOrder.couponCode}
+                      </span>
+                    </span>
+                    <span>-₹{currentOrder.discount || 0}</span>
+                  </div>
+                )}
                 <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
                   <span>Total Paid</span>
-                  <span>₹{currentOrder.subtotal}</span>
+                  <span className="text-green-700">₹{currentOrder.netAmountPaid || currentOrder.subtotal}</span>
                 </div>
                 <div className="mt-2 text-right">
                   <StatusBadge status={currentOrder.paymentStatus} type="payment" />
