@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, Bell, MessageSquare, Settings, Layers, Ticket } from 'lucide-react';
 
-const getNavItems = (newOrdersCount: number, openTicketsCount: number) => [
+const getNavItems = (newOrdersCount: number, openTicketsCount: number, pendingRewardsCount: number) => [
   { href: '/celsius-7th-heaven/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/celsius-7th-heaven/collections', label: 'Collections', icon: Layers },
   { href: '/celsius-7th-heaven/categories', label: 'Categories', icon: Tags },
@@ -13,7 +13,7 @@ const getNavItems = (newOrdersCount: number, openTicketsCount: number) => [
   { href: '/celsius-7th-heaven/orders', label: 'Orders', icon: ShoppingCart, badgeCount: newOrdersCount },
   { href: '/celsius-7th-heaven/coupons', label: 'Coupons', icon: Ticket },
   { href: '/celsius-7th-heaven/customers', label: 'Customers', icon: Users },
-  { href: '/celsius-7th-heaven/network', label: 'Network', icon: Share2 },
+  { href: '/celsius-7th-heaven/network', label: 'Network', icon: Share2, badgeCount: pendingRewardsCount },
   { href: '/celsius-7th-heaven/support-tickets', label: 'Support Tickets', icon: MessageSquare, badgeCount: openTicketsCount },
   { href: '/celsius-7th-heaven/notifications', label: 'Notifications', icon: Bell },
   { href: '/celsius-7th-heaven/storefront', label: 'Store Front Page', icon: LayoutDashboard },
@@ -59,6 +59,7 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
 
   const [newOrdersCount, setNewOrdersCount] = useState(0);
   const [openTicketsCount, setOpenTicketsCount] = useState(0);
+  const [pendingRewardsCount, setPendingRewardsCount] = useState(0);
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -75,6 +76,15 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
         const ticketsData = await ticketsRes.json();
         if (ticketsData.success) {
           setOpenTicketsCount(ticketsData.tickets?.length || 0);
+        }
+        const networkRes = await fetch('/api/v1/admin/mlm/leaders');
+        
+        const networkData = await networkRes.json();
+        if (networkData.success) {
+          const usersWithRewards = networkData.data.filter(
+            (leader: { stats: { completedLevels: number[] } }) => leader.stats.completedLevels.length > 0
+          ).length;
+          setPendingRewardsCount(usersWithRewards);
         }
       } catch (err) {
         console.error('Failed to fetch counts');
@@ -108,7 +118,7 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
 
         {/* Navigation Links */}
         <div className="flex! flex-col! flex-1! overflow-y-auto! custom-scrollbar! gap-0.5!">
-          {getNavItems(newOrdersCount, openTicketsCount).map((item) => (
+          {getNavItems(newOrdersCount, openTicketsCount, pendingRewardsCount).map((item) => (
             <NavLink key={item.href} {...item} />
           ))}
         </div>
