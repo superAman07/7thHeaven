@@ -4,6 +4,108 @@ import { getUserIdFromToken } from '@/lib/auth';
 import crypto from 'crypto';
 import axios from 'axios';
 
+/**
+ * @swagger
+ * /api/v1/payment/status/{transactionId}:
+ *   get:
+ *     summary: Get Payment Status
+ *     description: Retrieves the current status of a payment transaction and order details.
+ *     tags:
+ *       - Payment
+ *     parameters:
+ *       - in: path
+ *         name: transactionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The transaction ID from payment gateway
+ *         example: "TEST-1770545426492"
+ *     responses:
+ *       200:
+ *         description: Payment status retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 order:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       description: Order ID
+ *                     paymentStatus:
+ *                       type: string
+ *                       enum: [PENDING, PAID, FAILED]
+ *                       example: "PAID"
+ *                     subtotal:
+ *                       type: number
+ *                       description: Original cart total
+ *                       example: 9750
+ *                     netAmountPaid:
+ *                       type: number
+ *                       description: Final amount after discount
+ *                       example: 8775
+ *                     discount:
+ *                       type: number
+ *                       description: Discount amount applied
+ *                       example: 975
+ *                     couponCode:
+ *                       type: string
+ *                       nullable: true
+ *                       example: "SUMMER20"
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: string
+ *                           quantity:
+ *                             type: integer
+ *                           priceAtPurchase:
+ *                             type: number
+ *                           size:
+ *                             type: string
+ *                     shippingAddress:
+ *                       type: object
+ *                       properties:
+ *                         fullName:
+ *                           type: string
+ *                         fullAddress:
+ *                           type: string
+ *                         city:
+ *                           type: string
+ *                         state:
+ *                           type: string
+ *                         pincode:
+ *                           type: string
+ *                         phone:
+ *                           type: string
+ *                     mlmOptInRequested:
+ *                       type: boolean
+ *                       description: Whether user opted for 7th Heaven
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         fullName:
+ *                           type: string
+ *                         email:
+ *                           type: string
+ *                         phone:
+ *                           type: string
+ *       404:
+ *         description: Order not found
+ *       500:
+ *         description: Server error
+ */
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ transactionId: string }> }) {
     try {
         const userId = await getUserIdFromToken(req);

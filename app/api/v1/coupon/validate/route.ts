@@ -1,6 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+/**
+ * @swagger
+ * /api/v1/coupon/validate:
+ *   post:
+ *     summary: Validate Coupon Code
+ *     description: Validates a coupon code and calculates the discount amount based on cart total.
+ *     tags:
+ *       - Coupons
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - code
+ *               - cartTotal
+ *             properties:
+ *               code:
+ *                 type: string
+ *                 description: The coupon code to validate
+ *                 example: "SUMMER20"
+ *               cartTotal:
+ *                 type: number
+ *                 description: Current cart total before discount
+ *                 example: 9750
+ *     responses:
+ *       200:
+ *         description: Coupon validated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 coupon:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     code:
+ *                       type: string
+ *                       example: "SUMMER20"
+ *                     type:
+ *                       type: string
+ *                       enum: [PERCENT, FIXED]
+ *                       example: "PERCENT"
+ *                     value:
+ *                       type: number
+ *                       example: 10
+ *                     discountAmount:
+ *                       type: number
+ *                       example: 975
+ *                     finalTotal:
+ *                       type: number
+ *                       example: 8775
+ *       400:
+ *         description: Invalid request, coupon inactive, or minimum amount not met
+ *       404:
+ *         description: Coupon code not found
+ *       500:
+ *         description: Server error
+ */
+
 export async function POST(req: NextRequest) {
     try {
         const { code, cartTotal } = await req.json();
