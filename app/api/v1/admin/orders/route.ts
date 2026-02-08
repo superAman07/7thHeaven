@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
             where.status = 'CANCELLED';
             where.paymentStatus = 'PAID';
         } else if (status === 'NEW_ORDERS') {
-            where.status = 'PENDING';
+            where.status = { in: ['PENDING', 'PROCESSING'] };
             where.paymentStatus = 'PAID';
         } else if (status) {
             where.status = status;
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
             }),
             prisma.order.count({
                 where: {
-                    status: 'PENDING',
+                    status: { in: ['PENDING', 'PROCESSING'] },
                     paymentStatus: 'PAID'
                 }
             })

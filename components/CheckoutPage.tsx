@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from './CartContext';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const CheckoutPageComponent: React.FC = () => {
     const { cartItems, cartTotal, isLoggedIn } = useCart();
@@ -16,6 +16,23 @@ const CheckoutPageComponent: React.FC = () => {
     const [minPurchaseLimit, setMinPurchaseLimit] = useState(2000);
 
     const [isAlreadyMember, setIsAlreadyMember] = useState(false);
+
+    const searchParams = useSearchParams();
+    const [appliedCoupon, setAppliedCoupon] = useState<{
+        code: string;
+        discountAmount: number;
+    } | null>(null);
+    useEffect(() => {
+        const couponCode = searchParams.get('coupon');
+        const discountAmount = searchParams.get('discount');
+        
+        if (couponCode && discountAmount) {
+            setAppliedCoupon({
+                code: couponCode,
+                discountAmount: parseFloat(discountAmount)
+            });
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         axios.get('/api/v1/settings')
@@ -141,7 +158,9 @@ const CheckoutPageComponent: React.FC = () => {
     //                 pincode: finalShipping.zip,
     //                 country: finalShipping.country
     //             },
-    //             mlmOptIn: is7thHeavenOptIn
+    //             mlmOptIn: is7thHeavenOptIn,
+    //             couponCode: appliedCoupon?.code || null,
+    //             discountAmount: appliedCoupon?.discountAmount || 0
     //         };
     //         const orderResponse = await axios.post('/api/v1/orders', orderPayload, { withCredentials: true });
 
@@ -193,7 +212,9 @@ const CheckoutPageComponent: React.FC = () => {
                     pincode: finalShipping.zip,
                     country: finalShipping.country
                 },
-                mlmOptIn: is7thHeavenOptIn
+                mlmOptIn: is7thHeavenOptIn,
+                couponCode: appliedCoupon?.code || null,
+                discountAmount: appliedCoupon?.discountAmount || 0
             };
             const orderResponse = await axios.post('/api/v1/orders', orderPayload, { withCredentials: true });
             if (!orderResponse.data.success) {

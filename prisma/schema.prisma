@@ -160,13 +160,37 @@ model CartItem {
 }
 
 model Coupon {
-  id         String    @id @default(cuid())
-  code       String    @unique
-  type       String // PERCENT / FIXED
-  value      Decimal
-  expiresAt  DateTime?
-  usageLimit Int?
-  createdAt  DateTime  @default(now())
+  id              String    @id @default(cuid())
+  code            String    @unique
+  type            String    // PERCENT / FIXED
+  value           Decimal
+  expiresAt       DateTime?
+  usageLimit      Int?      // Max total uses (null = unlimited)
+  usedCount       Int       @default(0)
+  minOrderAmount  Decimal?  @default(0)  // Minimum cart value
+  isActive        Boolean   @default(true)
+  
+  // Influencer tracking
+  influencerName  String?
+  influencerEmail String?
+  influencerPhone String?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  usageHistory    CouponUsage[]
+}
+
+model CouponUsage {
+  id             String   @id @default(cuid())
+  couponId       String
+  coupon         Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  orderId        String   @unique
+  userId         String?
+  userName       String?
+  discountAmount Decimal
+  orderTotal     Decimal
+  createdAt      DateTime @default(now())
 }
 
 model Payment {

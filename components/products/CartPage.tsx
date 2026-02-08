@@ -11,6 +11,14 @@ const CartPageComponent: React.FC = () => {
     const router = useRouter();
     
     const [couponCode, setCouponCode] = useState('');
+    const [appliedCoupon, setAppliedCoupon] = useState<{
+        code: string;
+        type: string;
+        value: number;
+        discountAmount: number;
+    } | null>(null);
+    const [couponError, setCouponError] = useState('');
+    const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
     const [unavailableItems, setUnavailableItems] = useState<Set<string>>(new Set());
     const [validating, setValidating] = useState(true);
 
@@ -74,11 +82,49 @@ const CartPageComponent: React.FC = () => {
         removeFromCart(id);
     };
 
+    const handleApplyCoupon = async () => {
+        if (!couponCode.trim()) {
+            setCouponError('Please enter a coupon code');
+            return;
+        }
+
+        setIsApplyingCoupon(true);
+        setCouponError('');
+
+        try {
+            const response = await axios.post('/api/v1/coupon/validate', {
+                code: couponCode,
+                cartTotal: cartTotal
+            });
+
+            if (response.data.success) {
+                setAppliedCoupon(response.data.coupon);
+                setCouponError('');
+            }
+        } catch (error: any) {
+            setCouponError(error.response?.data?.error || 'Failed to apply coupon');
+            setAppliedCoupon(null);
+        } finally {
+            setIsApplyingCoupon(false);
+        }
+    };
+
+    const handleRemoveCoupon = () => {
+        setAppliedCoupon(null);
+        setCouponCode('');
+        setCouponError('');
+    };
+
     const handleProceedToCheckout = () => {
         if (cartItems.length === 0) {
             alert("Your cart is empty.");
             return;
         }
+
+        const checkoutUrl = appliedCoupon 
+        ? `/cart/checkout?coupon=${appliedCoupon.code}&discount=${appliedCoupon.discountAmount}`
+        : '/cart/checkout';
+
         
         // Check for unavailable items
         if (unavailableItems.size > 0) {
@@ -94,12 +140,12 @@ const CartPageComponent: React.FC = () => {
                         removeFromCart(item.id);
                     }
                 });
-                setTimeout(() => router.push('/cart/checkout'), 100);
+                setTimeout(() => router.push(checkoutUrl), 100);
             }
             return;
         }
         
-        router.push('/cart/checkout');
+        router.push(checkoutUrl);
     };
 
     return (
@@ -352,16 +398,63 @@ const CartPageComponent: React.FC = () => {
                                     {/* Discount Coupon */}
                                     <div className="discount-coupon">
                                         <h4>Discount Coupon Code</h4>
-                                        <form action="#">
-                                            <div className="row">
-                                                <div className="col-md-6 col-12 mb-25">
-                                                    <input type="text" placeholder="Coupon Code" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
+                                        {appliedCoupon ? (
+                                            <div className="applied-coupon" style={{ 
+                                                background: '#f0fdf4', 
+                                                border: '1px solid #22c55e', 
+                                                borderRadius: '8px', 
+                                                padding: '12px',
+                                                marginBottom: '15px'
+                                            }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <div>
+                                                        <span style={{ color: '#22c55e', fontWeight: 'bold' }}>
+                                                            ✓ {appliedCoupon.code}
+                                                        </span>
+                                                        <span style={{ color: '#666', marginLeft: '10px' }}>
+                                                            ({appliedCoupon.type === 'PERCENT' ? `${appliedCoupon.value}% off` : `₹${appliedCoupon.value} off`})
+                                                        </span>
+                                                    </div>
+                                                    <button 
+                                                        onClick={handleRemoveCoupon}
+                                                        style={{ 
+                                                            background: 'none', 
+                                                            border: 'none', 
+                                                            color: '#ef4444', 
+                                                            cursor: 'pointer',
+                                                            fontSize: '14px'
+                                                        }}
+                                                    >
+                                                        Remove
+                                                    </button>
                                                 </div>
-                                                <div className="col-md-6 col-12 mb-25">
-                                                    <button className="btn">Apply Code</button>
+                                                <div style={{ color: '#22c55e', marginTop: '5px', fontWeight: '600' }}>
+                                                    You save ₹{appliedCoupon.discountAmount}!
                                                 </div>
                                             </div>
-                                        </form>
+                                        ) : (
+                                            <form onSubmit={(e) => { e.preventDefault(); handleApplyCoupon(); }}>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Enter Coupon Code" 
+                                                    value={couponCode} 
+                                                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                                    style={{ textTransform: 'uppercase' }}
+                                                />
+                                                <button 
+                                                    type="submit" 
+                                                    disabled={isApplyingCoupon}
+                                                    style={{ opacity: isApplyingCoupon ? 0.7 : 1 }}
+                                                >
+                                                    {isApplyingCoupon ? 'Applying...' : 'Apply'}
+                                                </button>
+                                            </form>
+                                        )}
+                                        {couponError && (
+                                            <p style={{ color: '#ef4444', fontSize: '13px', marginTop: '8px' }}>
+                                                {couponError}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 
@@ -372,8 +465,13 @@ const CartPageComponent: React.FC = () => {
                                             <h4>Cart Summary</h4>
                                             <p>Sub Total <span>Rs.{subTotal.toFixed(2)}</span></p>
                                             <p>Shipping Cost <span>Rs.{shippingCost.toFixed(2)}</span></p>
-                                            <p>Discount <span>- Rs.0.00</span></p>
-                                            <h2>Grand Total <span>Rs.{grandTotal.toFixed(2)}</span></h2>
+                                            <p style={appliedCoupon ? { color: '#22c55e', fontWeight: '600' } : {}}>
+                                                Discount {appliedCoupon && <span style={{ fontSize: '11px' }}>({appliedCoupon.code})</span>}
+                                                <span style={appliedCoupon ? { color: '#22c55e' } : {}}>
+                                                    - Rs.{appliedCoupon ? appliedCoupon.discountAmount.toFixed(2) : '0.00'}
+                                                </span>
+                                            </p>
+                                            <h2>Grand Total <span>Rs.{(grandTotal - (appliedCoupon?.discountAmount || 0)).toFixed(2)}</span></h2>
                                         </div>
                                         <div className="cart-summary-button">
                                             <button className="btn" onClick={handleProceedToCheckout}>Checkout</button>

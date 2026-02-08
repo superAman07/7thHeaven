@@ -106,6 +106,8 @@ const orderSchema = z.object({
         country: z.string(),
     }),
     mlmOptIn: z.boolean().optional(),
+    couponCode: z.string().nullable().optional(),
+    discountAmount: z.number().optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -167,7 +169,7 @@ export async function POST(req: NextRequest) {
         if (!validation.success) {
             return NextResponse.json({ error: 'Invalid request body', details: validation.error }, { status: 400 });
         }
-        const { items, shippingDetails, mlmOptIn } = validation.data;
+        const { items, shippingDetails, mlmOptIn, couponCode, discountAmount } = validation.data;
         let userId = await getUserIdFromToken(req);
         if (!userId) {
             let user = await prisma.user.findUnique({
@@ -250,7 +252,8 @@ export async function POST(req: NextRequest) {
             data: {
                 userId: userId!,
                 subtotal: subtotal,
-                discount: 0,
+                discount: discountAmount || 0,
+                couponCode: couponCode || null,
                 netAmountPaid: 0,
                 paymentStatus: 'PENDING',
                 shippingAddress: shippingDetails as any,
@@ -269,7 +272,7 @@ export async function POST(req: NextRequest) {
                 data: {
                     paymentStatus: 'PAID',
                     status: 'PROCESSING',
-                    netAmountPaid: subtotal,
+                    netAmountPaid: subtotal - (discountAmount || 0),
                     gatewayOrderId: merchantTransactionId
                 }
              });
@@ -330,6 +333,33 @@ export async function POST(req: NextRequest) {
                   })),
                   total: subtotal
                 }).catch(err => console.error('Email send error:', err));
+             }
+             // 3. Record coupon usage
+             if (couponCode) {
+                 const coupon = await prisma.coupon.findUnique({
+                     where: { code: couponCode }
+                 });
+                 
+                 if (coupon) {
+                     // Increment usage count
+                     await prisma.coupon.update({
+                         where: { id: coupon.id },
+                         data: { usedCount: { increment: 1 } }
+                     });
+                     
+                     // Record usage history
+                     const user = await prisma.user.findUnique({ where: { id: userId! } });
+                     await prisma.couponUsage.create({
+                         data: {
+                             couponId: coupon.id,
+                             orderId: newOrder.id,
+                             userId: userId,
+                             userName: user?.fullName || shippingDetails.fullName,
+                             discountAmount: discountAmount || 0,
+                             orderTotal: subtotal - (discountAmount || 0)
+                         }
+                     });
+                 }
              }
              
              return NextResponse.json({
@@ -463,7 +493,8 @@ export async function POST(req: NextRequest) {
 //             data: {
 //                 userId: userId!,
 //                 subtotal: subtotal,
-//                 discount: 0,
+//                 discount: discountAmount || 0,
+//                 couponCode: couponCode || null,
 //                 netAmountPaid: 0,
 //                 paymentStatus: 'PENDING',
 //                 shippingAddress: shippingDetails as any,
