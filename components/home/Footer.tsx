@@ -55,9 +55,9 @@ export default function FooterPage({
     { label: "New Arrivals", href: "/collections/perfumes?sort=newest" },
   ],
   contact = {
-    address: "Celsius HQ, Business Bay, India",
-    phone: "+91 98765 43210",
-    email: "support@celsius.com",
+    address: "",
+    phone: "",
+    email: "",
   },
   copyrightOwner = "Celsius",
   logoSrc = "/assets/images/logo.png",
@@ -66,11 +66,9 @@ export default function FooterPage({
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
   };
-  // Map the new Settings fields to display variables
-  // Note the new field names (e.g. settings.address instead of settings.supportAddress)
-  const displayAddress = settings?.address ? `${settings.address}, ${settings.city}, ${settings.country}` : contact.address;
-  const displayPhone = settings?.phone || contact.phone;
-  const displayEmail = settings?.email || contact.email;
+  const displayAddress = settings?.address ? `${settings.address}${settings.city ? ', ' + settings.city : ''}${settings.country ? ', ' + settings.country : ''}` : '';
+  const displayPhone = settings?.phone || '';
+  const displayEmail = settings?.email || '';
   const displaySiteName = settings?.companyName || copyrightOwner;
   const displayFooterText = settings?.footerText; // New footer text if you want to use it
   
@@ -141,23 +139,28 @@ export default function FooterPage({
                   <span className="d-md-none text-[#E6B422]">{openSection === 'contact' ? '−' : '+'}</span>
                 </h4>
                 <ul className={`address ${openSection === 'contact' ? '' : 'd-none d-md-block'}`}>
-                  <li>
-                    <i className="fa fa-home" />
-                    <span>{displayAddress}</span>
-                  </li>
-                  <li>
-                    <i className="fa fa-phone" />
-                    <span>
-                      <a href={`tel:${displayPhone}`}>{displayPhone}</a>
-                    </span>
-                  </li>
-                  <li>
-                    <i className="fa fa-envelope-o" />
-                    <span>
-                      <a href={`mailto:${displayEmail}`}>{displayEmail}</a>
-                    </span>
-                  </li>
-                  {/* Optional: Add Social Icons below contact details if desired */}
+                  {displayAddress && (
+                    <li>
+                      <i className="fa fa-home" />
+                      <span>{displayAddress}</span>
+                    </li>
+                  )}
+                  {displayPhone && (
+                    <li>
+                      <i className="fa fa-phone" />
+                      <span>
+                        <a href={`tel:${displayPhone}`}>{displayPhone}</a>
+                      </span>
+                    </li>
+                  )}
+                  {displayEmail && (
+                    <li>
+                      <i className="fa fa-envelope-o" />
+                      <span>
+                        <a href={`mailto:${displayEmail}`}>{displayEmail}</a>
+                      </span>
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>

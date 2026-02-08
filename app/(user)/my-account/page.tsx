@@ -27,6 +27,9 @@ interface Order {
     createdAt: string;
     status: string;
     subtotal: string;
+    netAmountPaid?: string;
+    discount?: string;
+    couponCode?: string;
     paymentStatus: string;
     items: any[];
     genderTags: string[];
@@ -579,7 +582,7 @@ function ProfileContent() {
                                                                         <td>#{order.id.slice(-6).toUpperCase()}</td>
                                                                         <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                                                                         <td>{getStatusBadge(order.status)}</td>
-                                                                        <td>Rs. {order.subtotal}</td>
+                                                                        <td>Rs. {order.netAmountPaid || order.subtotal}</td>
                                                                         <td>{getStatusBadge(order.paymentStatus)}</td>
                                                                         <td><button className="btn btn-sm btn-primary" style={{ backgroundColor: '#ddb040', borderColor: '#ddb040' }}>View</button></td>
                                                                     </tr>
@@ -794,7 +797,7 @@ function ProfileContent() {
                                 <p><strong>Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
                             </div>
                             <div className="col-6 text-right" style={{ textAlign: 'right' }}>
-                                <p><strong>Total:</strong> Rs. {selectedOrder.subtotal}</p>
+                                <p><strong>Total:</strong> Rs. {selectedOrder.netAmountPaid || selectedOrder.subtotal}</p>
                                 <p><strong>Payment:</strong> {selectedOrder.paymentStatus}</p>
                             </div>
                         </div>
@@ -890,7 +893,7 @@ function ProfileContent() {
                         ) : (
                             <p>No shipping address available.</p>
                         )}
-                        <div className="mt-4 flex justify-between items-center" style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                        <div className="mt-4! flex! justify-between! items-center!" style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
                             <div>
                                 {!['DELIVERED', 'CANCELLED', 'FAILED', 'REFUNDED', 'RETURNED'].includes(selectedOrder.status.toUpperCase()) && (
                                     <button 
