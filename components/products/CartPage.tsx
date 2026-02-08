@@ -234,7 +234,7 @@ const CartPageComponent: React.FC = () => {
                                                         )}
                                                         {item.selectedVariant && (
                                                             <div style={{ fontSize: '13px', color: '#777', marginTop: '4px' }}>
-                                                                Size: {item.selectedVariant.size}ml
+                                                                Size: {item.selectedVariant.size}
                                                             </div>
                                                         )}
                                                     </td>
@@ -326,7 +326,7 @@ const CartPageComponent: React.FC = () => {
                                                     </Link>
                                                     {item.selectedVariant && (
                                                         <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#777' }}>
-                                                            Size: {item.selectedVariant.size}ml
+                                                            Size: {item.selectedVariant.size}
                                                         </p>
                                                     )}
                                                     <p style={{ margin: '0 0 8px 0', color: '#B6902E', fontWeight: '600', fontSize: '14px' }}>

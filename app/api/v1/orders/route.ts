@@ -365,7 +365,7 @@ export async function POST(req: NextRequest) {
              return NextResponse.json({
                 success: true,
                 orderId: newOrder.id,
-                totalAmount: newOrder.subtotal,
+                totalAmount: subtotal - (discountAmount || 0),
                 bypassed: true, 
                 transactionId: merchantTransactionId
             });
