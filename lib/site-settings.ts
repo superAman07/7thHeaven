@@ -4,6 +4,7 @@ export interface SiteSettings {
     id: string;
     companyName: string;
     tagline: string | null;
+    logoUrl: string | null;
     phone: string | null;
     email: string | null;
     whatsapp: string | null;
