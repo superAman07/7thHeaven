@@ -88,7 +88,7 @@ export default function FooterPage({
                 <div className="footer-logo w-full! flex! justify-center! md:justify-start!">
                     <Link href="/">
                         <img 
-                            src="/celsius-logo.png" 
+                            src={settings?.logoUrl || "/celsius-logo.png"} 
                             alt="7th Heaven" 
                             className="w-full! max-w-[220px]! object-contain! h-auto!"
                         />

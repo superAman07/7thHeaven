@@ -9,6 +9,7 @@ import { ImagePlus, X } from 'lucide-react';
 interface SiteSettings {
     companyName: string;
     tagline: string;
+    logoUrl: string;  
     phone: string;
     email: string;
     whatsapp: string;
@@ -31,6 +32,7 @@ interface SiteSettings {
 const defaultSettings: SiteSettings = {
     companyName: '',
     tagline: '',
+    logoUrl: '',
     phone: '',
     email: '',
     whatsapp: '',
@@ -58,7 +60,9 @@ export default function SiteSettingsPage() {
     const [hasFetched, setHasFetched] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
+    const logoInputRef = useRef<HTMLInputElement>(null);
+    const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+    
     const fetchSettings = useCallback(async () => {
         if (hasFetched) return;
         try {
@@ -116,6 +120,34 @@ export default function SiteSettingsPage() {
             setIsUploading(false);
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
+            }
+        }
+    };
+
+    const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        setIsUploadingLogo(true);
+        const file = files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await axios.post('/api/v1/admin/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            if (response.data.success) {
+                handleChange('logoUrl', response.data.data.url);
+                toast.success('Logo uploaded successfully!');
+            }
+        } catch (err) {
+            console.error('Logo upload failed:', err);
+            toast.error('Logo upload failed. Please try again.');
+        } finally {
+            setIsUploadingLogo(false);
+            if (logoInputRef.current) {
+                logoInputRef.current.value = '';
             }
         }
     };
@@ -179,6 +211,47 @@ export default function SiteSettingsPage() {
             {/* Contact Tab */}
             {activeTab === 'contact' && (
                 <div className="bg-white! rounded-xl! p-6! shadow-sm!">
+                    <h3 className="text-lg! font-semibold! mb-4! text-gray-800!">Site Logo</h3>
+                    <div className="mb-6! pb-6! border-b! border-gray-200!">
+                        {settings.logoUrl ? (
+                            <div className="relative! inline-block!">
+                                <img 
+                                    src={settings.logoUrl} 
+                                    alt="Site Logo" 
+                                    className="h-20! max-w-[200px]! object-contain! rounded-lg! border! border-gray-200! bg-gray-50! p-2!" 
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => handleChange('logoUrl', '')}
+                                    className="absolute! -top-2! -right-2! bg-red-500! text-white! rounded-full! p-1! hover:bg-red-600!"
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+                        ) : (
+                            <div
+                                onClick={() => logoInputRef.current?.click()}
+                                className="w-48! h-20! border-2! border-dashed! border-gray-300! rounded-lg! flex! flex-col! items-center! justify-center! cursor-pointer! hover:border-amber-500! hover:bg-amber-50! transition-all!"
+                            >
+                                {isUploadingLogo ? (
+                                    <div className="animate-spin! rounded-full! h-6! w-6! border-b-2! border-amber-600!"></div>
+                                ) : (
+                                    <>
+                                        <ImagePlus size={24} className="text-gray-400! mb-1!" />
+                                        <span className="text-xs! text-gray-500!">Upload Logo</span>
+                                    </>
+                                )}
+                            </div>
+                        )}
+                        <input
+                            type="file"
+                            ref={logoInputRef}
+                            onChange={handleLogoUpload}
+                            accept="image/*"
+                            className="hidden!"
+                        />
+                        <p className="text-xs! text-gray-400! mt-2!">Recommended: PNG with transparent background, max height 80px</p>
+                    </div>
                     <h3 className="text-lg! font-semibold! mb-4! text-gray-800!">Contact Information</h3>
                     <div className="grid! grid-cols-1! md:grid-cols-2! gap-4!">
                         <InputField label="Company Name" value={settings.companyName} onChange={v => handleChange('companyName', v)} />

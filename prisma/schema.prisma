@@ -305,6 +305,7 @@ model SiteSettings {
   
   companyName     String   @default("Celsius")
   tagline         String?
+  logoUrl         String?
   
   phone           String?
   email           String?
