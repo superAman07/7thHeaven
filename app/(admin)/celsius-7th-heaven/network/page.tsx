@@ -5,6 +5,13 @@ import { Search, Trophy, Users, Gift, Star, Crown, X, Phone, Mail, CheckCircle, 
 import toast, { Toaster } from 'react-hot-toast';
 import NetworkGalaxy, { NetworkNode } from '@/components/heaven/NetworkGalaxy';
 
+interface LevelProgress {
+    count: number;
+    target: number;
+    progress: number;
+    complete: boolean;
+}
+
 interface Leader {
     id: string;
     fullName: string;
@@ -14,11 +21,26 @@ interface Leader {
     createdAt: string;
     stats: {
         totalTeam: number;
+        levelCounts: number[];
+        oddLevelProgress: {
+            level1: LevelProgress;
+            level3: LevelProgress;
+            level5: LevelProgress;
+            level7: LevelProgress;
+        };
+        completedLevels: number[];
+        level1Count: number;
         level7Count: number;
         level7Progress: number;
-        level1Count: number;
     };
 }
+
+const REWARD_AMOUNTS: Record<number, string> = {
+    1: '₹5,000',
+    3: '₹25,000',
+    5: '₹1,25,000',
+    7: '₹1 Crore'
+};
 
 export default function NetworkLeadersPage() {
     const [leaders, setLeaders] = useState<Leader[]>([]);
@@ -256,7 +278,7 @@ export default function NetworkLeadersPage() {
             </div>
             {isModalOpen && selectedLeader && (
                 <div className="fixed inset-0 z-99! flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-[#E6B422]">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden border border-[#E6B422]">
                         {/* Modal Header */}
                         <div className="bg-black p-6 text-center relative">
                             <button 
@@ -269,87 +291,116 @@ export default function NetworkLeadersPage() {
                                 <Trophy className="w-8 h-8 text-white" />
                             </div>
                             <h3 className="text-xl font-black text-white uppercase tracking-widest">Reward Concierge</h3>
-                            <p className="text-[#E6B422] text-xs font-bold mt-1">LEVEL 7 COMPLETED</p>
+                            <p className="text-[#E6B422] text-xs font-bold mt-1">7TH HEAVEN PROGRESS</p>
                         </div>
 
-                        {/* Modal Body */}
+                        {/* Modal Body - HORIZONTAL LAYOUT */}
                         <div className="p-6">
-                            <div className="text-center mb-6">
-                                <h4 className="text-lg font-bold text-gray-900">{selectedLeader.fullName}</h4>
-                                <p className="text-sm text-gray-500">Referral Code: {selectedLeader.referralCode}</p>
-                            </div>
-
-                            {/* Contact Info Card */}
-                            <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
-                                <p className="text-xs font-bold text-gray-400 uppercase mb-3">Winner Contact Details</p>
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-gray-200">
-                                            <Phone className="w-4 h-4 text-gray-600" />
-                                        </div>
-                                        <span className="text-sm font-medium text-gray-800">{selectedLeader.phone || 'No Phone'}</span>
+                            <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900">{selectedLeader.fullName}</h4>
+                                    <p className="text-sm text-gray-500">Code: {selectedLeader.referralCode}</p>
+                                </div>
+                                <div className="flex items-center gap-4 text-sm text-gray-600">
+                                    <div className="flex items-center gap-2">
+                                        <Phone className="w-4 h-4" />
+                                        <span>{selectedLeader.phone || 'No Phone'}</span>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-gray-200">
-                                            <Mail className="w-4 h-4 text-gray-600" />
-                                        </div>
-                                        <span className="text-sm font-medium text-gray-800">{selectedLeader.email}</span>
+                                    <div className="flex items-center gap-2">
+                                        <Mail className="w-4 h-4" />
+                                        <span>{selectedLeader.email}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="space-y-3">
-                                {selectedLeader.stats.level7Progress >= 100 ? (
-                                    /* --- CASE 1: WINNER (Level 7 Complete) --- */
-                                    <>
-                                        <div className="bg-[#E6B422]/10 p-4 rounded-xl text-center mb-2 border border-[#E6B422]/20">
-                                            <p className="text-[#E6B422] font-black text-lg">ELIGIBLE FOR REWARD</p>
-                                            <p className="text-xs text-gray-600">User has completed the 7th Heaven Cycle.</p>
-                                        </div>
-                                        {processingStep === 'completed' ? (
-                                            <div className="text-center py-4 bg-green-50 rounded-xl border border-green-100">
-                                                <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-2" />
-                                                <p className="text-green-800 font-bold">Notification Sent!</p>
-                                            </div>
-                                        ) : (
-                                            <button 
-                                                onClick={handleSendCongratulation}
-                                                disabled={processingStep === 'sending'}
-                                                className="w-full bg-[#E6B422] text-white py-3 rounded-xl font-bold uppercase tracking-wider hover:bg-[#b5952f] transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform active:scale-95"
+                            {/* Level Progress - Full Width Horizontal */}
+                            <div className="mb-6">
+                                <p className="text-xs font-bold text-gray-400 uppercase mb-3">Level Progress</p>
+                                <div className="flex gap-3">
+                                    {([1, 3, 5, 7] as const).map((level) => {
+                                        const key = `level${level}` as keyof typeof selectedLeader.stats.oddLevelProgress;
+                                        const data = selectedLeader.stats.oddLevelProgress[key];
+                                        const reward = REWARD_AMOUNTS[level];
+                                        
+                                        return (
+                                            <div 
+                                                key={level} 
+                                                className={`flex-1 p-4 rounded-xl text-center border-2 transition-all ${
+                                                    data.complete 
+                                                        ? 'bg-[#E6B422] border-[#E6B422] text-white shadow-lg shadow-[#E6B422]/20' 
+                                                        : 'bg-gray-50 border-gray-200 text-gray-600'
+                                                }`}
                                             >
-                                                {processingStep === 'sending' ? 'Sending...' : <><Send className="w-4 h-4" /> Send Prize Notification</>}
+                                                <p className={`text-lg font-black ${data.complete ? 'text-white' : 'text-gray-700'}`}>Level {level}</p>
+                                                <p className="text-xs mt-1 opacity-80">
+                                                    {data.count.toLocaleString()} / {data.target >= 1000 ? `${(data.target/1000).toFixed(0)}K` : data.target}
+                                                </p>
+                                                <div className={`w-full rounded-full h-1.5 mt-2 overflow-hidden ${data.complete ? 'bg-white/30' : 'bg-gray-200'}`}>
+                                                    <div 
+                                                        className={`h-full rounded-full ${data.complete ? 'bg-white' : 'bg-gray-400'}`}
+                                                        style={{ width: `${Math.max(5, data.progress)}%` }}
+                                                    />
+                                                </div>
+                                                {data.complete && (
+                                                    <p className="text-sm font-bold mt-2">{reward}</p>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Action Row */}
+                            <div className="flex items-center justify-between">
+                                {selectedLeader.stats.completedLevels.length > 0 ? (
+                                    <>
+                                        <div className="text-left">
+                                            <p className="text-[#E6B422] font-black">
+                                                {selectedLeader.stats.completedLevels.length} LEVEL{selectedLeader.stats.completedLevels.length > 1 ? 'S' : ''} COMPLETED
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                                Eligible: {selectedLeader.stats.completedLevels.map(l => `L${l}`).join(', ')}
+                                            </p>
+                                        </div>
+                                        <div className="flex gap-3">
+                                            {processingStep === 'completed' ? (
+                                                <div className="flex items-center gap-2 text-green-600">
+                                                    <CheckCircle className="w-5 h-5" />
+                                                    <span className="font-bold">Notification Sent!</span>
+                                                </div>
+                                            ) : (
+                                                <button 
+                                                    onClick={handleSendCongratulation}
+                                                    disabled={processingStep === 'sending'}
+                                                    className="px-6 py-2 bg-[#E6B422] text-white rounded-lg font-bold hover:bg-[#b5952f] transition-all flex items-center gap-2"
+                                                >
+                                                    {processingStep === 'sending' ? 'Sending...' : <><Send className="w-4 h-4" /> Send Notification</>}
+                                                </button>
+                                            )}
+                                            <button 
+                                                onClick={() => setIsModalOpen(false)}
+                                                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+                                            >
+                                                Close
                                             </button>
-                                        )}
+                                        </div>
                                     </>
                                 ) : (
-                                    /* --- CASE 2: IN PROGRESS (Show Stats) --- */
-                                    <div className="bg-gray-50 p-6 rounded-xl text-center border border-gray-100">
-                                        <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
-                                            <Trophy className="w-8 h-8 opacity-50" />
+                                    <>
+                                        <div className="text-left">
+                                            <p className="text-gray-600 font-bold">Not Eligible Yet</p>
+                                            <p className="text-xs text-gray-400">
+                                                Needs {5 - selectedLeader.stats.oddLevelProgress.level1.count} more for Level 1
+                                            </p>
                                         </div>
-                                        <h5 className="text-gray-900 font-bold mb-1">Not Eligible Yet</h5>
-                                        <p className="text-sm text-gray-500 mb-4">
-                                            User is at <span className="text-[#E6B422] font-bold">{selectedLeader.stats.level7Progress.toFixed(1)}%</span> completion.
-                                        </p>
-                                        
-                                        {/* Progress Bar inside Modal */}
-                                        <div className="w-full bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
-                                            <div 
-                                                className="bg-gray-400 h-full rounded-full" 
-                                                style={{ width: `${selectedLeader.stats.level7Progress}%` }}
-                                            ></div>
-                                        </div>
-                                        <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Target: 100%</p>
-                                    </div>
+                                        <button 
+                                            onClick={() => setIsModalOpen(false)}
+                                            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+                                        >
+                                            Close
+                                        </button>
+                                    </>
                                 )}
-                                
-                                <button 
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="w-full py-3 text-gray-500 font-medium text-sm hover:text-gray-800"
-                                >
-                                    Close Window
-                                </button>
                             </div>
                         </div>
                     </div>

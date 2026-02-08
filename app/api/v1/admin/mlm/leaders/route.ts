@@ -61,29 +61,64 @@ export async function GET() {
             return { totalTeam, levelCounts };
         };
 
-        // 4. Filter only 7th Heaven Members and attach stats
         const leaders = allUsers
             .filter(u => u.is7thHeaven)
             .map(u => {
                 const stats = calculateStats(u.id);
                 
-                // Check Level 7 Completion (Target: 78125, but for demo maybe 5?)
-                // We'll return the raw count so UI can decide
-                const level7Count = stats.levelCounts[6];
-                const level7Target = 78125; // 5^7
-                const progress = Math.min(100, (level7Count / level7Target) * 100);
+                const oddLevelTargets = {
+                    1: 5,       
+                    3: 125,     
+                    5: 3125,    
+                    7: 78125    
+                };
+
+                const oddLevelProgress = {
+                    level1: {
+                        count: stats.levelCounts[0],
+                        target: oddLevelTargets[1],
+                        progress: Math.min(100, (stats.levelCounts[0] / oddLevelTargets[1]) * 100),
+                        complete: stats.levelCounts[0] >= oddLevelTargets[1]
+                    },
+                    level3: {
+                        count: stats.levelCounts[2],
+                        target: oddLevelTargets[3],
+                        progress: Math.min(100, (stats.levelCounts[2] / oddLevelTargets[3]) * 100),
+                        complete: stats.levelCounts[2] >= oddLevelTargets[3]
+                    },
+                    level5: {
+                        count: stats.levelCounts[4],
+                        target: oddLevelTargets[5],
+                        progress: Math.min(100, (stats.levelCounts[4] / oddLevelTargets[5]) * 100),
+                        complete: stats.levelCounts[4] >= oddLevelTargets[5]
+                    },
+                    level7: {
+                        count: stats.levelCounts[6],
+                        target: oddLevelTargets[7],
+                        progress: Math.min(100, (stats.levelCounts[6] / oddLevelTargets[7]) * 100),
+                        complete: stats.levelCounts[6] >= oddLevelTargets[7]
+                    }
+                };
+
+                const completedLevels = [1, 3, 5, 7].filter(level => {
+                    const key = `level${level}` as keyof typeof oddLevelProgress;
+                    return oddLevelProgress[key].complete;
+                });
 
                 return {
                     ...u,
                     stats: {
                         totalTeam: stats.totalTeam,
-                        level7Count,
-                        level7Progress: progress,
-                        level1Count: stats.levelCounts[0]
+                        levelCounts: stats.levelCounts,
+                        oddLevelProgress,
+                        completedLevels,
+                        level1Count: stats.levelCounts[0],
+                        level7Count: stats.levelCounts[6],
+                        level7Progress: oddLevelProgress.level7.progress
                     }
                 };
             })
-            .sort((a, b) => b.stats.totalTeam - a.stats.totalTeam); // Sort by biggest team
+            .sort((a, b) => b.stats.totalTeam - a.stats.totalTeam);
 
         return NextResponse.json({ success: true, data: leaders });
 
