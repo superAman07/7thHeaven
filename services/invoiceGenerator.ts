@@ -6,6 +6,8 @@ export interface InvoiceData {
     id: string;
     createdAt: string | Date;
     subtotal: number;
+    discount?: number;          
+    netAmountPaid?: number;  
     mlmOptInRequested?: boolean;
     user?: { // Make user optional
         fullName: string;
