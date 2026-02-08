@@ -47,6 +47,10 @@ export default function CouponsPage() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [currentCoupon, setCurrentCoupon] = useState<Coupon | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [usageModalOpen, setUsageModalOpen] = useState(false);
+  const [usageData, setUsageData] = useState<any[]>([]);
+  const [usageLoading, setUsageLoading] = useState(false);
+  const [selectedCouponCode, setSelectedCouponCode] = useState('');
 
   // Form states
   const [code, setCode] = useState('');
@@ -177,6 +181,21 @@ export default function CouponsPage() {
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
+  const fetchUsageHistory = async (couponId: string, couponCode: string) => {
+    setUsageLoading(true);
+    setSelectedCouponCode(couponCode);
+    setUsageModalOpen(true);
+    try {
+      const response = await axios.get(`/api/v1/admin/coupons/${couponId}/usage`, { withCredentials: true });
+      setUsageData(response.data.usageHistory || []);
+    } catch (err) {
+      console.error('Failed to fetch usage history', err);
+      setUsageData([]);
+    } finally {
+      setUsageLoading(false);
+    }
+  };
+
   const filteredCoupons = coupons.filter(c => 
     c.code.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
     c.influencerName?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
@@ -272,8 +291,14 @@ export default function CouponsPage() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-medium">{coupon.usedCount}</span>
-                      <span className="text-gray-400">/{coupon.usageLimit || '∞'}</span>
+                      <button 
+                        onClick={() => fetchUsageHistory(coupon.id, coupon.code)}
+                        className="hover:bg-blue-50 px-2 py-1 rounded transition-colors cursor-pointer"
+                        title="Click to view users"
+                      >
+                        <span className="font-medium text-blue-600 underline">{coupon.usedCount}</span>
+                        <span className="text-gray-400">/{coupon.usageLimit || '∞'}</span>
+                      </button>
                     </td>
                     <td className="px-6 py-4">
                       {coupon.influencerName ? (
@@ -397,6 +422,59 @@ export default function CouponsPage() {
           </div>
         </form>
       </div>
+      {usageModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setUsageModalOpen(false)} />
+          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-hidden z-50">
+            <div className="flex items-center justify-between px-6 py-4 border-b bg-gray-50">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">Coupon Usage History</h3>
+                <p className="text-sm text-gray-500">Users who used <span className="font-mono bg-gray-200 px-2 py-0.5 rounded">{selectedCouponCode}</span></p>
+              </div>
+              <button onClick={() => setUsageModalOpen(false)} className="p-2 hover:bg-gray-200 rounded-full">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="overflow-y-auto max-h-[60vh] p-4">
+              {usageLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-gray-500" />
+                </div>
+              ) : usageData.length === 0 ? (
+                <p className="text-center text-gray-500 py-8">No usage history found</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 text-xs uppercase text-gray-600">
+                    <tr>
+                      <th className="px-4 py-3 text-left">User</th>
+                      <th className="px-4 py-3 text-left">Order Total</th>
+                      <th className="px-4 py-3 text-left">Discount</th>
+                      <th className="px-4 py-3 text-left">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {usageData.map((usage: any, idx: number) => (
+                      <tr key={idx} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <div>
+                            <p className="font-medium text-gray-900">{usage.userName || 'Unknown'}</p>
+                            <p className="text-xs text-gray-500">{usage.userEmail || '-'}</p>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 font-medium">₹{usage.orderTotal}</td>
+                        <td className="px-4 py-3 text-green-600">-₹{usage.discountAmount}</td>
+                        <td className="px-4 py-3 text-gray-500">
+                          {new Date(usage.usedAt).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
