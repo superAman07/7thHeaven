@@ -27,7 +27,21 @@ export default function NavBar() {
     const [suggestions, setSuggestions] = useState<PublicProduct[]>([]); 
     const [showSuggestions, setShowSuggestions] = useState(false); 
 
-    // 1. Scroll Detection for Shrinking Animation
+    const [logoUrl, setLogoUrl] = useState('/celsius-logo.png');
+
+    useEffect(() => {
+        const fetchLogo = async () => {
+            try {
+                const res = await axios.get('/api/v1/site-settings');
+                if (res.data.success && res.data.data?.logoUrl) {
+                    setLogoUrl(res.data.data.logoUrl);
+                }
+            } catch (error) {
+            }
+        };
+        fetchLogo();
+    }, []);
+
     useEffect(() => {
         const onScroll = () => {
             setSticky(window.scrollY > 50);
@@ -213,7 +227,7 @@ export default function NavBar() {
                         <div className="absolute! left-1/2! top-1/2! -translate-x-1/2! -translate-y-1/2! z-50!">
                             <a href="/" className="block!">
                                 <img 
-                                    src="/celsius-logo.png" 
+                                    src={logoUrl || "/celsius-logo.png"} 
                                     alt="logo" 
                                     className={`transition-all! duration-500! ease-in-out! object-contain! ${
                                         isSticky 
@@ -379,7 +393,7 @@ export default function NavBar() {
             <div className={`fixed! top-0! right-0! h-full! w-[280px]! bg-white! z-1002! transform! transition-transform! duration-300! xl:!hidden! ${isMobileOpen ? 'translate-x-0!' : 'translate-x-full!'}`}>
                 {/* Header */}
                 <div className="flex! items-center! justify-between! p-4! border-b!">
-                    <img src="/celsius-logo.png" alt="logo" className="h-10!" />
+                    <img src={logoUrl || "/celsius-logo.png"} alt="logo" className="h-10!" />
                     <button onClick={toggleMobile} className="text-2xl! text-gray-600!">
                         <i className="fa fa-times"></i>
                     </button>
