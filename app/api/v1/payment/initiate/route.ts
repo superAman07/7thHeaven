@@ -60,7 +60,10 @@ export async function POST(req: NextRequest) {
         }
 
         // 2. Prepare the payment payload for PhonePe
-        const amountInPaise = order.subtotal.toNumber() * 100;
+        const finalAmount = order.netAmountPaid && order.netAmountPaid.toNumber() > 0 
+            ? order.netAmountPaid.toNumber() 
+            : order.subtotal.toNumber() - (order.discount?.toNumber() || 0);
+        const amountInPaise = Math.round(finalAmount * 100);
         const merchantTransactionId = uniqid();
 
         await prisma.order.update({

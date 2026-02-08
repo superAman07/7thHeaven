@@ -9,18 +9,6 @@ export async function GET(
 ) {
     try {
         const id = (await params).id;
-        const token = req.cookies.get('token')?.value || req.headers.get('Authorization')?.replace('Bearer ', '');
-        if (!token) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-        const user = await verifyToken(token);
-        if (!user?.isAdmin) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-        if (!user?.isAdmin) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const coupon = await prisma.coupon.findUnique({
             where: { id: id },
             include: {
@@ -49,18 +37,6 @@ export async function PUT(
 ) {
     try {
         const id = (await params).id;
-        const token = req.cookies.get('token')?.value || req.headers.get('Authorization')?.replace('Bearer ', '');
-        if (!token) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-        const user = await verifyToken(token);
-        if (!user?.isAdmin) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-        if (!user?.isAdmin) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const body = await req.json();
 
         const coupon = await prisma.coupon.update({
@@ -93,18 +69,6 @@ export async function DELETE(
 ) {
     try {
         const id = (await params).id;
-        const token = req.cookies.get('token')?.value || req.headers.get('Authorization')?.replace('Bearer ', '');
-        if (!token) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-        const user = await verifyToken(token);
-        if (!user?.isAdmin) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-        if (!user?.isAdmin) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         await prisma.coupon.delete({ where: { id: id } });
 
         return NextResponse.json({ success: true, message: 'Coupon deleted' });
