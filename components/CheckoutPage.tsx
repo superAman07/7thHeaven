@@ -450,7 +450,13 @@ const CheckoutPageComponent: React.FC = () => {
                                                     </ul>
                                                     <p>Sub Total <span>Rs.{cartTotal.toFixed(2)}</span></p>
                                                     <p>Shipping Fee <span>Rs.0.00</span></p>
-                                                    <h4>Grand Total <span>Rs.{cartTotal.toFixed(2)}</span></h4>
+                                                    {appliedCoupon && (
+                                                        <p style={{ color: '#28a745', fontWeight: 600 }}>
+                                                            Discount ({appliedCoupon.code}) 
+                                                            <span style={{ color: '#28a745' }}>-Rs.{appliedCoupon.discountAmount.toFixed(2)}</span>
+                                                        </p>
+                                                    )}
+                                                    <h4>Grand Total <span>Rs.{(cartTotal - (appliedCoupon?.discountAmount || 0)).toFixed(2)}</span></h4>
                                                 </div>
                                             </div>
 
