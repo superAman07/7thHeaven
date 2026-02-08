@@ -893,39 +893,41 @@ function ProfileContent() {
                         ) : (
                             <p>No shipping address available.</p>
                         )}
-                        <div className="mt-4! flex! justify-between! items-center!" style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
-                            <div>
-                                {!['DELIVERED', 'CANCELLED', 'FAILED', 'REFUNDED', 'RETURNED'].includes(selectedOrder.status.toUpperCase()) && (
-                                    <button 
-                                        onClick={handleCancelOrder} 
-                                        disabled={isCancelling}
-                                        className="btn btn-outline-danger btn-sm"
-                                        style={{ 
-                                            borderColor: '#dc3545!', 
-                                            color: '#dc3545!', 
-                                            fontWeight: 'bold',
-                                            padding: '8px 16px'
-                                        }}
-                                    >
-                                        {isCancelling ? (
-                                            <><i className="fa fa-spinner fa-spin mr-1"></i> Cancelling...</>
-                                        ) : (
-                                            <><i className="fa fa-times-circle mr-1"></i> Cancel Order</>
-                                        )}
-                                    </button>
-                                )}
-                                {selectedOrder.paymentStatus === 'PAID' && (
-                                    <button 
-                                        onClick={() => handleDownloadInvoice(selectedOrder)}
-                                        className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2"
-                                    >
-                                        <i className="fa fa-file-pdf-o"></i>
-                                        <span>Invoice</span>
-                                    </button>
-                                )}
+                        <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                                    {!['DELIVERED', 'CANCELLED', 'FAILED', 'REFUNDED', 'RETURNED'].includes(selectedOrder.status.toUpperCase()) && (
+                                        <button 
+                                            onClick={handleCancelOrder} 
+                                            disabled={isCancelling}
+                                            className="btn btn-danger btn-sm"
+                                            style={{ 
+                                                fontWeight: 'bold',
+                                                padding: '8px 16px'
+                                            }}
+                                        >
+                                            {isCancelling ? (
+                                                <><i className="fa fa-spinner fa-spin mr-1"></i> Cancelling...</>
+                                            ) : (
+                                                <><i className="fa fa-times-circle mr-1"></i> Cancel Order</>
+                                            )}
+                                        </button>
+                                    )}
+                                    {selectedOrder.paymentStatus === 'PAID' && (
+                                        <button 
+                                            onClick={() => handleDownloadInvoice(selectedOrder)}
+                                            className="btn btn-sm"
+                                            style={{ backgroundColor: '#ddb040', color: '#fff', padding: '8px 16px' }}
+                                        >
+                                            <i className="fa fa-file-pdf-o mr-1"></i> Invoice
+                                        </button>
+                                    )}
+                                </div>
+                                
+                                <button onClick={() => setShowOrderModal(false)} className="btn btn-secondary btn-sm" style={{ padding: '8px 20px' }}>
+                                    Close
+                                </button>
                             </div>
-                            
-                            <button onClick={() => setShowOrderModal(false)} className="btn btn-secondary">Close</button>
                         </div>
                     </div>
                 </div>
