@@ -77,9 +77,9 @@ export default function SeventhHeavenPage() {
             category: { name: p.category, slug: '' },
             variants: [
               {
-                id: p.id,
+                id: p.variantId || p.variants?.[0]?.id || '',
                 price: p.price,
-                size: 'Standard',
+                size: p.size || 'Standard',
                 stock: 100,
               },
             ],
