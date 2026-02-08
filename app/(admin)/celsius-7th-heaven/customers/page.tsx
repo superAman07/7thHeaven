@@ -309,9 +309,9 @@ export default function CustomersPage() {
                 />
                 <motion.div 
                     initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className="fixed top-0 right-0 h-full w-full md:w-[450px] bg-white z-70 shadow-2xl overflow-y-auto border-l border-gray-100"
+                    className="fixed top-0 right-0 h-full w-full md:w-[450px] bg-white z-70 shadow-2xl flex flex-col border-l border-gray-100"
                 >
-                    <div className="p-6">
+                    <div className="p-6 flex-1 overflow-y-auto">
                         {/* Header */}
                         <div className="flex justify-between items-start mb-8">
                             <div className="flex items-center gap-4">
@@ -361,8 +361,8 @@ export default function CustomersPage() {
 
                         {/* Recent Orders */}
                         <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2"><Package size={16}/> Recent Orders</h3>
-                        <div className="space-y-3">
-                            {selectedProfile.orders && selectedProfile.orders.length > 0 ? selectedProfile.orders.map(order => (
+                        <div className="max-h-[250px] overflow-y-auto space-y-3 pr-2">
+                            {selectedProfile.orders && selectedProfile.orders.length > 0 ? selectedProfile.orders.slice(0, 5).map(order => (
                                 <div key={order.id} className="border border-gray-100 rounded-lg p-3 hover:border-gray-300 transition-colors">
                                     <div className="flex justify-between items-center mb-2">
                                         <span className="text-xs font-mono font-bold text-gray-600 bg-gray-50 px-2 py-1 rounded border border-gray-100">
@@ -380,24 +380,31 @@ export default function CustomersPage() {
                             )) : (
                                 <div className="text-center py-6 text-gray-400 text-sm">No orders found.</div>
                             )}
+                            {selectedProfile.orders && selectedProfile.orders.length > 5 && (
+                                <a href={`/celsius-7th-heaven/orders?customer=${selectedProfile.id}`} className="block text-center text-xs text-blue-600 font-bold py-2 hover:underline">
+                                    View All {selectedProfile.orders.length} Orders →
+                                </a>
+                            )}
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="mt-8 grid! grid-cols-2! gap-3!">
-                             <button onClick={() => { handleOpenNetwork(selectedProfile); }} className="w-full py-3 rounded-lg border border-blue-100 text-blue-600 font-bold text-sm hover:bg-blue-50 transition-colors flex! items-center! justify-center! gap-2!">
-                                <Network size={16} /> View Network
-                             </button>
-                             <button onClick={() => { setMessageTarget({ ids: [selectedProfile.id], name: selectedProfile.fullName }); setShowMessageModal(true); }} className="w-full py-3 rounded-lg bg-gray-900 text-white font-bold text-sm hover:bg-black transition-colors flex! items-center! justify-center! gap-2!">
-                                <Send size={16} /> Send Message
-                             </button>
-                             {!selectedProfile.is7thHeaven && (
-                                <button 
-                                    onClick={() => handleUpgradeToVIP(selectedProfile.id)}
-                                    className="col-span-2 w-full py-3 rounded-lg bg-linear-to-r from-[#ddb040] to-amber-500 text-white font-bold text-sm hover:opacity-90 transition-opacity flex! items-center! justify-center! gap-2! shadow-lg"
-                                >
-                                    <Zap size={16} fill="currentColor" /> Grant 7th Heaven Access
+                        <div className="p-6 pt-4 border-t border-gray-100 bg-white">
+                            <div className="grid grid-cols-2 gap-3">
+                                <button onClick={() => { handleOpenNetwork(selectedProfile); }} className="w-full py-3 rounded-lg border border-blue-100 text-blue-600 font-bold text-sm hover:bg-blue-50 transition-colors flex! items-center! justify-center! gap-2!">
+                                    <Network size={16} /> View Network
                                 </button>
-                            )}
+                                <button onClick={() => { setMessageTarget({ ids: [selectedProfile.id], name: selectedProfile.fullName }); setShowMessageModal(true); }} className="w-full py-3 rounded-lg bg-gray-900 text-white font-bold text-sm hover:bg-black transition-colors flex! items-center! justify-center! gap-2!">
+                                    <Send size={16} /> Send Message
+                                </button>
+                                {!selectedProfile.is7thHeaven && (
+                                    <button 
+                                        onClick={() => handleUpgradeToVIP(selectedProfile.id)}
+                                        className="col-span-2 w-full py-3 rounded-lg bg-linear-to-r from-[#ddb040] to-amber-500 text-white font-bold text-sm hover:opacity-90 transition-opacity flex! items-center! justify-center! gap-2! shadow-lg"
+                                    >
+                                        <Zap size={16} fill="currentColor" /> Grant 7th Heaven Access
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </motion.div>
