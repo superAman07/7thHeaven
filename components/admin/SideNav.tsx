@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, Bell, MessageSquare, Settings, Layers } from 'lucide-react';
+import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, Bell, MessageSquare, Settings, Layers, Ticket } from 'lucide-react';
 
 const getNavItems = (newOrdersCount: number, openTicketsCount: number) => [
   { href: '/celsius-7th-heaven/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -11,6 +11,7 @@ const getNavItems = (newOrdersCount: number, openTicketsCount: number) => [
   { href: '/celsius-7th-heaven/categories', label: 'Categories', icon: Tags },
   { href: '/celsius-7th-heaven/products', label: 'Products', icon: Package },
   { href: '/celsius-7th-heaven/orders', label: 'Orders', icon: ShoppingCart, badgeCount: newOrdersCount },
+  { href: '/celsius-7th-heaven/coupons', label: 'Coupons', icon: Ticket },
   { href: '/celsius-7th-heaven/customers', label: 'Customers', icon: Users },
   { href: '/celsius-7th-heaven/network', label: 'Network', icon: Share2 },
   { href: '/celsius-7th-heaven/support-tickets', label: 'Support Tickets', icon: MessageSquare, badgeCount: openTicketsCount },

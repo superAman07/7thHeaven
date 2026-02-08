@@ -2,23 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { verifyToken, getUserIdFromToken } from '@/lib/auth';
 
-// GET all coupons
 export async function GET(req: NextRequest) {
     try {
-        const token = req.cookies.get('token')?.value || req.headers.get('Authorization')?.replace('Bearer ', '');
-        if (!token) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-        const user = await verifyToken(token);
-        if (!user?.isAdmin) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const coupons = await prisma.coupon.findMany({
-            orderBy: { createdAt: 'desc' },
-            include: {
-                _count: { select: { usageHistory: true } }
-            }
+            orderBy: { createdAt: 'desc' }
         });
 
         return NextResponse.json({ success: true, coupons });
@@ -28,18 +15,8 @@ export async function GET(req: NextRequest) {
     }
 }
 
-// CREATE new coupon
 export async function POST(req: NextRequest) {
     try {
-        const token = req.cookies.get('token')?.value || req.headers.get('Authorization')?.replace('Bearer ', '');
-        if (!token) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-        const user = await verifyToken(token);
-        if (!user?.isAdmin) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const body = await req.json();
         const {
             code,
