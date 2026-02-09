@@ -142,21 +142,27 @@ export default function FooterPage({
                   {displayAddress && (
                     <li>
                       <i className="fa fa-home" />
-                      <span>{displayAddress}</span>
+                      <span className="text-sm">{displayAddress}</span>
                     </li>
                   )}
                   {displayPhone && (
                     <li>
                       <i className="fa fa-phone" />
-                      <span>
+                      <span className="text-sm">
                         <a href={`tel:${displayPhone}`}>{displayPhone}</a>
                       </span>
+                    </li>
+                  )}
+                  {displaySiteName && (
+                    <li>
+                      <i className="fa fa-building-o" />
+                      <span className="text-sm">{displaySiteName}</span>
                     </li>
                   )}
                   {displayEmail && (
                     <li>
                       <i className="fa fa-envelope-o" />
-                      <span>
+                      <span className="text-sm">
                         <a href={`mailto:${displayEmail}`}>{displayEmail}</a>
                       </span>
                     </li>
