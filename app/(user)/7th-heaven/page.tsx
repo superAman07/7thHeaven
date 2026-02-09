@@ -73,6 +73,7 @@ export default function SeventhHeavenPage() {
             createdAt: new Date(),
             categoryId: '',
             isNewArrival: false,
+            isBestSeller: p.isBestSeller || false,
             discountPercentage: p.discountPercentage,
             category: { name: p.category, slug: '' },
             variants: [
