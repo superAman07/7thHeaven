@@ -20,6 +20,7 @@ const updateProductSchema = z.object({
   inStock: z.boolean().optional(),
   isNewArrival: z.boolean().optional(),
   discountPercentage: z.number().min(0).max(100).optional(),
+  isBestSeller: z.boolean().optional(),
   variants: z.array(variantSchema).min(1).optional(),
 });
 
@@ -70,12 +71,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ success: false, error: validation.error.flatten() }, { status: 400 });
     }
 
-    const { variants, ...productData } = validation.data;
+    const { variants, categoryId, ...productData } = validation.data;
 
     const updatedProduct = await prisma.$transaction(async (tx) => {
       const product = await tx.product.update({
         where: { id },
-        data: productData,
+        data: {
+          ...productData,
+          ...(categoryId && { category: { connect: { id: categoryId } } }),
+        },
       });
 
       if (variants) {

@@ -86,6 +86,7 @@ model Product {
   category           Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   isNewArrival       Boolean          @default(false)
   discountPercentage Decimal?         @default(0)
+  isBestSeller       Boolean          @default(false) 
 }
 
 model Review {

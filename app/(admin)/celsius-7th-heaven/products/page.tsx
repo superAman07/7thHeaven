@@ -29,6 +29,7 @@ interface Product {
   category: Category;
   variants: ProductVariant[];
   discountPercentage: number | null;
+  isBestSeller: boolean;
 }
 
 interface PaginationMeta {
@@ -134,6 +135,7 @@ export default function ProductsPage() {
   const [genderTags, setGenderTags] = useState<string[]>([]);
   const [inStock, setInStock] = useState(true);
   const [discountPercentage, setDiscountPercentage] = useState('');
+  const [isBestSeller, setIsBestSeller] = useState(false);
   const [variants, setVariants] = useState<{ id?: string; size: string; price: string; stock: string }[]>([{ size: '', price: '', stock: '0' }]);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -220,6 +222,7 @@ export default function ProductsPage() {
     setInStock(true);
     setDiscountPercentage('');
     setVariants([{ size: '', price: '', stock: '0'  }]);
+    setIsBestSeller(false);
   };
 
   const openPanelForNew = () => {
@@ -245,6 +248,7 @@ export default function ProductsPage() {
         stock: stock.toString() 
     })));
     setIsPanelOpen(true);
+    setIsBestSeller(product.isBestSeller || false);
   };
 
   const closePanel = () => {
@@ -267,6 +271,7 @@ export default function ProductsPage() {
       categoryId,
       genderTags,
       inStock,
+      isBestSeller,
       discountPercentage: discountPercentage ? parseFloat(discountPercentage) : 0,
       variants: variants.map(v => ({ 
           ...v, 
@@ -586,6 +591,18 @@ export default function ProductsPage() {
                         {inStock ? 'AVAILABLE' : 'UNAVAILABLE'}
                     </span>
                     <ToggleSwitch checked={inStock} onChange={setInStock} />
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div>
+                    <span className="block text-sm font-bold text-gray-700">Best Seller</span>
+                    <span className="text-xs text-gray-500">{isBestSeller ? 'Product is marked as Best Seller' : 'Not a Best Seller'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className={`text-xs font-bold ${isBestSeller ? 'text-amber-600' : 'text-gray-400'}`}>
+                        {isBestSeller ? 'YES' : 'NO'}
+                    </span>
+                    <ToggleSwitch checked={isBestSeller} onChange={setIsBestSeller} />
                 </div>
               </div>
             </div>
