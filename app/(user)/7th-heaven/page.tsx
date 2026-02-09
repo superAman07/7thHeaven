@@ -388,6 +388,14 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
   };
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) {
+        localStorage.setItem('7thHeavenReferral', ref);
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const settingsRes = await axios.get('/api/v1/settings');

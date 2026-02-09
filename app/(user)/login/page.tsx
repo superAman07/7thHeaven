@@ -301,7 +301,7 @@ export default function AuthPage() {
         setError(null);
         setIsLoading(true);
         try {
-            const response = await axios.post('/api/v1/auth/verify-otp', { phone, otp });
+            const response = await axios.post('/api/v1/auth/verify-otp', { email, otp });
             const { data } = response.data;
 
             toast.success('OTP Verified!');

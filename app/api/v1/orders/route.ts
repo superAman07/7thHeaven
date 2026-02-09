@@ -69,6 +69,9 @@ import { sendOrderConfirmation } from '@/lib/email';
  *               mlmOptIn:
  *                 type: boolean
  *                 description: "If true, user becomes a 7th Heaven Member"
+ *               referrerCode:
+ *                 type: string
+ *                 description: "Optional referral code from existing 7th Heaven member"
  *     responses:
  *       200:
  *         description: Order placed successfully
@@ -106,6 +109,7 @@ const orderSchema = z.object({
         country: z.string(),
     }),
     mlmOptIn: z.boolean().optional(),
+    referrerCode: z.string().nullable().optional(), 
     couponCode: z.string().nullable().optional(),
     discountAmount: z.number().optional(),
 });
@@ -169,7 +173,7 @@ export async function POST(req: NextRequest) {
         if (!validation.success) {
             return NextResponse.json({ error: 'Invalid request body', details: validation.error }, { status: 400 });
         }
-        const { items, shippingDetails, mlmOptIn, couponCode, discountAmount } = validation.data;
+        const { items, shippingDetails, mlmOptIn , referrerCode , couponCode, discountAmount } = validation.data;
         let userId = await getUserIdFromToken(req);
         if (!userId) {
             let user = await prisma.user.findUnique({
@@ -281,11 +285,21 @@ export async function POST(req: NextRequest) {
                 let userRef = await prisma.user.findUnique({ where: { id: userId! } });
                 let newReferralCode = userRef?.referralCode;
                 if (!newReferralCode) newReferralCode = generateReferralCode();
+                let referrerId = userRef?.referrerId;
+                if (!referrerId && referrerCode) {
+                    const referrer = await prisma.user.findUnique({ 
+                        where: { referralCode: referrerCode } 
+                    });
+                    if (referrer && referrer.id !== userId) {
+                        referrerId = referrer.id;
+                    }
+                }
                 await prisma.user.update({
                     where: { id: userId! },
                     data: { 
                         is7thHeaven: true, 
                         referralCode: newReferralCode,
+                        ...(referrerId ? { referrerId } : {})
                     } 
                 });
              } else {

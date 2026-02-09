@@ -15,7 +15,7 @@ export default function ShareButton({
 }: ShareButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const referralUrl =
-    typeof window !== 'undefined' ? `${window.location.origin}/login?ref=${referralCode}` : '';
+    typeof window !== 'undefined' ? `${window.location.origin}/7th-heaven?ref=${referralCode}` : '';
 
   const [isCopied, setIsCopied] = useState(false);
 

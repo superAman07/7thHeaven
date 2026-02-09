@@ -23,9 +23,12 @@ import { serialize } from 'cookie';
  *               - email
  *               - otp
  *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: "9876543210"
  *               email:
  *                 type: string
- *                 example: "newuser@example.com"
+ *                 example: "user@example.com"
  *               otp:
  *                 type: string
  *                 description: The 6-digit code received via Email
@@ -38,8 +41,11 @@ import { serialize } from 'cookie';
  */
 
 const verifyOtpSchema = z.object({
-  phone: z.string().regex(/^\d{10}$/, { message: 'Phone number must be 10 digits' }),
+  phone: z.string().regex(/^\d{10}$/, { message: 'Phone number must be 10 digits' }).optional(),
+  email: z.string().email({ message: 'Invalid email' }).optional(),
   otp: z.string().length(6, { message: 'OTP must be 6 digits' }),
+}).refine(data => data.phone || data.email, {
+  message: 'Either phone or email is required'
 });
 
 export async function POST(request: NextRequest) {
@@ -51,9 +57,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: { message: 'Invalid input.', details: validation.error.flatten().fieldErrors } }, { status: 400 });
     }
 
-    const { phone, otp } = validation.data;
+    const { phone, email, otp } = validation.data;
 
-    const user = await prisma.user.findUnique({ where: { phone } });
+    
+    const user = phone 
+      ? await prisma.user.findUnique({ where: { phone } })
+      : await prisma.user.findUnique({ where: { email: email! } });
 
     if (!user || !user.otpHash || !user.otpExpiry) {
       return NextResponse.json({ success: false, error: { message: 'Invalid request. Please try again.' } }, { status: 400 });

@@ -16,6 +16,14 @@ const CheckoutPageComponent: React.FC = () => {
     const [minPurchaseLimit, setMinPurchaseLimit] = useState(2000);
 
     const [isAlreadyMember, setIsAlreadyMember] = useState(false);
+    const [referralCode, setReferralCode] = useState('');
+    const [referralLocked, setReferralLocked] = useState(false);
+    // OTP states
+    const [otpSent, setOtpSent] = useState(false);
+    const [otpCode, setOtpCode] = useState('');
+    const [otpVerified, setOtpVerified] = useState(false);
+    const [otpSending, setOtpSending] = useState(false);
+    const [otpError, setOtpError] = useState('');
 
     const searchParams = useSearchParams();
     const [appliedCoupon, setAppliedCoupon] = useState<{
@@ -33,6 +41,64 @@ const CheckoutPageComponent: React.FC = () => {
             });
         }
     }, [searchParams]);
+
+    useEffect(() => {
+        const ref = searchParams.get('ref');
+        if (ref) {
+            setReferralCode(ref);
+            setReferralLocked(true);
+            setIs7thHeavenOptIn(true);
+            localStorage.setItem('7thHeavenReferral', ref);
+        } else {
+            const storedRef = localStorage.getItem('7thHeavenReferral');
+            if (storedRef) {
+                setReferralCode(storedRef);
+                setReferralLocked(true);
+                setIs7thHeavenOptIn(true);
+            }
+        }
+    }, [searchParams]);
+
+    const handleSendOtp = async () => {
+        if (!billing.email) {
+            setOtpError('Please enter your email first');
+            return;
+        }
+        setOtpSending(true);
+        setOtpError('');
+        try {
+            await axios.post('/api/v1/auth/request-otp', { 
+                fullName: `${billing.firstName} ${billing.lastName}`,
+                email: billing.email,
+                phone: billing.phone.replace(/\D/g, '').slice(-10),
+                referralCode: referralCode || undefined
+            });
+            setOtpSent(true);
+        } catch (err: any) {
+            setOtpError(err.response?.data?.error?.message || 'Failed to send OTP');
+        } finally {
+            setOtpSending(false);
+        }
+    };
+
+    const handleVerifyOtp = async () => {
+        if (!otpCode || otpCode.length !== 6) {
+            setOtpError('Enter valid 6-digit OTP');
+            return;
+        }
+        try {
+            const res = await axios.post('/api/v1/auth/verify-otp', { 
+                phone: billing.phone.replace(/\D/g, '').slice(-10), 
+                otp: otpCode 
+            });
+            if (res.data.success) {
+                setOtpVerified(true);
+                setOtpError('');
+            }
+        } catch (err: any) {
+            setOtpError(err.response?.data?.error?.message || 'Invalid OTP');
+        }
+    };
 
     useEffect(() => {
         axios.get('/api/v1/settings')
@@ -193,6 +259,11 @@ const CheckoutPageComponent: React.FC = () => {
             alert("Please fill in all required billing fields.");
             return;
         }
+        const phoneDigits = billing.phone.replace(/\D/g, '');
+        if (phoneDigits.length !== 10) {
+            alert("Please enter a valid 10-digit phone number (without country code).");
+            return;
+        }
         setIsProcessing(true);
         try {
             const finalShipping = shipToDifferentAddress ? shipping : billing;
@@ -204,7 +275,7 @@ const CheckoutPageComponent: React.FC = () => {
                 })),
                 shippingDetails: {
                     fullName: `${finalShipping.firstName} ${finalShipping.lastName}`,
-                    phone: finalShipping.phone,
+                    phone: finalShipping.phone.replace(/\D/g, '').slice(-10),
                     email: finalShipping.email,
                     fullAddress: `${finalShipping.address1} ${finalShipping.address2}`,
                     city: finalShipping.city,
@@ -213,6 +284,7 @@ const CheckoutPageComponent: React.FC = () => {
                     country: finalShipping.country
                 },
                 mlmOptIn: is7thHeavenOptIn,
+                referrerCode: is7thHeavenOptIn ? referralCode : null,
                 couponCode: appliedCoupon?.code || null,
                 discountAmount: appliedCoupon?.discountAmount || 0
             };
@@ -473,14 +545,85 @@ const CheckoutPageComponent: React.FC = () => {
                                                 ) : (
                                                     cartTotal > 0 && (
                                                         cartTotal >= minPurchaseLimit ? (
-                                                            <div className="p-3 text-center" style={{ backgroundColor: '#ddb040', color: '#000', border: '1px solid #cca33b', borderRadius: '5px' }}>
-                                                                <div className="flex justify-center gap-x-2">
-                                                                    <input type="checkbox" id="heavenOptIn" className="mt-auto mb-auto" checked={is7thHeavenOptIn} onChange={(e) => setIs7thHeavenOptIn(e.target.checked)} disabled={!isLoggedIn} />
+                                                            <div className="p-3" style={{ backgroundColor: '#ddb040', color: '#000', border: '1px solid #cca33b', borderRadius: '5px' }}>
+                                                                <div className="flex justify-center gap-x-2 mb-2">
+                                                                    <input 
+                                                                        type="checkbox" 
+                                                                        id="heavenOptIn" 
+                                                                        className="mt-auto mb-auto" 
+                                                                        checked={is7thHeavenOptIn} 
+                                                                        onChange={(e) => setIs7thHeavenOptIn(e.target.checked)} 
+                                                                        disabled={!isLoggedIn && !otpVerified}
+                                                                    />
                                                                     <label htmlFor="heavenOptIn" style={{ fontSize: '16px', fontWeight: 700 }}>Join 7th Heaven Club?</label>
                                                                 </div>
-                                                                <p className="mt-1 mb-0" style={{ fontSize: '14px', marginLeft: '28px', fontWeight: 500 }}>
-                                                                    {!isLoggedIn ? (
-                                                                        <span><i className="fa fa-lock"></i> Login required to join.</span>
+                                                                
+                                                                {is7thHeavenOptIn && (
+                                                                    <div className="mt-3 p-3" style={{ backgroundColor: '#fff', borderRadius: '5px' }}>
+                                                                        {/* Referral Code Input */}
+                                                                        <div className="mb-3">
+                                                                            <label className="block text-sm font-semibold mb-1">Referral Code (Optional)</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                value={referralCode}
+                                                                                onChange={(e) => !referralLocked && setReferralCode(e.target.value.toUpperCase())}
+                                                                                placeholder="Enter referral code"
+                                                                                disabled={referralLocked}
+                                                                                className="w-full p-2 border rounded"
+                                                                                style={{ backgroundColor: referralLocked ? '#e9ecef' : '#fff' }}
+                                                                            />
+                                                                            {referralLocked && <small className="text-gray-600">Referral code auto-applied</small>}
+                                                                        </div>
+
+                                                                        {/* OTP Section for Guests */}
+                                                                        {!isLoggedIn && (
+                                                                            <div className="pt-3 border-t">
+                                                                                <label className="block text-sm font-semibold mb-1">Verify Your Email</label>
+                                                                                {!otpVerified ? (
+                                                                                    <>
+                                                                                        {!otpSent ? (
+                                                                                            <button 
+                                                                                                type="button"
+                                                                                                onClick={handleSendOtp}
+                                                                                                disabled={otpSending || !billing.email}
+                                                                                                className="px-4 py-2 bg-black text-white rounded text-sm"
+                                                                                            >
+                                                                                                {otpSending ? 'Sending...' : 'Send OTP to Email'}
+                                                                                            </button>
+                                                                                        ) : (
+                                                                                            <div className="flex gap-2">
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    value={otpCode}
+                                                                                                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                                                                                    placeholder="Enter 6-digit OTP"
+                                                                                                    className="flex-1 p-2 border rounded"
+                                                                                                    maxLength={6}
+                                                                                                />
+                                                                                                <button 
+                                                                                                    type="button"
+                                                                                                    onClick={handleVerifyOtp}
+                                                                                                    className="px-4 py-2 bg-green-600 text-white rounded text-sm"
+                                                                                                >
+                                                                                                    Verify
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        )}
+                                                                                        {otpError && <p className="text-red-600 text-sm mt-1">{otpError}</p>}
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <p className="text-green-600 font-semibold">
+                                                                                        <i className="fa fa-check-circle mr-1"></i> Email Verified!
+                                                                                    </p>
+                                                                                )}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+
+                                                                <p className="mt-2 mb-0 text-center" style={{ fontSize: '14px', fontWeight: 500 }}>
+                                                                    {!isLoggedIn && !otpVerified ? (
+                                                                        <span><i className="fa fa-lock"></i> Verify email to join</span>
                                                                     ) : (
                                                                         "Unlock exclusive benefits and referral rewards!"
                                                                     )}
