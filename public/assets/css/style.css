@@ -4485,7 +4485,7 @@ a.popup-img {
   color: #1a1511;
 }
 .dec-and-review-menu > li > a.active, .dec-and-review-menu > li > a:hover {
-  background-color: #E6B422;
+  background-color: rgb(182, 144, 46);
   color: #ffffff;
 }
 
