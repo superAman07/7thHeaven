@@ -36,10 +36,10 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: NextRequest) {
     try {
         // 1. Authorization Check (Optional: If you only want Members to see this)
-        const userId = await getUserIdFromToken(req);
-        if (!userId) {
-             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        // const userId = await getUserIdFromToken(req);
+        // if (!userId) {
+        //      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // }
 
         // 2. Fetch the Price Limit from Settings
         const settings = await prisma.mLMSettings.findFirst();
@@ -79,7 +79,8 @@ export async function GET(req: NextRequest) {
             price: Number(p.variants[0]?.price || 0),
             variantId: p.variants[0]?.id || null,
             size: p.variants[0]?.size || 'Standard',
-            discountPercentage: p.discountPercentage ? Number(p.discountPercentage) : 0
+            discountPercentage: p.discountPercentage ? Number(p.discountPercentage) : 0,
+            isBestSeller: p.isBestSeller || false
         }));
 
         return NextResponse.json({ 

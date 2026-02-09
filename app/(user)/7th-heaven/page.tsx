@@ -373,19 +373,59 @@ export default function SeventhHeavenPage() {
    ---------------- */
 function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
   const [minAmount, setMinAmount] = useState(2000);
+  const [clubProducts, setClubProducts] = useState<PublicProduct[]>([]);
+  const [maxPriceLimit, setMaxPriceLimit] = useState(4000);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
+  const handleOpenModal = (product: PublicProduct) => {
+    setSelectedProductId(product.id);
+    setIsModalOpen(true);
+  };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProductId(null);
+  };
+
   useEffect(() => {
-    const fetchSettings = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get('/api/v1/settings');
-        if (res.data.success && res.data.value) {
-          setMinAmount(res.data.value);
+        const settingsRes = await axios.get('/api/v1/settings');
+        if (settingsRes.data.success && settingsRes.data.value) {
+          setMinAmount(settingsRes.data.value);
+        }
+        const prodRes = await axios.get('/api/v1/products/club');
+        if (prodRes.data.success) {
+          if (prodRes.data.maxPriceLimit) setMaxPriceLimit(prodRes.data.maxPriceLimit);
+          const mappedProducts: PublicProduct[] = prodRes.data.products.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            description: '',
+            images: [p.image || '/assets/images/product/shop.webp'],
+            genderTags: [],
+            inStock: true,
+            ratingsAvg: 0,
+            createdAt: new Date(),
+            categoryId: '',
+            isNewArrival: false,
+            isBestSeller: p.isBestSeller || false,
+            discountPercentage: p.discountPercentage,
+            category: { name: p.category, slug: '' },
+            variants: [{ id: p.variantId || '', price: p.price, size: p.size || 'Standard', stock: 100 }],
+            reviews: [],
+          }));
+          setClubProducts(mappedProducts);
         }
       } catch (error) {
-        console.error('Failed to fetch settings', error);
+        console.error('Failed to fetch data', error);
       }
     };
-    fetchSettings();
+    fetchData();
   }, []);
+  const scrollToProducts = () => {
+    document.getElementById('club-products')?.scrollIntoView({ behavior: 'smooth' });
+  };
   return (
     <div className="bg-linear-to-b from-[#1a1a1a] to-[#252525] min-h-screen text-white">
       {/* Hero */}
@@ -406,12 +446,9 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
           </p>
 
           <div className="flex gap-2 md:gap-4 justify-center items-center w-full sm:w-auto px-2 sm:px-0">
-            <Link
-              href={isLoggedIn ? "/collections/perfumes?sort=price_asc" : "/login"}
-              className="px-4 py-3 md:px-8 md:py-4 bg-[#E6B422] text-black text-[10px] sm:text-xs md:text-base font-bold uppercase tracking-wider hover:bg-white transition-colors whitespace-nowrap flex-1 sm:flex-none text-center"
-            >
-              {isLoggedIn ? "Start Your Journey" : "Join The Club"}
-            </Link>
+            <button onClick={scrollToProducts} className="px-4 py-3 md:px-8 md:py-4 bg-[#E6B422] text-black text-[10px] sm:text-xs md:text-base font-bold uppercase tracking-wider hover:bg-white transition-colors cursor-pointer">
+              Join The Club
+            </button>
 
             <Link
               href="/collections/perfumes"
@@ -424,6 +461,39 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
       </div>
 
       <HowItWorks minPurchaseAmount={minAmount} />
+
+      {clubProducts.length > 0 && (
+        <div id="club-products" className="py-20 bg-[#f5f5f5]"> {/* Light background */}
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl! md:text-4xl! font-serif! text-[#1a1a1a]! mb-4!">Best Sellers</h2>
+              <p className="text-gray-600 max-w-xl mx-auto">
+                Purchase any product worth ₹{minAmount.toLocaleString()}+ to become a 7th Heaven member
+              </p>
+            </div>
+            <div className="row">
+              {clubProducts.map((product) => (
+                <div className="col-lg-3 col-md-4 col-sm-6 mb-4" key={product.id}>
+                  <div className="relative">
+                    {product.isBestSeller && (
+                      <div className="absolute top-2 left-2 z-10 bg-[#E6B422] text-black text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">
+                        Best Seller
+                      </div>
+                    )}
+                    <ProductCard product={product} onQuickView={handleOpenModal} />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="text-center mt-8">
+              <Link href={`/collections/perfumes?maxPrice=${maxPriceLimit}&sort=price_asc`} className="inline-block px-8 py-3 border border-[#1a1a1a] text-[#1a1a1a] font-bold uppercase tracking-wider hover:bg-[#1a1a1a] hover:text-white transition-colors">
+                View All Eligible Products
+              </Link>
+            </div>
+          </div>
+          <ProductQuickViewModal isOpen={isModalOpen} onClose={handleCloseModal} productId={selectedProductId || ''} />
+        </div>
+      )}
 
       {/* Features */}
       <div className="py-20 container mx-auto px-4">
