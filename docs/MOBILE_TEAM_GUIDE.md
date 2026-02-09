@@ -2,7 +2,7 @@
 
 > **Date:** February 9, 2026  
 > **From:** Web Development Team  
-> **Subject:** 7th Heaven App Development Guidelines
+> **Subject:** Celsius App Development Guidelines
 
 ---
 
