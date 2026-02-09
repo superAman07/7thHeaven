@@ -133,7 +133,7 @@ export default function SeventhHeavenPage() {
 
   const copyToClipboard = () => {
     if (data?.referralCode) {
-      navigator.clipboard.writeText(`${window.location.origin}/login?ref=${data.referralCode}`);
+      navigator.clipboard.writeText(`${window.location.origin}/7th-heaven?ref=${data.referralCode}`);
       setCopySuccess(true);
       toast.success('Referral link copied!');
       setTimeout(() => setCopySuccess(false), 2000);
@@ -483,11 +483,6 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
               {clubProducts.map((product) => (
                 <div className="col-lg-3 col-md-4 col-sm-6 mb-4" key={product.id}>
                   <div className="relative">
-                    {product.isBestSeller && (
-                      <div className="absolute top-2 left-2 z-10 bg-[#E6B422] text-black text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">
-                        Best Seller
-                      </div>
-                    )}
                     <ProductCard product={product} onQuickView={handleOpenModal} />
                   </div>
                 </div>

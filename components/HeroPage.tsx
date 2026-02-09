@@ -21,6 +21,7 @@ export type PublicProduct = {
     createdAt: Date;
     categoryId: string;
     isNewArrival: boolean;
+    isBestSeller?: boolean;
     discountPercentage: number | null;
     selectedVariant?: {
         id: string;
