@@ -331,7 +331,7 @@ const StatCard = ({ label, value, icon, gradient, delay }: any) => {
         
         <div className="relative z-10">
             <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-1">{label}</p>
-            <h3 className="text-2xl! font-black! text-gray-900! tracking-tight! group-hover:scale-105! transition-transform! origin-left! font-sans!" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+            <h3 className="text-xl! font-black! text-gray-900! tracking-tight! group-hover:scale-105! transition-transform! origin-left! font-sans!" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
               {value}
             </h3>
         </div>
