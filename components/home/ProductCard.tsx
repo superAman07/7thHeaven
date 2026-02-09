@@ -271,10 +271,10 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                             </span>
                         ) : product.isBestSeller ? (
                             <div 
-                                className="absolute z-10 bg-[#E6B422] text-black text-[10px] font-bold uppercase tracking-widest shadow-md px-2 py-1 rounded-sm"
+                                className="absolute z-10 bg-[#E6B422] text-black text-[10px] font-bold uppercase tracking-widest shadow-md px-2 py-1 rounded-l-sm"
                                 style={{
                                     top: '10px',
-                                    right: '10px',
+                                    right: '0px',
                                     border: 'none',
                                 }}
                             >
