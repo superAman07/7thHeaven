@@ -249,39 +249,38 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                         </Link>
                         
                         {product.isNewArrival && <span className="sticker">New</span>}
-                        {product.isBestSeller && (
-                            <div 
-                                className="absolute z-10 bg-[#E6B422] text-black text-[10px] font-bold uppercase tracking-widest shadow-md rounded-l-sm"
-                                style={{
-                                    top: '50%',
-                                    left: '0px',
-                                    padding: '12px 2px',
-                                    writingMode: 'vertical-rl', // Makes text vertical
-                                    textOrientation: 'mixed',
-                                    transform: 'translateY(-50%) rotate(180deg)', // Centered vertically, read bottom-to-top
-                                    borderTopLeftRadius: '4px',
-                                    borderBottomLeftRadius: '4px',
-                                }}
-                            >
-                                Best Seller
-                            </div>
-                        )}
-                        
-                        {/* FIXED: Black background discount tag */}
                         {priceData.discount > 0 && (
                             <span className="descount-sticker-custom">
                                 -{Math.round(priceData.discount)}%
                             </span>
                         )}
-                        
-                        {isLowStock && (
+                        {isLowStock ? (
                             <span 
                                 className="stock-sticker" 
-                                style={{ top: product.isNewArrival ? '45px' : '10px' }}
+                                style={{ 
+                                    top: '10px',
+                                    right: '10px',
+                                    border: '1px solid #e53935',
+                                    color: '#e53935',
+                                    background: 'rgba(255,255,255,0.95)',
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                    whiteSpace: 'nowrap'
+                                }}
                             >
                                 Only {currentStock} Left
                             </span>
-                        )}
+                        ) : product.isBestSeller ? (
+                            <div 
+                                className="absolute z-10 bg-[#E6B422] text-black text-[10px] font-bold uppercase tracking-widest shadow-md px-2 py-1 rounded-sm"
+                                style={{
+                                    top: '10px',
+                                    right: '10px',
+                                    border: 'none',
+                                }}
+                            >
+                                Best Seller
+                            </div>
+                        ) : null}
                         
                         <div className="product-action d-flex justify-content-between">
                             <a
