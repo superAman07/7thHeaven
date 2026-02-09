@@ -398,10 +398,6 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                     </div>
                                 )}
 
-                                <div className="product-description">
-                                    <p>{product.description}</p>
-                                </div>
-
                                 <div className="single-product-quantity">
                                     <form className="add-quantity" action="#" onSubmit={handleAddToCart}>
                                         <div className="product-quantity">
@@ -586,7 +582,45 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                 {/* Review And Description Tab Content Start */}
                                 <div className="tab-content product-review-content-tab" id="myTabContent-4">
                                     <div className={`tab-pane fade ${activeTab === 'description' ? 'active show' : ''}`} id="description">
-                                        <div className="single-product-description" dangerouslySetInnerHTML={{ __html: product.description || '' }} />
+                                        <div className="single-product-description" style={{ fontSize: '16px', lineHeight: '1.8', color: '#555' }}>
+                                            {product.description ? (
+                                                product.description.split('\n').map((line, index) => {
+                                                    const trimmedLine = line.trim();
+                                                    if (!trimmedLine) return <br key={index} />;
+
+                                                    if (trimmedLine.endsWith(':') || (trimmedLine.length < 50 && trimmedLine.endsWith('?'))) {
+                                                        return (
+                                                            <h5 key={index} style={{ 
+                                                                fontWeight: '700', 
+                                                                marginTop: '25px', 
+                                                                marginBottom: '15px', 
+                                                                color: '#1a1511',
+                                                                textTransform: 'uppercase',
+                                                                fontSize: '14px',
+                                                                letterSpacing: '1px'
+                                                            }}>
+                                                                {trimmedLine}
+                                                            </h5>
+                                                        );
+                                                    }
+
+                                                    const listMatch = trimmedLine.match(/^(\d+[:.]|\-|\*|•|🎁|☀️|👜|✨)\s+(.*)/);
+                                                    
+                                                    if (listMatch) {
+                                                        return (
+                                                            <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '8px', paddingLeft: '10px' }}>
+                                                                <span style={{ color: '#B6902E', fontWeight: 'bold' }}>•</span>
+                                                                <span>{listMatch[2] || trimmedLine}</span>
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    return <p key={index} style={{ marginBottom: '15px' }}>{trimmedLine}</p>;
+                                                })
+                                            ) : (
+                                                <p>No description available.</p>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className={`tab-pane fade ${activeTab === 'reviews' ? 'active show' : ''}`} id="reviews">
                                         <div className="review-page-comment">
