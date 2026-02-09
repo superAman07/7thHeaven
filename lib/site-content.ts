@@ -65,7 +65,7 @@ export const defaultGlobalSettings: GlobalSettings = {
 
 export const defaultHomeAbout: HomeAboutSection = {
   displayTitle: "The Celsius Story",
-  image: "/assets/images/product/bwebp.webp",
+  image: "/assets/images/bg-hero.png",
   imageAlt: "Celsius Luxury Perfume",
   paragraphs: [
     `Celsius is not just a perfume; it’s a statement of Indian luxury. Proudly crafted under the "Make in Bharat" initiative, we challenge the global narrative by proving that world-class luxury doesn't have to come from abroad.`,

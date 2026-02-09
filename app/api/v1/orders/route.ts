@@ -345,7 +345,7 @@ export async function POST(req: NextRequest) {
                     quantity: item.quantity,
                     price: item.priceAtPurchase
                   })),
-                  total: subtotal
+                  total: Math.round(subtotal - (discountAmount || 0))
                 }).catch(err => console.error('Email send error:', err));
              }
              // 3. Record coupon usage

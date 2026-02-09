@@ -151,6 +151,7 @@ export default function NavBar() {
     const links = [
         { href: '/', label: 'Home' },
         { href: '/collections', label: 'Collections' },
+        { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact Us' },
         { href: '/7th-heaven', label: '7th Heaven' },
     ];
