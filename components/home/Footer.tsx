@@ -27,8 +27,10 @@ const defaultQuickLinks: LinkItem[] = [
   { label: "Contact Us", href: "/contact" },
   { label: "Track Order", href: "/track-order" },
   { label: "My Account", href: "/my-account" },
-  { label: "Privacy Policy", href: "#" },
-  { label: "Terms & Conditions", href: "#" },
+  { label: "Privacy Policy", href: "/policies/legal_privacy" },
+  { label: "Terms & Conditions", href: "/policies/legal_terms" },
+  { label: "Refund Policy", href: "/policies/legal_refund" },
+  { label: "Shipping Policy", href: "/policies/legal_shipping" },
 ];
 
 const defaultCollectionLinks: LinkItem[] = [
@@ -45,8 +47,10 @@ export default function FooterPage({
     { label: "Contact Us", href: "/contact" },
     { label: "Track Order", href: "/track-order" },
     { label: "My Account", href: "/my-account" },
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms & Conditions", href: "#" },
+    { label: "Privacy Policy", href: "/policies/legal_privacy" },
+    { label: "Terms & Conditions", href: "/policies/legal_terms" },
+    { label: "Refund Policy", href: "/policies/legal_refund" },
+    { label: "Shipping Policy", href: "/policies/legal_shipping" },
   ],
   collectionLinks = [
     { label: "Men's Perfumes", href: "/collections/perfumes?gender=Male" },
