@@ -18,6 +18,8 @@ const getNavItems = (newOrdersCount: number, openTicketsCount: number, pendingRe
   { href: '/celsius-7th-heaven/notifications', label: 'Notifications', icon: Bell },
   { href: '/celsius-7th-heaven/storefront', label: 'Store Front Page', icon: LayoutDashboard },
   { href: '/celsius-7th-heaven/site-settings', label: 'Site Settings', icon: Settings },
+  { href: '/celsius-7th-heaven/settings/policies', label: 'Policies', icon: Settings },
+
 ];
 
 interface NavLinkProps {
