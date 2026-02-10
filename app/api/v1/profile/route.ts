@@ -18,8 +18,8 @@ import { sendOTPEmail } from '@/lib/email';
  *       200:
  *         description: User profile data
  *   post:
- *     summary: Request Profile Update OTP
- *     description: Request OTP to verify phone/email change.
+ *     summary: Request Email Update OTP
+ *     description: Request OTP to verify EMAIL change. (Phone updates do not happen here anymore).
  *     tags:
  *       - Profile
  *     security:
@@ -36,17 +36,22 @@ import { sendOTPEmail } from '@/lib/email';
  *             properties:
  *               type:
  *                 type: string
- *                 enum: [email, phone]
+ *                 enum: [email]
+ *                 description: Only 'email' is supported for OTP requests now.
  *               value:
  *                 type: string
+ *                 description: New email address to verify.
  *     responses:
  *       200:
- *         description: OTP sent
+ *         description: OTP sent successfully
+ *       400:
+ *         description: Email already in use or invalid parameters
  *   put:
  *     summary: Update Profile
  *     description: >
  *       Update profile details. 
- *       **Note:** Changing Phone/Email requires `otp`. 
+ *       **Note:** Changing Email requires `otp` and `email`. 
+ *       Changing Phone does NOT require OTP anymore.
  *       Changing Password requires `currentPassword`.
  *     tags:
  *       - Profile
@@ -73,11 +78,13 @@ import { sendOTPEmail } from '@/lib/email';
  *                 type: string
  *               phone:
  *                 type: string
+ *                 description: Direct update allowed (No OTP needed).
  *               email:
  *                 type: string
+ *                 description: Requires OTP if changed.
  *               otp:
  *                 type: string
- *                 description: Required if changing phone/email
+ *                 description: Required ONLY if changing email.
  *               newPassword:
  *                 type: string
  *               currentPassword:
@@ -86,6 +93,8 @@ import { sendOTPEmail } from '@/lib/email';
  *     responses:
  *       200:
  *         description: Profile updated successfully
+ *       400:
+ *         description: OTP required/invalid or Email/Phone already in use
  */
 
 export async function GET(req: NextRequest) {
@@ -138,6 +147,19 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid request parameters' }, { status: 400 });
         }
 
+        if (type === 'email') {
+             const existingUser = await prisma.user.findFirst({
+                where: { 
+                    email: value,
+                    NOT: { id: userId } 
+                }
+            });
+            if (existingUser) {
+                return NextResponse.json({ error: 'This email is already in use by another account.' }, { status: 400 });
+            }
+        }
+
+
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         
         const otpHash = await bcrypt.hash(otp, 10);
@@ -180,10 +202,9 @@ export async function PUT(req: NextRequest) {
             country,
             currentPassword,
             newPassword,
-            otp // OTP is required if phone or email changes
+            otp // OTP is required if email changes
         } = body;
 
-        // Fetch user first to check current values
         const user = await prisma.user.findUnique({ where: { id: userId } });
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -198,30 +219,34 @@ export async function PUT(req: NextRequest) {
             country
         };
 
-        // Handle Phone Update
         if (phone && phone !== user.phone) {
-            if (!otp) {
-                return NextResponse.json({ error: 'OTP is required to update phone number.' }, { status: 400 });
-            }
-            // Verify OTP
-            if (!user.otpHash || !user.otpExpiry || new Date() > user.otpExpiry) {
-                 return NextResponse.json({ error: 'Invalid or expired OTP.' }, { status: 400 });
-            }
-            const isOtpValid = await bcrypt.compare(otp, user.otpHash);
-            if (!isOtpValid) {
-                return NextResponse.json({ error: 'Invalid OTP.' }, { status: 400 });
+             const existingPhone = await prisma.user.findFirst({
+                where: { 
+                    phone: phone,
+                    NOT: { id: userId }
+                }
+            });
+            if (existingPhone) {
+                return NextResponse.json({ error: 'This phone number is already in use.' }, { status: 400 });
             }
             updateData.phone = phone;
         } else if (phone) {
             updateData.phone = phone;
         }
 
-        // Handle Email Update
         if (email && email !== user.email) {
+            const existingEmail = await prisma.user.findFirst({
+                where: { 
+                    email: email,
+                    NOT: { id: userId }
+                }
+            });
+            if (existingEmail) {
+                return NextResponse.json({ error: 'This email is already in use.' }, { status: 400 });
+            }
             if (!otp) {
                 return NextResponse.json({ error: 'OTP is required to update email.' }, { status: 400 });
             }
-            // Verify OTP (Reusing same otpHash slot)
             if (!user.otpHash || !user.otpExpiry || new Date() > user.otpExpiry) {
                  return NextResponse.json({ error: 'Invalid or expired OTP.' }, { status: 400 });
             }
@@ -234,7 +259,6 @@ export async function PUT(req: NextRequest) {
             updateData.email = email;
         }
 
-        // Handle Password Change
         if (newPassword) {
             if (!currentPassword) {
                 return NextResponse.json({ error: 'Current password is required to set a new one.' }, { status: 400 });

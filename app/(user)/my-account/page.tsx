@@ -249,17 +249,12 @@ function ProfileContent() {
         const phoneChanged = formData.phone !== user?.phone;
         const emailChanged = formData.email !== user?.email;
 
-        if (phoneChanged || emailChanged) {
-            const type = phoneChanged ? 'phone' : 'email';
-            const value = phoneChanged ? formData.phone : formData.email;
-
+        if (emailChanged) {
             try {
-                await axios.post('/api/v1/profile', { type, value });
-                toast.success(`OTP sent to ${value}`);
+                await axios.post('/api/v1/profile', { type: 'email', value: formData.email });
+                toast.success(`OTP sent to ${formData.email}`);
 
                 if (phoneChanged) payload.phone = formData.phone;
-                if (emailChanged) payload.email = formData.email;
-
                 setPendingUpdate(payload);
                 setShowOtpModal(true);
             } catch (err: any) {
@@ -268,6 +263,9 @@ function ProfileContent() {
                 setIsUpdatingProfile(false);
             }
             return;
+        }
+        if (phoneChanged) {
+             payload.phone = formData.phone;
         }
         await submitUpdate(payload);
         setIsUpdatingProfile(false);
