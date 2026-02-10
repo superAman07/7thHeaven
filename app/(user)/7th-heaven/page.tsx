@@ -461,7 +461,7 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
 
             <Link
               href="/collections/perfumes"
-              className="px-4 py-3 md:px-8 md:py-4 border border-white text-white text-[10px] sm:text-xs md:text-base font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors whitespace-nowrap flex-1 sm:flex-none text-center"
+              className="px-4 py-3 md:px-8 md:py-4 border border-white text-white text-[10px] sm:text-xs md:text-base font-bold uppercase tracking-wider hover:bg-white hover:text-black! transition-colors whitespace-nowrap flex-1 sm:flex-none text-center"
             >
               Shop Collection
             </Link>
