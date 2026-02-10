@@ -265,6 +265,18 @@ export async function POST(req: NextRequest) {
                 items: orderItemsData,
             },
         });
+        if (userId) {
+            await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    fullAddress: shippingDetails.fullAddress,
+                    city: shippingDetails.city,
+                    state: shippingDetails.state,
+                    pincode: shippingDetails.pincode,
+                    country: shippingDetails.country,
+                }
+            });
+        }
         // --- BYPASS LOGIC START (Immediate Success + Admin Upgrade) ---
         const BYPASS_FOR_TESTING = true;
         if (BYPASS_FOR_TESTING) {
