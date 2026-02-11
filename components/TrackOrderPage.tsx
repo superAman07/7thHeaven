@@ -88,8 +88,8 @@ export default function TrackOrderPage() {
                 </div>
             </div>
 
-                        {/* Tracking Form Section */}
-            <div className="py-10 px-4">
+            {/* Tracking Form Section */}
+            <div className="py-16 md:py-24 px-4 min-h-[50vh] bg-[#f9f9f9]">
                 <div className="container mx-auto max-w-lg">
                     <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
                         <form onSubmit={handleTrack}>
