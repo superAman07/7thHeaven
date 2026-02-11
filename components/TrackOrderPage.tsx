@@ -88,37 +88,37 @@ export default function TrackOrderPage() {
                 </div>
             </div>
 
-            {/* Tracking Form Section */}
-            <div className="py-20 px-4 pt-6!">
-                <div className="container mx-auto max-w-xl">
-                    <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+                        {/* Tracking Form Section */}
+            <div className="py-10 px-4">
+                <div className="container mx-auto max-w-lg">
+                    <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
                         <form onSubmit={handleTrack}>
-                            <div className="space-y-6">
+                            <div className="space-y-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Order ID</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Order ID</label>
                                     <input 
                                         type="text" 
                                         placeholder="e.g. CMLIHUZ7..." 
                                         value={orderId}
                                         onChange={(e) => setOrderId(e.target.value)}
                                         required
-                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-[#ddb040] focus:ring-1 focus:ring-[#ddb040] outline-none transition-all"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#ddb040] focus:ring-1 focus:ring-[#ddb040] outline-none transition-all text-sm"
                                     />
-                                    <p className="text-xs text-gray-400 mt-1">Found in your confirmation email.</p>
+                                    <p className="text-[10px] text-gray-400 mt-1 ml-1">Found in your confirmation email.</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number OR Email</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number OR Email</label>
                                     <input 
                                         type="text" 
-                                        placeholder="Enter the phone or email used at checkout" 
+                                        placeholder="Enter phone or email used at checkout" 
                                         value={identifier}
                                         onChange={(e) => setIdentifier(e.target.value)}
                                         required
-                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-[#ddb040] focus:ring-1 focus:ring-[#ddb040] outline-none transition-all"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#ddb040] focus:ring-1 focus:ring-[#ddb040] outline-none transition-all text-sm"
                                     />
                                 </div>
                                 <button 
-                                    className="w-full py-4 bg-[#ddb040] hover:bg-[#c9a227] text-white font-bold rounded-lg transition-colors shadow-lg shadow-[#ddb040]/30 disabled:opacity-50"
+                                    className="w-full py-3 bg-[#ddb040] hover:bg-[#c9a227] text-white font-bold rounded-lg transition-colors shadow-md disabled:opacity-50 text-sm uppercase tracking-wide"
                                     disabled={loading}
                                 >
                                     {loading ? 'Searching...' : 'Track Order'}
@@ -126,29 +126,31 @@ export default function TrackOrderPage() {
                             </div>
                         </form>
                     </div>
-                    {/* Order Details Result */}
+
+                    {/* Order Details Result - Compact & Responsive */}
                     {orderData && (
-                        <div className="mt-12 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
                             {/* Header */}
-                            <div className="bg-[#1a1511] p-6 flex flex-wrap justify-between items-center gap-4">
+                            <div className="bg-[#1a1511] p-5 flex flex-wrap justify-between items-center gap-3">
                                 <div>
-                                    <div className="text-white/60 text-sm uppercase tracking-wider mb-1">Order Status</div>
-                                    <div className="text-[#ddb040] text-2xl font-bold uppercase">{orderData.status}</div>
+                                    <div className="text-white/60 text-[10px] uppercase tracking-wider mb-0.5">Order Status</div>
+                                    <div className="text-[#ddb040] text-lg font-bold uppercase">{orderData.status}</div>
                                 </div>
                                 {(['PAID', 'REFUNDED'].includes((orderData.paymentStatus || '').toString().trim().toUpperCase()) || 
-                                    orderData.status === 'DELIVERED') && (
+                                  orderData.status === 'DELIVERED') && (
                                     <button 
                                         onClick={handleDownloadInvoice}
-                                        className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full text-sm font-medium backdrop-blur-sm transition-all flex items-center gap-2"
+                                        className="px-4 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-full text-xs font-medium backdrop-blur-sm transition-all flex items-center gap-2"
                                     >
                                         <i className="fa fa-download"></i> Invoice
                                     </button>
                                 )}
                             </div>
+                            
                             {/* Details Grid */}
-                            <div className="p-6 md:p-8">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                                    <div className="space-y-3">
+                            <div className="p-5 md:p-6">
+                                <div className="grid grid-cols-1 gap-6 mb-6">
+                                    <div className="space-y-2 text-sm">
                                         <div className="flex justify-between border-b border-dashed border-gray-200 pb-2">
                                             <span className="text-gray-500">Order ID</span>
                                             <span className="font-mono font-medium">{orderData.orderId || orderData.id}</span>
@@ -159,45 +161,44 @@ export default function TrackOrderPage() {
                                         </div>
                                         <div className="flex justify-between border-b border-dashed border-gray-200 pb-2">
                                             <span className="text-gray-500">Payment</span>
-                                            <span className={`px-2 py-0.5 rounded text-xs font-bold ${orderData.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${orderData.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                                                 {orderData.paymentStatus}
                                             </span>
                                         </div>
                                     </div>
                                     
-                                    <div className="bg-gray-50 p-4 rounded-xl">
-                                        <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">Shipping To</h4>
-                                        <p className="text-sm text-gray-600 leading-relaxed">
+                                    <div className="bg-gray-50 p-3 rounded-lg text-sm">
+                                        <h4 className="text-[10px] font-bold text-gray-900 uppercase tracking-wide mb-2">Shipping To</h4>
+                                        <p className="text-gray-600 leading-relaxed">
                                             <strong className="block text-gray-900">{orderData.shippingAddress?.name || orderData.customerName}</strong>
-                                            {orderData.shippingAddress?.street}<br/>
-                                            {orderData.shippingAddress?.city}, {orderData.shippingAddress?.state} {orderData.shippingAddress?.postalCode}<br/>
-                                            {orderData.shippingAddress?.country}<br/>
-                                            <span className="block mt-2 text-gray-500">{orderData.shippingAddress?.phone}</span>
+                                            {orderData.shippingAddress?.street}, {orderData.shippingAddress?.city}<br/>
+                                            {orderData.shippingAddress?.state} {orderData.shippingAddress?.postalCode}
                                         </p>
                                     </div>
                                 </div>
+
                                 {/* Items */}
                                 <div>
-                                    <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4 border-b pb-2">Order Items</h4>
-                                    <div className="space-y-4">
+                                    <h4 className="text-[10px] font-bold text-gray-900 uppercase tracking-wide mb-3 border-b pb-1">Order Items</h4>
+                                    <div className="space-y-3">
                                         {Array.isArray(orderData.items) && orderData.items.map((item: any, idx: number) => (
-                                            <div key={idx} className="flex justify-between items-center group hover:bg-gray-50 p-2 rounded transition-colors">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                                                        <i className="fa fa-cube"></i>
+                                            <div key={idx} className="flex justify-between items-center group hover:bg-gray-50 p-2 rounded transition-colors text-sm">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                                                        <i className="fa fa-cube text-xs"></i>
                                                     </div>
                                                     <div>
                                                         <div className="font-medium text-gray-900">{item.name}</div>
-                                                        <div className="text-sm text-gray-500">Qty: {item.quantity} × Rs. {item.priceAtPurchase}</div>
+                                                        <div className="text-xs text-gray-500">Qty: {item.quantity} × Rs. {item.priceAtPurchase}</div>
                                                     </div>
                                                 </div>
                                                 <div className="font-bold text-gray-900">Rs. {item.priceAtPurchase * item.quantity}</div>
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="mt-6 pt-4 border-t border-gray-200 flex justify-between items-center">
-                                        <span className="text-lg font-bold text-gray-900">Total Amount</span>
-                                        <span className="text-2xl font-serif text-[#ddb040] font-bold">Rs. {parseFloat(orderData.subtotal).toLocaleString()}</span>
+                                    <div className="mt-4 pt-3 border-t border-gray-200 flex justify-between items-center">
+                                        <span className="text-base font-bold text-gray-900">Total Amount</span>
+                                        <span className="text-lg font-serif text-[#ddb040] font-bold">Rs. {parseFloat(orderData.subtotal).toLocaleString()}</span>
                                     </div>
                                 </div>
                             </div>
