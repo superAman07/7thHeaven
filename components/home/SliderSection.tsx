@@ -50,12 +50,14 @@ const SliderSection = () => {
 
                   <h1 className="text-center mb-3" 
                       style={{ 
-                          fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+                          fontSize: 'clamp(2rem, 5.5vw, 4.5rem)',
                           fontWeight: '800', 
-                          color: 'white', 
+                          color: 'white',
                           lineHeight: '1.1',
                           letterSpacing: '-1px',
-                          textShadow: '0 4px 20px rgba(0,0,0,0.5)'
+                          textShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                          whiteSpace: 'nowrap',
+                          width: '100%' 
                       }}>
                     The Symbol of <span style={{ fontFamily: 'serif', fontStyle: 'italic', color: '#D4AF37' }}>Luxury</span>
                   </h1>
