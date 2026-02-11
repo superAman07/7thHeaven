@@ -38,37 +38,30 @@ export default function AboutPageContent() {
     // Default content if not set in admin
     const companyName = settings?.companyName || 'Celsius';
     const aboutTitle = settings?.aboutTitle || 'Our Story';
-    const aboutContent = settings?.aboutContent || `
-        Welcome to ${companyName}, where passion meets perfection in every bottle.
-        
-        Founded with a vision to bring the world's finest fragrances to discerning individuals, we have curated an exceptional collection of premium perfumes that transcend ordinary scents.
-        
-        Our journey began with a simple belief: that everyone deserves to experience the transformative power of a truly exceptional fragrance. Each perfume in our collection is carefully selected for its unique character, superior quality, and ability to evoke emotions and memories.
-        
-        We source our fragrances from renowned perfumers around the globe, ensuring that every bottle meets our exacting standards of excellence. From timeless classics to contemporary masterpieces, our collection offers something for every taste and occasion.
-        
-        At ${companyName}, we don't just sell perfumes – we help you discover your signature scent. Our expert team is dedicated to guiding you through the fascinating world of fragrances, helping you find the perfect match for your personality and style.
-        
-        Thank you for choosing ${companyName}. We invite you to explore our collection and embark on a sensory journey that will leave a lasting impression.
-    `;
+    const rawContent = settings?.aboutContent || `Welcome to ${companyName}, where passion meets perfection in every bottle.
+    
+    Founded with a vision to bring the world's finest fragrances to discerning individuals, we have curated an exceptional collection of premium perfumes that transcend ordinary scents.
+    
+    Our journey began with a simple belief: that everyone deserves to experience the transformative power of a truly exceptional fragrance. Each perfume in our collection is carefully selected for its unique character, superior quality, and ability to evoke emotions and memories.`;
+    
     const aboutImage = settings?.aboutImage || '/images/about-default.jpg';
 
     if (loading) {
         return (
-            <div className="min-h-screen! flex! items-center! justify-center! bg-gray-50!">
-                <div className="text-center!">
-                    <div className="w-12! h-12! border-4! border-[#ddb040]! border-t-transparent! rounded-full! animate-spin! mx-auto! mb-4!"></div>
-                    <p className="text-gray-500! font-medium!">Loading...</p>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0d0b09]">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-[#ddb040] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
                 </div>
             </div>
         );
     }
 
     return (
-        <div id="main-wrapper">
-            {/* Page Banner */}
+        <div id="main-wrapper" className="bg-[#0d0b09] min-h-screen">
+            
+            {/* --- KEEPING YOUR ORIGINAL BANNER --- */}
             <div 
-                className="page-banner-section section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]!" 
+                className="page-banner-section section min-h-[35vh] lg:min-h-[45vh] flex items-end pb-[20px]" 
                 style={{ 
                     background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)',
                 }}
@@ -80,15 +73,15 @@ export default function AboutPageContent() {
                                 
                                 {/* Breadcrumbs: Bottom-Left */}
                                 <div className="order-2 order-md-1 mt-2 mt-md-0">
-                                    <ul className="page-breadcrumb justify-content-center justify-content-md-start mb-0!" style={{ fontSize: '14px' }}>
-                                        <li><Link href="/" className="hover:text-[#D4AF37] transition-colors">Home</Link></li>
+                                    <ul className="page-breadcrumb justify-content-center justify-content-md-start mb-0" style={{ fontSize: '14px' }}>
+                                        <li><Link href="/" className="hover:text-[#D4AF37] transition-colors text-white no-underline">Home</Link></li>
                                         <li className="text-white/80">About Us</li>
                                     </ul>
                                 </div>
 
                                 {/* Title: Bottom-Right */}
                                 <div className="order-1 order-md-2 text-center text-md-end">
-                                    <h1 className="text-white! mb-0!" style={{ fontSize: 'clamp(22px, 3vw, 36px)', lineHeight: 1.1, letterSpacing: '0.05em' }}>
+                                    <h1 className="text-white mb-0" style={{ fontSize: 'clamp(22px, 3vw, 36px)', lineHeight: 1.1, letterSpacing: '0.05em' }}>
                                         About Us
                                     </h1>
                                 </div>
@@ -98,249 +91,110 @@ export default function AboutPageContent() {
                     </div>
                 </div>
             </div>
+            {/* --- END ORIGINAL BANNER --- */}
 
-            {/* About Section */}
-            <div className="about-section section" style={{ padding: '80px 0' }}>
-                <div className="container">
-                    <div className="row align-items-center">
-                        {/* Image Section */}
-                        <div className="col-lg-6 col-12 mb-5 mb-lg-0">
-                            <div 
-                                style={{ 
-                                    position: 'relative',
-                                    borderRadius: '20px',
-                                    overflow: 'hidden',
-                                    boxShadow: '0 25px 50px rgba(0,0,0,0.15)'
-                                }}
-                            >
-                                {/* Decorative Border */}
-                                <div 
-                                    style={{
-                                        position: 'absolute',
-                                        top: '-10px',
-                                        left: '-10px',
-                                        right: '10px',
-                                        bottom: '10px',
-                                        border: '3px solid #C9A227',
-                                        borderRadius: '20px',
-                                        zIndex: 0
-                                    }}
-                                ></div>
-                                
-                                <img 
-                                    src={aboutImage}
-                                    alt="About Celsius"
-                                    style={{
-                                        width: '100%',
-                                        height: '500px',
-                                        objectFit: 'cover',
-                                        position: 'relative',
-                                        zIndex: 1,
-                                        borderRadius: '20px'
-                                    }}
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=800';
-                                    }}
-                                />
-                                
-                                {/* Badge */}
-                                <div 
-                                    style={{
-                                        position: 'absolute',
-                                        bottom: '30px',
-                                        right: '-20px',
-                                        background: 'linear-gradient(135deg, #C9A227, #B8860B)',
-                                        color: 'white',
-                                        padding: '20px 30px',
-                                        borderRadius: '15px',
-                                        boxShadow: '0 10px 30px rgba(201, 162, 39, 0.4)',
-                                        zIndex: 2,
-                                        textAlign: 'center'
-                                    }}
-                                >
-                                    <div style={{ fontSize: '32px', fontWeight: '700', lineHeight: 1 }}>100%</div>
-                                    <div style={{ fontSize: '12px', marginTop: '5px', textTransform: 'uppercase', letterSpacing: '1px' }}>Authentic</div>
-                                </div>
-                            </div>
+            {/* --- NEW VERTICAL CONTENT SECTION --- */}
+            <div className="about-section section py-16 md:py-24">
+                <div className="container mx-auto px-4 max-w-5xl">
+
+                    {/* 1. HERO IMAGE (Top, Centered) */}
+                    <div className="relative w-full h-[400px] md:h-[600px] rounded-2xl overflow-hidden shadow-2xl mb-16 group mx-auto">
+                         {/* Golden Border Frame */}
+                        <div className="absolute inset-4 border border-[#C9A227]/30 rounded-xl z-20 pointer-events-none"></div>
+
+                        <img 
+                            src={aboutImage}
+                            alt="About Us"
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=1200';
+                            }}
+                        />
+                        {/* Gradient Overlay for Text Readability if needed */}
+                        <div className="absolute inset-0 bg-linear-to-t from-[#0d0b09] via-transparent to-transparent opacity-80"></div>
+                        
+                        {/* Badge */}
+                         <div className="absolute bottom-6 right-6 z-30 bg-black/40 backdrop-blur-md border border-[#C9A227]/30 px-6 py-3 rounded-xl text-white">
+                             <div className="text-xs uppercase tracking-[2px] text-[#ddb040] font-bold">100% Authentic</div>
+                             <div className="text-xl font-serif">Luxury Experience</div>
+                         </div>
+                    </div>
+
+                    {/* 2. TEXT CONTENT (Below Image, Centered width) */}
+                    <div className="max-w-3xl mx-auto">
+                        
+                        {/* Title & Divider */}
+                        <div className="text-center mb-10">
+                            <span className="text-[#ddb040] text-xs font-bold uppercase tracking-[4px] mb-3 block">Est. 2024</span>
+                            <h2 className="text-4xl md:text-5xl font-serif text-white mb-6 leading-tight">
+                                {aboutTitle}
+                            </h2>
+                            <div className="w-16 h-1 bg-[#ddb040] mx-auto opacity-60"></div>
                         </div>
 
-                        {/* Content Section */}
-                        <div className="col-lg-6 col-12">
-                            <div style={{ paddingLeft: '30px' }} className="ps-lg-5">
-                                {/* Section Tag */}
-                                <div 
-                                    style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '10px',
-                                        background: 'rgba(201, 162, 39, 0.1)',
-                                        padding: '8px 16px',
-                                        borderRadius: '30px',
-                                        marginBottom: '20px'
-                                    }}
-                                >
-                                    <span style={{ width: '8px', height: '8px', background: '#C9A227', borderRadius: '50%' }}></span>
-                                    <span style={{ color: '#C9A227', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>About {companyName}</span>
-                                </div>
-
-                                <h2 
-                                    style={{ 
-                                        fontSize: '42px', 
-                                        fontWeight: '700', 
-                                        color: '#fff',
-                                        marginBottom: '25px',
-                                        lineHeight: '1.2'
-                                    }}
-                                >
-                                    {aboutTitle}
-                                </h2>
-
-                                <div 
-                                    style={{ 
-                                        color: '#aaa', 
-                                        fontSize: '15px', 
-                                        lineHeight: '1.8',
-                                        whiteSpace: 'pre-line'
-                                    }}
-                                >
-                                    {aboutContent}
-                                </div>
-
-                                {/* Features */}
-                                <div className="row mt-4">
-                                    <div className="col-6">
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '15px' }}>
-                                            <div style={{ width: '50px', height: '50px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <i className="fa fa-check" style={{ color: 'white', fontSize: '18px' }}></i>
-                                            </div>
-                                            <span style={{ fontWeight: '600', color: '#fff' }}>Premium Quality</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-6">
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '15px' }}>
-                                            <div style={{ width: '50px', height: '50px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <i className="fa fa-truck" style={{ color: 'white', fontSize: '18px' }}></i>
-                                            </div>
-                                            <span style={{ fontWeight: '600', color: '#fff' }}>Fast Delivery</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-6">
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '15px' }}>
-                                            <div style={{ width: '50px', height: '50px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <i className="fa fa-shield" style={{ color: 'white', fontSize: '18px' }}></i>
-                                            </div>
-                                            <span style={{ fontWeight: '600', color: '#fff' }}>100% Authentic</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-6">
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '15px' }}>
-                                            <div style={{ width: '50px', height: '50px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <i className="fa fa-heart" style={{ color: 'white', fontSize: '18px' }}></i>
-                                            </div>
-                                            <span style={{ fontWeight: '600', color: '#fff' }}>Customer Love</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* CTA Button */}
-                                <Link 
-                                    href="/collections/perfumes"
-                                    style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '10px',
-                                        background: 'linear-gradient(135deg, #C9A227, #B8860B)',
-                                        color: 'white',
-                                        padding: '15px 35px',
-                                        borderRadius: '50px',
-                                        fontSize: '15px',
-                                        fontWeight: '600',
-                                        marginTop: '20px',
-                                        textDecoration: 'none',
-                                        boxShadow: '0 10px 30px rgba(201, 162, 39, 0.3)',
-                                        transition: 'transform 0.3s, box-shadow 0.3s'
-                                    }}
-                                    className="hover:scale-105!"
-                                >
-                                    Explore Collection
-                                    <i className="fa fa-arrow-right"></i>
-                                </Link>
-                            </div>
+                        {/* Article Content */}
+                        <div className="prose prose-invert prose-lg text-gray-300 font-light leading-relaxed text-justify">
+                             {/* Properly formatting dynamic content with newlines */}
+                             {rawContent.split('\n').map((paragraph, index) => (
+                                paragraph.trim() && (
+                                    <p key={index} className="mb-6 whitespace-pre-line">
+                                        {paragraph.trim()}
+                                    </p>
+                                )
+                            ))}
                         </div>
+
+                         {/* Signature */}
+                        <div className="mt-12 text-center">
+                            <img src="/images/signature.png" alt="" className="h-16 mx-auto opacity-50 mb-4 invert" style={{ display: 'none' }} /> {/* Place signature image here if available */}
+                            <div className="text-[#ddb040] font-serif italic text-xl">The {companyName} Team</div>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
-            {/* Stats Section */}
-            <div style={{ background: 'linear-gradient(135deg, #1a1511 0%, #0d0b09 100%)', padding: '60px 0' }}>
+            {/* --- STATS SECTION (Keep existing but align colors) --- */}
+            <div className="py-20 bg-[#12100e] border-t border-white/5">
                 <div className="container">
-                    <div className="row text-center">
-                        <div className="col-6 col-md-3 mb-4 mb-md-0">
-                            <div style={{ color: '#C9A227', fontSize: '42px', fontWeight: '700' }}>500+</div>
-                            <div style={{ color: '#aaa', fontSize: '14px', marginTop: '5px' }}>Products</div>
-                        </div>
-                        <div className="col-6 col-md-3 mb-4 mb-md-0">
-                            <div style={{ color: '#C9A227', fontSize: '42px', fontWeight: '700' }}>10K+</div>
-                            <div style={{ color: '#aaa', fontSize: '14px', marginTop: '5px' }}>Happy Customers</div>
-                        </div>
-                        <div className="col-6 col-md-3">
-                            <div style={{ color: '#C9A227', fontSize: '42px', fontWeight: '700' }}>50+</div>
-                            <div style={{ color: '#aaa', fontSize: '14px', marginTop: '5px' }}>Brands</div>
-                        </div>
-                        <div className="col-6 col-md-3">
-                            <div style={{ color: '#C9A227', fontSize: '42px', fontWeight: '700' }}>4.8★</div>
-                            <div style={{ color: '#aaa', fontSize: '14px', marginTop: '5px' }}>Customer Rating</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Why Choose Us */}
-            <div style={{ padding: '80px 0', background: '#0d0b09' }}>
-                <div className="container">
-                    <div className="text-center mb-5">
-                        <h2 style={{ fontSize: '36px', fontWeight: '700', color: '#fff' }}>Why Choose {companyName}?</h2>
-                        <p style={{ color: '#aaa', maxWidth: '600px', margin: '15px auto 0' }}>
-                            We're committed to bringing you the finest fragrances with unmatched quality and service.
-                        </p>
-                    </div>
-
-                    <div className="row">
+                    <div className="row text-center g-4">
                         {[
-                            { icon: 'fa-diamond', title: 'Premium Selection', desc: 'Curated collection of authentic luxury fragrances from top brands worldwide.' },
-                            { icon: 'fa-lock', title: 'Secure Shopping', desc: 'Your transactions are protected with advanced encryption technology.' },
-                            { icon: 'fa-certificate', title: 'Quality Assured', desc: 'Every product is verified for authenticity before dispatch.' },
-                            { icon: 'fa-headphones', title: '24/7 Support', desc: 'Our expert team is always ready to assist you with any queries.' }
+                            { val: '500+', label: 'Products' },
+                            { val: '10K+', label: 'Happy Customers' },
+                            { val: '50+', label: 'Brands' },
+                            { val: '4.8★', label: 'Rating' },
                         ].map((item, idx) => (
-                            <div key={idx} className="col-md-6 col-lg-3 mb-4">
-                                <div 
-                                    style={{
-                                        background: '#1a1511',
-                                        padding: '30px 25px',
-                                        borderRadius: '16px',
-                                        textAlign: 'center',
-                                        height: '100%',
-                                        boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
-                                        transition: 'transform 0.3s, box-shadow 0.3s'
-                                    }}
-                                    className="hover:scale-105!"
-                                >
-                                    <div 
-                                        style={{
-                                            width: '70px',
-                                            height: '70px',
-                                            background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.1), rgba(184, 134, 11, 0.1))',
-                                            borderRadius: '50%',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            margin: '0 auto 20px'
-                                        }}
-                                    >
-                                        <i className={`fa ${item.icon}`} style={{ fontSize: '28px', color: '#C9A227' }}></i>
+                            <div key={idx} className="col-6 col-md-3">
+                                <div className="text-4xl font-serif font-bold text-[#C9A227] mb-2">{item.val}</div>
+                                <div className="text-xs text-gray-500 uppercase tracking-widest">{item.label}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* --- WHY CHOOSE US (Keep existing) --- */}
+            <div className="py-24 bg-[#0d0b09]">
+                <div className="container">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-serif font-bold text-white mb-3">Why Choose {companyName}?</h2>
+                        <p className="text-gray-500 max-w-lg mx-auto text-sm">Committed to finest fragrances and unmatched quality.</p>
+                    </div>
+
+                    <div className="row g-4">
+                        {[
+                            { icon: 'fa-diamond', title: 'Premium Selection', desc: 'Curated collection of authentic luxury fragrances.' },
+                            { icon: 'fa-lock', title: 'Secure Shopping', desc: 'Transactions protected with advanced encryption.' },
+                            { icon: 'fa-certificate', title: 'Quality Assured', desc: 'Every product verified for authenticity.' },
+                            { icon: 'fa-headphones', title: '24/7 Support', desc: 'Expert team ready to assist you anytime.' }
+                        ].map((item, idx) => (
+                            <div key={idx} className="col-md-6 col-lg-3">
+                                <div className="bg-[#151210] p-8 rounded-xl border border-white/5 hover:border-[#C9A227]/30 transition-all h-100 text-center group">
+                                    <div className="w-14 h-14 rounded-full bg-[#C9A227]/10 flex items-center justify-center text-[#C9A227] text-xl mb-6 mx-auto group-hover:scale-110 transition-transform">
+                                        <i className={`fa ${item.icon}`}></i>
                                     </div>
-                                    <h4 style={{ fontSize: '18px', fontWeight: '600', color: '#fff',marginBottom: '10px' }}>{item.title}</h4>
-                                    <p style={{ color: '#aaa', fontSize: '14px', margin: 0, lineHeight: '1.6' }}>{item.desc}</p>
+                                    <h4 className="text-lg font-bold text-white mb-3">{item.title}</h4>
+                                    <p className="text-sm text-gray-400 m-0">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
