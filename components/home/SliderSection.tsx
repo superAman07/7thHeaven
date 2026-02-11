@@ -42,14 +42,12 @@ const SliderSection = () => {
                         position: 'relative'
                     }}>
                   
-                  {/* Premium Label - Top */}
                   <div className="d-none d-md-block mb-3 animate-fade-in-up">
                       <span className="d-inline-block px-3 py-1 border-start border-end border-white text-white text-uppercase tracking-[4px]" style={{ fontSize: '10px', letterSpacing: '4px' }}>
                           Signature Collection
                       </span>
                   </div>
 
-                  {/* Main Heading with Luxury Typography */}
                   <h1 className="text-center mb-3" 
                       style={{ 
                           fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
@@ -72,7 +70,6 @@ const SliderSection = () => {
                         marginTop: '20px'
                     }}
                   > 
-                    {/* Primary CTA: Shop Collection */}
                     <a 
                       href="/collections" 
                       style={{ 
@@ -99,7 +96,6 @@ const SliderSection = () => {
                       Shop Collection
                     </a>
                     
-                    {/* Secondary CTA: 7th Heaven */}
                     <a 
                       href="/7th-heaven" 
                       style={{ 
