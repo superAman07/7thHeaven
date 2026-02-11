@@ -478,16 +478,46 @@ export default function NavBar() {
                 
                 {/* Nav Links */}
                 <nav className="p-4!">
-                    {mobileLinks.map((l) => (
-                        <a 
-                            key={l.label}
-                            href={l.href}
-                            className={`block! py-3! text-sm! font-medium! border-b! border-gray-100! ${l.label === '7th Heaven Club' ? 'text-[#D4AF37]!' : 'text-gray-700!'}`}
-                            onClick={toggleMobile}
-                        >
-                            {l.label}
-                        </a>
-                    ))}
+                                        {mobileLinks.map((l) => {
+                        if (l.label === '7th Heaven') {
+                            return (
+                                <a 
+                                    key={l.label}
+                                    href={l.href}
+                                    onClick={toggleMobile}
+                                    className="
+                                        relative! flex! items-center! justify-center! gap-2! 
+                                        w-full! mx-auto! mt-4! mb-4! py-2.5! rounded-lg! 
+                                        bg-linear-to-r! from-[#D4AF37]! to-[#B77A06]! text-white! 
+                                        shadow-md! overflow-hidden! group!
+                                    "
+                                >
+                                    {/* Mobile Shimmer */}
+                                    <div className="absolute! inset-0! w-full! h-full! bg-linear-to-r! from-transparent! via-white/20! to-transparent! -translate-x-full! group-hover:translate-x-full! transition-transform! duration-1000! ease-in-out!" />
+
+                                    <div className="flex! flex-col! items-center! leading-tight!">
+                                        <span className="text-[9px]! font-bold! tracking-[3px]! uppercase! text-white/90!">Exclusive</span>
+                                        <div className="flex! items-center! gap-2!">
+                                            <span className="text-[15px]! font-extrabold! tracking-[1px]! uppercase!">7th Heaven</span>
+                                            <i className="fa fa-star text-[11px]!"></i>
+                                        </div>
+                                    </div>
+                                </a>
+                            );
+                        }
+
+                        // Standard styling for other links
+                        return (
+                            <a 
+                                key={l.label}
+                                href={l.href}
+                                className="block! py-3! text-sm! font-medium! border-b! border-gray-100! text-gray-700! hover:text-[#D4AF37]! transition-colors!"
+                                onClick={toggleMobile}
+                            >
+                                {l.label}
+                            </a>
+                        );
+                    })}
                 </nav>
                 
                 {/* Account Links */}
