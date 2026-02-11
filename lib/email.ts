@@ -1,51 +1,50 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: false, // TLS
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-    },
-});
+// Initialize Resend with API Key from environment variables
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface SendEmailOptions {
-    to: string;
-    subject: string;
-    html: string;
-    replyTo?: string;
+  to: string;
+  subject: string;
+  html: string;
+  replyTo?: string;
 }
 
 export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions): Promise<boolean> {
-    try {
-        const info = await transporter.sendMail({
-            from: process.env.SMTP_FROM || 'noreply@celsius.com',
-            to,
-            subject,
-            html,
-            replyTo,
-        });
-        console.log(`📧 Email sent to ${to}: ${subject} (Message ID: ${info.messageId})`);
-        return true;
-    } catch (error) {
-        console.error('❌ Email send failed:', error);
-        return false;
+  try {
+    const data = await resend.emails.send({
+      from: 'Celsius <onboarding@resend.dev>', // Default sender for testing
+      to: [to],
+      subject: subject,
+      html: html,
+      replyTo: replyTo,
+    });
+
+    if (data.error) {
+      console.error('❌ Resend Error:', data.error);
+      return false;
     }
+
+    console.log(`📧 Email sent to ${to}: ${subject} (ID: ${data.data?.id})`);
+    return true;
+  } catch (error) {
+    console.error('❌ Email send failed:', error);
+    return false;
+  }
 }
 
 // Convenience function for order confirmation emails
 export async function sendOrderConfirmation(email: string, orderDetails: {
-    orderId: string;
-    customerName: string;
-    items: Array<{ name: string; quantity: number; price: number }>;
-    total: number;
+  orderId: string;
+  customerName: string;
+  items: Array<{ name: string; quantity: number; price: number }>;
+  total: number;
 }) {
-    const itemsHtml = orderDetails.items.map(item =>
-        `<tr><td style="padding: 8px; border-bottom: 1px solid #eee;">${item.name}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${item.quantity}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">₹${item.price.toLocaleString()}</td></tr>`
-    ).join('');
+  const itemsHtml = orderDetails.items.map(item =>
+    `<tr><td style="padding: 8px; border-bottom: 1px solid #eee;">${item.name}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${item.quantity}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">₹${item.price.toLocaleString()}</td></tr>`
+  ).join('');
 
-    const html = `
+  const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9; padding: 20px;">
       <div style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
         <h1 style="color: #ddb040; margin: 0; font-size: 28px;">Celsius</h1>
@@ -53,7 +52,7 @@ export async function sendOrderConfirmation(email: string, orderDetails: {
       </div>
       <div style="background: #fff; padding: 30px; border-radius: 0 0 10px 10px;">
         <h2 style="color: #333; margin-top: 0;">Thank you for your order, ${orderDetails.customerName}!</h2>
-        <p style="color: #666;">Your order <strong>#${orderDetails.orderId.slice(-8).toUpperCase()}</strong> has been confirmed and is being processed.</p>
+        <p style="color: #666;">Your order <strong>#${orderDetails.orderId}</strong> has been confirmed and is being processed.</p>
         
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
           <thead>
@@ -83,33 +82,33 @@ export async function sendOrderConfirmation(email: string, orderDetails: {
     </div>
   `;
 
-    return sendEmail({ to: email, subject: `Order Confirmed! #${orderDetails.orderId.slice(-8).toUpperCase()}`, html });
+  return sendEmail({ to: email, subject: `Order Confirmed! #${orderDetails.orderId.slice(-8).toUpperCase()}`, html });
 }
 
 // Order status update email
 export async function sendOrderStatusUpdate(email: string, details: {
-    orderId: string;
-    customerName: string;
-    status: string;
-    message?: string;
+  orderId: string;
+  customerName: string;
+  status: string;
+  message?: string;
 }) {
-    const statusColors: Record<string, string> = {
-        PROCESSING: '#3b82f6',
-        SHIPPED: '#8b5cf6',
-        OUT_FOR_DELIVERY: '#f59e0b',
-        DELIVERED: '#22c55e',
-        CANCELLED: '#ef4444',
-    };
+  const statusColors: Record<string, string> = {
+    PROCESSING: '#3b82f6',
+    SHIPPED: '#8b5cf6',
+    OUT_FOR_DELIVERY: '#f59e0b',
+    DELIVERED: '#22c55e',
+    CANCELLED: '#ef4444',
+  };
 
-    const statusEmoji: Record<string, string> = {
-        PROCESSING: '⏳',
-        SHIPPED: '📦',
-        OUT_FOR_DELIVERY: '🚚',
-        DELIVERED: '✅',
-        CANCELLED: '❌',
-    };
+  const statusEmoji: Record<string, string> = {
+    PROCESSING: '⏳',
+    SHIPPED: '📦',
+    OUT_FOR_DELIVERY: '🚚',
+    DELIVERED: '✅',
+    CANCELLED: '❌',
+  };
 
-    const html = `
+  const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9; padding: 20px;">
       <div style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
         <h1 style="color: #ddb040; margin: 0; font-size: 28px;">Celsius</h1>
@@ -134,12 +133,12 @@ export async function sendOrderStatusUpdate(email: string, details: {
     </div>
   `;
 
-    return sendEmail({ to: email, subject: `Order Update: ${details.status.replace(/_/g, ' ')} - #${details.orderId.slice(-8).toUpperCase()}`, html });
+  return sendEmail({ to: email, subject: `Order Update: ${details.status.replace(/_/g, ' ')} - #${details.orderId.slice(-8).toUpperCase()}`, html });
 }
 
 // OTP email
 export async function sendOTPEmail(email: string, otp: string, name: string = 'Customer') {
-    const html = `
+  const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9; padding: 20px;">
       <div style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
         <h1 style="color: #ddb040; margin: 0; font-size: 28px;">Celsius</h1>
@@ -159,13 +158,12 @@ export async function sendOTPEmail(email: string, otp: string, name: string = 'C
     </div>
   `;
 
-    return sendEmail({ to: email, subject: `Your Celsius Login OTP: ${otp}`, html });
+  return sendEmail({ to: email, subject: `Your Celsius Login OTP: ${otp}`, html });
 }
 
 // Welcome email for new users
-// Welcome email for new users
 export async function sendWelcomeEmail(email: string, name: string, referralCode?: string) {
-    const html = `
+  const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9; padding: 20px;">
       <div style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
         <h1 style="color: #ddb040; margin: 0; font-size: 28px;">Welcome to Celsius!</h1>
@@ -200,18 +198,18 @@ export async function sendWelcomeEmail(email: string, name: string, referralCode
     </div>
   `;
 
-    return sendEmail({ to: email, subject: `Welcome to Celsius, ${name}! 🎉`, html });
+  return sendEmail({ to: email, subject: `Welcome to Celsius, ${name}! 🎉`, html });
 }
 
 
 // Ticket Confirmation Email
 export async function sendTicketConfirmationEmail(
-    to: string,
-    ticketId: string,
-    subject: string,
-    customerName: string
+  to: string,
+  ticketId: string,
+  subject: string,
+  customerName: string
 ) {
-    const html = `
+  const html = `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 16px; overflow: hidden;">
             <div style="background: linear-gradient(135deg, #E6B422 0%, #D4A420 100%); padding: 30px; text-align: center;">
                 <h1 style="color: #1a1a2e; margin: 0; font-size: 28px;">Ticket Received!</h1>
@@ -232,22 +230,22 @@ export async function sendTicketConfirmationEmail(
         </div>
     `;
 
-    await sendEmail({
-        to,
-        subject: `Ticket Received: ${subject} - Celsius`,
-        html
-    });
+  await sendEmail({
+    to,
+    subject: `Ticket Received: ${subject} - Celsius`,
+    html
+  });
 }
 
 // Ticket Response Email
 export async function sendTicketResponseEmail(
-    to: string,
-    ticketId: string,
-    ticketSubject: string,
-    responseMessage: string,
-    customerName: string
+  to: string,
+  ticketId: string,
+  ticketSubject: string,
+  responseMessage: string,
+  customerName: string
 ) {
-    const html = `
+  const html = `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 16px; overflow: hidden;">
             <div style="background: linear-gradient(135deg, #E6B422 0%, #D4A420 100%); padding: 30px; text-align: center;">
                 <h1 style="color: #1a1a2e; margin: 0; font-size: 28px;">New Response to Your Ticket</h1>
@@ -273,23 +271,23 @@ export async function sendTicketResponseEmail(
         </div>
     `;
 
-    await sendEmail({
-        to,
-        subject: `Response to Ticket #${ticketId.slice(-8).toUpperCase()} - Celsius`,
-        html
-    });
+  await sendEmail({
+    to,
+    subject: `Response to Ticket #${ticketId.slice(-8).toUpperCase()} - Celsius`,
+    html
+  });
 }
 
 export async function sendAccountStatusUpdate(email: string, name: string, isBlocked: boolean) {
-    const statusText = isBlocked ? 'Suspended' : 'Reactivated';
-    const color = isBlocked ? '#ef4444' : '#22c55e';
-    const emoji = isBlocked ? '⛔' : '✅';
-    
-    const message = isBlocked 
-        ? 'Your account has been suspended due to policy violations or security concerns. You will not be able to login or place orders.'
-        : 'Good news! Your account has been reactivated. You can now login and access all features.';
+  const statusText = isBlocked ? 'Suspended' : 'Reactivated';
+  const color = isBlocked ? '#ef4444' : '#22c55e';
+  const emoji = isBlocked ? '⛔' : '✅';
 
-    const html = `
+  const message = isBlocked
+    ? 'Your account has been suspended due to policy violations or security concerns. You will not be able to login or place orders.'
+    : 'Good news! Your account has been reactivated. You can now login and access all features.';
+
+  const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9; padding: 20px;">
       <div style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
         <h1 style="color: #ddb040; margin: 0; font-size: 28px;">Celsius</h1>
@@ -313,5 +311,5 @@ export async function sendAccountStatusUpdate(email: string, name: string, isBlo
     </div>
   `;
 
-    return sendEmail({ to: email, subject: `Account Status Update - Celsius`, html });
+  return sendEmail({ to: email, subject: `Account Status Update - Celsius`, html });
 }

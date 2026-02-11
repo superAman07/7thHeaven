@@ -38,6 +38,7 @@
     "react-dom": "19.2.0",
     "react-hot-toast": "^2.6.0",
     "react-slick": "^0.31.0",
+    "resend": "^6.9.2",
     "slick-carousel": "^1.8.1",
     "swagger-ui-react": "^5.31.0",
     "uniqid": "^5.4.0",
