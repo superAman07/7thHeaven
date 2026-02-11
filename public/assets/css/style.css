@@ -7440,7 +7440,6 @@ h2.entry-title:before {
   line-height: 24px;
 }
 .footer-widget > .ft-menu > li > a {
-  list-style-type: square;
   text-transform: capitalize;
   text-decoration: none;
   color: #d8d8d8;

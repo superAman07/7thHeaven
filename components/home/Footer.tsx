@@ -108,10 +108,10 @@ export default function FooterPage({
                   <span className="text">Quick Links</span>
                   <span className="d-md-none text-[#E6B422]">{openSection === 'quick' ? '−' : '+'}</span>
                 </h4>
-                <ul className={`ft-menu ${openSection === 'quick' ? '' : 'd-none d-md-block'}`}>
+                <ul className={`ft-menu list-none pl-0 ${openSection === 'quick' ? '' : 'd-none d-md-block'}`}>
                   {quickLinks.map((l, i) => (
                     <li key={i}>
-                      <Link href={l.href}>{l.label}</Link>
+                      <Link href={l.href} className="text-sm">{l.label}</Link>
                     </li>
                   ))}
                 </ul>
@@ -125,10 +125,10 @@ export default function FooterPage({
                   <span className="text">Collections</span>
                   <span className="d-md-none text-[#E6B422]">{openSection === 'collections' ? '−' : '+'}</span>
                 </h4>
-                <ul className={`ft-menu ${openSection === 'collections' ? '' : 'd-none d-md-block'}`}>
+                <ul className={`ft-menu list-none pl-0 ${openSection === 'collections' ? '' : 'd-none d-md-block'}`}>
                   {collectionLinks.map((l, i) => (
                     <li key={i}>
-                      <Link href={l.href}>{l.label}</Link>
+                      <Link href={l.href} className="text-sm">{l.label}</Link>
                     </li>
                   ))}
                 </ul>
