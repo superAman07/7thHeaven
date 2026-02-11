@@ -6,8 +6,8 @@ import { z } from 'zod';
  * @swagger
  * /api/v1/orders/track:
  *   post:
- *     summary: Track Order (Guest)
- *     description: Track an order using Order ID and Phone Number (without login).
+ *     summary: Track Order
+ *     description: Track an order using Order ID (Full or Last 8 chars) and either Phone or Email.
  *     tags:
  *       - Orders
  *     requestBody:
@@ -18,11 +18,12 @@ import { z } from 'zod';
  *             type: object
  *             required:
  *               - orderId
- *               - phone
  *             properties:
  *               orderId:
  *                 type: string
  *               phone:
+ *                 type: string
+ *               email:
  *                 type: string
  *     responses:
  *       200:
@@ -33,7 +34,11 @@ import { z } from 'zod';
 
 const trackSchema = z.object({
     orderId: z.string().min(1, "Order ID is required"),
-    phone: z.string().min(10, "Valid phone number is required"),
+    phone: z.string().optional(),
+    email: z.string().email("Invalid email format").optional(),
+}).refine(data => data.phone || data.email, {
+    message: "Either Phone Number or Email is required for verification",
+    path: ["phone"], // Error path
 });
 
 export async function POST(req: NextRequest) {
@@ -42,39 +47,63 @@ export async function POST(req: NextRequest) {
         const validation = trackSchema.safeParse(body);
 
         if (!validation.success) {
-            return NextResponse.json({ error: validation.error.issues[0].message }, { status: 400 });
+            // Return specific error message
+            const msg = validation.error.issues[0].message;
+            return NextResponse.json({ error: msg }, { status: 400 });
         }
 
-        const { orderId, phone } = validation.data;
+        const { orderId, phone, email } = validation.data;
 
-        // Find order that matches BOTH ID and Phone (via User)
-        // We search for the order, and verify the associated user has the matching phone
+        // Build search conditions
+        const where: any = {
+            // Support partial search (last 8 chars) OR full ID
+            // "endsWith" works for both cases perfectly
+            id: { endsWith: orderId.trim() },
+        };
+
+        // Add user verification condition (Phone OR Email)
+        if (phone) {
+            where.user = { phone: phone.trim() };
+        } else if (email) {
+            where.user = { email: email.trim() };
+        }
+
+        // Find match
         const order = await prisma.order.findFirst({
-            where: {
-                id: orderId,
-                user: {
-                    phone: phone
-                }
-            },
+            where,
             select: {
                 id: true,
                 status: true,
                 paymentStatus: true,
                 createdAt: true,
                 subtotal: true,
-                items: true, // This is the JSON field
+                items: true,
                 shippingAddress: true,
+                // Include user name for display if needed
+                user: {
+                    select: {
+                        fullName: true,
+                        phone: true,
+                        email: true
+                    }
+                }
             }
         });
 
         if (!order) {
-            return NextResponse.json({ 
-                success: false, 
-                error: "Order not found. Please check your Order ID and Phone Number." 
+            return NextResponse.json({
+                success: false,
+                error: "Order not found. Please check your verification details."
             }, { status: 404 });
         }
 
-        return NextResponse.json({ success: true, order });
+        // Inject computed values if necessary (e.g. orderId for frontend display)
+        const responseOrder = {
+            ...order,
+            orderId: order.id, // Ensure frontend gets 'orderId' as key if it expects it
+        };
+
+        return NextResponse.json({ success: true, order: responseOrder });
 
     } catch (error) {
         console.error("Track Order Error:", error);
