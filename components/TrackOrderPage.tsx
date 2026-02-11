@@ -61,20 +61,27 @@ export default function TrackOrderPage() {
         <div id="main-wrapper">
             {/* Banner */}
             <div 
-                className="page-banner-section section min-h-[30vh]! lg:min-h-[45vh]! flex! items-end! pb-[30px]! lg:pb-[40px]!" 
+                className="page-banner-section section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]!" 
                 style={{ 
                     background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)',
                 }}
             >
-                <div className="container">
+                <div className="container-fluid px-4 px-md-5">
                     <div className="row">
-                        <div className="col">
-                            <div className="page-banner text-center">
-                                <h1>Track Your Order</h1>
-                                <ul className="page-breadcrumb">
-                                    <li><Link href="/">Home</Link></li>
-                                    <li>Track Order</li>
-                                </ul>
+                        <div className="col-12 p-0">
+                            <div className="page-banner w-100 d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-end">
+                                <div className="order-2 order-md-1 mt-2 mt-md-0">
+                                    <ul className="page-breadcrumb justify-content-center justify-content-md-start mb-0!" style={{ fontSize: '14px' }}>
+                                        <li><Link href="/" className="hover:text-[#D4AF37] transition-colors">Home</Link></li>
+                                        <li className="text-white/80">Track Order</li>
+                                    </ul>
+                                </div>
+                                <div className="order-1 order-md-2 text-center text-md-end">
+                                    <h1 className="text-white! mb-0!" style={{ fontSize: 'clamp(22px, 3vw, 36px)', lineHeight: 1.1, letterSpacing: '0.05em' }}>
+                                        Track Your Order
+                                    </h1>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -82,7 +89,7 @@ export default function TrackOrderPage() {
             </div>
 
             {/* Tracking Form Section */}
-            <div className="py-20 px-4">
+            <div className="py-20 px-4 pt-6!">
                 <div className="container mx-auto max-w-xl">
                     <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
                         <form onSubmit={handleTrack}>
@@ -128,7 +135,8 @@ export default function TrackOrderPage() {
                                     <div className="text-white/60 text-sm uppercase tracking-wider mb-1">Order Status</div>
                                     <div className="text-[#ddb040] text-2xl font-bold uppercase">{orderData.status}</div>
                                 </div>
-                                {['PAID', 'REFUNDED'].includes((orderData.paymentStatus || '').toString().trim().toUpperCase()) && (
+                                {(['PAID', 'REFUNDED'].includes((orderData.paymentStatus || '').toString().trim().toUpperCase()) || 
+                                    orderData.status === 'DELIVERED') && (
                                     <button 
                                         onClick={handleDownloadInvoice}
                                         className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full text-sm font-medium backdrop-blur-sm transition-all flex items-center gap-2"
