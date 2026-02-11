@@ -163,52 +163,81 @@ export default function SeventhHeavenPage() {
       <div className="container mx-auto px-4 relative z-10 -mt-16">
         {/* 1. STATUS CARD */}
           <div className="bg-white rounded-xl shadow-lg p-6 mb-12 border-t-4 border-[#ddb040] relative overflow-hidden">
-            {!data ? (
+                        {!data ? (
               <div className="flex items-center justify-center py-8">
-                  <div className="w-10 h-10 border-3 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
+                  <div className="w-10 h-10 border-4 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center relative z-10">
-                <div>
-                  {/* Personalized Greeting */}
-                  <h2 className="text-2xl font-serif text-gray-800 mb-2">
-                    Welcome, <span className="text-[#ddb040] ">{data?.fullName?.split(' ')[0] || 'Member'}</span>
-                  </h2>
-                  <p className="text-gray-600 mb-4 flex items-center gap-2">
-                    Status: <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">ACTIVE</span>
-                  </p>
-                  {/* Referral Code Box */}
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <div className="bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200 font-mono text-base font-bold text-gray-800 tracking-wider">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 items-center relative z-10">
+                
+                {/* Left Column: User Info & Actions */}
+                <div className="flex flex-col gap-1">
+                  {/* Greeting & Status */}
+                  <div className="flex items-center justify-between lg:justify-start lg:gap-4 mb-1">
+                    <h2 className="text-2xl font-serif text-gray-900">
+                      Welcome, <span className="text-[#ddb040] font-bold">{data?.fullName?.split(' ')[0] || 'Member'}</span>
+                    </h2>
+                    <span className="bg-green-50 text-green-700 text-[9px] md:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border border-green-200">
+                        Active
+                    </span>
+                  </div>
+                  
+                  <p className="text-gray-500 text-xs mb-4">Your dashboard for empire expansion.</p>
+
+                  {/* Referral Section - Compact & Professional */}
+                  <div className="flex items-center gap-2 w-full md:max-w-md bg-gray-50 p-1.5 rounded-xl border border-gray-200 shadow-sm">
+                    
+                    {/* Code Display */}
+                    <div className="flex-1 px-3 py-2 bg-white rounded-lg font-mono text-sm md:text-base font-bold text-gray-800 tracking-wider text-center border border-gray-100 shadow-inner">
                       {data?.referralCode || 'NO CODE'}
                     </div>
-                    <button
-                      onClick={copyToClipboard}
-                      className="bg-[#1a1a1a] hover:bg-[#333] text-white h-[42px] px-4 rounded-lg shadow-sm flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors"
-                    >
-                      <i className={`fa ${copySuccess ? 'fa-check text-[#ddb040]' : 'fa-copy'}`} />
-                      {copySuccess ? 'Copied' : 'Copy'}
-                    </button>
-                    <ShareButton referralCode={data?.referralCode || ''} variant="icon" />
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={copyToClipboard}
+                          className="group bg-[#1a1a1a] hover:bg-black text-white h-[40px] px-3 md:px-5 rounded-lg shadow-sm flex items-center justify-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all hover:shadow-md"
+                          title="Copy Code"
+                        >
+                          <i className={`fa ${copySuccess ? 'fa-check text-[#ddb040]' : 'fa-copy group-hover:scale-110 transition-transform'}`} />
+                          <span className="hidden md:inline">{copySuccess ? 'Copied' : 'Copy'}</span>
+                        </button>
+                        
+                        <div className="h-[40px] w-[40px] flex items-center justify-center bg-[#ddb040] hover:bg-[#b6902e] text-black rounded-lg shadow-sm transition-all cursor-pointer hover:shadow-md hover:scale-105">
+                           <ShareButton referralCode={data?.referralCode || ''} variant="icon" />
+                        </div>
+                    </div>
                   </div>
+
                 </div>
-                {/* Stats */}
-                <div className="flex justify-center lg:justify-end gap-8 text-center divide-x divide-gray-100">
-                  <div
-                    className="px-4 cursor-pointer hover:scale-105 transition-transform duration-300 group"
-                    onClick={() => setIsGalaxyOpen(true)}
-                    title="View Galaxy Map"
-                  >
-                    <div className="text-2xl font-bold text-[#ddb040] mb-1 group-hover:text-[#b6902e] transition-colors">
-                      {data?.totalTeamSize || 0}
+
+                {/* Right Column: Key Metrics (Animated) */}
+                <div className="mt-0 lg:mt-0 border-t lg:border-t-0 border-gray-100 pt-0 lg:pt-0">
+                  <div className="flex flex-row justify-around lg:justify-end gap-2 lg:gap-12">
+                    
+                    {/* Metric 1: Heaven Size */}
+                    <div className="group cursor-pointer flex flex-col items-center justify-center p-2 hover:bg-gray-50 rounded-lg transition-colors" onClick={() => setIsGalaxyOpen(true)}>
+                      <div className="flex items-center justify-center w-8 h-8 md:w-14 md:h-14 bg-gray-50 border border-gray-200 rounded-full mb-1 group-hover:bg-[#ddb040]/10 transition-colors shadow-sm">
+                          <i className="fa fa-users text-xs md:text-xl text-gray-400 group-hover:text-[#ddb040] transition-colors" />
+                      </div>
+                      <div className="text-sm md:text-2xl font-bold text-gray-900 group-hover:text-[#ddb040] leading-none mb-0.5 transition-colors">{data?.totalTeamSize || 0}</div>
+                      <div className="text-[7px] md:text-[9px] uppercase tracking-widest text-gray-400 font-bold group-hover:text-[#ddb040]">Heaven Size</div>
                     </div>
-                    <div className="text-[8px]! md:text-[10px]! text-gray-400 uppercase tracking-widest font-bold whitespace-nowrap">
-                      Heaven Size <i className="fa fa-external-link ml-1 text-[8px] md:text-[9px]" />
+                    {/* Metric 2: Current Rank */}
+                    <div className="relative flex flex-col items-center justify-center p-2">
+                       {/* Circle */}
+                      <div className="relative flex items-center justify-center w-8 h-8 md:w-14 md:h-14 mb-1">
+                          <div className="absolute inset-0 bg-[#ddb040] rounded-full opacity-20 animate-ping" />
+                          <div className="relative z-10 w-full h-full bg-linear-to-br from-[#ddb040] to-[#b6902e] rounded-full flex items-center justify-center shadow-sm text-white font-serif font-bold text-sm md:text-xl border md:border-2 border-white">
+                              {(data?.levels?.filter((l) => l.isCompleted).length || 0) + 1}
+                          </div>
+                      </div>
+                      
+                      <div className="text-sm md:text-2xl font-bold text-gray-900 leading-none mb-0.5">
+                        Rank {(data?.levels?.filter((l) => l.isCompleted).length || 0) + 1}
+                      </div>
+                      <div className="text-[7px] md:text-[9px] uppercase tracking-widest text-[#ddb040] font-bold">Current Rank</div>
                     </div>
-                  </div>
-                  <div className="px-4">
-                    <div className="text-2xl font-bold text-gray-800 mb-1">{data?.levels?.filter((l) => l.isCompleted).length || 0} / 7</div>
-                    <div className="text-[8px] md:text-[10px] text-gray-400 uppercase tracking-widest font-bold">Heaven Unlocked</div>
                   </div>
                 </div>
               </div>
