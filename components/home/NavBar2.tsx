@@ -150,14 +150,15 @@ export default function NavBar() {
 
     const links = [
         { href: '/', label: 'Home' },
+        { href: '/collections/perfumes', label: 'Fragrance' },
         { href: '/collections', label: 'Collections' },
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact Us' },
-        { href: '/7th-heaven', label: '7th Heaven' },
     ];
 
     const mobileLinks = [
         { href: '/', label: 'Home' },
+        { href: '/collections/perfumes', label: 'Fragrance' },
         { href: '/collections', label: 'Collections' },
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact Us' },
@@ -239,7 +240,41 @@ export default function NavBar() {
                             </a>
                         </div>
                         <div className="hidden! xl:flex! flex-1! items-center! justify-end! gap-4!">
-                            
+                            <a 
+                                href="/7th-heaven"
+                                className={`
+                                    relative! group! flex! items-center! justify-center! gap-2! 
+                                    px-6! py-2! rounded-full! font-bold! tracking-widest! uppercase! 
+                                    transition-all! duration-500! ease-in-out! transform! hover:scale-105!
+                                    ${isSticky 
+                                        ? 'bg-white! text-[#B77A06]! shadow-xl! border! border-[#D4AF37]/20!' 
+                                        : 'bg-linear-to-r! from-[#FFD56B]! via-[#D4AF37]! to-[#B77A06]! text-white! shadow-[0_10px_30px_-10px_rgba(183,122,6,0.5)]! border-t! border-white/30!'}
+                                `}
+                            >
+                                <i className={`fa fa-star text-[14px]! mb-[2px] transition-transform! duration-500! group-hover:rotate-12! ${isSticky ? 'text-[#B77A06]!' : 'text-white/90!'}`}></i>
+
+                                <span className="relative! z-10! text-[13px]! md:text-[14px]! font-extrabold! drop-shadow-sm!">
+                                    7TH HEAVEN
+                                </span>
+
+                                <span className={`
+                                    absolute! -top-2! -right-1! z-20! 
+                                    rounded-sm! px-1.5! py-px! 
+                                    text-[8px]! font-black! tracking-tighter! shadow-md!
+                                    transition-all! duration-300! transform! -rotate-12! group-hover:-rotate-6! group-hover:scale-110!
+                                    ${isSticky ? 'bg-[#DC2626]! text-white!' : 'bg-[#DC2626]! text-white! border! border-white/20!'}
+                                `}>
+                                    EXCLUSIVE
+                                </span>
+
+                                {!isSticky && (
+                                    <div className="absolute! inset-0! overflow-hidden! rounded-full! pointer-events-none!">
+                                         <div 
+                                            className="absolute! inset-0! w-full! h-full! bg-linear-to-r! from-transparent! via-white/40! to-transparent! -translate-x-full! group-hover:translate-x-full! transition-transform! duration-1000! ease-in-out!"
+                                        />
+                                    </div>
+                                )}
+                            </a>
                             {/* Search */}
                             <div className="relative!" ref={searchRef}>
                                 <button 
