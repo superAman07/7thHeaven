@@ -122,10 +122,11 @@ export default function DashboardPage() {
           icon={<ShoppingBag className="w-7 h-7" />}
           gradient="from-[#E6B422] to-[#F4D03F]"
           delay="0s"
+          link="/celsius-7th-heaven/orders"
         />
         <StatCard 
           label="Total Revenue" 
-          value={`₹${stats.totalRevenue.toLocaleString()}`} 
+          value={`₹${Math.round(stats.totalRevenue).toLocaleString()}`} 
           icon={<DollarSign className="w-7 h-7" />}
           gradient="from-purple-500 to-purple-700"
           delay="0.1s"
@@ -136,6 +137,7 @@ export default function DashboardPage() {
           icon={<Package className="w-7 h-7" />}
           gradient="from-blue-500 to-blue-700"
           delay="0.2s"
+          link="/celsius-7th-heaven/products"
         />
         <StatCard 
           label="Elite Club Members" 
@@ -143,6 +145,7 @@ export default function DashboardPage() {
           icon={<Users className="w-7 h-7" />}
           gradient="from-green-500 to-emerald-600"
           delay="0.3s"
+          link="/celsius-7th-heaven/network"
         />
       </div>
 
@@ -309,37 +312,51 @@ export default function DashboardPage() {
   );
 }
 
-// Updated StatCard with Gradient & Glow
-const StatCard = ({ label, value, icon, gradient, delay }: any) => {
-  return (
+// Updated StatCard with Dynamic Links
+const StatCard = ({ label, value, icon, gradient, delay, link }: any) => {
+  const getValueSize = (val: string | number) => {
+      const strVal = String(val);
+      if (strVal.length > 9) return 'text-xl';
+      if (strVal.length > 6) return 'text-2xl';
+      return 'text-3xl';
+  };
+
+  const Content = () => (
     <div 
-      className="relative bg-white/80 backdrop-blur-xl p-6 rounded-3xl shadow-xl border border-white/20 flex items-center gap-5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden animate-fade-in"
-      style={{ animationDelay: delay }}
+        className={`relative bg-white/80 backdrop-blur-xl p-6 rounded-3xl shadow-xl border border-white/20 flex items-center gap-5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden animate-fade-in ${link ? 'cursor-pointer hover:bg-white/90' : ''}`}
+        style={{ animationDelay: delay }}
     >
-        {/* Animated Glow Effect */}
         <div className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
         
-        {/* Icon Container with Gradient */}
-        <div className={`relative p-4 rounded-2xl bg-linear-to-br ${gradient} group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg`}
-             style={{ boxShadow: '0 8px 20px rgba(0,0,0,0.15)' }}>
-            <div className="text-white">
-              {icon}
-            </div>
-            {/* Animated Ring */}
+        <div className={`relative p-4 rounded-2xl bg-linear-to-br ${gradient} group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg shrink-0`}
+                style={{ boxShadow: '0 8px 20px rgba(0,0,0,0.15)' }}>
+            <div className="text-white">{icon}</div>
             <div className="absolute inset-0 rounded-2xl border-2 border-white/30 group-hover:scale-110 transition-transform duration-500"></div>
         </div>
         
-        <div className="relative z-10">
-            <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-1">{label}</p>
-            <h3 className="text-xl! font-black! text-gray-900! tracking-tight! group-hover:scale-105! transition-transform! origin-left! font-sans!" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-              {value}
+        <div className="relative z-10 min-w-0">
+            <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-1 truncate">{label}</p>
+            <h3 className={`${getValueSize(value)} font-black font-serif! text-gray-900 tracking-tight group-hover:scale-105 transition-transform origin-left truncate`} 
+                style={{ textShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                {value}
             </h3>
         </div>
 
-        {/* Corner Accent */}
-        <div className={`absolute top-0 right-0 w-20 h-20 bg-linear-to-bl ${gradient} opacity-5 rounded-bl-full`}></div>
+        <div className={`absolute top-0 right-0 w-20 h-20 bg-linear-to-bl ${gradient} opacity-5 rounded-bl-full pointer-events-none`}></div>
+        
+        {link && (
+            <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <ArrowRight className="w-4 h-4 text-gray-400" />
+            </div>
+        )}
     </div>
   );
+
+  if (link) {
+      return <Link href={link} className="block w-full">{Content()}</Link>;
+  }
+  
+  return Content();
 };
 
 // Updated StatusPill with Modern Design
