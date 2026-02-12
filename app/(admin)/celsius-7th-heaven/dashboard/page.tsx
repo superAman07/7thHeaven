@@ -228,7 +228,7 @@ export default function DashboardPage() {
                   {/* Min Purchase Level */}
                   <div>
                     <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">
-                      Elite Club Entry Threshold
+                      Minimum Spending to Join Club
                     </label>
                     <div className="relative group/input">
                       <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[#E6B422] font-black text-2xl group-hover/input:scale-110 transition-transform">₹</span>
@@ -245,7 +245,7 @@ export default function DashboardPage() {
                   {/* 4. New Input: Max Product Price for Display */}
                   <div>
                     <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">
-                       Club Display Price Limit
+                       Max Price for Club Products
                     </label>
                     <div className="relative group/input">
                       <span className="absolute left-5 top-1/2 -translate-y-1/2 text-purple-500 font-black text-2xl group-hover/input:scale-110 transition-transform">
