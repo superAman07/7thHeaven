@@ -55,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({ setSideNavOpen, user, onLogout }) => {
         <div className="ml-auto relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 transition-all group"
+            className="flex! items-center! gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 transition-all group"
             aria-haspopup="true"
             aria-expanded={dropdownOpen}
           >
@@ -63,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({ setSideNavOpen, user, onLogout }) => {
               <UserCircle className="w-10 h-10 text-gray-400 group-hover:text-[#E6B422] transition-colors" />
               <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
             </div>
-            <div className="hidden sm:block text-left">
+            <div className="hidden sm:block! text-left">
               <p className="text-sm font-bold text-gray-900 group-hover:text-[#E6B422] transition-colors">{user?.fullName || 'Admin'}</p>
               <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Administrator</p>
             </div>
@@ -79,29 +79,10 @@ const Header: React.FC<HeaderProps> = ({ setSideNavOpen, user, onLogout }) => {
                 <p className="text-xs text-gray-500 truncate mt-0.5">{user?.email || 'admin@7thheaven.com'}</p>
               </div>
 
-              {/* Menu Items */}
-              <div className="p-2 space-y-1">
-                <button 
-                  onClick={() => setDropdownOpen(false)} 
-                  className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-[#E6B422]/5 hover:text-[#E6B422] transition-colors"
-                >
-                  <User className="w-4 h-4" />
-                  Profile
-                </button>
-
-                <button 
-                  onClick={() => setDropdownOpen(false)} 
-                  className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-[#E6B422]/5 hover:text-[#E6B422] transition-colors"
-                >
-                  <Settings className="w-4 h-4" />
-                  Settings
-                </button>
-              </div>
-
               <div className="p-2 border-t border-gray-100">
                 <button 
                   onClick={handleLogoutClick} 
-                  className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm font-bold text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                  className="w-full text-left flex! items-center! gap-3 px-3 py-2 text-sm font-bold text-red-600 rounded-lg hover:bg-red-50 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   Log Out
