@@ -120,6 +120,7 @@ export default function OrdersPage() {
   // UPDATED: Handle Refund Status Update
   const handleStatusUpdate = async (newStatus: string, type: 'status' | 'paymentStatus' = 'status') => {
     if (!currentOrder) return;
+    setIsUpdatingStatus(true);
     try {
       const payload = type === 'status' ? { status: newStatus } : { paymentStatus: newStatus };
       
