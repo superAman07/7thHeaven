@@ -6,16 +6,23 @@ export interface InvoiceData {
     id: string;
     createdAt: string | Date;
     subtotal: number;
-    discount?: number;          
-    netAmountPaid?: number;  
+    discount?: number;
+    netAmountPaid?: number;
     mlmOptInRequested?: boolean;
-    user?: { // Make user optional
+    companyDetails?: {
+        name: string;
+        address: string;
+        phone: string;
+        email: string;
+        logoUrl?: string;
+    };
+    user?: {
         fullName: string;
         email: string;
         phone: string;
     };
     shippingAddress: {
-        fullName?: string; // Add fullName to shippingAddress definition
+        fullName?: string;
         fullAddress: string;
         city: string;
         state: string;
@@ -24,17 +31,17 @@ export interface InvoiceData {
         phone?: string;
     };
     items: Array<{
-        name?: string; 
+        name?: string;
         product?: { name: string };
         quantity: number;
-        priceAtPurchase?: number; 
+        priceAtPurchase?: number;
         size?: string;
     }>;
 }
 
 export const generateInvoice = (order: InvoiceData) => {
     const doc = new jsPDF();
-    
+
     const brandColor: [number, number, number] = [221, 176, 64];
     const secondaryColor: [number, number, number] = [60, 60, 60];
     const lightGray: [number, number, number] = [240, 240, 240];
@@ -45,14 +52,16 @@ export const generateInvoice = (order: InvoiceData) => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(24);
     doc.setTextColor(...brandColor);
-    doc.text("Celsius", 14, 25);
-    
+    doc.text(order.companyDetails?.name || "Celsius", 14, 25);
+
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setTextColor(...secondaryColor);
-    doc.text("Premium Fragrances & Scents", 14, 31);
-    doc.text("contact@7thheaven.com", 14, 36);
-    doc.text("+91 98765 43210", 14, 41);
+    const companyAddr = order.companyDetails?.address || "Premium Fragrances & Scents";
+    doc.text(companyAddr, 14, 31);
+    doc.text(order.companyDetails?.email || "contact@7thheaven.com", 14, 36);
+    doc.text(order.companyDetails?.phone || "+91 98765 43210", 14, 41);
+
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(28);
@@ -80,10 +89,10 @@ export const generateInvoice = (order: InvoiceData) => {
     doc.setFont("helvetica", "normal");
     doc.setTextColor(0, 0, 0);
     doc.text(customerName, 14, 66);
-    
+
     const addressLines = doc.splitTextToSize(order.shippingAddress?.fullAddress || "", 80);
     doc.text(addressLines, 14, 71);
-    
+
     let currentY = 71 + (addressLines.length * 4);
     doc.text(`${order.shippingAddress?.city || ""}, ${order.shippingAddress?.state || ""} - ${order.shippingAddress?.pincode || ""}`, 14, currentY);
     currentY += 5;
@@ -104,10 +113,10 @@ export const generateInvoice = (order: InvoiceData) => {
         head: [['ITEM DESCRIPTION', 'SIZE', 'QTY', 'UNIT PRICE', 'AMOUNT']],
         body: tableBody,
         theme: 'grid',
-        headStyles: { 
-            fillColor: brandColor, 
-            textColor: 255, 
-            fontSize: 9, 
+        headStyles: {
+            fillColor: brandColor,
+            textColor: 255,
+            fontSize: 9,
             fontStyle: 'bold',
             halign: 'left',
             cellPadding: 3
@@ -140,18 +149,25 @@ export const generateInvoice = (order: InvoiceData) => {
     doc.text(`Subtotal:`, 140, finalY);
     doc.text(`Rs. ${order.subtotal.toLocaleString()}`, 196, finalY, { align: 'right' });
 
-    doc.text(`Shipping:`, 140, finalY + 5);
-    doc.text(`Rs. 0`, 196, finalY + 5, { align: 'right' });
+    let nextY = finalY;
+    if (order.discount && order.discount > 0) {
+        nextY += 5;
+        doc.setTextColor(34, 197, 94);
+        doc.text(`Discount:`, 140, nextY);
+        doc.text(`- Rs. ${order.discount.toLocaleString()}`, 196, nextY, { align: 'right' });
+        doc.setTextColor(...secondaryColor);
+    }
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...brandColor);
-    doc.text(`Grand Total:`, 140, finalY + 12);
-    doc.text(`Rs. ${order.subtotal.toLocaleString()}`, 196, finalY + 12, { align: 'right' });
+    const finalTotal = order.netAmountPaid || (order.subtotal - (order.discount || 0));
+    doc.text(`Grand Total:`, 140, nextY + 12);
+    doc.text(`Rs. ${finalTotal.toLocaleString()}`, 196, nextY + 12, { align: 'right' });
 
     doc.setFillColor(245, 245, 245);
     doc.roundedRect(14, finalY + 20, 182, 20, 2, 2, 'F');
-    
+
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(60, 60, 60);

@@ -98,9 +98,9 @@ export async function completeOrder(orderId: string, transactionId: string, amou
         // but here we confirm the status update.
         await prisma.user.update({
             where: { id: order.userId },
-            data: { 
-                is7thHeaven: true, 
-                referralCode: newReferralCode 
+            data: {
+                is7thHeaven: true,
+                referralCode: newReferralCode
             }
         });
 
@@ -117,13 +117,13 @@ export async function completeOrder(orderId: string, transactionId: string, amou
         const coupon = await prisma.coupon.findUnique({
             where: { code: order.couponCode }
         });
-        
+
         if (coupon) {
             await prisma.coupon.update({
                 where: { id: coupon.id },
                 data: { usedCount: { increment: 1 } }
             });
-            
+
             await prisma.couponUsage.create({
                 data: {
                     couponId: coupon.id,
@@ -161,7 +161,9 @@ export async function completeOrder(orderId: string, transactionId: string, amou
                 orderId: order.id,
                 customerName: shipping.fullName,
                 items: emailItems,
-                total: amountPaid
+                total: amountPaid,
+                subtotal: order.subtotal ? Number(order.subtotal) : undefined,
+                discount: order.discount ? Number(order.discount) : 0
             }).catch(e => console.error("Order Confirmation Email Failed", e));
         }
     }

@@ -11,6 +11,15 @@ export default function TrackOrderPage() {
     const [identifier, setIdentifier] = useState('');
     const [loading, setLoading] = useState(false);
     const [orderData, setOrderData] = useState<any>(null);
+    const [siteSettings, setSiteSettings] = useState<any>(null);
+
+    React.useEffect(() => {
+        axios.get('/api/v1/site-settings').then(res => {
+            if(res.data.success) {
+                setSiteSettings(res.data.data);
+            }
+        }).catch(err => console.error("Failed to fetch settings", err));
+    }, []);
 
     const handleTrack = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,9 +54,17 @@ export default function TrackOrderPage() {
                 status: orderData.status,
                 createdAt: orderData.createdAt,
                 subtotal: parseFloat(orderData.subtotal),
+                discount: parseFloat(orderData.discount) || 0,
+                netAmountPaid: parseFloat(orderData.netAmountPaid) || (parseFloat(orderData.subtotal) - (parseFloat(orderData.discount) || 0)),
                 paymentStatus: orderData.paymentStatus,
                 items: orderData.items,
-                shippingAddress: orderData.shippingAddress
+                shippingAddress: orderData.shippingAddress,
+                companyDetails: {
+                    name: siteSettings?.companyName || "Celsius",
+                    address: `${siteSettings?.address || ''}, ${siteSettings?.city || ''}`,
+                    phone: siteSettings?.phone || "",
+                    email: siteSettings?.email || "",
+                }
             };
             generateInvoice(invoiceData);
             toast.success("Invoice downloading...");
@@ -138,7 +155,7 @@ export default function TrackOrderPage() {
                                 </div>
                                 {(['PAID', 'REFUNDED'].includes((orderData.paymentStatus || '').toString().trim().toUpperCase()) || 
                                   orderData.status === 'DELIVERED') && (
-                                    <button 
+                                        <button 
                                         onClick={handleDownloadInvoice}
                                         className="px-4 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-full text-xs font-medium backdrop-blur-sm transition-all flex items-center gap-2"
                                     >
@@ -196,9 +213,23 @@ export default function TrackOrderPage() {
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="mt-4 pt-3 border-t border-gray-200 flex justify-between items-center">
-                                        <span className="text-base font-bold text-gray-900">Total Amount</span>
-                                        <span className="text-lg font-serif text-[#ddb040] font-bold">Rs. {parseFloat(orderData.subtotal).toLocaleString()}</span>
+                                    <div className="mt-4 pt-3 border-t border-gray-200">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-gray-500">Subtotal</span>
+                                            <span className="font-semibold">Rs. {parseFloat(orderData.subtotal).toLocaleString()}</span>
+                                        </div>
+                                        {orderData.discount && parseFloat(orderData.discount) > 0 && (
+                                            <div className="flex justify-between items-center mb-2 text-green-600">
+                                                <span>Discount</span>
+                                                <span>- Rs. {parseFloat(orderData.discount).toLocaleString()}</span>
+                                            </div>
+                                        )}
+                                        <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                                            <span className="text-base font-bold text-gray-900">Total Paid</span>
+                                            <span className="text-lg font-serif text-[#ddb040] font-bold">
+                                                Rs. {(parseFloat(orderData.netAmountPaid) || parseFloat(orderData.subtotal) - (parseFloat(orderData.discount) || 0)).toLocaleString()}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
