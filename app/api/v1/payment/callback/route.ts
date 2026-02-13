@@ -1,233 +1,80 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import crypto from 'crypto';
-import axios from 'axios';
-import { sendNotification } from '@/lib/notifications';
-import { sendOrderConfirmation, sendWelcomeEmail } from '@/lib/email';
+import { verifyPayUHash } from '@/lib/payu';
+import { completeOrder } from '@/services/orderService';
 
-function generateReferralCode() {
-    return '7H-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-}
-
-async function sendOrderConfirmationSMS(phone: string, orderId: string, amount: number) {
-    try {
-        // In the future, replace this console.log with an actual API call
-        // Example: await axios.post('https://api.textlocal.in/send/', { ... });
-        
-        const message = `Thank you for your order! Order ID: ${orderId}. Amount Paid: Rs. ${amount}. Track your status here: ${process.env.NEXT_PUBLIC_BASE_URL}/track-order`;
-
-        console.log(`\n================================================`);
-        console.log(`[SMS SERVICE MOCK] Sending Order Confirmation`);
-        console.log(`To Phone : ${phone}`);
-        console.log(`Message  : ${message}`);
-        console.log(`================================================\n`);
-    } catch (error) {
-        console.error("Failed to send Order SMS:", error);
-    }
-}
-
-async function sendReferralSMS(phone: string, code: string, name: string) {
-    try {
-        // Example: Fast2SMS or Twilio logic here
-        // const message = `Welcome to 7th Heaven Club, ${name}! Your referral code is ${code}. Share it to start earning rewards.`;
-        // await axios.post('YOUR_SMS_API_URL', { ... });
-        console.log(`[SMS MOCK] Sending to ${phone}: Welcome ${name}! Your code is ${code}`);
-    } catch (error) {
-        console.error("Failed to send SMS:", error);
-    }
-}
-
+/**
+ * @swagger
+ * /api/v1/payment/callback:
+ *   post:
+ *     summary: Payment Callback (PayU)
+ *     description: Handles the server-to-server callback from PayU after a transaction. Verifies the hash and completes the order.
+ *     tags:
+ *       - Payment
+ *     consumes:
+ *       - application/x-www-form-urlencoded
+ *     parameters:
+ *       - in: formData
+ *         name: status
+ *         type: string
+ *         description: Transaction status (success/failure)
+ *       - in: formData
+ *         name: txnid
+ *         type: string
+ *         description: Transaction ID
+ *       - in: formData
+ *         name: hash
+ *         type: string
+ *         description: Security hash for verification
+ *     responses:
+ *       303:
+ *         description: Redirects to the payment status page
+ *       400:
+ *         description: Invalid hash or missing data
+ *       404:
+ *         description: Order not found
+ */
 export async function POST(req: NextRequest) {
     try {
-        console.log("--- Payment Callback Received ---");
+        console.log("--- PayU Callback Received ---");
         
-        // 1. Read raw text (Standard way)
-        const rawBody = await req.text();
-        
-        console.log("Content-Length Header:", req.headers.get('content-length'));
-        console.log("Actual Body Length:", rawBody.length);
+        const formData = await req.formData();
+        const status = formData.get('status') as string;
+        const txnid = formData.get('txnid') as string;
+        const amount = formData.get('amount') as string;
+        const productinfo = formData.get('productinfo') as string;
+        const firstname = formData.get('firstname') as string;
+        const email = formData.get('email') as string;
+        const hash = formData.get('hash') as string;
 
-        if (!rawBody) {
-            console.error("Callback Error: Empty request body received.");
-            return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
+        if (!txnid || !hash) {
+            return NextResponse.json({ error: 'Invalid callback data' }, { status: 400 });
         }
 
-        let base64Response;
-
-        // 2. Try parsing as JSON first
-        try {
-            const body = JSON.parse(rawBody);
-            base64Response = body.response;
-            console.log("Parsed as JSON. Response field found:", !!base64Response);
-        } catch (e) {
-            console.log("JSON parse failed, trying URLSearchParams...");
-            const params = new URLSearchParams(rawBody);
-            base64Response = params.get('response');
-            console.log("Parsed as Form Data. Response field found:", !!base64Response);
-        }
-
-        if (!base64Response) {
-            console.error("Callback Error: Could not find 'response' in body.");
-            return NextResponse.json({ error: 'Invalid payload structure' }, { status: 400 });
-        }
-
-        // 3. Verify the checksum
-        const saltKey = process.env.PHONEPE_SALT_KEY;
-        const saltIndex = process.env.PHONEPE_SALT_INDEX;
-        const receivedChecksum = req.headers.get('x-verify');
-
-        if (!saltKey || !saltIndex) {
-             console.error("Server Error: PhonePe credentials missing in .env");
-             return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
-        }
-
-        const calculatedChecksum = crypto.createHash('sha256').update(base64Response + saltKey).digest('hex') + '###' + saltIndex;
-
-        if (receivedChecksum !== calculatedChecksum) {
-            console.error("Webhook checksum mismatch!");
-            return NextResponse.json({ error: 'Checksum mismatch' }, { status: 400 });
-        }
- 
-        const decodedResponse = JSON.parse(Buffer.from(base64Response, 'base64').toString('utf-8'));
-        const { code: paymentStatus } = decodedResponse;
-        const { merchantTransactionId, amount } = decodedResponse.data;
-
-        console.log(`Transaction: ${merchantTransactionId}, Status: ${paymentStatus}`);
-
-        const order = await prisma.order.findFirst({
-            where: { gatewayOrderId: merchantTransactionId },
-            include: { 
-                user: true,
-            }
+        // Verify Hash
+        const isValid = verifyPayUHash({
+            txnid,
+            amount,
+            productinfo,
+            firstname,
+            email,
+            status,
+            hash
         });
 
-        if (!order) {
-            return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+        if (!isValid) {
+            console.error("Callback Hash Mismatch! Potential Fraud.");
+            return NextResponse.json({ error: 'Invalid Hash' }, { status: 400 });
         }
 
-        if (order.paymentStatus !== 'PENDING') {
-            return NextResponse.json({ success: true, message: 'Order already processed.' });
-        }
+        const order = await prisma.order.findFirst({
+            where: { gatewayOrderId: txnid }
+        });
 
-        if (paymentStatus === 'PAYMENT_SUCCESS') {
-            const amountPaid = amount / 100;
-            await prisma.order.update({
-                where: { id: order.id },
-                data: {
-                    paymentStatus: 'PAID',
-                    status: 'PROCESSING',
-                    netAmountPaid: amountPaid,
-                    // rawPayload: decodedResponse
-                }
-            });
+        if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 
-            const orderItems = order.items as any[];
-            
-            for (const item of orderItems) {
-                const quantityToDeduct = item.quantity || 1;
-                const variantId = item.variantId || item.selectedVariant?.id;
-                const productId = item.productId || item.id;
-
-                try {
-                    if (variantId) {
-                        const updatedVariant = await prisma.productVariant.update({
-                            where: { id: variantId },
-                            data: { stock: { decrement: quantityToDeduct } }
-                        });
-
-                        if (updatedVariant.stock <= 0) {
-                            await prisma.productVariant.update({
-                                where: { id: variantId },
-                                data: { stock: 0 }
-                            });
-                        }
-                        const hasStockLeft = await prisma.productVariant.findFirst({
-                            where: {
-                                productId: productId,
-                                stock: { gt: 0 }
-                            }
-                        });
-
-                        // If no variants have stock left, mark parent as Out of Stock
-                        if (!hasStockLeft) {
-                            await prisma.product.update({
-                                where: { id: productId },
-                                data: { inStock: false }
-                            });
-                            console.log(`Auto-updated Product ${productId} to Out of Stock`);
-                        }
-                    } else if (productId) {
-                        const updatedProduct = await prisma.product.update({
-                            where: { id: productId }, 
-                            data: { stock: { decrement: quantityToDeduct } }
-                        });
-
-                        if (updatedProduct.stock <= 0) {
-                            await prisma.product.update({
-                                where: { id: productId },
-                                data: { 
-                                    inStock: false,
-                                    stock: 0
-                                }
-                            });
-                        }
-                    }
-                } catch (err) {
-                    console.error(`Inventory Error for item ${item.name}:`, err);
-                }
-            }
-
-            await sendNotification(
-                order.userId,
-                "Order Confirmed! 🎉",
-                `Your order #${order.id.slice(-6).toUpperCase()} has been placed successfully.`,
-                "ORDER_UPDATE"
-            );
-
-            // Send SMS
-            if (order.user.phone) {
-                await sendOrderConfirmationSMS(order.user.phone, order.id, amountPaid);
-            }
-
-            if (order.user.email) {
-                const orderTotal = orderItems.reduce((sum, item) => sum + (item.priceAtPurchase || 0) * item.quantity, 0);
-                
-                 const emailItems = orderItems.map(item => ({
-                    name: item.name || item.product?.name || "Product",
-                    quantity: item.quantity,
-                    price: Number(item.priceAtPurchase || 0)
-                }));
-                await sendOrderConfirmation(order.user.email, {
-                    orderId: order.id,
-                    customerName: order.user.fullName,
-                    items: emailItems,
-                    total: Number(order.netAmountPaid) || orderTotal
-                });
-            }
-
-            // MLM Logic
-            if (order.mlmOptInRequested) {
-                let newReferralCode = order.user.referralCode;
-                if (!newReferralCode) newReferralCode = generateReferralCode();
-
-                await prisma.user.update({
-                    where: { id: order.userId },
-                    data: { is7thHeaven: true, referralCode: newReferralCode } 
-                });
-                if (order.user.email) {
-                    await sendWelcomeEmail(order.user.email, order.user.fullName, newReferralCode || undefined);
-                }
-                if (order.user.phone && newReferralCode) {
-                    await sendReferralSMS(order.user.phone, newReferralCode, order.user.fullName);
-                }
-            }
-
-            // Clear Cart
-            const cart = await prisma.cart.findUnique({ where: { userId: order.userId } });
-            if (cart) {
-                await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
-            }
-
+        if (status === 'success') {
+            await completeOrder(order.id, txnid, parseFloat(amount));
         } else {
             await prisma.order.update({
                 where: { id: order.id },
@@ -235,10 +82,257 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        return NextResponse.json({ success: true, message: 'Callback received' });
+        // Redirect to Status Page
+        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/status/${txnid}`, 303);
 
     } catch (error) {
         console.error('Payment Callback Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
+
+
+// import { NextRequest, NextResponse } from 'next/server';
+// import prisma from '@/lib/prisma';
+// import crypto from 'crypto';
+// import axios from 'axios';
+// import { sendNotification } from '@/lib/notifications';
+// import { sendOrderConfirmation, sendWelcomeEmail } from '@/lib/email';
+
+// function generateReferralCode() {
+//     return '7H-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+// }
+
+// async function sendOrderConfirmationSMS(phone: string, orderId: string, amount: number) {
+//     try {
+//         // In the future, replace this console.log with an actual API call
+//         // Example: await axios.post('https://api.textlocal.in/send/', { ... });
+        
+//         const message = `Thank you for your order! Order ID: ${orderId}. Amount Paid: Rs. ${amount}. Track your status here: ${process.env.NEXT_PUBLIC_BASE_URL}/track-order`;
+
+//         console.log(`\n================================================`);
+//         console.log(`[SMS SERVICE MOCK] Sending Order Confirmation`);
+//         console.log(`To Phone : ${phone}`);
+//         console.log(`Message  : ${message}`);
+//         console.log(`================================================\n`);
+//     } catch (error) {
+//         console.error("Failed to send Order SMS:", error);
+//     }
+// }
+
+// async function sendReferralSMS(phone: string, code: string, name: string) {
+//     try {
+//         // Example: Fast2SMS or Twilio logic here
+//         // const message = `Welcome to 7th Heaven Club, ${name}! Your referral code is ${code}. Share it to start earning rewards.`;
+//         // await axios.post('YOUR_SMS_API_URL', { ... });
+//         console.log(`[SMS MOCK] Sending to ${phone}: Welcome ${name}! Your code is ${code}`);
+//     } catch (error) {
+//         console.error("Failed to send SMS:", error);
+//     }
+// }
+
+// export async function POST(req: NextRequest) {
+//     try {
+//         console.log("--- Payment Callback Received ---");
+        
+//         // 1. Read raw text (Standard way)
+//         const rawBody = await req.text();
+        
+//         console.log("Content-Length Header:", req.headers.get('content-length'));
+//         console.log("Actual Body Length:", rawBody.length);
+
+//         if (!rawBody) {
+//             console.error("Callback Error: Empty request body received.");
+//             return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
+//         }
+
+//         let base64Response;
+
+//         // 2. Try parsing as JSON first
+//         try {
+//             const body = JSON.parse(rawBody);
+//             base64Response = body.response;
+//             console.log("Parsed as JSON. Response field found:", !!base64Response);
+//         } catch (e) {
+//             console.log("JSON parse failed, trying URLSearchParams...");
+//             const params = new URLSearchParams(rawBody);
+//             base64Response = params.get('response');
+//             console.log("Parsed as Form Data. Response field found:", !!base64Response);
+//         }
+
+//         if (!base64Response) {
+//             console.error("Callback Error: Could not find 'response' in body.");
+//             return NextResponse.json({ error: 'Invalid payload structure' }, { status: 400 });
+//         }
+
+//         // 3. Verify the checksum
+//         const saltKey = process.env.PHONEPE_SALT_KEY;
+//         const saltIndex = process.env.PHONEPE_SALT_INDEX;
+//         const receivedChecksum = req.headers.get('x-verify');
+
+//         if (!saltKey || !saltIndex) {
+//              console.error("Server Error: PhonePe credentials missing in .env");
+//              return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+//         }
+
+//         const calculatedChecksum = crypto.createHash('sha256').update(base64Response + saltKey).digest('hex') + '###' + saltIndex;
+
+//         if (receivedChecksum !== calculatedChecksum) {
+//             console.error("Webhook checksum mismatch!");
+//             return NextResponse.json({ error: 'Checksum mismatch' }, { status: 400 });
+//         }
+ 
+//         const decodedResponse = JSON.parse(Buffer.from(base64Response, 'base64').toString('utf-8'));
+//         const { code: paymentStatus } = decodedResponse;
+//         const { merchantTransactionId, amount } = decodedResponse.data;
+
+//         console.log(`Transaction: ${merchantTransactionId}, Status: ${paymentStatus}`);
+
+//         const order = await prisma.order.findFirst({
+//             where: { gatewayOrderId: merchantTransactionId },
+//             include: { 
+//                 user: true,
+//             }
+//         });
+
+//         if (!order) {
+//             return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+//         }
+
+//         if (order.paymentStatus !== 'PENDING') {
+//             return NextResponse.json({ success: true, message: 'Order already processed.' });
+//         }
+
+//         if (paymentStatus === 'PAYMENT_SUCCESS') {
+//             const amountPaid = amount / 100;
+//             await prisma.order.update({
+//                 where: { id: order.id },
+//                 data: {
+//                     paymentStatus: 'PAID',
+//                     status: 'PROCESSING',
+//                     netAmountPaid: amountPaid,
+//                     // rawPayload: decodedResponse
+//                 }
+//             });
+
+//             const orderItems = order.items as any[];
+            
+//             for (const item of orderItems) {
+//                 const quantityToDeduct = item.quantity || 1;
+//                 const variantId = item.variantId || item.selectedVariant?.id;
+//                 const productId = item.productId || item.id;
+
+//                 try {
+//                     if (variantId) {
+//                         const updatedVariant = await prisma.productVariant.update({
+//                             where: { id: variantId },
+//                             data: { stock: { decrement: quantityToDeduct } }
+//                         });
+
+//                         if (updatedVariant.stock <= 0) {
+//                             await prisma.productVariant.update({
+//                                 where: { id: variantId },
+//                                 data: { stock: 0 }
+//                             });
+//                         }
+//                         const hasStockLeft = await prisma.productVariant.findFirst({
+//                             where: {
+//                                 productId: productId,
+//                                 stock: { gt: 0 }
+//                             }
+//                         });
+
+//                         // If no variants have stock left, mark parent as Out of Stock
+//                         if (!hasStockLeft) {
+//                             await prisma.product.update({
+//                                 where: { id: productId },
+//                                 data: { inStock: false }
+//                             });
+//                             console.log(`Auto-updated Product ${productId} to Out of Stock`);
+//                         }
+//                     } else if (productId) {
+//                         const updatedProduct = await prisma.product.update({
+//                             where: { id: productId }, 
+//                             data: { stock: { decrement: quantityToDeduct } }
+//                         });
+
+//                         if (updatedProduct.stock <= 0) {
+//                             await prisma.product.update({
+//                                 where: { id: productId },
+//                                 data: { 
+//                                     inStock: false,
+//                                     stock: 0
+//                                 }
+//                             });
+//                         }
+//                     }
+//                 } catch (err) {
+//                     console.error(`Inventory Error for item ${item.name}:`, err);
+//                 }
+//             }
+
+//             await sendNotification(
+//                 order.userId,
+//                 "Order Confirmed! 🎉",
+//                 `Your order #${order.id.slice(-6).toUpperCase()} has been placed successfully.`,
+//                 "ORDER_UPDATE"
+//             );
+
+//             // Send SMS
+//             if (order.user.phone) {
+//                 await sendOrderConfirmationSMS(order.user.phone, order.id, amountPaid);
+//             }
+
+//             if (order.user.email) {
+//                 const orderTotal = orderItems.reduce((sum, item) => sum + (item.priceAtPurchase || 0) * item.quantity, 0);
+                
+//                  const emailItems = orderItems.map(item => ({
+//                     name: item.name || item.product?.name || "Product",
+//                     quantity: item.quantity,
+//                     price: Number(item.priceAtPurchase || 0)
+//                 }));
+//                 await sendOrderConfirmation(order.user.email, {
+//                     orderId: order.id,
+//                     customerName: order.user.fullName,
+//                     items: emailItems,
+//                     total: Number(order.netAmountPaid) || orderTotal
+//                 });
+//             }
+
+//             // MLM Logic
+//             if (order.mlmOptInRequested) {
+//                 let newReferralCode = order.user.referralCode;
+//                 if (!newReferralCode) newReferralCode = generateReferralCode();
+
+//                 await prisma.user.update({
+//                     where: { id: order.userId },
+//                     data: { is7thHeaven: true, referralCode: newReferralCode } 
+//                 });
+//                 if (order.user.email) {
+//                     await sendWelcomeEmail(order.user.email, order.user.fullName, newReferralCode || undefined);
+//                 }
+//                 if (order.user.phone && newReferralCode) {
+//                     await sendReferralSMS(order.user.phone, newReferralCode, order.user.fullName);
+//                 }
+//             }
+
+//             // Clear Cart
+//             const cart = await prisma.cart.findUnique({ where: { userId: order.userId } });
+//             if (cart) {
+//                 await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+//             }
+
+//         } else {
+//             await prisma.order.update({
+//                 where: { id: order.id },
+//                 data: { paymentStatus: 'FAILED' }
+//             });
+//         }
+
+//         return NextResponse.json({ success: true, message: 'Callback received' });
+
+//     } catch (error) {
+//         console.error('Payment Callback Error:', error);
+//         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+//     }
+// }

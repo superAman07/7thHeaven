@@ -278,135 +278,135 @@ export async function POST(req: NextRequest) {
             });
         }
         // --- BYPASS LOGIC START (Immediate Success + Admin Upgrade) ---
-        const BYPASS_FOR_TESTING = true;
-        if (BYPASS_FOR_TESTING) {
-             const merchantTransactionId = `TEST-${Date.now()}`;
+        // const BYPASS_FOR_TESTING = true;
+        // if (BYPASS_FOR_TESTING) {
+        //      const merchantTransactionId = `TEST-${Date.now()}`;
              
-             // 1. Update Order to PAID
-             await prisma.order.update({
-                where: { id: newOrder.id },
-                data: {
-                    paymentStatus: 'PAID',
-                    status: 'PROCESSING',
-                    netAmountPaid: Math.round(subtotal - (discountAmount || 0)),
-                    gatewayOrderId: merchantTransactionId
-                }
-             });
-             // 2. Update User (IsAdmin + 7th Heaven + Referral)
-             if (mlmOptIn) {
-                let userRef = await prisma.user.findUnique({ where: { id: userId! } });
-                let newReferralCode = userRef?.referralCode;
-                if (!newReferralCode) newReferralCode = generateReferralCode();
-                let referrerId = userRef?.referrerId;
-                if (!referrerId && referrerCode) {
-                    const referrer = await prisma.user.findUnique({ 
-                        where: { referralCode: referrerCode } 
-                    });
-                    if (referrer && referrer.id !== userId) {
-                        referrerId = referrer.id;
-                    }
-                }
-                await prisma.user.update({
-                    where: { id: userId! },
-                    data: { 
-                        is7thHeaven: true, 
-                        referralCode: newReferralCode,
-                        ...(referrerId ? { referrerId } : {})
-                    } 
-                });
-             } else {
-                 // Even if no OptIn, user apparently wants admin bypass? 
-                 // Uncomment below if you want EVERY order to make user admin:
-                 /*
-                 await prisma.user.update({
-                    where: { id: userId! },
-                    data: { isAdmin: true } 
-                 });
-                 */
-             }
-             // 3. Inventory Update
-             for (const item of orderItemsData) {
-                try {
-                    const quantityToDeduct = item.quantity;
-                    if (item.variantId) {
-                         await prisma.productVariant.update({
-                            where: { id: item.variantId },
-                            data: { stock: { decrement: quantityToDeduct } }
-                        });
-                    } else if (item.productId) {
-                         await prisma.product.update({
-                            where: { id: item.productId }, 
-                            data: { stock: { decrement: quantityToDeduct } }
-                        });
-                    }
-                } catch (e) { console.error("Inventory update failed", e); }
-             }
-             // 4. Clear Cart
-             const cart = await prisma.cart.findUnique({ where: { userId: userId! } });
-             if (cart) {
-                await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
-             }
+        //      // 1. Update Order to PAID
+        //      await prisma.order.update({
+        //         where: { id: newOrder.id },
+        //         data: {
+        //             paymentStatus: 'PAID',
+        //             status: 'PROCESSING',
+        //             netAmountPaid: Math.round(subtotal - (discountAmount || 0)),
+        //             gatewayOrderId: merchantTransactionId
+        //         }
+        //      });
+        //      // 2. Update User (IsAdmin + 7th Heaven + Referral)
+        //      if (mlmOptIn) {
+        //         let userRef = await prisma.user.findUnique({ where: { id: userId! } });
+        //         let newReferralCode = userRef?.referralCode;
+        //         if (!newReferralCode) newReferralCode = generateReferralCode();
+        //         let referrerId = userRef?.referrerId;
+        //         if (!referrerId && referrerCode) {
+        //             const referrer = await prisma.user.findUnique({ 
+        //                 where: { referralCode: referrerCode } 
+        //             });
+        //             if (referrer && referrer.id !== userId) {
+        //                 referrerId = referrer.id;
+        //             }
+        //         }
+        //         await prisma.user.update({
+        //             where: { id: userId! },
+        //             data: { 
+        //                 is7thHeaven: true, 
+        //                 referralCode: newReferralCode,
+        //                 ...(referrerId ? { referrerId } : {})
+        //             } 
+        //         });
+        //      } else {
+        //          // Even if no OptIn, user apparently wants admin bypass? 
+        //          // Uncomment below if you want EVERY order to make user admin:
+        //          /*
+        //          await prisma.user.update({
+        //             where: { id: userId! },
+        //             data: { isAdmin: true } 
+        //          });
+        //          */
+        //      }
+        //      // 3. Inventory Update
+        //      for (const item of orderItemsData) {
+        //         try {
+        //             const quantityToDeduct = item.quantity;
+        //             if (item.variantId) {
+        //                  await prisma.productVariant.update({
+        //                     where: { id: item.variantId },
+        //                     data: { stock: { decrement: quantityToDeduct } }
+        //                 });
+        //             } else if (item.productId) {
+        //                  await prisma.product.update({
+        //                     where: { id: item.productId }, 
+        //                     data: { stock: { decrement: quantityToDeduct } }
+        //                 });
+        //             }
+        //         } catch (e) { console.error("Inventory update failed", e); }
+        //      }
+        //      // 4. Clear Cart
+        //      const cart = await prisma.cart.findUnique({ where: { userId: userId! } });
+        //      if (cart) {
+        //         await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+        //      }
              
-             // 5. Send Order Confirmation Email
-             if (shippingDetails.email) {
-                sendOrderConfirmation(shippingDetails.email, {
-                  orderId: newOrder.id,
-                  customerName: shippingDetails.fullName,
-                  items: orderItemsData.map(item => ({
-                    name: item.name,
-                    quantity: item.quantity,
-                    price: item.priceAtPurchase
-                  })),
-                  total: Math.round(subtotal - (discountAmount || 0))
-                }).catch(err => console.error('Email send error:', err));
-             }
-             // 3. Record coupon usage
-             if (couponCode) {
-                 const coupon = await prisma.coupon.findUnique({
-                     where: { code: couponCode }
-                 });
+        //      // 5. Send Order Confirmation Email
+        //      if (shippingDetails.email) {
+        //         sendOrderConfirmation(shippingDetails.email, {
+        //           orderId: newOrder.id,
+        //           customerName: shippingDetails.fullName,
+        //           items: orderItemsData.map(item => ({
+        //             name: item.name,
+        //             quantity: item.quantity,
+        //             price: item.priceAtPurchase
+        //           })),
+        //           total: Math.round(subtotal - (discountAmount || 0))
+        //         }).catch(err => console.error('Email send error:', err));
+        //      }
+        //      // 3. Record coupon usage
+        //      if (couponCode) {
+        //          const coupon = await prisma.coupon.findUnique({
+        //              where: { code: couponCode }
+        //          });
                  
-                 if (coupon) {
-                     // Increment usage count
-                     await prisma.coupon.update({
-                         where: { id: coupon.id },
-                         data: { usedCount: { increment: 1 } }
-                     });
+        //          if (coupon) {
+        //              // Increment usage count
+        //              await prisma.coupon.update({
+        //                  where: { id: coupon.id },
+        //                  data: { usedCount: { increment: 1 } }
+        //              });
                      
-                     // Record usage history
-                     const user = await prisma.user.findUnique({ where: { id: userId! } });
-                     await prisma.couponUsage.create({
-                         data: {
-                             couponId: coupon.id,
-                             orderId: newOrder.id,
-                             userId: userId,
-                             userName: user?.fullName || shippingDetails.fullName,
-                             discountAmount: discountAmount || 0,
-                             orderTotal: Math.round(subtotal - (discountAmount || 0))
-                         }
-                     });
-                 }
-             }
+        //              // Record usage history
+        //              const user = await prisma.user.findUnique({ where: { id: userId! } });
+        //              await prisma.couponUsage.create({
+        //                  data: {
+        //                      couponId: coupon.id,
+        //                      orderId: newOrder.id,
+        //                      userId: userId,
+        //                      userName: user?.fullName || shippingDetails.fullName,
+        //                      discountAmount: discountAmount || 0,
+        //                      orderTotal: Math.round(subtotal - (discountAmount || 0))
+        //                  }
+        //              });
+        //          }
+        //      }
              
-             return NextResponse.json({
-                success: true,
-                orderId: newOrder.id,
-                totalAmount: Math.round(subtotal - (discountAmount || 0)),
-                bypassed: true, 
-                transactionId: merchantTransactionId
-            });
-        }
+        //      return NextResponse.json({
+        //         success: true,
+        //         orderId: newOrder.id,
+        //         totalAmount: Math.round(subtotal - (discountAmount || 0)),
+        //         bypassed: true, 
+        //         transactionId: merchantTransactionId
+        //     });
+        // }
         // --- BYPASS LOGIC END ---
-        await prisma.user.update({
-            where: { id: userId },
-            data: {
-                fullAddress: shippingDetails.fullAddress,
-                city: shippingDetails.city,
-                state: shippingDetails.state,
-                pincode: shippingDetails.pincode,
-                country: shippingDetails.country
-            }
-        });
+        // await prisma.user.update({
+        //     where: { id: userId },
+        //     data: {
+        //         fullAddress: shippingDetails.fullAddress,
+        //         city: shippingDetails.city,
+        //         state: shippingDetails.state,
+        //         pincode: shippingDetails.pincode,
+        //         country: shippingDetails.country
+        //     }
+        // });
         return NextResponse.json({
             success: true,
             orderId: newOrder.id,
@@ -418,137 +418,3 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
-
-
-// export async function POST(req: NextRequest) {
-//     try {
-//         const body = await req.json();
-//         const validation = orderSchema.safeParse(body);
-//         if (!validation.success) {
-//             return NextResponse.json({ error: 'Invalid request body', details: validation.error }, { status: 400 });
-//         }
-//         const { items, shippingDetails, mlmOptIn } = validation.data;
-//         let userId = await getUserIdFromToken(req);
-
-//         if (!userId) {
-//             let user = await prisma.user.findUnique({
-//                 where: { phone: shippingDetails.phone }
-//             });
-
-//             if (!user && shippingDetails.email) {
-//                 user = await prisma.user.findUnique({
-//                     where: { email: shippingDetails.email }
-//                 });
-//             }
-
-//             if (user) {
-//                 userId = user.id;
-//             } else {
-//                 const newUser = await prisma.user.create({
-//                     data: {
-//                         fullName: shippingDetails.fullName,
-//                         phone: shippingDetails.phone,
-//                         email: shippingDetails.email,
-//                         fullAddress: shippingDetails.fullAddress,
-//                         city: shippingDetails.city,
-//                         state: shippingDetails.state,
-//                         pincode: shippingDetails.pincode,
-//                         country: shippingDetails.country,
-//                         passwordHash: null,
-//                     }
-//                 });
-//                 userId = newUser.id;
-//             }
-//         }
-    
-//         const productIds = items.map(item => item.productId);
-//         const productsFromDb = await prisma.product.findMany({
-//             where: { id: { in: productIds } },
-//             include: { variants: true }
-//         });
-
-//         let subtotal = 0;
-//         const orderItemsData = items.map(item => {
-//             const product = productsFromDb.find(p => p.id === item.productId);
-            
-//             if (!product) {
-//                 throw new Error(`Product with ID ${item.productId} not found.`);
-//             }
-//             if (product.isArchived) {
-//                 throw new Error(`Item "${product.name}" is no longer available (Archived). Please remove it from your cart.`);
-//             }
-//             if (!product.inStock) {
-//                  throw new Error(`Item "${product.name}" is currently out of stock.`);
-//             }
-//             let selectedVariant;
-//             if (item.variantId) {
-//                 selectedVariant = product.variants.find(v => v.id === item.variantId);
-//             }
-
-//             if (!selectedVariant) {
-//                 if (product.variants.length > 0) {
-//                     console.warn(`No variantId provided for product ${product.name}. Defaulting to first variant.`);
-//                     selectedVariant = product.variants[0];
-//                 } else {
-//                     throw new Error(`Product ${product.name} has no variants available.`);
-//                 }
-//             }
-
-//             if (selectedVariant.stock < item.quantity) {
-//                 throw new Error(`Insufficient stock for ${product.name} (${selectedVariant.size}). Only ${selectedVariant.stock} left.`);
-//             }
-
-//             const basePrice = selectedVariant.price.toNumber();
-//             const discountPercentage = product.discountPercentage ? product.discountPercentage.toNumber() : 0;
-            
-//             const price = basePrice * (1 - discountPercentage / 100);
-//             subtotal += price * item.quantity;
-
-//             return {
-//                 productId: item.productId,
-//                 variantId: selectedVariant.id,
-//                 name: product.name,
-//                 size: selectedVariant.size, 
-//                 image: product.images[0] || '',
-//                 quantity: item.quantity,
-//                 priceAtPurchase: price,
-//             };
-//         });
-
-//         const newOrder = await prisma.order.create({
-//             data: {
-//                 userId: userId!,
-//                 subtotal: subtotal,
-//                 discount: discountAmount || 0,
-//                 couponCode: couponCode || null,
-//                 netAmountPaid: subtotal - (discountAmount || 0),
-//                 paymentStatus: 'PENDING',
-//                 shippingAddress: shippingDetails as any,
-//                 mlmOptInRequested: mlmOptIn || false,
-//                 items: orderItemsData,
-//             },
-//         });
-
-//         await prisma.user.update({
-//             where: { id: userId },
-//             data: {
-//                 fullAddress: shippingDetails.fullAddress,
-//                 city: shippingDetails.city,
-//                 state: shippingDetails.state,
-//                 pincode: shippingDetails.pincode,
-//                 country: shippingDetails.country
-//             }
-//         });
-
-//         return NextResponse.json({
-//             success: true,
-//             orderId: newOrder.id,
-//             totalAmount: newOrder.subtotal 
-//         });
-
-//     } catch (error) {
-//         console.error('Create Order Error:', error);
-//         const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
-//         return NextResponse.json({ error: errorMessage }, { status: 500 });
-//     }
-// }

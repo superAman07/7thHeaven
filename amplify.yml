@@ -25,6 +25,9 @@ frontend:
         - echo "SMTP_USER=$SMTP_USER" >> .env.production
         - echo "SMTP_PASS=$SMTP_PASS" >> .env.production
         - echo "SMTP_FROM=$SMTP_FROM" >> .env.production
+        - echo "PAYU_KEY=$PAYU_KEY" >> .env.production
+        - echo "PAYU_SALT=$PAYU_SALT" >> .env.production
+        - echo "PAYU_BASE_URL=$PAYU_BASE_URL" >> .env.production
         - npx prisma generate
     build:
       commands:

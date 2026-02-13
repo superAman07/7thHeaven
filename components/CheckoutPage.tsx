@@ -196,63 +196,6 @@ const CheckoutPageComponent: React.FC = () => {
         } as React.CSSProperties;
     };
 
-    // const handlePlaceOrder = async (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     if (!billing.firstName || !billing.phone || !billing.address1 || !billing.zip) {
-    //         alert("Please fill in all required billing fields.");
-    //         return;
-    //     }
-
-    //     setIsProcessing(true);
-
-    //     try {
-    //         const finalShipping = shipToDifferentAddress ? shipping : billing;
-
-    //         const orderPayload = {
-    //             items: cartItems.map(item => ({
-    //                 productId: item.originalProductId || item.id,
-    //                 variantId: item.selectedVariant?.id,
-    //                 quantity: item.quantity,
-    //             })),
-    //             shippingDetails: {
-    //                 fullName: `${finalShipping.firstName} ${finalShipping.lastName}`,
-    //                 phone: finalShipping.phone,
-    //                 email: finalShipping.email,
-    //                 fullAddress: `${finalShipping.address1} ${finalShipping.address2}`,
-    //                 city: finalShipping.city,
-    //                 state: finalShipping.state,
-    //                 pincode: finalShipping.zip,
-    //                 country: finalShipping.country
-    //             },
-    //             mlmOptIn: is7thHeavenOptIn,
-    //             couponCode: appliedCoupon?.code || null,
-    //             discountAmount: appliedCoupon?.discountAmount || 0
-    //         };
-    //         const orderResponse = await axios.post('/api/v1/orders', orderPayload, { withCredentials: true });
-
-    //         if (!orderResponse.data.success) {
-    //             throw new Error(orderResponse.data.error || 'Failed to create order.');
-    //         }
-
-    //         const { orderId } = orderResponse.data;
-    //         const paymentResponse = await axios.post('/api/v1/payment/initiate', { orderId }, { withCredentials: true });
-
-    //         if (!paymentResponse.data.success) {
-    //             throw new Error(paymentResponse.data.error || 'Failed to initiate payment.');
-    //         }
-
-    //         const { paymentUrl } = paymentResponse.data;
-    //         router.push(paymentUrl);
-
-    //     } catch (error) {
-    //         console.error("Checkout process failed", error);
-    //         const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
-    //         alert(`Failed to place order: ${errorMessage}`);
-    //         setIsProcessing(false);
-    //     } finally {
-    //         setIsProcessing(false);
-    //     }
-    // };
     const handlePlaceOrder = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!billing.firstName || !billing.phone || !billing.address1 || !billing.zip) {
@@ -293,20 +236,22 @@ const CheckoutPageComponent: React.FC = () => {
                 throw new Error(orderResponse.data.error || 'Failed to create order.');
             }
             // --- BYPASS HANDLER ---
-            const { orderId, bypassed, transactionId } = orderResponse.data;
-            if (bypassed) {
-                // Direct redirect to success page
-                router.push(`/payment/status/${transactionId}`);
-                console.log("Payment Bypassed. Redirecting...");
-                return;
-            }
-            // ----------------------
-            const paymentResponse = await axios.post('/api/v1/payment/initiate', { orderId }, { withCredentials: true });
-            if (!paymentResponse.data.success) {
-                throw new Error(paymentResponse.data.error || 'Failed to initiate payment.');
-            }
-            const { paymentUrl } = paymentResponse.data;
-            router.push(paymentUrl);
+            // const { orderId, bypassed, transactionId } = orderResponse.data;
+            // if (bypassed) {
+            //     // Direct redirect to success page
+            //     router.push(`/payment/status/${transactionId}`);
+            //     console.log("Payment Bypassed. Redirecting...");
+            //     return;
+            // }
+            // // ----------------------
+            // const paymentResponse = await axios.post('/api/v1/payment/initiate', { orderId }, { withCredentials: true });
+            // if (!paymentResponse.data.success) {
+            //     throw new Error(paymentResponse.data.error || 'Failed to initiate payment.');
+            // }
+            // const { paymentUrl } = paymentResponse.data;
+            // router.push(paymentUrl);
+            const { orderId } = orderResponse.data;
+            router.push(`/payment/process/${orderId}`);
         } catch (error) {
             console.error("Checkout process failed", error);
             const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
