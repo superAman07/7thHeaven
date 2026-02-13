@@ -1,6 +1,5 @@
-import jsPDF from 'jspdf';
+import jsPDF, { GState } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-
 // Define the shape of data needed for the invoice
 export interface InvoiceData {
     id: string;
@@ -52,6 +51,14 @@ export const generateInvoice = (order: InvoiceData) => {
     if (order.companyDetails?.logoUrl && order.companyDetails.logoUrl.startsWith('data:image')) {
         try {
             doc.addImage(order.companyDetails.logoUrl, 'PNG', 14, 10, 40, 15);
+            doc.saveGraphicsState();
+            
+            const gState = new GState({ opacity: 0.1 });
+            doc.setGState(gState);
+            
+            doc.addImage(order.companyDetails.logoUrl, 'PNG', 55, 100, 100, 100);
+            
+            doc.restoreGraphicsState();
         } catch (e) {
             console.warn("Failed to add logo to PDF", e);
         }
