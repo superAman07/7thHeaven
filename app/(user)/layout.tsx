@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getSiteContent, defaultGlobalSettings } from "@/lib/site-content";
 import { getSiteSettings } from "@/lib/site-settings";
+import AnnouncementBar from "@/components/AnnouncementBar";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
@@ -24,6 +25,11 @@ export default async function UserPagesLayout({
   const siteSettings = await getSiteSettings();
   return (
     <div id="main-wrapper">
+      <AnnouncementBar 
+        text={siteSettings?.announcementText ?? null}
+        link={siteSettings?.announcementLink ?? null}
+        isVisible={siteSettings?.showAnnouncement ?? false}
+      />
       <Suspense fallback={<div style={{ height: '90px', backgroundColor: '#000' }}></div>}>
         <NavBar />
       </Suspense>

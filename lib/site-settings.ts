@@ -22,6 +22,9 @@ export interface SiteSettings {
     aboutContent: string | null;
     aboutImage: string | null;
     footerText: string | null;
+    announcementText: string | null;
+    showAnnouncement: boolean;
+    announcementLink: string | null;
     updatedAt?: Date;
 }
 

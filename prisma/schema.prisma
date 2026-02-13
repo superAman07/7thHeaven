@@ -330,6 +330,9 @@ model SiteSettings {
   aboutImage      String?
   
   footerText      String?
+  announcementText String?
+  showAnnouncement Boolean  @default(false)
+  announcementLink String?
   
   updatedAt       DateTime @updatedAt
 }

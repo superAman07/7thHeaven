@@ -27,6 +27,9 @@ interface SiteSettings {
     aboutContent: string;
     aboutImage: string;
     footerText: string;
+    announcementText: string;
+    showAnnouncement: boolean;
+    announcementLink: string;
 }
 
 const defaultSettings: SiteSettings = {
@@ -49,14 +52,17 @@ const defaultSettings: SiteSettings = {
     aboutTitle: '',
     aboutContent: '',
     aboutImage: '',
-    footerText: ''
+    footerText: '',
+    announcementText: '',
+    showAnnouncement: false,
+    announcementLink: ''
 };
 
 export default function SiteSettingsPage() {
     const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState<'contact' | 'about' | 'social' | 'footer'>('contact');
+    const [activeTab, setActiveTab] = useState<'contact' | 'about' | 'social' | 'announcement' | 'footer'>('contact');
     const [hasFetched, setHasFetched] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -172,6 +178,7 @@ export default function SiteSettingsPage() {
         { id: 'contact', label: '📍 Contact & Address' },
         { id: 'about', label: '📝 About Us' },
         { id: 'social', label: '🔗 Social Links' },
+        { id: 'announcement', label: '📢 Announcement' },
         { id: 'footer', label: '📄 Footer' }
     ];
 
@@ -348,6 +355,47 @@ export default function SiteSettingsPage() {
                         <InputField label="Facebook URL" value={settings.facebook} onChange={v => handleChange('facebook', v)} placeholder="https://facebook.com/..." />
                         <InputField label="Twitter URL" value={settings.twitter} onChange={v => handleChange('twitter', v)} placeholder="https://twitter.com/..." />
                         <InputField label="YouTube URL" value={settings.youtube} onChange={v => handleChange('youtube', v)} placeholder="https://youtube.com/..." />
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'announcement' && (
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-800">Announcement Bar</h3>
+                    
+                    {/* Toggle Switch */}
+                    <div className="flex items-center justify-between mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div>
+                            <h4 className="font-medium text-gray-900">Show Announcement Bar</h4>
+                            <p className="text-sm text-gray-500">Enable to show the strip at the top of the website</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input 
+                                type="checkbox" 
+                                checked={settings.showAnnouncement}
+                                onChange={e => setSettings(prev => ({ ...prev, showAnnouncement: e.target.checked }))}
+                                className="sr-only peer" 
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                        </label>
+                    </div>
+                    <div className="space-y-4">
+                        <InputField 
+                            label="Announcement Text" 
+                            value={settings.announcementText} 
+                            onChange={v => handleChange('announcementText', v)} 
+                            placeholder="e.g., Free Shipping on Orders Over ₹999!" 
+                        />
+                        
+                        <InputField 
+                            label="Link URL (Optional)" 
+                            value={settings.announcementLink} 
+                            onChange={v => handleChange('announcementLink', v)} 
+                            placeholder="e.g., /collections/sale" 
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                            If provided, the entire bar becomes clickable. Start with <code>/</code> for internal pages.
+                        </p>
                     </div>
                 </div>
             )}
