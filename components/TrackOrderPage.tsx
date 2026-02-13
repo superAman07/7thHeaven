@@ -9,17 +9,25 @@ import { generateInvoice } from '@/services/invoiceGenerator';
 const urlToBase64 = (url: string): Promise<string> => {
     return new Promise((resolve, reject) => {
         const img = new Image();
-        img.crossOrigin = 'Anonymous';
+        img.crossOrigin = 'Anonymous'; 
         img.src = url;
         img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            ctx?.drawImage(img, 0, 0);
-            resolve(canvas.toDataURL('image/png'));
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0);
+                const dataURL = canvas.toDataURL('image/png');
+                resolve(dataURL);
+            } catch (error) {
+                reject(new Error("CORS Security Error: Cannot export image data"));
+            }
         };
-        img.onerror = (error) => reject(error);
+        
+        img.onerror = () => {
+             reject(new Error("Failed to load image source"));
+        };
     });
 };
 
@@ -66,15 +74,26 @@ export default function TrackOrderPage() {
         if (!orderData) return;
         
         try {
-            const logoUrlToUse = siteSettings?.logoUrl || '/celsius-logo.png';
             let logoBase64 = undefined;
-            if (logoUrlToUse) {
+            const defaultLogo = '/celsius-logo.png';
+
+            const loadLogo = async (url: string) => {
                 try {
-                    logoBase64 = await urlToBase64(logoUrlToUse);
+                    return await urlToBase64(url);
                 } catch (e) {
-                    console.warn("Could not load logo for PDF", e);
+                    return null;
                 }
+            };
+
+            if (siteSettings?.logoUrl) {
+                logoBase64 = await loadLogo(siteSettings.logoUrl);
             }
+
+            if (!logoBase64) {
+                console.log("Remote logo failed, using local fallback...");
+                logoBase64 = await loadLogo(defaultLogo);
+            }
+
             const invoiceData: any = {
                 id: orderData.orderId || orderData.id,
                 status: orderData.status,
