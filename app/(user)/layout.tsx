@@ -31,7 +31,7 @@ export default async function UserPagesLayout({
         isVisible={siteSettings?.showAnnouncement ?? false}
       />
       <Suspense fallback={<div style={{ height: '90px', backgroundColor: '#000' }}></div>}>
-        <NavBar />
+        <NavBar isAnnouncementVisible={siteSettings?.showAnnouncement} />
       </Suspense>
       <main>
         <WishlistProvider>

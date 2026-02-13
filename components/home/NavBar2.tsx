@@ -9,7 +9,7 @@ import { PublicProduct } from '../HeroPage';
 import { usePathname } from 'next/navigation';
 const MOBILE_BREAKPOINT = 991;
 
-export default function NavBar() {
+export default function NavBar({ isAnnouncementVisible }: { isAnnouncementVisible?: boolean }) {
     const [isSticky, setSticky] = useState(false);
     const [isSearchOpen, setSearchOpen] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -171,7 +171,9 @@ export default function NavBar() {
             {/* Header Main Container */}
             <header 
                 id="main-navbar"
-                className={`fixed! top-0! left-0! right-0! z-1000! transition-all! duration-500! ease-in-out! ${
+                className={`fixed! left-0! right-0! z-1000! transition-all! duration-500! ease-in-out! ${
+                    isAnnouncementVisible ? 'top-[40px]!' : 'top-0!'
+                } ${
                     isSticky 
                         ? 'bg-black/80! backdrop-blur-xl! shadow-lg! h-[80px]!' 
                         : 'bg-transparent! h-[140px]! md:h-[160px]!'
