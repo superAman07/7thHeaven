@@ -66,10 +66,11 @@ export default function TrackOrderPage() {
         if (!orderData) return;
         
         try {
+            const logoUrlToUse = siteSettings?.logoUrl || '/celsius-logo.png';
             let logoBase64 = undefined;
-            if (siteSettings?.logoUrl) {
+            if (logoUrlToUse) {
                 try {
-                    logoBase64 = await urlToBase64(siteSettings.logoUrl);
+                    logoBase64 = await urlToBase64(logoUrlToUse);
                 } catch (e) {
                     console.warn("Could not load logo for PDF", e);
                 }
