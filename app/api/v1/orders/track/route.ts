@@ -77,6 +77,8 @@ export async function POST(req: NextRequest) {
                 paymentStatus: true,
                 createdAt: true,
                 subtotal: true,
+                discount: true,
+                netAmountPaid: true,
                 items: true,
                 shippingAddress: true,
                 // Include user name for display if needed

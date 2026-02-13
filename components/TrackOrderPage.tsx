@@ -6,6 +6,23 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { generateInvoice } from '@/services/invoiceGenerator';
 
+const urlToBase64 = (url: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.src = url;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0);
+            resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = (error) => reject(error);
+    });
+};
+
 export default function TrackOrderPage() {
     const [orderId, setOrderId] = useState('');
     const [identifier, setIdentifier] = useState('');
@@ -45,10 +62,18 @@ export default function TrackOrderPage() {
         }
     };
 
-    const handleDownloadInvoice = () => {
+    const handleDownloadInvoice = async () => {
         if (!orderData) return;
         
         try {
+            let logoBase64 = undefined;
+            if (siteSettings?.logoUrl) {
+                try {
+                    logoBase64 = await urlToBase64(siteSettings.logoUrl);
+                } catch (e) {
+                    console.warn("Could not load logo for PDF", e);
+                }
+            }
             const invoiceData: any = {
                 id: orderData.orderId || orderData.id,
                 status: orderData.status,
@@ -64,6 +89,7 @@ export default function TrackOrderPage() {
                     address: `${siteSettings?.address || ''}, ${siteSettings?.city || ''}`,
                     phone: siteSettings?.phone || "",
                     email: siteSettings?.email || "",
+                    logoUrl: logoBase64
                 }
             };
             generateInvoice(invoiceData);

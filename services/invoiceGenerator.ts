@@ -49,18 +49,41 @@ export const generateInvoice = (order: InvoiceData) => {
     doc.setFillColor(...brandColor);
     doc.rect(0, 0, 210, 5, 'F');
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(24);
-    doc.setTextColor(...brandColor);
-    doc.text(order.companyDetails?.name || "Celsius", 14, 25);
+    if (order.companyDetails?.logoUrl && order.companyDetails.logoUrl.startsWith('data:image')) {
+        try {
+            doc.addImage(order.companyDetails.logoUrl, 'PNG', 14, 10, 40, 15);
+        } catch (e) {
+            console.warn("Failed to add logo to PDF", e);
+        }
+    }
 
+    const companyName = order.companyDetails?.name || "Celsius";
+    let titleFontSize = 24;
+    
+    // Shrink font if name is too long
+    if (companyName.length > 20) titleFontSize = 18;
+    if (companyName.length > 30) titleFontSize = 14;
+    
+    doc.setFontSize(titleFontSize);
+    doc.setTextColor(...brandColor);
+    
+    // Move text down (Y=35) if logo is present, otherwise keep at 25
+    const nameY = (order.companyDetails?.logoUrl && order.companyDetails.logoUrl.startsWith('data:image')) ? 35 : 25;
+    doc.text(companyName, 14, nameY);
+    // --- 3. DYNAMIC ADDRESS ---
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setTextColor(...secondaryColor);
+    
     const companyAddr = order.companyDetails?.address || "Premium Fragrances & Scents";
-    doc.text(companyAddr, 14, 31);
-    doc.text(order.companyDetails?.email || "contact@7thheaven.com", 14, 36);
-    doc.text(order.companyDetails?.phone || "+91 98765 43210", 14, 41);
+    const startAddrY = nameY + 6;
+    
+    const splitAddress = doc.splitTextToSize(companyAddr, 80);
+    doc.text(splitAddress, 14, startAddrY);
+    
+    let currentY = startAddrY + (splitAddress.length * 4);
+    doc.text(order.companyDetails?.email || "jchindia@gmail.com", 14, currentY);
+    doc.text(order.companyDetails?.phone || "+91 98765 43210", 14, currentY + 5);
 
 
     doc.setFont("helvetica", "bold");
@@ -92,11 +115,6 @@ export const generateInvoice = (order: InvoiceData) => {
 
     const addressLines = doc.splitTextToSize(order.shippingAddress?.fullAddress || "", 80);
     doc.text(addressLines, 14, 71);
-
-    let currentY = 71 + (addressLines.length * 4);
-    doc.text(`${order.shippingAddress?.city || ""}, ${order.shippingAddress?.state || ""} - ${order.shippingAddress?.pincode || ""}`, 14, currentY);
-    currentY += 5;
-    doc.text(`Phone: ${customerPhone}`, 14, currentY);
 
     const tableStartY = Math.max(currentY + 10, 90);
 
