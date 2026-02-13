@@ -12,7 +12,7 @@ export default function AnnouncementBar({ text, link, isVisible }: AnnouncementB
     if (!isVisible || !text) return null;
 
     return (
-        <div className="fixed top-0 left-0 right-0 z-[2001] h-[40px] w-full bg-gradient-to-r from-[#D4AF37] to-[#B77A06] text-white shadow-md overflow-hidden flex items-center group">
+        <div className="fixed top-0 left-0 right-0 z-2001 h-[40px] w-full bg-linear-to-r from-[#D4AF37] to-[#B77A06] text-white shadow-md overflow-hidden flex items-center group">
              {/* Use standard style tag to prevent black screen/render errors */}
              <style>{`
                 @keyframes marquee {
