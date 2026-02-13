@@ -45,39 +45,53 @@ export const generateInvoice = (order: InvoiceData) => {
     const secondaryColor: [number, number, number] = [60, 60, 60];
     const lightGray: [number, number, number] = [240, 240, 240];
 
+    // --- 1. HEADER STRIP ---
     doc.setFillColor(...brandColor);
     doc.rect(0, 0, 210, 5, 'F');
 
+    // --- 2. WATERMARK (Big & Centered) ---
     if (order.companyDetails?.logoUrl && order.companyDetails.logoUrl.startsWith('data:image')) {
         try {
-            doc.addImage(order.companyDetails.logoUrl, 'PNG', 14, 10, 40, 15);
             doc.saveGraphicsState();
-            
-            const gState = new GState({ opacity: 0.1 });
+            const gState = new GState({ opacity: 0.08 }); // Very subtle
             doc.setGState(gState);
-            
-            doc.addImage(order.companyDetails.logoUrl, 'PNG', 55, 100, 100, 100);
-            
+            // Centered on A4 (210mm wide): (210-140)/2 = 35
+            doc.addImage(order.companyDetails.logoUrl, 'PNG', 35, 80, 140, 140);
             doc.restoreGraphicsState();
         } catch (e) {
-            console.warn("Failed to add logo to PDF", e);
+            console.warn("Failed to add watermark", e);
         }
     }
 
+    // --- 3. COMPANY LOGO & DETAILS ---
+    let headerBottomY = 20; // Start tracking height
+
+    // LOGO: Bigger Size (50w x 25h)
+    if (order.companyDetails?.logoUrl && order.companyDetails.logoUrl.startsWith('data:image')) {
+        try {
+            doc.addImage(order.companyDetails.logoUrl, 'PNG', 14, 10, 50, 25);
+            headerBottomY = 40; // Push text down
+        } catch (e) {
+            console.warn("Failed to add logo", e);
+        }
+    }
+
+    doc.setFont("helvetica", "bold");
+    
+    // Auto-Size Company Name
     const companyName = order.companyDetails?.name || "Celsius";
     let titleFontSize = 24;
-    
-    // Shrink font if name is too long
     if (companyName.length > 20) titleFontSize = 18;
     if (companyName.length > 30) titleFontSize = 14;
     
     doc.setFontSize(titleFontSize);
     doc.setTextColor(...brandColor);
     
-    // Move text down (Y=35) if logo is present, otherwise keep at 25
-    const nameY = (order.companyDetails?.logoUrl && order.companyDetails.logoUrl.startsWith('data:image')) ? 35 : 25;
+    // Position Name below logo or at top
+    const nameY = headerBottomY === 40 ? 42 : 25; 
     doc.text(companyName, 14, nameY);
-    // --- 3. DYNAMIC ADDRESS ---
+
+    // Address
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setTextColor(...secondaryColor);
@@ -89,10 +103,15 @@ export const generateInvoice = (order: InvoiceData) => {
     doc.text(splitAddress, 14, startAddrY);
     
     let currentY = startAddrY + (splitAddress.length * 4);
-    doc.text(order.companyDetails?.email || "jchindia@gmail.com", 14, currentY);
-    doc.text(order.companyDetails?.phone || "+91 98765 43210", 14, currentY + 5);
+    doc.text(order.companyDetails?.email || "contact@7thheaven.com", 14, currentY);
+    currentY += 5;
+    doc.text(order.companyDetails?.phone || "+91 98765 43210", 14, currentY);
+    
+    // Update header bottom to ensure no overlap
+    headerBottomY = currentY + 10;
 
 
+    // --- 4. INVOICE INFO (Right Side) ---
     doc.setFont("helvetica", "bold");
     doc.setFontSize(28);
     doc.setTextColor(220, 220, 220);
@@ -101,30 +120,40 @@ export const generateInvoice = (order: InvoiceData) => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setTextColor(...secondaryColor);
-    doc.text(`Invoice No: ${order.id.toUpperCase()}`, 196, 40, { align: "right" });
+    doc.text(`Invoice No: ${order.id.toUpperCase().substring(0, 12)}`, 196, 40, { align: "right" });
     doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 196, 45, { align: "right" });
 
+
+    // --- 5. SEPARATOR LINE ---
+    // Dynamic Y position based on header height
+    const separatorY = Math.max(headerBottomY, 55); 
     doc.setDrawColor(230, 230, 230);
     doc.setLineWidth(0.5);
-    doc.line(14, 50, 196, 50);
+    doc.line(14, separatorY, 196, separatorY);
 
-    const customerName = order.user?.fullName || order.shippingAddress?.fullName || "Valued Customer";
-    const customerPhone = order.user?.phone || order.shippingAddress?.phone || "N/A";
+
+    // --- 6. BILL TO ---
+    const billToY = separatorY + 10;
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...brandColor);
-    doc.text("BILL TO", 14, 60);
+    doc.text("BILL TO", 14, billToY);
 
     doc.setFont("helvetica", "normal");
     doc.setTextColor(0, 0, 0);
-    doc.text(customerName, 14, 66);
+    const customerName = order.user?.fullName || order.shippingAddress?.fullName || "Valued Customer";
+    doc.text(customerName, 14, billToY + 6);
 
-    const addressLines = doc.splitTextToSize(order.shippingAddress?.fullAddress || "", 80);
-    doc.text(addressLines, 14, 71);
+    const addressLines = doc.splitTextToSize(order.shippingAddress?.fullAddress || "", 150);
+    doc.text(addressLines, 14, billToY + 11);
 
-    const tableStartY = Math.max(currentY + 10, 90);
+    // Calculate where table should start
+    const addressBlockHeight = (addressLines.length * 5) + 20;
+    const tableStartY = billToY + addressBlockHeight;
 
+
+    // --- 7. ITEMS TABLE ---
     const tableBody = order.items.map(item => [
         item.product?.name || item.name || "Product",
         item.size || "Standard",
@@ -138,69 +167,71 @@ export const generateInvoice = (order: InvoiceData) => {
         head: [['ITEM DESCRIPTION', 'SIZE', 'QTY', 'UNIT PRICE', 'AMOUNT']],
         body: tableBody,
         theme: 'grid',
-        headStyles: {
-            fillColor: brandColor,
-            textColor: 255,
-            fontSize: 9,
-            fontStyle: 'bold',
-            halign: 'left',
-            cellPadding: 3
-        },
+        headStyles: { fillColor: brandColor, textColor: 255, fontSize: 9, fontStyle: 'bold', halign: 'left' }, // Removed cellPadding to fix type error if strictly typed
         columnStyles: {
             0: { cellWidth: 80 },
-            1: { cellWidth: 30 },
-            2: { cellWidth: 20, halign: 'center' },
-            3: { cellWidth: 30, halign: 'right' },
-            4: { cellWidth: 30, halign: 'right' }
+            4: { halign: 'right' }
         },
-        bodyStyles: {
-            fontSize: 9,
-            textColor: 60,
-            cellPadding: 3
-        },
-        alternateRowStyles: {
-            fillColor: lightGray
-        },
-        margin: { left: 14, right: 14 }
+        styles: { fontSize: 9, cellPadding: 4 },
     });
 
+    // --- 8. TOTALS CALCULATION ---
     const finalY = (doc as any).lastAutoTable.finalY + 10;
 
     doc.setDrawColor(220, 220, 220);
     doc.line(120, finalY - 5, 196, finalY - 5);
 
+    let nextY = finalY;
+
+    // Subtotal
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text(`Subtotal:`, 140, finalY);
-    doc.text(`Rs. ${order.subtotal.toLocaleString()}`, 196, finalY, { align: 'right' });
+    doc.text(`Subtotal:`, 140, nextY);
+    doc.text(`Rs. ${order.subtotal.toLocaleString()}`, 196, nextY, { align: 'right' });
 
-    let nextY = finalY;
+    // Discount
     if (order.discount && order.discount > 0) {
         nextY += 5;
-        doc.setTextColor(34, 197, 94);
+        doc.setTextColor(34, 197, 94); // Green
         doc.text(`Discount:`, 140, nextY);
         doc.text(`- Rs. ${order.discount.toLocaleString()}`, 196, nextY, { align: 'right' });
         doc.setTextColor(...secondaryColor);
     }
 
+    // Grand Total
+    const finalTotal = order.netAmountPaid || (order.subtotal - (order.discount || 0));
+    nextY += 10;
+
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...brandColor);
-    const finalTotal = order.netAmountPaid || (order.subtotal - (order.discount || 0));
-    doc.text(`Grand Total:`, 140, nextY + 12);
-    doc.text(`Rs. ${finalTotal.toLocaleString()}`, 196, nextY + 12, { align: 'right' });
+    doc.text(`Grand Total:`, 140, nextY);
+    doc.text(`Rs. ${finalTotal.toLocaleString()}`, 196, nextY, { align: 'right' });
 
-    doc.setFillColor(245, 245, 245);
-    doc.roundedRect(14, finalY + 20, 182, 20, 2, 2, 'F');
 
-    doc.setFontSize(9);
+    // --- 9. PROFESSIONAL FOOTER (Bottom Page) ---
+    const pageHeight = doc.internal.pageSize.height || 297;
+    
+    // Authorization / Thank You Section
+    const footerTopY = pageHeight - 40;
+
+    doc.setFillColor(250, 250, 250);
+    doc.rect(0, footerTopY, 210, 40, 'F'); // Light gray footer background
+
+    doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(60, 60, 60);
-    doc.text("Thank you for your business!", 105, finalY + 32, { align: "center" });
+    doc.setTextColor(...brandColor);
+    doc.text("Thank you for your business!", 105, footerTopY + 15, { align: "center" });
 
-    const pageHeight = doc.internal.pageSize.height;
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(150, 150, 150);
+    doc.text("Authorized Signatory", 196, footerTopY + 25, { align: "right" });
+    
+    // Bottom Brand Strip
     doc.setFillColor(...brandColor);
     doc.rect(0, pageHeight - 5, 210, 5, 'F');
-
+    
+    // Save
     doc.save(`Invoice_${order.id}.pdf`);
 };
