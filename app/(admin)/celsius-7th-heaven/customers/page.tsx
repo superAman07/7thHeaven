@@ -52,10 +52,46 @@ export default function CustomersPage() {
 
   // Profile Sidebar State
   const [selectedProfile, setSelectedProfile] = useState<Customer | null>(null);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     fetchCustomers();
   }, []);
+
+  const handleSendMessage = async () => {
+      if (!messageTarget || !messageTarget.ids.length) return;
+      
+      // Get the value from the textarea (you might need to add state for the textarea value too)
+      // For now, let's assume you add a state: const [messageBody, setMessageBody] = useState("");
+      // And attach it to the textarea: value={messageBody} onChange={e => setMessageBody(e.target.value)}
+      
+      // Quick fix: Get it from DOM if you don't want to add state (Not recommended but quick)
+      const textArea = document.querySelector('textarea[placeholder="Message content..."]') as HTMLTextAreaElement;
+      const message = textArea?.value;
+      if (!message) {
+          toast.error("Please enter a message");
+          return;
+      }
+      setSending(true);
+      try {
+          const res = await axios.post('/api/v1/admin/customers/message', {
+              userIds: messageTarget.ids,
+              message: message
+          });
+          if (res.data.success) {
+              toast.success(res.data.message);
+              setShowMessageModal(false);
+              if(textArea) textArea.value = ""; // Clear input
+          } else {
+              toast.error(res.data.error || "Failed to send");
+          }
+      } catch (error) {
+          toast.error("Failed to send message");
+          console.error(error);
+      } finally {
+          setSending(false);
+      }
+  };
 
   const fetchCustomers = async () => {
     try {
@@ -393,8 +429,13 @@ export default function CustomersPage() {
                                 <button onClick={() => { handleOpenNetwork(selectedProfile); }} className="w-full py-3 rounded-lg border border-blue-100 text-blue-600 font-bold text-sm hover:bg-blue-50 transition-colors flex! items-center! justify-center! gap-2!">
                                     <Network size={16} /> View Network
                                 </button>
-                                <button onClick={() => { setMessageTarget({ ids: [selectedProfile.id], name: selectedProfile.fullName }); setShowMessageModal(true); }} className="w-full py-3 rounded-lg bg-gray-900 text-white font-bold text-sm hover:bg-black transition-colors flex! items-center! justify-center! gap-2!">
-                                    <Send size={16} /> Send Message
+                                <button 
+                                    onClick={handleSendMessage} 
+                                    disabled={sending}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold flex items-center gap-2"
+                                >
+                                    {sending ? <Loader2 className="animate-spin w-4 h-4" /> : <Send size={16} />}
+                                    {sending ? "Sending..." : "Send"}
                                 </button>
                                 {!selectedProfile.is7thHeaven && (
                                     <button 
@@ -423,7 +464,14 @@ export default function CustomersPage() {
                 <textarea className="w-full border rounded-lg p-2 h-32 mb-4" placeholder="Message content..."></textarea>
                 <div className="flex justify-end gap-2">
                     <button onClick={() => setShowMessageModal(false)} className="px-4 py-2 text-gray-500 text-sm">Cancel</button>
-                    <button onClick={() => { toast.success("Message sent!"); setShowMessageModal(false); }} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold">Send</button>
+                    <button 
+                        onClick={handleSendMessage} 
+                        disabled={sending}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold flex items-center gap-2"
+                    >
+                        {sending ? <Loader2 className="animate-spin w-4 h-4" /> : <Send size={16} />}
+                        {sending ? "Sending..." : "Send"}
+                    </button>
                 </div>
              </div>
         </div>

@@ -17,7 +17,7 @@ interface SendEmailOptions {
 export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions): Promise<boolean> {
   try {
     const data = await resend.emails.send({
-      from: 'Celsius <onboarding@resend.dev>', // Update this once you verify your domain in Resend
+      from: 'Celsius <support@celsiuspop.com>', // Update this once you verify your domain in Resend
       to: [to],
       subject: subject,
       html: html,
