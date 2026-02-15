@@ -7,6 +7,9 @@ export async function GET(req: NextRequest) {
         const customers = await prisma.user.findMany({
             include: {
                 _count: { select: { children: true } },
+                messages: {
+                    orderBy: { sentAt: 'desc' },
+                },
                 orders: {
                     where: { paymentStatus: 'PAID' },
                     select: { 
@@ -44,7 +47,8 @@ export async function GET(req: NextRequest) {
                 referralCode: user.referralCode,
                 networkSize: user._count?.children || 0,
                 orders: user.orders,
-                address: addressStr
+                address: addressStr,
+                messages: user.messages || [],
             };
         });
 

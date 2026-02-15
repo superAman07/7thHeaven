@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
                 id: { in: userIds },
                 email: { not: null }
             },
-            select: { email: true, fullName: true }
+            select: { id: true, email: true, fullName: true }
         });
 
         if (users.length === 0) {
@@ -41,20 +41,30 @@ export async function POST(req: NextRequest) {
                         </div>
                     </div>
                 `;
-                
+
                 const success = await sendEmail({
                     to: user.email,
                     subject: "New Message from Celsius Admin",
                     html: html
                 });
-                
-                if (success) sentCount++;
+
+                if (success) {
+                    sentCount++;
+                    // LOG THE MESSAGE
+                    await prisma.adminMessage.create({
+                        data: {
+                            userId: user.id,
+                            message: message,
+                            subject: "Message from Admin"
+                        }
+                    });
+                }
             }
         }));
 
-        return NextResponse.json({ 
-            success: true, 
-            message: `Sent ${sentCount} emails successfully` 
+        return NextResponse.json({
+            success: true,
+            message: `Sent ${sentCount} emails successfully`
         });
 
     } catch (error) {
