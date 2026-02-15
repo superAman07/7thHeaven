@@ -222,7 +222,7 @@ export default function CustomersPage() {
              {selectedIds.length > 0 && (
                 <button 
                     onClick={() => { setMessageTarget({ids: selectedIds, name: `${selectedIds.length} Citizens`}); setShowMessageModal(true); }}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition flex items-center gap-2"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition flex! items-center gap-2"
                 >
                     <Mail size={16} /> Send Message ({selectedIds.length})
                 </button>
@@ -467,7 +467,7 @@ export default function CustomersPage() {
                     <button 
                         onClick={handleSendMessage} 
                         disabled={sending}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold flex items-center gap-2"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold flex! items-center gap-2"
                     >
                         {sending ? <Loader2 className="animate-spin w-4 h-4" /> : <Send size={16} />}
                         {sending ? "Sending..." : "Send"}
