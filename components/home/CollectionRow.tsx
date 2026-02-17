@@ -47,7 +47,7 @@ export default async function CollectionRow({ title, type, categorySlug, collect
                                             <div className="product-slider tf-element-carousel">
                                                 {showComingSoon ? (
                                                     <div className="row justify-content-center">
-                                                        <ComingSoonCard />
+                                                        <ComingSoonCard collectionSlug={collectionSlug || categorySlug} />
                                                     </div>
                                                 ) : (
                                                     <ProductSlider products={products as any[]} />

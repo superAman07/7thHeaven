@@ -348,6 +348,16 @@ model AdminMessage {
   sentBy    String?
 }
 
+model NotifySubscriber {
+  id             String   @id @default(cuid())
+  email          String
+  collectionSlug String?          
+  source         String   @default("coming_soon")  
+  isNotified     Boolean  @default(false)           
+  createdAt      DateTime @default(now())
+  @@unique([email, collectionSlug])  
+}
+
 enum GenderTags {
   Male
   Female

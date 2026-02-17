@@ -333,3 +333,61 @@ export async function sendAccountStatusUpdate(email: string, name: string, isBlo
 
   return sendEmail({ to: email, subject: `Account Status Update`, html });
 }
+
+export async function sendNotifyMeConfirmation(email: string, collectionName: string) {
+  const html = `
+    <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f4f4f4; padding: 20px;">
+      <div style="background: #0d0b09; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <img src="${LOGO_URL}" alt="Celsius" style="max-height: 50px; width: auto;" />
+      </div>
+      <div style="background: #ffffff; padding: 40px; border-radius: 0 0 8px 8px; text-align: center;">
+        <h2 style="color: #333; margin-top: 0; font-weight: 600;">You're on the List!</h2>
+        <p style="color: #666; margin-bottom: 30px;">
+          We'll notify you as soon as <strong>${collectionName}</strong> launches. Get ready for something extraordinary.
+        </p>
+        
+        <div style="background: #fdfbf7; border: 1px solid rgba(182,144,46,0.2); padding: 25px; border-radius: 8px; margin: 30px 0;">
+          <p style="margin: 0; color: #B6902E; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">Exclusive Early Access</p>
+          <p style="margin: 10px 0 0; color: #666; font-size: 13px;">You'll be among the first to know when this collection drops.</p>
+        </div>
+        
+        <div style="margin-top: 30px;">
+          <a href="${SITE_URL}/collections/perfumes" style="background: #ddb040; color: #000; padding: 14px 30px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Browse Current Collections</a>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+        <p>&copy; 2026 Celsius. All rights reserved.</p>
+      </div>
+    </div>
+  `;
+  return sendEmail({ to: email, subject: `You're In! We'll Notify You When ${collectionName} Launches`, html });
+}
+// ----------------------------------------------------------------------
+// 9. NOTIFY ME - COLLECTION LAUNCH NOTIFICATION
+// ----------------------------------------------------------------------
+export async function sendCollectionLaunchEmail(email: string, collectionName: string, collectionSlug: string) {
+  const html = `
+    <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f4f4f4; padding: 20px;">
+      <div style="background: #0d0b09; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <img src="${LOGO_URL}" alt="Celsius" style="max-height: 50px; width: auto;" />
+      </div>
+      <div style="background: #ffffff; padding: 40px; border-radius: 0 0 8px 8px; text-align: center;">
+        <p style="color: #B6902E; font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 5px;">It's Here</p>
+        <h2 style="color: #333; margin-top: 0; font-size: 28px; font-weight: 600;">${collectionName} Has Launched!</h2>
+        <p style="color: #666; margin-bottom: 30px; line-height: 1.6;">
+          The wait is over. The collection you signed up for is now live. Be among the first to explore and shop these exclusive new fragrances.
+        </p>
+        
+        <div style="margin: 40px 0;">
+          <a href="${SITE_URL}/collections/${collectionSlug}" style="background: #ddb040; color: #000; padding: 16px 40px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Shop Now</a>
+        </div>
+        
+        <p style="color: #999; font-size: 12px;">You received this because you subscribed to launch notifications for ${collectionName}.</p>
+      </div>
+      <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+        <p>&copy; 2026 Celsius. All rights reserved.</p>
+      </div>
+    </div>
+  `;
+  return sendEmail({ to: email, subject: `🎉 ${collectionName} is Live! Shop Now`, html });
+}

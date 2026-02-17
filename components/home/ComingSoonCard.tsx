@@ -1,82 +1,242 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import axios from 'axios';
 
-export const ComingSoonCard = () => {
+interface ComingSoonCardProps {
+    collectionSlug?: string;
+}
+
+export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
+    const [email, setEmail] = useState('');
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+    const handleNotify = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setStatus('loading');
+
+        try {
+            const res = await axios.post('/api/v1/notify-me', {
+                email,
+                collectionSlug: collectionSlug || 'general',
+                source: 'coming_soon',
+            });
+
+            if (res.data.success) {
+                setStatus('success');
+                setEmail('');
+            } else {
+                setStatus('error');
+            }
+        } catch (err: any) {
+            // If it's a duplicate, still show success (user already subscribed)
+            if (err?.response?.status === 409) {
+                setStatus('success');
+            } else {
+                setStatus('error');
+            }
+        }
+    };
+
     return (
         <>
             <style jsx>{`
-                .coming-soon-card {
+                .coming-soon-luxury {
                     position: relative;
-                    background: linear-gradient(145deg, #fafafa, #f0f0f0);
-                    border: 2px dashed #ddb040;
-                    border-radius: 12px;
-                    overflow: hidden;
-                    min-height: 420px;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
+                    width: 100%;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 50px 40px;
                     text-align: center;
-                    padding: 30px 20px;
-                    transition: all 0.3s ease;
+                    background: linear-gradient(135deg, #fdfbf7 0%, #f5f0e8 100%);
+                    border: 1px solid rgba(182, 144, 46, 0.2);
+                    border-radius: 4px;
+                    overflow: hidden;
                 }
-                .coming-soon-card:hover {
-                    border-color: #b6902e;
-                    box-shadow: 0 10px 30px rgba(221, 176, 64, 0.15);
+                .coming-soon-luxury::before {
+                    content: '';
+                    position: absolute;
+                    top: 12px;
+                    left: 12px;
+                    right: 12px;
+                    bottom: 12px;
+                    border: 1px solid rgba(182, 144, 46, 0.15);
+                    border-radius: 2px;
+                    pointer-events: none;
                 }
-                .coming-soon-icon {
-                    font-size: 4rem;
-                    margin-bottom: 20px;
-                    animation: pulse 2s infinite;
+                .cs-gold-line {
+                    width: 50px;
+                    height: 2px;
+                    background: linear-gradient(90deg, transparent, #B6902E, transparent);
+                    margin: 0 auto 20px;
                 }
-                @keyframes pulse {
-                    0%, 100% { transform: scale(1); opacity: 0.7; }
-                    50% { transform: scale(1.05); opacity: 1; }
+                .cs-subtitle {
+                    font-size: 10px;
+                    font-weight: 700;
+                    letter-spacing: 4px;
+                    text-transform: uppercase;
+                    color: #B6902E;
+                    margin-bottom: 12px;
                 }
-                .coming-soon-title {
+                .cs-title {
                     font-family: 'Cormorant Garamond', serif;
-                    font-size: 1.8rem;
+                    font-size: 2rem;
                     font-weight: 600;
+                    color: #1a1a1a;
+                    margin-bottom: 8px;
+                    letter-spacing: 1px;
+                }
+                .cs-desc {
+                    color: #888;
+                    font-size: 0.85rem;
+                    line-height: 1.7;
+                    max-width: 380px;
+                    margin: 0 auto 28px;
+                }
+                .cs-notify-form {
+                    display: flex;
+                    gap: 0;
+                    max-width: 360px;
+                    margin: 0 auto 20px;
+                    border: 1px solid #ddd;
+                    border-radius: 2px;
+                    overflow: hidden;
+                }
+                .cs-notify-form input {
+                    flex: 1;
+                    padding: 12px 16px;
+                    border: none;
+                    outline: none;
+                    font-size: 13px;
+                    background: white;
                     color: #333;
-                    margin-bottom: 10px;
+                }
+                .cs-notify-form input::placeholder {
+                    color: #bbb;
+                    letter-spacing: 0.5px;
+                }
+                .cs-notify-btn {
+                    padding: 12px 22px;
+                    background: #1a1a1a;
+                    color: #D4AF37;
+                    border: none;
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: 1.5px;
+                    text-transform: uppercase;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    white-space: nowrap;
+                }
+                .cs-notify-btn:hover {
+                    background: #B6902E;
+                    color: #fff;
+                }
+                .cs-notify-btn:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                }
+                .cs-divider-text {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin: 20px auto;
+                    max-width: 300px;
+                    color: #ccc;
+                    font-size: 11px;
                     letter-spacing: 2px;
+                    text-transform: uppercase;
                 }
-                .coming-soon-text {
-                    color: #777;
-                    font-size: 0.9rem;
-                    margin-bottom: 20px;
-                    max-width: 200px;
+                .cs-divider-text::before,
+                .cs-divider-text::after {
+                    content: '';
+                    flex: 1;
+                    height: 1px;
+                    background: #e0d9cc;
                 }
-                .coming-soon-btn {
+                .cs-browse-link {
                     display: inline-block;
-                    background-color: #ddb040;
                     color: #1a1a1a;
                     font-size: 12px;
                     font-weight: 600;
+                    letter-spacing: 2px;
                     text-transform: uppercase;
-                    letter-spacing: 1px;
-                    padding: 12px 25px;
-                    border: none;
-                    cursor: pointer;
+                    text-decoration: none;
+                    border-bottom: 1px solid #B6902E;
+                    padding-bottom: 2px;
                     transition: all 0.3s ease;
                 }
-                .coming-soon-btn:hover {
-                    background-color: #1a1a1a;
-                    color: #ddb040;
+                .cs-browse-link:hover {
+                    color: #B6902E;
+                }
+                .cs-success {
+                    color: #B6902E;
+                    font-size: 13px;
+                    font-weight: 600;
+                    letter-spacing: 1px;
+                    animation: fadeIn 0.5s ease;
+                    margin-bottom: 0;
+                }
+                .cs-error {
+                    color: #dc3545;
+                    font-size: 12px;
+                    margin-top: 8px;
+                    animation: fadeIn 0.3s ease;
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(5px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
                 }
             `}</style>
 
-            <div className="col-lg-3 col-md-4 col-sm-6 col-12 mb-30">
-                <div className="coming-soon-card">
-                    <div className="coming-soon-icon">🚀</div>
-                    <h3 className="coming-soon-title">Coming Soon</h3>
-                    <p className="coming-soon-text">
-                        Exciting new products are on the way!
+            <div className="col-12">
+                <div className="coming-soon-luxury">
+                    <div className="cs-subtitle">Exclusively Crafted</div>
+                    <h3 className="cs-title">Something Special Awaits</h3>
+                    <div className="cs-gold-line"></div>
+                    <p className="cs-desc">
+                        Our perfumers are crafting something extraordinary for this collection.
+                        Be the first to experience it.
                     </p>
-                    <Link href="/contact" className="coming-soon-btn">
-                        Enquire Now
+
+                    {status === 'success' ? (
+                        <p className="cs-success">✓ You're on the list! We'll notify you at launch.</p>
+                    ) : (
+                        <>
+                            <form onSubmit={handleNotify} className="cs-notify-form">
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                    required
+                                    disabled={status === 'loading'}
+                                />
+                                <button
+                                    type="submit"
+                                    className="cs-notify-btn"
+                                    disabled={status === 'loading'}
+                                >
+                                    {status === 'loading' ? 'Saving...' : 'Notify Me'}
+                                </button>
+                            </form>
+                            {status === 'error' && (
+                                <p className="cs-error">Something went wrong. Please try again.</p>
+                            )}
+                        </>
+                    )}
+
+                    <div className="cs-divider-text">
+                        <span>or</span>
+                    </div>
+
+                    <Link href="/collections/perfumes" className="cs-browse-link">
+                        Browse All Fragrances
                     </Link>
                 </div>
             </div>
