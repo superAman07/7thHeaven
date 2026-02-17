@@ -398,13 +398,13 @@ export default function CustomersPage() {
                                     <motion.div 
                                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                         onClick={() => setSelectedProfile(null)}
-                                        className="fixed! inset-0! bg-black/40 z-[60]! backdrop-blur-sm"
+                                        className="fixed! inset-0! bg-black/40 z-60! backdrop-blur-sm"
                                     />
                                     
                                     {/* SIDEBAR PANEL */}
                                     <motion.div 
                                         initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                                        className="fixed! top-0! right-0! h-[100vh]! w-full md:w-[450px]! bg-white z-[70]! shadow-2xl flex! flex-col! border-l border-gray-100"
+                                        className="fixed! top-0! right-0! h-100vh! w-full md:w-[450px]! bg-white z-70! shadow-2xl flex! flex-col! border-l border-gray-100"
                                     >
                                         {/* SCROLLABLE CONTENT AREA */}
                                         <div className="p-6 flex-1! overflow-y-auto!">
@@ -542,7 +542,7 @@ export default function CustomersPage() {
                                         </div>
 
                                         {/* STICKY FOOTER ACTIONS */}
-                                        <div className="p-6 pt-4 border-t border-gray-100 bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.03)] z-[80]! relative!">
+                                        <div className="p-6 pt-4 border-t border-gray-100 bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.03)] z-80! relative!">
                                             <div className="grid! grid-cols-2 gap-3">
                                                 <button onClick={() => { handleOpenNetwork(selectedProfile); }} className="w-full! py-3 rounded-lg border border-blue-100 text-blue-600 font-bold text-sm hover:bg-blue-50 transition-colors flex! items-center justify-center gap-2">
                                                     <Network size={16} /> View Network
