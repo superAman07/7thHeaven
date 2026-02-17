@@ -62,12 +62,28 @@ export default function SiteSettingsPage() {
     const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState<'contact' | 'about' | 'social' | 'announcement' | 'footer'>('contact');
+    const [activeTab, setActiveTab] = useState<'contact' | 'about' | 'homeAbout' | 'social' | 'announcement' | 'footer'>('contact');
     const [hasFetched, setHasFetched] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const logoInputRef = useRef<HTMLInputElement>(null);
     const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+    const [homeAbout, setHomeAbout] = useState({
+        displayTitle: 'The Celsius Story',
+        image: '/assets/images/bg-hero.png',
+        imageAlt: 'Celsius Luxury Perfume',
+        paragraphs: [
+            'Celsius is not just a perfume; it\'s a statement of Indian luxury.',
+            'Our perfumers source the finest essential oils from across the globe.',
+            'With Celsius by 7th Heaven, you are buying direct luxury.',
+        ],
+        buttonText: 'Read More',
+        buttonLink: '/about',
+        showButton: true,
+    });
+    const [homeAboutLoaded, setHomeAboutLoaded] = useState(false);
+    const homeAboutImageRef = useRef<HTMLInputElement>(null);
+    const [isUploadingHomeAboutImage, setIsUploadingHomeAboutImage] = useState(false);
     
     const fetchSettings = useCallback(async () => {
         if (hasFetched) return;
@@ -87,6 +103,19 @@ export default function SiteSettingsPage() {
     useEffect(() => {
         fetchSettings();
     }, [fetchSettings]);
+
+    useEffect(() => {
+        if (activeTab === 'homeAbout' && !homeAboutLoaded) {
+            axios.get('/api/v1/content/home_about')
+                .then(res => {
+                    if (res.data.success && res.data.data) {
+                        setHomeAbout(prev => ({ ...prev, ...res.data.data }));
+                    }
+                })
+                .catch(() => toast.error('Failed to load homepage about data'))
+                .finally(() => setHomeAboutLoaded(true));
+        }
+    }, [activeTab, homeAboutLoaded]);
 
     const handleSave = async () => {
         setSaving(true);
@@ -158,6 +187,61 @@ export default function SiteSettingsPage() {
         }
     };
 
+    const handleSaveHomeAbout = async () => {
+        setSaving(true);
+        try {
+            const res = await axios.put('/api/v1/content/home_about', homeAbout);
+            if (res.data.success) {
+                toast.success('Homepage About section saved!');
+            }
+        } catch (error) {
+            toast.error('Failed to save homepage about section');
+        } finally {
+            setSaving(false);
+        }
+    };
+    // Image upload for Homepage About section
+    const handleHomeAboutImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+        setIsUploadingHomeAboutImage(true);
+        const file = files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+            const response = await axios.post('/api/v1/admin/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            if (response.data.success) {
+                setHomeAbout(prev => ({ ...prev, image: response.data.data.url }));
+                toast.success('Image uploaded!');
+            }
+        } catch (err) {
+            toast.error('Image upload failed.');
+        } finally {
+            setIsUploadingHomeAboutImage(false);
+            if (homeAboutImageRef.current) {
+                homeAboutImageRef.current.value = '';
+            }
+        }
+    };
+    // Paragraph helpers
+    const updateParagraph = (index: number, value: string) => {
+        const updated = [...homeAbout.paragraphs];
+        updated[index] = value;
+        setHomeAbout(prev => ({ ...prev, paragraphs: updated }));
+    };
+    const addParagraph = () => {
+        setHomeAbout(prev => ({ ...prev, paragraphs: [...prev.paragraphs, ''] }));
+    };
+    const removeParagraph = (index: number) => {
+        setHomeAbout(prev => ({
+            ...prev,
+            paragraphs: prev.paragraphs.filter((_, i) => i !== index),
+        }));
+    };
+
+
     const removeImage = () => {
         handleChange('aboutImage', '');
     };
@@ -177,6 +261,7 @@ export default function SiteSettingsPage() {
     const tabs = [
         { id: 'contact', label: '📍 Contact & Address' },
         { id: 'about', label: '📝 About Us' },
+        { id: 'homeAbout', label: '🏠 Homepage About' },
         { id: 'social', label: '🔗 Social Links' },
         { id: 'announcement', label: '📢 Announcement' },
         { id: 'footer', label: '📄 Footer' }
@@ -190,7 +275,7 @@ export default function SiteSettingsPage() {
                     <p className="text-gray-500! text-sm!">Manage your website's contact info, about page, and footer</p>
                 </div>
                 <button
-                    onClick={handleSave}
+                    onClick={activeTab === 'homeAbout' ? handleSaveHomeAbout : handleSave}
                     disabled={saving}
                     className="px-6! py-2.5! bg-amber-600! text-white! rounded-lg! font-medium! hover:bg-amber-700! disabled:opacity-50! flex! items-center! gap-2!"
                 >
@@ -355,6 +440,144 @@ export default function SiteSettingsPage() {
                         <InputField label="Facebook URL" value={settings.facebook} onChange={v => handleChange('facebook', v)} placeholder="https://facebook.com/..." />
                         <InputField label="Twitter URL" value={settings.twitter} onChange={v => handleChange('twitter', v)} placeholder="https://twitter.com/..." />
                         <InputField label="YouTube URL" value={settings.youtube} onChange={v => handleChange('youtube', v)} placeholder="https://youtube.com/..." />
+                    </div>
+                </div>
+            )}
+
+            {/* Homepage About Tab */}
+            {activeTab === 'homeAbout' && (
+                <div className="bg-white! rounded-xl! p-6! shadow-sm!">
+                    <div className="flex! items-center! gap-2! mb-1!">
+                        <h3 className="text-lg! font-semibold! text-gray-800!">Homepage — About Us Section</h3>
+                    </div>
+                    <p className="text-sm! text-gray-500! mb-6!">This content appears on the homepage as a short teaser. Different from the full About page.</p>
+
+                    <div className="space-y-5!">
+                        {/* Title */}
+                        <InputField
+                            label="Display Title"
+                            value={homeAbout.displayTitle}
+                            onChange={v => setHomeAbout(prev => ({ ...prev, displayTitle: v }))}
+                            placeholder="e.g., The Celsius Story"
+                        />
+
+                        {/* Image */}
+                        <div>
+                            <label className="block! text-sm! font-medium! text-gray-700! mb-2!">Section Image</label>
+                            {homeAbout.image ? (
+                                <div className="relative! inline-block!">
+                                    <img
+                                        src={homeAbout.image}
+                                        alt={homeAbout.imageAlt}
+                                        className="h-48! w-72! object-cover! rounded-lg! border! border-gray-200!"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setHomeAbout(prev => ({ ...prev, image: '' }))}
+                                        className="absolute! -top-2! -right-2! bg-red-500! text-white! rounded-full! p-1! hover:bg-red-600!"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div
+                                    onClick={() => homeAboutImageRef.current?.click()}
+                                    className="w-72! h-48! border-2! border-dashed! border-gray-300! rounded-lg! flex! flex-col! items-center! justify-center! cursor-pointer! hover:border-amber-500! hover:bg-amber-50! transition-all!"
+                                >
+                                    {isUploadingHomeAboutImage ? (
+                                        <div className="animate-spin! rounded-full! h-8! w-8! border-b-2! border-amber-600!"></div>
+                                    ) : (
+                                        <>
+                                            <ImagePlus size={32} className="text-gray-400! mb-2!" />
+                                            <span className="text-sm! text-gray-500!">Click to upload image</span>
+                                        </>
+                                    )}
+                                </div>
+                            )}
+                            <input
+                                type="file"
+                                ref={homeAboutImageRef}
+                                onChange={handleHomeAboutImageUpload}
+                                accept="image/*"
+                                className="hidden!"
+                            />
+                        </div>
+
+                        {/* Image Alt */}
+                        <InputField
+                            label="Image Alt Text"
+                            value={homeAbout.imageAlt}
+                            onChange={v => setHomeAbout(prev => ({ ...prev, imageAlt: v }))}
+                            placeholder="e.g., Celsius Luxury Perfume"
+                        />
+
+                        {/* Paragraphs */}
+                        <div>
+                            <label className="block! text-sm! font-medium! text-gray-700! mb-2!">
+                                Paragraphs ({homeAbout.paragraphs.length})
+                            </label>
+                            <div className="space-y-3!">
+                                {homeAbout.paragraphs.map((p, i) => (
+                                    <div key={i} className="flex! gap-2!">
+                                        <textarea
+                                            value={p}
+                                            onChange={e => updateParagraph(i, e.target.value)}
+                                            rows={3}
+                                            className="flex-1! px-4! py-2.5! border! border-gray-200! rounded-lg! focus:ring-2! focus:ring-amber-500! focus:border-transparent!"
+                                            placeholder={`Paragraph ${i + 1}`}
+                                        />
+                                        <button
+                                            onClick={() => removeParagraph(i)}
+                                            className="text-red-500! hover:text-red-700! px-2! self-start! mt-2!"
+                                            title="Remove paragraph"
+                                        >
+                                            <X size={18} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            <button
+                                onClick={addParagraph}
+                                className="mt-3! text-amber-600! hover:text-amber-800! text-sm! font-medium!"
+                            >
+                                + Add Paragraph
+                            </button>
+                        </div>
+
+                        {/* Button Settings */}
+                        <div className="p-4! bg-gray-50! rounded-lg! border! border-gray-200!">
+                            <div className="flex! items-center! justify-between! mb-4!">
+                                <div>
+                                    <h4 className="font-medium! text-gray-900!">Show Button</h4>
+                                    <p className="text-sm! text-gray-500!">Show a "Read More" style button below the text</p>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={homeAbout.showButton}
+                                        onChange={e => setHomeAbout(prev => ({ ...prev, showButton: e.target.checked }))}
+                                        className="sr-only peer"
+                                    />
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                                </label>
+                            </div>
+                            {homeAbout.showButton && (
+                                <div className="grid! grid-cols-1! md:grid-cols-2! gap-4!">
+                                    <InputField
+                                        label="Button Text"
+                                        value={homeAbout.buttonText}
+                                        onChange={v => setHomeAbout(prev => ({ ...prev, buttonText: v }))}
+                                        placeholder="Read More"
+                                    />
+                                    <InputField
+                                        label="Button Link"
+                                        value={homeAbout.buttonLink}
+                                        onChange={v => setHomeAbout(prev => ({ ...prev, buttonLink: v }))}
+                                        placeholder="/about"
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
