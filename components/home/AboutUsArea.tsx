@@ -12,7 +12,7 @@ type Props = {
 const defaultParagraphs = [
   `Celsius is not just a perfume; it’s a statement of Indian luxury. Proudly crafted under the "Make in Bharat" initiative, we challenge the global narrative by proving that world-class luxury doesn't have to come from abroad.`,
   `Our perfumers source the finest essential oils from across the globe—the same oils used by expensive designer labels—but we blend and bottle them right here. The result? A fragrance that contains 2-3x more perfume oil than standard brands, ensuring a scent that lasts through your longest days.`,
-  `Why pay for a celebrity endorsement or a fancy Italian bottle when you can pay for the product itself? With Celsius by 7th Heaven, you are buying direct luxury. Earn rewards, build your collection, and experience the scent of success.`,
+  `Why pay for a celebrity endorsement or a fancy Italian bottle when you can pay for the product itself? With 7th Heaven by Celsius, you are buying direct luxury. Earn rewards, build your collection, and experience the scent of success.`,
 ];
 
 export default function AboutUsAreaSection({
