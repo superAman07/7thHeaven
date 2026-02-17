@@ -527,29 +527,6 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
           <ProductQuickViewModal isOpen={isModalOpen} onClose={handleCloseModal} productId={selectedProductId || ''} />
         </div>
       )}
-
-      {/* Features */}
-      <div className="py-20 container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
-          <div className="p-8 border border-white/10 rounded-xl hover:border-[#E6B422]/50 transition-colors">
-            <div className="text-4xl mb-4">💎</div>
-            <h3 className="text-xl font-bold mb-2 text-[#E6B422]!">Exclusive Rewards</h3>
-            <p className="text-gray-400">Access limited edition fragrances reserved only for club members.</p>
-          </div>
-
-          <div className="p-8 border border-white/10 rounded-xl hover:border-[#E6B422]/50 transition-colors">
-            <div className="text-4xl mb-4">🤝</div>
-            <h3 className="text-xl font-bold mb-2 text-[#E6B422]!">Build Your Network</h3>
-            <p className="text-gray-400">Invite friends and grow your influence. Watch your empire expand in real-time.</p>
-          </div>
-
-          <div className="p-8 border border-white/10 rounded-xl hover:border-[#E6B422]/50 transition-colors">
-            <div className="text-4xl mb-4">🎁</div>
-            <h3 className="text-xl font-bold mb-2 text-[#E6B422]!">Luxury Gifts</h3>
-            <p className="text-gray-400">Complete Level 7 to unlock a curated luxury gift package from our founders.</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
