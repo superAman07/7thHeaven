@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromToken } from '@/lib/auth';
-import { sendCollectionLaunchEmail } from '@/lib/email';
+import { sendCollectionLaunchEmail, sendCustomNotifyEmail } from '@/lib/email';
 
 // POST: Admin sends launch notification to all pending subscribers for a collection
 export async function POST(request: NextRequest) {
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
         }
 
-        const { collectionSlug } = await request.json();
+        const { collectionSlug, customSubject, customBody } = await request.json();
 
         if (!collectionSlug) {
             return NextResponse.json({ success: false, error: 'collectionSlug is required' }, { status: 400 });
@@ -45,11 +45,14 @@ export async function POST(request: NextRequest) {
 
         let sentCount = 0;
         let failedCount = 0;
+        const isCustom = customSubject && customBody;
 
         // Send emails (with small delay to avoid rate limits)
         for (const sub of subscribers) {
             try {
-                const sent = await sendCollectionLaunchEmail(sub.email, collectionName, collectionSlug);
+                const sent = isCustom
+                    ? await sendCustomNotifyEmail(sub.email, customSubject, customBody, collectionName, collectionSlug)
+                    : await sendCollectionLaunchEmail(sub.email, collectionName, collectionSlug);
                 if (sent) {
                     // Mark as notified
                     await prisma.notifySubscriber.update({

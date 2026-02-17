@@ -391,3 +391,26 @@ export async function sendCollectionLaunchEmail(email: string, collectionName: s
   `;
   return sendEmail({ to: email, subject: `🎉 ${collectionName} is Live! Shop Now`, html });
 }
+// 10. CUSTOM NOTIFY EMAIL (Admin-composed)
+export async function sendCustomNotifyEmail(
+    email: string, customSubject: string, customBody: string,
+    collectionName: string, collectionSlug: string
+) {
+    const formattedBody = customBody.replace(/\n/g, '<br/>');
+    const html = `
+    <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f4f4f4; padding: 20px;">
+      <div style="background: #0d0b09; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <img src="${LOGO_URL}" alt="Celsius" style="max-height: 50px; width: auto;" />
+      </div>
+      <div style="background: #ffffff; padding: 40px; border-radius: 0 0 8px 8px;">
+        <h2 style="color: #333; margin-top: 0; font-size: 24px; font-weight: 600; text-align: center;">${customSubject}</h2>
+        <div style="color: #555; font-size: 15px; line-height: 1.8; margin: 25px 0;">${formattedBody}</div>
+        <div style="text-align: center; margin: 35px 0;">
+          <a href="${SITE_URL}/collections/${collectionSlug}" style="background: #ddb040; color: #000; padding: 16px 40px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Shop ${collectionName}</a>
+        </div>
+        <p style="color: #999; font-size: 12px; text-align: center;">You received this because you subscribed to launch notifications for ${collectionName}.</p>
+      </div>
+      <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;"><p>&copy; 2026 Celsius. All rights reserved.</p></div>
+    </div>`;
+    return sendEmail({ to: email, subject: customSubject, html });
+}
