@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, Bell, MessageSquare, Settings, Layers, Ticket, Mail } from 'lucide-react';
 
-const getNavItems = (newOrdersCount: number, openTicketsCount: number, pendingRewardsCount: number) => [
+const getNavItems = (newOrdersCount: number, openTicketsCount: number, pendingRewardsCount: number, subscriberCount: number) => [
   { href: '/celsius-7th-heaven/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/celsius-7th-heaven/collections', label: 'Collections', icon: Layers },
   { href: '/celsius-7th-heaven/categories', label: 'Categories', icon: Tags },
@@ -16,7 +16,7 @@ const getNavItems = (newOrdersCount: number, openTicketsCount: number, pendingRe
   { href: '/celsius-7th-heaven/network', label: 'Network', icon: Share2, badgeCount: pendingRewardsCount },
   { href: '/celsius-7th-heaven/support-tickets', label: 'Support Tickets', icon: MessageSquare, badgeCount: openTicketsCount },
   { href: '/celsius-7th-heaven/notifications', label: 'Notifications', icon: Bell },
-  { href: '/celsius-7th-heaven/subscribers', label: 'Subscribers', icon: Mail },
+  { href: '/celsius-7th-heaven/subscribers', label: 'Subscribers', icon: Mail, badgeCount: subscriberCount },
   { href: '/celsius-7th-heaven/storefront', label: 'Store Front Page', icon: LayoutDashboard },
   { href: '/celsius-7th-heaven/site-settings', label: 'Site Settings', icon: Settings },
   { href: '/celsius-7th-heaven/settings/policies', label: 'Policies', icon: Settings },
@@ -63,6 +63,7 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
   const [newOrdersCount, setNewOrdersCount] = useState(0);
   const [openTicketsCount, setOpenTicketsCount] = useState(0);
   const [pendingRewardsCount, setPendingRewardsCount] = useState(0);
+  const [subscriberCount, setSubscriberCount] = useState(0);
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -89,6 +90,14 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
           ).length;
           setPendingRewardsCount(usersWithRewards);
         }
+        try {
+            const subsRes = await fetch('/api/v1/notify-me');
+            const subsData = await subsRes.json();
+            if (subsData.success) {
+                const pending = subsData.data.filter((s: any) => !s.isNotified).length;
+                setSubscriberCount(pending);
+            }
+        } catch {}
       } catch (err) {
         console.error('Failed to fetch counts');
       }
@@ -121,7 +130,7 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
 
         {/* Navigation Links */}
         <div className="flex! flex-col! flex-1! overflow-y-auto! custom-scrollbar! gap-0.5!">
-          {getNavItems(newOrdersCount, openTicketsCount, pendingRewardsCount).map((item) => (
+          {getNavItems(newOrdersCount, openTicketsCount, pendingRewardsCount, subscriberCount).map((item) => (
             <NavLink key={item.href} {...item} />
           ))}
         </div>

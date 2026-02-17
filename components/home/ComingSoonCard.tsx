@@ -10,7 +10,7 @@ interface ComingSoonCardProps {
 
 export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
     const [email, setEmail] = useState('');
-    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'already' | 'error'>('idle');
 
     const handleNotify = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,7 +24,7 @@ export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
             });
 
             if (res.data.success) {
-                setStatus('success');
+                setStatus(res.data.alreadySubscribed ? 'already' : 'success');
                 setEmail('');
             } else {
                 setStatus('error');
@@ -204,8 +204,12 @@ export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
                         Be the first to experience it.
                     </p>
 
-                    {status === 'success' ? (
-                        <p className="cs-success">✓ You're on the list! We'll notify you at launch.</p>
+                    {(status === 'success' || status === 'already') ? (
+                        <p className="cs-success">
+                            {status === 'already'
+                                ? '🔔 You\'re already on the list! We\'ll notify you at launch.'
+                                : '✓ You\'re on the list! We\'ll notify you at launch.'}
+                        </p>
                     ) : (
                         <>
                             <form onSubmit={handleNotify} className="cs-notify-form">

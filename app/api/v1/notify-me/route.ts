@@ -24,36 +24,35 @@ export async function POST(request: NextRequest) {
 
         const cleanEmail = email.toLowerCase().trim();
         const slug = collectionSlug || 'general';
-
-        // Upsert: if already exists, just update timestamp (no duplicates)
-        const subscriber = await prisma.notifySubscriber.upsert({
+        const existing = await prisma.notifySubscriber.findUnique({
             where: {
                 email_collectionSlug: {
                     email: cleanEmail,
                     collectionSlug: slug,
                 },
             },
-            update: {
-                createdAt: new Date(),
-            },
-            create: {
+        });
+        if (existing) {
+            return NextResponse.json({
+                success: true,
+                alreadySubscribed: true,
+                data: { id: existing.id },
+            });
+        }
+        const subscriber = await prisma.notifySubscriber.create({
+            data: {
                 email: cleanEmail,
                 collectionSlug: slug,
                 source,
             },
         });
-
-        // Send confirmation email (format slug into readable name)
         const collectionName = slug
             .replace(/-/g, ' ')
             .replace(/\b\w/g, (c: string) => c.toUpperCase());
-
-        // Fire-and-forget: don't block API response
         sendNotifyMeConfirmation(cleanEmail, collectionName).catch(err =>
             console.error('[Notify Me] Confirmation email failed:', err)
         );
-
-        return NextResponse.json({ success: true, data: { id: subscriber.id } });
+        return NextResponse.json({ success: true, alreadySubscribed: false, data: { id: subscriber.id } });
     } catch (error) {
         console.error('[Notify Me] Error:', error);
         return NextResponse.json(

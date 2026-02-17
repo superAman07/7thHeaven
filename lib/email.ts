@@ -352,7 +352,7 @@ export async function sendNotifyMeConfirmation(email: string, collectionName: st
         </div>
         
         <div style="margin-top: 30px;">
-          <a href="${SITE_URL}/collections/perfumes" style="background: #ddb040; color: #000; padding: 14px 30px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Browse Current Collections</a>
+          <a href="${SITE_URL}/collections/perfumes" style="background: #ddb040; color: #000; padding: 14px 30px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Browse Collections</a>
         </div>
       </div>
       <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
