@@ -308,7 +308,6 @@ function ProfileContent() {
                             state: details.State,
                             country: 'India'
                         }));
-                        toast.success("Location details fetched!");
                     }
                 } catch (error) {
                     console.error("Pincode fetch error:", error);
@@ -349,17 +348,6 @@ function ProfileContent() {
         setSelectedOrder(order);
         setShowOrderModal(true);
     };
-
-    if(loading){
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-[#ddb040] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-500 font-medium">Loading your Account...</p>
-                </div>
-            </div>
-        )
-    }
 
     if (!user) {
         return (
@@ -458,6 +446,14 @@ function ProfileContent() {
 
             {/* My Account Section */}
                 <div className="my-account-section section pt-100 pb-100">
+                  {loading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <div className="text-center">
+                            <div className="w-12 h-12 border-4 border-[#ddb040] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                            <p className="text-gray-500 font-medium">Loading your account...</p>
+                        </div>
+                    </div>
+                  ) : (
                     <div className="container">
                         <div className="row">
                             <div className="col-12">
@@ -637,11 +633,11 @@ function ProfileContent() {
                                                                         {/* Optional: Add "View" button if it's an order */}
                                                                         {notif.title.includes('Order') && (
                                                                             <button 
-                                                                                className="btn btn-sm btn-link p-0 mt-2" 
-                                                                                style={{ color: '#E6B422', textDecoration: 'none', fontSize: '13px', fontWeight: '600' }}
+                                                                                className="btn btn-sm btn-link p-2 mt-2" 
+                                                                                style={{ color: '#fff' ,textDecoration: 'none', fontSize: '13px', fontWeight: '600' }}
                                                                                 onClick={() => setActiveTab('orders')}
                                                                             >
-                                                                                View Order Details →
+                                                                                Order Details →
                                                                             </button>
                                                                         )}
                                                                     </div>
@@ -725,7 +721,7 @@ function ProfileContent() {
                                                                     <input placeholder="Confirm Password" type="password" value={formData.confirmPassword} onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })} />
                                                                 </div>
                                                                 <div className="col-12">
-                                                                    <button className="save-change-btn" disabled={isUpdatingProfile} style={{ opacity: isUpdatingProfile ? 0.7 : 1 }}>
+                                                                    <button className="save-change-btn p-2 text-md! w-auto!" disabled={isUpdatingProfile} style={{ opacity: isUpdatingProfile ? 0.7 : 1 }}>
                                                                         {isUpdatingProfile ? 'Saving...' : 'Save Changes'}
                                                                     </button>
                                                                 </div>
@@ -740,6 +736,7 @@ function ProfileContent() {
                             </div>
                         </div>
                     </div>
+                    )}
                 </div>
             {/* OTP Modal */}
             {showOtpModal && (
