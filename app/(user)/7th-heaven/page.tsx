@@ -484,7 +484,14 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
           </p>
 
           <div className="flex gap-2 md:gap-4 justify-center items-center w-full sm:w-auto px-2 sm:px-0">
-            <button onClick={scrollToProducts} className="px-4 py-3 md:px-8 md:py-4 bg-[#E6B422] text-black text-[10px] sm:text-xs md:text-base font-bold uppercase tracking-wider hover:bg-white transition-colors cursor-pointer">
+            <button onClick={() => {
+              const el = document.getElementById('club-products');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                window.location.href = `/collections/perfumes?maxPrice=${maxPriceLimit}&sort=price_asc`;
+              }
+            }} className="px-4 py-3 md:px-8 md:py-4 bg-[#E6B422] text-black text-[10px] sm:text-xs md:text-base font-bold uppercase tracking-wider hover:bg-white transition-colors cursor-pointer">
               Join The Club
             </button>
 
