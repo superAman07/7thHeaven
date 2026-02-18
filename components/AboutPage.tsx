@@ -186,7 +186,7 @@ export default function AboutPageContent() {
                             { icon: 'fa-diamond', title: 'Premium Selection', desc: 'Curated collection of authentic luxury fragrances.' },
                             { icon: 'fa-lock', title: 'Secure Shopping', desc: 'Transactions protected with advanced encryption.' },
                             { icon: 'fa-certificate', title: 'Quality Assured', desc: 'Every product verified for authenticity.' },
-                            { icon: 'fa-headphones', title: '24/7 Support', desc: 'Expert team ready to assist you anytime.' }
+                            { icon: 'fa-envelope', title: 'Email Support', desc: 'Reach us anytime via email — we respond within 24–48 hours.' }
                         ].map((item, idx) => (
                             <div key={idx} className="col-md-6 col-lg-3">
                                 <div className="bg-[#151210] p-8 rounded-xl border border-white/5 hover:border-[#C9A227]/30 transition-all h-100 text-center group">
