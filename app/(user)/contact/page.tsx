@@ -157,13 +157,13 @@ export default function ContactPage() {
     };
 
     // Construct Address dynamically
-    const parts = [
-        siteSettings?.address,
-        siteSettings?.city,
-        siteSettings?.state ? `${siteSettings.state} - ${siteSettings.pincode || ''}` : siteSettings?.pincode,
-        siteSettings?.country
-    ].filter(Boolean);
-    const displayAddress = parts.join(', ');
+    // const parts = [
+    //     siteSettings?.address,
+    //     siteSettings?.city,
+    //     siteSettings?.state ? `${siteSettings.state} - ${siteSettings.pincode || ''}` : siteSettings?.pincode,
+    //     siteSettings?.country
+    // ].filter(Boolean);
+    // const displayAddress = parts.join(', ');
 
         return (
         <div id="main-wrapper">
@@ -222,19 +222,6 @@ export default function ContactPage() {
                                             <div>
                                                 <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Our Company</h5>
                                                 <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{siteSettings.companyName}</p>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* 2. Address */}
-                                    {displayAddress && (
-                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '18px' }}>
-                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                <i className="fa fa-map-marker" style={{ color: 'white', fontSize: '16px' }}></i>
-                                            </div>
-                                            <div>
-                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Our Location</h5>
-                                                <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{displayAddress}</p>
                                             </div>
                                         </div>
                                     )}

@@ -70,7 +70,6 @@ export default function FooterPage({
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
   };
-  const displayAddress = settings?.address ? `${settings.address}${settings.city ? ', ' + settings.city : ''}${settings.country ? ', ' + settings.country : ''}` : '';
   const displayPhone = settings?.phone || '';
   const displayEmail = settings?.email || '';
   const displaySiteName = settings?.companyName || copyrightOwner;
@@ -143,12 +142,6 @@ export default function FooterPage({
                   <span className="d-md-none text-[#E6B422]">{openSection === 'contact' ? '−' : '+'}</span>
                 </h4>
                 <ul className={`address ${openSection === 'contact' ? '' : 'd-none d-md-block'}`}>
-                  {displayAddress && (
-                    <li>
-                      <i className="fa fa-home" />
-                      <span className="text-sm">{displayAddress}</span>
-                    </li>
-                  )}
                   {displayPhone && (
                     <li>
                       <i className="fa fa-phone" />
