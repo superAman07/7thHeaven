@@ -1,7 +1,6 @@
 import { Resend } from 'resend';
 
-// Initialize Resend with API Key from environment variables
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResend = () => new Resend(process.env.RESEND_API_KEY!);
 
 // SITE CONFIGURATION
 const SITE_URL = 'https://www.celsiuspop.com';
@@ -16,7 +15,7 @@ interface SendEmailOptions {
 
 export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions): Promise<boolean> {
   try {
-    const data = await resend.emails.send({
+    const data = await getResend().emails.send({
       from: 'Celsius <support@celsiuspop.com>', // Update this once you verify your domain in Resend
       to: [to],
       subject: subject,
