@@ -47,7 +47,7 @@ const CheckoutPageComponent: React.FC = () => {
         if (ref) {
             setReferralCode(ref);
             setReferralLocked(true);
-            setIs7thHeavenOptIn(true);
+            // setIs7thHeavenOptIn(true);
             localStorage.setItem('7thHeavenReferral', ref);
         } else {
             const storedRef = localStorage.getItem('7thHeavenReferral');
@@ -197,6 +197,11 @@ const CheckoutPageComponent: React.FC = () => {
     };
 
     const handlePlaceOrder = async (e: React.FormEvent) => {
+        if (!isLoggedIn && is7thHeavenOptIn && !otpVerified) {
+            alert("Please verify your email via OTP before placing an order with 7th Heaven membership.");
+            setIsProcessing(false);
+            return;
+        }
         e.preventDefault();
         if (!billing.firstName || !billing.phone || !billing.address1 || !billing.zip) {
             alert("Please fill in all required billing fields.");
