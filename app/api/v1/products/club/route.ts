@@ -78,13 +78,13 @@ export async function GET(req: NextRequest) {
                 isArchived: false,
                 inStock: true,
                 isFor7thHeaven: true,
-                variants: {
-                    some: {
-                        price: {
-                            lte: maxPrice // Less than or equal to Max Price
-                        }
-                    }
-                }
+                // variants: {
+                //     some: {
+                //         price: {
+                //             lte: maxPrice // Less than or equal to Max Price
+                //         }
+                //     }
+                // }
             },
             take: 12, // Show top 12
             orderBy: { createdAt: 'desc' },
