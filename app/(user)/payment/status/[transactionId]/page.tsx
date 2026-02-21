@@ -217,7 +217,7 @@ export default function PaymentStatusPage() {
                     <div className="container">
                         <div className="max-w-lg mx-auto">
                             {/* Order Card */}
-                            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 mt-[49vh] sm:mt-[70vh]">
+                            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
                                 <h3 className="text-center text-gray-400 text-sm uppercase tracking-widest mb-6">
                                     Order Confirmation
                                 </h3>
