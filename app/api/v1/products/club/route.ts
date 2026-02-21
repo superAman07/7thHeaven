@@ -10,27 +10,54 @@ export const dynamic = 'force-dynamic';
  *   get:
  *     summary: Get Club Products (7th Heaven Scheme)
  *     description: >
- *       Returns a curated list of products eligible for the 7th Heaven Scheme. 
- *       **Logic:** Fetches products with price <= Admin Configured Limit (Default: 4000).
+ *       Returns products tagged as "For 7th Heaven" by admin.
+ *       Only products with `isFor7thHeaven: true`, in stock, and not archived are returned.
+ *       Additionally filtered by price <= admin-configured limit (default: ₹4000).
  *     tags:
  *       - Products
- *     security:
- *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: List of eligible club products
+ *         description: List of 7th Heaven tagged products
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
  *                 maxPriceLimit:
  *                   type: number
  *                   description: The current price cap set by admin
+ *                   example: 4000
  *                 products:
  *                   type: array
  *                   items:
  *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       slug:
+ *                         type: string
+ *                       image:
+ *                         type: string
+ *                       category:
+ *                         type: string
+ *                       price:
+ *                         type: number
+ *                       variantId:
+ *                         type: string
+ *                         nullable: true
+ *                       size:
+ *                         type: string
+ *                       discountPercentage:
+ *                         type: number
+ *                       isBestSeller:
+ *                         type: boolean
+ *       500:
+ *         description: Internal Server Error
  */
 
 export async function GET(req: NextRequest) {
