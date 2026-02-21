@@ -39,15 +39,17 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
         if (!selectedVariant) return { current: 0, old: 0, discount: 0 };
         
         const originalPrice = selectedVariant.price;
-        const discount = product.discountPercentage || 0;
-        const discountedPrice = originalPrice * (1 - discount / 100);
+        const sellingPrice = (selectedVariant as any).sellingPrice;
+        const hasDiscount = sellingPrice != null && sellingPrice < originalPrice;
+        const discountedPrice = hasDiscount ? sellingPrice : originalPrice;
+        const discount = hasDiscount ? Math.round(((originalPrice - sellingPrice) / originalPrice) * 100) : 0;
         
         return { 
             current: discountedPrice, 
             old: originalPrice,
             discount: discount
         };
-    }, [selectedVariant, product.discountPercentage]);
+    }, [selectedVariant]);
 
     const handleCartAction = (e: React.MouseEvent) => {
         e.preventDefault();

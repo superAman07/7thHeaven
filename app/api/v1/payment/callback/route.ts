@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
         console.log("--- PayU Callback Received ---");
         
         const formData = await req.formData();
+        console.log("PayU Form Data:", Object.fromEntries(formData.entries()));
+        
         const status = formData.get('status') as string;
         const txnid = formData.get('txnid') as string;
         const amount = formData.get('amount') as string;
@@ -67,11 +69,26 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid Hash' }, { status: 400 });
         }
 
-        const order = await prisma.order.findFirst({
-            where: { gatewayOrderId: txnid }
-        });
+        console.log(`Looking up order with gatewayOrderId: ${txnid}`);
 
-        if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+const order = await prisma.order.findFirst({
+    where: { gatewayOrderId: txnid }
+});
+
+if (!order) {
+    console.error(`Order NOT FOUND for txnid: ${txnid}. Checking all recent orders...`);
+    
+    // Fallback: Try to find the most recent pending order
+    const recentOrder = await prisma.order.findFirst({
+        where: { paymentStatus: 'PENDING' },
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, gatewayOrderId: true, createdAt: true }
+    });
+    console.error(`Most recent pending order:`, recentOrder);
+    
+    // Redirect to home instead of showing JSON error
+    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/checkout?error=order_not_found`, 303);
+}
 
         if (status === 'success') {
             await completeOrder(order.id, txnid, parseFloat(amount));

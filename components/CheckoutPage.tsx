@@ -47,7 +47,7 @@ const CheckoutPageComponent: React.FC = () => {
         if (ref) {
             setReferralCode(ref);
             setReferralLocked(true);
-            // setIs7thHeavenOptIn(true);
+            setIs7thHeavenOptIn(true);
             localStorage.setItem('7thHeavenReferral', ref);
         } else {
             const storedRef = localStorage.getItem('7thHeavenReferral');
@@ -459,9 +459,10 @@ const CheckoutPageComponent: React.FC = () => {
                                                     <h4>Product <span>Total</span></h4>
                                                     <ul>
                                                         {cartItems.map(item => {
-                                                            const price = item.variants?.[0]?.price || 0;
-                                                            const discount = item.discountPercentage || 0;
-                                                            const currentPrice = Math.round(price * (1 - discount / 100));
+                                                            const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
+                                                            const sellingPrice = (item.selectedVariant as any)?.sellingPrice;
+                                                            const hasDiscount = sellingPrice != null && sellingPrice < price;
+                                                            const currentPrice = hasDiscount ? sellingPrice : price;
                                                             return (
                                                                 <li key={item.id}>
                                                                     {item.name} X {item.quantity}
@@ -502,8 +503,7 @@ const CheckoutPageComponent: React.FC = () => {
                                                                         id="heavenOptIn" 
                                                                         className="mt-auto mb-auto" 
                                                                         checked={is7thHeavenOptIn} 
-                                                                        onChange={(e) => setIs7thHeavenOptIn(e.target.checked)} 
-                                                                        disabled={!isLoggedIn && !otpVerified}
+                                                                        onChange={(e) => setIs7thHeavenOptIn(e.target.checked)}
                                                                     />
                                                                     <label htmlFor="heavenOptIn" style={{ fontSize: '16px', fontWeight: 700 }}>Join 7th Heaven Club?</label>
                                                                 </div>
@@ -623,7 +623,7 @@ const CheckoutPageComponent: React.FC = () => {
                                                         <label htmlFor="accept_terms">I’ve read and accept the terms & conditions</label>
                                                     </div>
                                                 </div>
-                                                <button className="place-order btn btn-lg btn-round" disabled={isProcessing}>
+                                                <button className="place-order btn btn-lg btn-round" disabled={isProcessing || (!isLoggedIn && is7thHeavenOptIn && !otpVerified)}>
                                                     {isProcessing ? 'Processing...' : 'Place Order'}
                                                 </button>
                                             </div>

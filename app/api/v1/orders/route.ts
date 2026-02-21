@@ -238,9 +238,9 @@ export async function POST(req: NextRequest) {
                 throw new Error(`Insufficient stock for ${product.name} (${selectedVariant.size}). Only ${selectedVariant.stock} left.`);
             }
             const basePrice = selectedVariant.price.toNumber();
-            const discountPercentage = product.discountPercentage ? product.discountPercentage.toNumber() : 0;
-            
-            const price = Math.round(basePrice * (1 - discountPercentage / 100));
+            const sellingPrice = selectedVariant.sellingPrice ? selectedVariant.sellingPrice.toNumber() : null;
+            const hasDiscount = sellingPrice != null && sellingPrice < basePrice;
+            const price = hasDiscount ? Math.round(sellingPrice) : Math.round(basePrice);
             subtotal += price * item.quantity;
             return {
                 productId: item.productId,

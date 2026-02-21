@@ -122,7 +122,7 @@ export async function getProducts(params: ProductFilterParams) {
         ...p,
         category: p.category,
         discountPercentage: p.discountPercentage?.toNumber() || 0,
-        variants: p.variants.map(v => ({ ...v, price: v.price.toNumber() })),
+        variants: p.variants.map(v => ({ ...v, price: v.price.toNumber(), sellingPrice: v.sellingPrice ? v.sellingPrice.toNumber() : null })),
         ratingsAvg: p.reviews.length > 0
             ? p.reviews.reduce((acc, r) => acc + r.rating, 0) / p.reviews.length
             : 0,
@@ -171,7 +171,7 @@ export async function getProductById(productId: string) {
     const formattedProduct = {
         ...product,
         discountPercentage: product.discountPercentage?.toNumber() || 0,
-        variants: p.variants.map((v: any) => ({ ...v, price: v.price.toNumber() })),
+        variants: p.variants.map((v: any) => ({ ...v, price: v.price.toNumber(), sellingPrice: v.sellingPrice ? v.sellingPrice.toNumber() : null })),
         ratingsAvg: p.reviews.length > 0
             ? p.reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / p.reviews.length
             : 0,

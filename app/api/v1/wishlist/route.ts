@@ -63,7 +63,8 @@ export async function GET(req: NextRequest) {
                                         id: true,
                                         price: true,
                                         size: true,
-                                        stock: true
+                                        stock: true,
+                                        sellingPrice: true,
                                     }
                                 }
                             }

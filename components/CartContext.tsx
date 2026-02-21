@@ -248,8 +248,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const cartTotal = cartItems.reduce((total, item) => { 
         const price = item.selectedVariant?.price || item.variants?.[0]?.price || item.price || 0;
-        const discount = item.discountPercentage || 0;
-        const currentPrice = Math.round(price * (1 - discount / 100));
+        const sellingPrice = (item.selectedVariant as any)?.sellingPrice;
+        const hasDiscount = sellingPrice != null && sellingPrice < price;
+        const currentPrice = hasDiscount ? sellingPrice : price;    
         return total + currentPrice * item.quantity;
     }, 0);
 

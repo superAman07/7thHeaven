@@ -336,8 +336,9 @@ export default function NavBar({ isAnnouncementVisible }: { isAnnouncementVisibl
                                             <ul className="cart-items">
                                                 {cartItems.map((item) => {
                                                     const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
-                                                    const discount = item.discountPercentage || 0;
-                                                    const finalPrice = Math.round(price * (1 - discount / 100));
+                                                    const sellingPrice = (item.selectedVariant as any)?.sellingPrice;
+                                                    const hasDiscount = sellingPrice != null && sellingPrice < price;
+                                                    const finalPrice = hasDiscount ? sellingPrice : price;
                                                     return (
                                                         <li key={item.id} className='single-cart-item'>
                                                             <div className="cart-img">

@@ -17,12 +17,14 @@ export default function PaymentProcessPage() {
         params: any;
     } | null>(null);
 
+    const initiatedRef = useRef(false);
+
     useEffect(() => {
-        if (!orderId) return;
+        if (!orderId || initiatedRef.current) return;
+        initiatedRef.current = true;
 
         const initiatePayment = async () => {
             try {
-                // Call our updated initiate API
                 const res = await axios.post('/api/v1/payment/initiate', { orderId });
                 
                 if (res.data.success) {
@@ -35,7 +37,7 @@ export default function PaymentProcessPage() {
                     setLoading(false);
                 }
             } catch (err: any) {
-                console.error("Iniatiate Error", err);
+                console.error("Initiate Error", err);
                 setError(err.response?.data?.error || 'Something went wrong');
                 setLoading(false);
             }

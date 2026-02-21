@@ -73,6 +73,7 @@ export async function GET(
             variants: p.variants.map((v: any) => ({
                 ...v,
                 price: Number(v.price),
+                sellingPrice: v.sellingPrice ? Number(v.sellingPrice) : null,
                 stock: Number(v.stock)
             })),
             discountPercentage: p.discountPercentage ? Number(p.discountPercentage) : 0,

@@ -29,7 +29,7 @@ async function getBestSellers(): Promise<PublicProduct[]> {
                 select: { name: true, slug: true }
             },
             variants: {
-                select: { id: true, price: true, size: true , stock: true },
+                select: { id: true, price: true, size: true , stock: true, sellingPrice: true },
                 orderBy: { price: 'asc' }
             },
             reviews: {
@@ -39,9 +39,10 @@ async function getBestSellers(): Promise<PublicProduct[]> {
     }).then(productsFromDb => productsFromDb.map(p => ({
         ...p,
         discountPercentage: p.discountPercentage ? p.discountPercentage.toNumber() : null,
-        variants: p.variants.map(v => ({
+        variants: p.variants.map((v:any) => ({
             ...v,
-            price: v.price.toNumber()
+            price: v.price.toNumber(),
+            sellingPrice: v.sellingPrice ? v.sellingPrice.toNumber() : null
         }))
     })));
     return productsFromDb;

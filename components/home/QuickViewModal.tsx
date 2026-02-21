@@ -127,10 +127,10 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
     const displayProduct = useMemo(() => {
         if (!product) return null;
 
-        // Use selectedVariant for price calculation
         const regularPrice = selectedVariant ? selectedVariant.price : (parseFloat(product.variants?.[0]?.price as any) || 0);
-        const discount = parseFloat(product.discountPercentage as any) || 0;
-        const currentPrice = regularPrice * (1 - discount / 100);
+        const sellingPrice = selectedVariant ? (selectedVariant as any).sellingPrice : (product.variants?.[0] as any)?.sellingPrice;
+        const hasDiscount = sellingPrice != null && sellingPrice < regularPrice;
+        const currentPrice = hasDiscount ? sellingPrice : regularPrice;
 
         return {
             id: product.id,

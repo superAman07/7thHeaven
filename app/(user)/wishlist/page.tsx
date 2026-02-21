@@ -143,8 +143,9 @@ export default function WishlistPage() {
                                                 {wishlistItems.map((item) => {
                                                     const product = item.product;
                                                     const basePrice = Number(product.variants?.[0]?.price) || 0;
-                                                    const discount = Number(product.discountPercentage) || 0;
-                                                    const finalPrice = Math.round(basePrice * (1 - discount / 100));
+                                                    const sellingPrice = (product.variants?.[0] as any)?.sellingPrice;
+                                                    const hasDiscount = sellingPrice != null && sellingPrice < basePrice;
+                                                    const finalPrice = hasDiscount ? sellingPrice : basePrice;
 
                                                     return (
                                                         <tr key={product.id}>
@@ -162,7 +163,7 @@ export default function WishlistPage() {
                                                             </td>
                                                             <td className="pro-price">
                                                                 <span style={{ color: '#B6902E', fontWeight: '600' }}>Rs. {finalPrice.toFixed(2)}</span>
-                                                                {discount > 0 && (
+                                                                {hasDiscount && (
                                                                     <span style={{ textDecoration: 'line-through', color: '#888', marginLeft: '8px', fontSize: '14px' }}>
                                                                         Rs. {basePrice.toFixed(2)}
                                                                     </span>
@@ -199,8 +200,9 @@ export default function WishlistPage() {
                                         {wishlistItems.map((item) => {
                                             const product = item.product;
                                             const basePrice = Number(product.variants?.[0]?.price) || 0;
-                                            const discount = Number(product.discountPercentage) || 0;
-                                            const finalPrice = Math.round(basePrice * (1 - discount / 100));
+                                            const sellingPrice = (product.variants?.[0] as any)?.sellingPrice;
+                                            const hasDiscount = sellingPrice != null && sellingPrice < basePrice;
+                                            const finalPrice = hasDiscount ? sellingPrice : basePrice;
 
                                             return (
                                                 <div 

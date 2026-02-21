@@ -105,6 +105,7 @@ export async function GET(req: NextRequest) {
             image: p.images[0] || '',
             category: p.category.name,
             price: Number(p.variants[0]?.price || 0),
+            sellingPrice: p.variants[0]?.sellingPrice ? Number(p.variants[0].sellingPrice) : null,
             variantId: p.variants[0]?.id || null,
             size: p.variants[0]?.size || 'Standard',
             discountPercentage: p.discountPercentage ? Number(p.discountPercentage) : 0,

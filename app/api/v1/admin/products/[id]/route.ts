@@ -8,6 +8,7 @@ const variantSchema = z.object({
   id: z.string().optional(),
   size: z.string().min(1, 'Variant size is required'),
   price: z.union([z.string(), z.number()]).transform((val) => Number(val)),
+  sellingPrice: z.union([z.string(), z.number()]).transform((val) => val ? Number(val) : null).optional().nullable(),
   stock: z.union([z.string(), z.number()]).transform((val) => parseInt(String(val), 10) || 0),
 });
 
@@ -104,10 +105,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
         if (variantsToCreate.length > 0) {
           await tx.productVariant.createMany({
-            data: variantsToCreate.map(({ size, price, stock }) => ({
+            data: variantsToCreate.map(({ size, price, sellingPrice, stock }) => ({
               productId: id,
               size,
               price: price,
+              sellingPrice: sellingPrice ?? null,
               stock: stock
             })),
           });
@@ -120,6 +122,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               data: {
                 size: variant.size,
                 price: variant.price,
+                sellingPrice: variant.sellingPrice ?? null,
                 stock: variant.stock
               },
             });

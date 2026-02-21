@@ -305,8 +305,9 @@ export default function NavBar() {
                                                         {cartItems.map((item) => {
                                                             // Calculate price logic
                                                             const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
-                                                            const discount = item.discountPercentage || 0;
-                                                            const finalPrice = price * (1 - discount / 100);
+                                                            const sellingPrice = (item.selectedVariant as any)?.sellingPrice;
+                                                            const hasDiscount = sellingPrice != null && sellingPrice < price;
+                                                            const finalPrice = hasDiscount ? sellingPrice : price;
 
                                                             return (
                                                                 <li key={item.id} className='single-cart-item'>

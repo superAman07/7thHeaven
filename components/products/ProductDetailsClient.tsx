@@ -45,8 +45,9 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
             return { current: 0, regular: 0 };
         }
         const regularPrice = selectedVariant.price;
-        const discount = product.discountPercentage || 0;
-        const current = regularPrice - (regularPrice * discount / 100);
+        const sellingPrice = (selectedVariant as any)?.sellingPrice;
+        const hasDiscount = sellingPrice != null && sellingPrice < regularPrice;
+        const current = hasDiscount ? sellingPrice : regularPrice;
         return { current, regular: regularPrice };
     }, [product, selectedVariant]);
 
@@ -785,8 +786,9 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                         <Slider {...sliderSettings}>
                                                             {relatedProducts.map((item) => {
                                                                 const itemPrice = item.variants?.[0]?.price || 0;
-                                                                const itemDiscount = item.discountPercentage || 0;
-                                                                const currentItemPrice = itemPrice * (1 - itemDiscount / 100);
+                                                                const itemSellingPrice = (item.variants?.[0] as any)?.sellingPrice;
+                                                                const hasItemDiscount = itemSellingPrice != null && itemSellingPrice < itemPrice;
+                                                                const currentItemPrice = hasItemDiscount ? itemSellingPrice : itemPrice;
 
                                                                 return (
                                                                     <div key={item.id} className="col-12" style={{ padding: '0 15px' }}>

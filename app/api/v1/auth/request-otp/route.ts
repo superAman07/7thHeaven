@@ -83,24 +83,52 @@ export async function POST(request: NextRequest) {
     const salt = await bcrypt.genSalt(10);
     const otpHash = await bcrypt.hash(otp, salt);
 
-    await prisma.user.upsert({
-      where: { phone },
-      update: {
-        fullName,
-        email,
-        otpHash,
-        otpExpiry,
-        ...(referrerId ? { referrerId } : {})
-      },
-      create: {
-        fullName,
-        email,
-        phone,
-        otpHash,
-        otpExpiry,
-        referrerId 
-      },
-    });
+    // Check if a user already exists with this email or phone
+    const existingByEmail = await prisma.user.findUnique({ where: { email } });
+    const existingByPhone = await prisma.user.findUnique({ where: { phone } });
+
+    if (existingByEmail && existingByPhone && existingByEmail.id !== existingByPhone.id) {
+        await prisma.user.update({
+            where: { id: existingByEmail.id },
+            data: {
+                fullName,
+                phone,
+                otpHash,
+                otpExpiry,
+                ...(referrerId ? { referrerId } : {})
+            }
+        });
+    } else if (existingByEmail) {
+        await prisma.user.update({
+            where: { id: existingByEmail.id },
+            data: {
+                fullName,
+                phone,
+                otpHash,
+                otpExpiry,
+                ...(referrerId ? { referrerId } : {})
+            }
+        });
+    } else {
+        await prisma.user.upsert({
+            where: { phone },
+            update: {
+                fullName,
+                email,
+                otpHash,
+                otpExpiry,
+                ...(referrerId ? { referrerId } : {})
+            },
+            create: {
+                fullName,
+                email,
+                phone,
+                otpHash,
+                otpExpiry,
+                referrerId
+            },
+        });
+    }
 
     console.log(`--- OTP for ${phone}: ${otp} ---`);
     sendOTPEmail(email, otp, fullName).catch(err => 

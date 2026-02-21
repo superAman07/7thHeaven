@@ -124,12 +124,14 @@ function formatCartForClient(cart: any) {
             selectedVariant: activeVariant ? {
                 id: activeVariant.id,
                 price: activeVariant.price.toNumber(),
+                sellingPrice: activeVariant.sellingPrice ? activeVariant.sellingPrice.toNumber() : null,
                 size: activeVariant.size,
                 stock: effectiveStock
             } : null,
             variants: item.product.variants.map((v: any) => ({
                 id: v.id,
                 price: v.price.toNumber(),
+                sellingPrice: v.sellingPrice ? v.sellingPrice.toNumber() : null,
                 size: v.size,
                 stock: isArchived ? 0 : v.stock
             })),

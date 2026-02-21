@@ -9,6 +9,7 @@ interface ProductVariant {
   id: string;
   size: string;
   price: string;
+  sellingPrice: string | null;
   stock: number;
 }
 
@@ -138,7 +139,7 @@ export default function ProductsPage() {
   const [discountPercentage, setDiscountPercentage] = useState('');
   const [isBestSeller, setIsBestSeller] = useState(false);
   const [isFor7thHeaven, setIsFor7thHeaven] = useState(false);
-  const [variants, setVariants] = useState<{ id?: string; size: string; price: string; stock: string }[]>([{ size: '', price: '', stock: '0' }]);
+  const [variants, setVariants] = useState<{ id?: string; size: string; price: string; sellingPrice: string; stock: string }[]>([{ size: '', price: '', sellingPrice: '', stock: '0' }]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -223,7 +224,7 @@ export default function ProductsPage() {
     setGenderTags([]);
     setInStock(true);
     setDiscountPercentage('');
-    setVariants([{ size: '', price: '', stock: '0'  }]);
+    setVariants([{ size: '', price: '', sellingPrice: '', stock: '0' }]);
     setIsBestSeller(false);
     setIsFor7thHeaven(false);
   };
@@ -244,11 +245,8 @@ export default function ProductsPage() {
     setGenderTags(product.genderTags);
     setInStock(product.inStock);
     setDiscountPercentage(product.discountPercentage ? product.discountPercentage.toString() : '');
-    setVariants(product.variants.map(({ id, size, price, stock }) => ({ 
-        id, 
-        size, 
-        price, 
-        stock: stock.toString() 
+    setVariants(product.variants.map(({ id, size, price, sellingPrice, stock }) => ({ 
+      id, size, price, sellingPrice: sellingPrice ? sellingPrice.toString() : '', stock: stock.toString() 
     })));
     setIsPanelOpen(true);
     setIsBestSeller(product.isBestSeller || false);
@@ -277,10 +275,10 @@ export default function ProductsPage() {
       inStock,
       isBestSeller,
       isFor7thHeaven,
-      discountPercentage: discountPercentage ? parseFloat(discountPercentage) : 0,
       variants: variants.map(v => ({ 
           ...v, 
           price: parseFloat(v.price),
+          sellingPrice: v.sellingPrice ? parseFloat(v.sellingPrice) : null,
           stock: parseInt(v.stock) || 0 
       })).filter(v => v.size && !isNaN(v.price) && v.price > 0),
     };
@@ -347,13 +345,13 @@ export default function ProductsPage() {
     }
   };
 
-  const handleVariantChange = (index: number, field: 'size' | 'price' | 'stock', value: string) => {
+  const handleVariantChange = (index: number, field: 'size' | 'price' | 'sellingPrice' | 'stock', value: string) => {
     const newVariants = [...variants];
     newVariants[index][field] = value;
     setVariants(newVariants);
   };
 
-  const addVariant = () => setVariants([...variants, { size: '', price: '', stock: '0' }]);
+  const addVariant = () => setVariants([...variants, { size: '', price: '', sellingPrice: '', stock: '0' }]);
   const removeVariant = (index: number) => setVariants(variants.filter((_, i) => i !== index));
   const handleGenderChange = (gender: string) => {
     setGenderTags(prev => prev.includes(gender) ? prev.filter(g => g !== gender) : [...prev, gender]);
@@ -573,19 +571,6 @@ export default function ProductsPage() {
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
-              <div>
-                <label htmlFor="discount" className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
-                <input 
-                  type="number" 
-                  id="discount" 
-                  value={discountPercentage} 
-                  onChange={e => setDiscountPercentage(e.target.value)} 
-                  min="0" 
-                  max="100" 
-                  placeholder="0" 
-                  className="w-full px-4 py-2.5 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" 
-                />
-              </div>
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div>
                     <span className="block text-sm font-bold text-gray-700">Stock Availability</span>
@@ -658,6 +643,21 @@ export default function ProductsPage() {
                         placeholder="e.g., 2500" 
                         className="w-full px-3 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" 
                       />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Selling Price (₹)</label>
+                      <input 
+                        type="number" 
+                        value={variant.sellingPrice} 
+                        onChange={e => handleVariantChange(index, 'sellingPrice', e.target.value)} 
+                        placeholder="e.g., 3250" 
+                        className="w-full px-3 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm transition-all" 
+                      />
+                      {variant.price && variant.sellingPrice && (
+                        <span className="text-[10px] text-green-600 font-bold mt-1 block">
+                          {Math.round(((parseFloat(variant.price) - parseFloat(variant.sellingPrice)) / parseFloat(variant.price)) * 100)}% off
+                        </span>
+                      )}
                     </div>
                     <div className="flex-1">
                       <label className="block text-xs font-medium text-gray-600 mb-1">Stock Qty</label>

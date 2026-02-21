@@ -206,8 +206,9 @@ const CartPageComponent: React.FC = () => {
                                             const baseProductId = item.originalProductId || item.id.split('-')[0];
                                             const isUnavailable = unavailableItems.has(baseProductId);
                                             const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
-                                            const discount = item.discountPercentage || 0;
-                                            const currentPrice = Math.round(price * (1 - discount / 100));
+                                            const sellingPrice = (item.selectedVariant as any)?.sellingPrice;
+                                            const hasDiscount = sellingPrice != null && sellingPrice < price;
+                                            const currentPrice = hasDiscount ? sellingPrice : price;
 
                                             return (
                                                 <tr key={item.id}>
@@ -271,8 +272,9 @@ const CartPageComponent: React.FC = () => {
                                         const baseProductId = item.originalProductId || item.id.split('-')[0];
                                         const isUnavailable = unavailableItems.has(baseProductId);
                                         const price = item.selectedVariant?.price || item.variants?.[0]?.price || 0;
-                                        const discount = item.discountPercentage || 0;
-                                        const currentPrice = Math.round(price * (1 - discount / 100));
+                                        const sellingPrice = (item.selectedVariant as any)?.sellingPrice;
+                                        const hasDiscount = sellingPrice != null && sellingPrice < price;
+                                        const currentPrice = hasDiscount ? sellingPrice : price;
 
                                         return (
                                             <div 

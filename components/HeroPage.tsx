@@ -38,6 +38,7 @@ export type PublicProduct = {
         price: number;
         size: string;
         stock?: number;
+        sellingPrice?: number | null;
     }[];
     reviews: {
         id: string;

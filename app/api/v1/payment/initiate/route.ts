@@ -89,6 +89,42 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Order not found' }, { status: 404 });
         }
 
+        if (order.gatewayOrderId) {
+            const existingTxnid = order.gatewayOrderId;
+            const finalAmount = order.netAmountPaid && order.netAmountPaid.toNumber() > 0 
+                ? order.netAmountPaid.toNumber()
+                : (order.subtotal.toNumber() - (order.discount?.toNumber() || 0));
+            
+            const amountStr = finalAmount.toFixed(2);
+            const productinfo = `Order #${orderId}`;
+            const firstname = order.user.fullName?.split(' ')[0];
+            const email = order.user.email;
+            const phone = order.user.phone;
+            const hash = generatePayUHash({
+                txnid: existingTxnid,
+                amount: amountStr,
+                productinfo,
+                firstname,
+                email
+            });
+            return NextResponse.json({
+                success: true,
+                payuParams: {
+                    key: process.env.PAYU_KEY,
+                    txnid: existingTxnid,
+                    amount: amountStr,
+                    productinfo,
+                    firstname,
+                    email,
+                    phone,
+                    surl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/payment/callback`,
+                    furl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/payment/callback`,
+                    hash
+                },
+                actionUrl: `${process.env.PAYU_BASE_URL}/_payment`
+            });
+        }
+
         // 2. Prepare PayU Data
         // PayU requires a unique transaction ID. We accept this as the Gateway Order ID.
         const txnid = uniqid(); 
