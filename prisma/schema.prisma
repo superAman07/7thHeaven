@@ -88,6 +88,7 @@ model Product {
   isNewArrival       Boolean          @default(false)
   discountPercentage Decimal?         @default(0)
   isBestSeller       Boolean          @default(false)
+  isFor7thHeaven     Boolean          @default(false)
 }
 
 model Review {

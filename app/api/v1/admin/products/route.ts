@@ -20,6 +20,7 @@ const createProductSchema = z.object({
   discountPercentage: z.number().min(0).max(100).optional(),
   variants: z.array(variantSchema).min(1, 'At least one product variant is required'),
   isBestSeller: z.boolean().default(false),
+  isFor7thHeaven: z.boolean().default(false),
 });
 
 export async function GET(request: NextRequest) {

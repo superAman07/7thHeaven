@@ -21,6 +21,7 @@ const updateProductSchema = z.object({
   isNewArrival: z.boolean().optional(),
   discountPercentage: z.number().min(0).max(100).optional(),
   isBestSeller: z.boolean().optional(),
+  isFor7thHeaven: z.boolean().optional(),
   variants: z.array(variantSchema).min(1).optional(),
 });
 
