@@ -30,6 +30,7 @@ interface Product {
   variants: ProductVariant[];
   discountPercentage: number | null;
   isBestSeller: boolean;
+  isFor7thHeaven: boolean;
 }
 
 interface PaginationMeta {
@@ -136,6 +137,7 @@ export default function ProductsPage() {
   const [inStock, setInStock] = useState(true);
   const [discountPercentage, setDiscountPercentage] = useState('');
   const [isBestSeller, setIsBestSeller] = useState(false);
+  const [isFor7thHeaven, setIsFor7thHeaven] = useState(false);
   const [variants, setVariants] = useState<{ id?: string; size: string; price: string; stock: string }[]>([{ size: '', price: '', stock: '0' }]);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -223,6 +225,7 @@ export default function ProductsPage() {
     setDiscountPercentage('');
     setVariants([{ size: '', price: '', stock: '0'  }]);
     setIsBestSeller(false);
+    setIsFor7thHeaven(false);
   };
 
   const openPanelForNew = () => {
@@ -249,6 +252,7 @@ export default function ProductsPage() {
     })));
     setIsPanelOpen(true);
     setIsBestSeller(product.isBestSeller || false);
+    setIsFor7thHeaven(product.isFor7thHeaven || false);
   };
 
   const closePanel = () => {
@@ -272,6 +276,7 @@ export default function ProductsPage() {
       genderTags,
       inStock,
       isBestSeller,
+      isFor7thHeaven,
       discountPercentage: discountPercentage ? parseFloat(discountPercentage) : 0,
       variants: variants.map(v => ({ 
           ...v, 
@@ -605,6 +610,18 @@ export default function ProductsPage() {
                     <ToggleSwitch checked={isBestSeller} onChange={setIsBestSeller} />
                 </div>
               </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <div>
+                <span className="block text-sm font-bold text-gray-700">For 7th Heaven</span>
+                <span className="text-xs text-gray-500">{isFor7thHeaven ? 'Visible on 7th Heaven page' : 'Not shown on 7th Heaven page'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`text-xs font-bold ${isFor7thHeaven ? 'text-purple-600' : 'text-gray-400'}`}>
+                  {isFor7thHeaven ? 'YES' : 'NO'}
+                </span>
+                <ToggleSwitch checked={isFor7thHeaven} onChange={setIsFor7thHeaven} />
+              </div>
+            </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Gender Tags</label>

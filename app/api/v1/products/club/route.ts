@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
             where: {
                 isArchived: false,
                 inStock: true,
+                isFor7thHeaven: true,
                 variants: {
                     some: {
                         price: {
