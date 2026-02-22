@@ -516,17 +516,6 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                         Categories: {` `}
                                         <a href={`/collections/${product.category.slug}`}> {product.category.name}</a>
                                     </span>
-                                    {product.genderTags && product.genderTags.length > 0 && (
-                                        <span className="posted-in">
-                                            Tags: {` `}
-                                            {product.genderTags.map((tag, index) => (
-                                                <React.Fragment key={tag}>
-                                                    <a href="#"> {tag}</a>
-                                                    {index < product.genderTags.length - 1 && ','}
-                                                </React.Fragment>
-                                            ))}
-                                        </span>
-                                    )}
                                 </div>
 
                                 <div className="single-product-sharing">
