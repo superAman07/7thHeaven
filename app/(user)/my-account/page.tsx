@@ -8,6 +8,27 @@ import toast from 'react-hot-toast';
 import { useSearchParams } from 'next/navigation';
 import { generateInvoice, InvoiceData } from '@/services/invoiceGenerator';
 
+const urlToBase64 = (url: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous'; 
+        img.src = url;
+        img.onload = () => {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0);
+                resolve(canvas.toDataURL('image/png'));
+            } catch (error) {
+                reject(new Error("CORS Security Error"));
+            }
+        };
+        img.onerror = () => reject(new Error("Failed to load image"));
+    });
+};
+
 interface UserProfile {
     id: string;
     fullName: string;
@@ -68,6 +89,13 @@ function ProfileContent() {
     const totalPages = Math.ceil(orders.length / itemsPerPage);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isCancelling, setIsCancelling] = useState(false);
+    const [siteSettings, setSiteSettings] = useState<any>(null);
+
+    useEffect(() => {
+        axios.get('/api/v1/site-settings').then(res => {
+            if(res.data.success) setSiteSettings(res.data.data);
+        });
+    }, []);
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -166,26 +194,45 @@ function ProfileContent() {
         }
     };
 
-    const handleDownloadInvoice = (order: Order) => {
+    const handleDownloadInvoice = async (order: Order) => {
         if (!order) return;
         
-        // Convert Order to InvoiceData format if needed, or pass directly if keys match
-        // Assuming Order interface matches InvoiceData mostly, but let's be safe:
-        const invoiceData: any = {
-            id: order.id,
-            status: order.status,
-            createdAt: order.createdAt,
-            subtotal: parseFloat(order.subtotal),
-            paymentStatus: order.paymentStatus,
-            items: order.items,
-            shippingAddress: order.shippingAddress
-        };
         try {
+            let logoBase64 = undefined;
+            const defaultLogo = '/celsius-logo.png';
+
+            if (siteSettings?.logoUrl) {
+                try {
+                    logoBase64 = await urlToBase64(siteSettings.logoUrl);
+                } catch (e) {
+                    logoBase64 = await urlToBase64(defaultLogo).catch(() => undefined);
+                }
+            }
+
+            const invoiceData: any = {
+                id: order.id,
+                status: order.status,
+                createdAt: order.createdAt,
+                subtotal: parseFloat(order.subtotal),
+                discount: parseFloat(order.discount || '0'),
+                netAmountPaid: parseFloat(order.netAmountPaid || (parseFloat(order.subtotal) - (parseFloat(order.discount || '0'))).toString()),
+                paymentStatus: order.paymentStatus,
+                items: order.items,
+                shippingAddress: order.shippingAddress,
+                companyDetails: {
+                    name: siteSettings?.companyName || "Celsius",
+                    address: `${siteSettings?.address || ''}, ${siteSettings?.city || ''}`,
+                    phone: siteSettings?.phone || "",
+                    email: siteSettings?.email || "",
+                    logoUrl: logoBase64
+                }
+            };
+
             generateInvoice(invoiceData);
-            toast.success("Invoice downloaded!");
+            toast.success("Professional invoice generated!");
         } catch (err) {
             console.error(err);
-            toast.error("Failed to generate invoice");
+            toast.error("Failed to generate branded invoice");
         }
     };
 

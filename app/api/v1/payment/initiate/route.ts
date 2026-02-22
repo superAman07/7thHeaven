@@ -78,8 +78,6 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
         }
 
-        // 1. Fetch order details securely from DB
-        // Include user to get their contact details for PayU
         const order = await prisma.order.findUnique({
             where: { id: orderId },
             include: { user: true } 
@@ -97,9 +95,14 @@ export async function POST(req: NextRequest) {
             
             const amountStr = finalAmount.toFixed(2);
             const productinfo = `Order #${orderId}`;
-            const firstname = order.user.fullName?.split(' ')[0];
+            if (!order.user || !order.user.email || !order.user.fullName) {
+                return NextResponse.json({ 
+                    error: 'Incomplete user profile. Please ensure your name and email are updated before payment.' 
+                }, { status: 400 });
+            }
+            const firstname = order.user.fullName.split(' ')[0];
             const email = order.user.email;
-            const phone = order.user.phone;
+            const phone = order.user.phone || ''; 
             const hash = generatePayUHash({
                 txnid: existingTxnid,
                 amount: amountStr,
@@ -125,24 +128,25 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        // 2. Prepare PayU Data
-        // PayU requires a unique transaction ID. We accept this as the Gateway Order ID.
         const txnid = uniqid(); 
         
-        // Calculate amount: PayU expects a string with up to 2 decimal places (e.g. "100.00")
         const finalAmount = order.netAmountPaid && order.netAmountPaid.toNumber() > 0 
             ? order.netAmountPaid.toNumber()
             : (order.subtotal.toNumber() - (order.discount?.toNumber() || 0));
         
         const amountStr = finalAmount.toFixed(2);
             
-        // Essential fields for Hash Calculation
         const productinfo = `Order #${orderId}`;
-        const firstname = order.user.fullName?.split(' ')[0] || 'Customer';
-        const email = order.user.email || 'customerr@example.com';
-        const phone = order.user.phone || '9999999999';
+        if (!order.user || !order.user.email || !order.user.fullName) {
+            return NextResponse.json({ 
+                error: 'Incomplete user profile. Please ensure your name and email are updated before payment.' 
+            }, { status: 400 });
+        }
 
-        // 3. Generate Secure Hash using our utility
+        const firstname = order.user.fullName.split(' ')[0];
+        const email = order.user.email;
+        const phone = order.user.phone || ''; 
+
         const hash = generatePayUHash({
             txnid,
             amount: amountStr,
@@ -151,14 +155,11 @@ export async function POST(req: NextRequest) {
             email
         });
 
-        // 4. Update Order with the Transaction ID (Critical for tracking)
         await prisma.order.update({
             where: { id: orderId },
             data: { gatewayOrderId: txnid },
         });
 
-        // 5. Return params to Frontend
-        // The frontend will use these to create a hidden form and auto-submit it to PayU
         return NextResponse.json({
             success: true,
             payuParams: {
@@ -173,8 +174,6 @@ export async function POST(req: NextRequest) {
                 furl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/payment/callback`, // Failure URL
                 hash: hash
             },
-            // Note: In Production, this should be https://secure.payu.in/_payment
-            // We use the env variable to switch easily.
             actionUrl: `${process.env.PAYU_BASE_URL}/_payment` 
         });
 
