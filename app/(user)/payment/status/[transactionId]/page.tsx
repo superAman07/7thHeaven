@@ -8,6 +8,27 @@ import { useCart } from '@/components/CartContext';
 import toast from 'react-hot-toast';
 import { generateInvoice, InvoiceData } from '@/services/invoiceGenerator';
 
+const urlToBase64 = (url: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous'; 
+        img.src = url;
+        img.onload = () => {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0);
+                resolve(canvas.toDataURL('image/png'));
+            } catch (error) {
+                reject(new Error("CORS Security Error"));
+            }
+        };
+        img.onerror = () => reject(new Error("Failed to load image"));
+    });
+};
+
 export default function PaymentStatusPage() {
     const params = useParams();
     const { transactionId } = params;
@@ -17,6 +38,14 @@ export default function PaymentStatusPage() {
     const [order, setOrder] = useState<InvoiceData | null>(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [retries, setRetries] = useState(0);
+
+    const [siteSettings, setSiteSettings] = useState<any>(null);
+
+    useEffect(() => {
+        axios.get('/api/v1/site-settings').then(res => {
+            if(res.data.success) setSiteSettings(res.data.data);
+        });
+    }, []);
 
     useEffect(() => {
         if (!transactionId) return;
@@ -69,10 +98,39 @@ export default function PaymentStatusPage() {
         }
     };
 
-    const handleDownloadInvoice = () => {
-        if (order) {
-            generateInvoice(order);
-            toast.success("Invoice downloaded!");
+    const handleDownloadInvoice = async () => {
+        if (!order) return;
+        
+        try {
+            let logoBase64 = undefined;
+            const defaultLogo = '/celsius-logo.png';
+
+            // 1. Get Logo (Same logic as Track Order)
+            if (siteSettings?.logoUrl) {
+                try {
+                    logoBase64 = await urlToBase64(siteSettings.logoUrl);
+                } catch (e) {
+                    logoBase64 = await urlToBase64(defaultLogo).catch(() => undefined);
+                }
+            }
+
+            // 2. Wrap the order with Company Details so the PDF generator sees them
+            const brandedOrder: any = {
+                ...order,
+                companyDetails: {
+                    name: siteSettings?.companyName || "Celsius",
+                    address: `${siteSettings?.address || ''}, ${siteSettings?.city || ''}`,
+                    phone: siteSettings?.phone || "",
+                    email: siteSettings?.email || "",
+                    logoUrl: logoBase64
+                }
+            };
+
+            generateInvoice(brandedOrder);
+            toast.success("Professional invoice generated!");
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to generate branded invoice");
         }
     };
 
