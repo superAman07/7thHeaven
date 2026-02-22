@@ -63,7 +63,7 @@ import { generatePayUHash } from '@/lib/payu';
  *                   type: string
  *                   description: "The PayU URL to submit the form to (Test/Live)"
  *       400:
- *         description: Missing Order ID
+ *         description: Bad Request (Missing Order ID or Incomplete User Profile)
  *       404:
  *         description: Order not found
  *       500:
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
 
         const order = await prisma.order.findUnique({
             where: { id: orderId },
-            include: { user: true } 
+            include: { user: true }
         });
 
         if (!order) {
@@ -89,20 +89,20 @@ export async function POST(req: NextRequest) {
 
         if (order.gatewayOrderId) {
             const existingTxnid = order.gatewayOrderId;
-            const finalAmount = order.netAmountPaid && order.netAmountPaid.toNumber() > 0 
+            const finalAmount = order.netAmountPaid && order.netAmountPaid.toNumber() > 0
                 ? order.netAmountPaid.toNumber()
                 : (order.subtotal.toNumber() - (order.discount?.toNumber() || 0));
-            
+
             const amountStr = finalAmount.toFixed(2);
             const productinfo = `Order #${orderId}`;
             if (!order.user || !order.user.email || !order.user.fullName) {
-                return NextResponse.json({ 
-                    error: 'Incomplete user profile. Please ensure your name and email are updated before payment.' 
+                return NextResponse.json({
+                    error: 'Incomplete user profile. Please ensure your name and email are updated before payment.'
                 }, { status: 400 });
             }
             const firstname = order.user.fullName.split(' ')[0];
             const email = order.user.email;
-            const phone = order.user.phone || ''; 
+            const phone = order.user.phone || '';
             const hash = generatePayUHash({
                 txnid: existingTxnid,
                 amount: amountStr,
@@ -128,24 +128,24 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        const txnid = uniqid(); 
-        
-        const finalAmount = order.netAmountPaid && order.netAmountPaid.toNumber() > 0 
+        const txnid = uniqid();
+
+        const finalAmount = order.netAmountPaid && order.netAmountPaid.toNumber() > 0
             ? order.netAmountPaid.toNumber()
             : (order.subtotal.toNumber() - (order.discount?.toNumber() || 0));
-        
+
         const amountStr = finalAmount.toFixed(2);
-            
+
         const productinfo = `Order #${orderId}`;
         if (!order.user || !order.user.email || !order.user.fullName) {
-            return NextResponse.json({ 
-                error: 'Incomplete user profile. Please ensure your name and email are updated before payment.' 
+            return NextResponse.json({
+                error: 'Incomplete user profile. Please ensure your name and email are updated before payment.'
             }, { status: 400 });
         }
 
         const firstname = order.user.fullName.split(' ')[0];
         const email = order.user.email;
-        const phone = order.user.phone || ''; 
+        const phone = order.user.phone || '';
 
         const hash = generatePayUHash({
             txnid,
@@ -174,7 +174,7 @@ export async function POST(req: NextRequest) {
                 furl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/payment/callback`, // Failure URL
                 hash: hash
             },
-            actionUrl: `${process.env.PAYU_BASE_URL}/_payment` 
+            actionUrl: `${process.env.PAYU_BASE_URL}/_payment`
         });
 
     } catch (error) {
@@ -195,7 +195,7 @@ export async function POST(req: NextRequest) {
 //  *   post:
 //  *     summary: Initiate Payment (Generic/PayU)
 //  *     description: >
-//  *       Initiates a payment transaction. 
+//  *       Initiates a payment transaction.
 //  *       **Note:** Currently pending final integration with PayU/Gateway.
 //  *     tags:
 //  *       - Payment
@@ -246,8 +246,8 @@ export async function POST(req: NextRequest) {
 //         }
 
 //         // 2. Prepare the payment payload for PhonePe
-//         const finalAmount = order.netAmountPaid && order.netAmountPaid.toNumber() > 0 
-//             ? order.netAmountPaid.toNumber() 
+//         const finalAmount = order.netAmountPaid && order.netAmountPaid.toNumber() > 0
+//             ? order.netAmountPaid.toNumber()
 //             : order.subtotal.toNumber() - (order.discount?.toNumber() || 0);
 //         const amountInPaise = Math.round(finalAmount * 100);
 //         const merchantTransactionId = uniqid();
