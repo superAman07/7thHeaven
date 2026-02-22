@@ -28,6 +28,7 @@ frontend:
         - echo "PAYU_KEY=$PAYU_KEY" >> .env.production
         - echo "PAYU_SALT=$PAYU_SALT" >> .env.production
         - echo "PAYU_BASE_URL=$PAYU_BASE_URL" >> .env.production
+        - echo "RESEND_API_KEY=$RESEND_API_KEY" >> .env.production
         - npx prisma generate
     build:
       commands:
