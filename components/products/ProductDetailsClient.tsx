@@ -306,6 +306,17 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                     </div>
                                 )}
                             </div>
+                            <p style={{
+                                fontSize: '11px',
+                                color: '#999',
+                                marginTop: '10px',
+                                lineHeight: '1.5',
+                                fontStyle: 'italic',
+                                paddingLeft: '2px'
+                            }}>
+                                <i className="fa fa-info-circle" style={{ marginRight: '4px', fontSize: '10px' }}></i>
+                                Product images are for illustration purposes only. Actual product may vary in colour, size, or packaging.
+                            </p>
                         </div>
 
                         <div className="col-xl-7 col-lg-6 col-md-6">
@@ -365,6 +376,20 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                         <span className="regular-price">Rs. {displayPrice.regular.toFixed(2)}</span>
                                     )}
                                 </div>
+                                
+                                {displayPrice.current < displayPrice.regular && (
+                                    <p style={{
+                                        fontSize: '11px',
+                                        color: '#999',
+                                        marginTop: '4px',
+                                        marginBottom: '0',
+                                        lineHeight: '1.4',
+                                        fontStyle: 'italic'
+                                    }}>
+                                        <i className="fa fa-info-circle" style={{ marginRight: '4px', fontSize: '10px' }}></i>
+                                        Discount percentage is approximate (rounded off). Actual savings are reflected in the selling price shown above.
+                                    </p>
+                                )}
 
                                 {product.variants && product.variants.length > 0 && (
                                     <div className="product-size-selector mt-4 mb-3">

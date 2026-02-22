@@ -12,9 +12,12 @@ interface ProductPageProps {
 const serializeProduct = (product: any): PublicProduct => {
   return {
     ...product,
-    variants: product.variants.map((variant: any) => ({
+        variants: product.variants.map((variant: any) => ({
       ...variant,
       price: variant.price?.toNumber ? variant.price.toNumber() : Number(variant.price),
+      sellingPrice: variant.sellingPrice != null
+        ? (variant.sellingPrice?.toNumber ? variant.sellingPrice.toNumber() : Number(variant.sellingPrice))
+        : null,
     })),
     discountPercentage: product.discountPercentage 
       ? (product.discountPercentage?.toNumber ? product.discountPercentage.toNumber() : Number(product.discountPercentage)) 
