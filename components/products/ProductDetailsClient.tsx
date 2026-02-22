@@ -789,6 +789,9 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                                 const itemSellingPrice = (item.variants?.[0] as any)?.sellingPrice;
                                                                 const hasItemDiscount = itemSellingPrice != null && itemSellingPrice < itemPrice;
                                                                 const currentItemPrice = hasItemDiscount ? itemSellingPrice : itemPrice;
+                                                                const itemDiscount = hasItemDiscount 
+                                                                    ? Math.round(((itemPrice - itemSellingPrice) / itemPrice) * 100) 
+                                                                    : 0;
 
                                                                 return (
                                                                     <div key={item.id} className="col-12" style={{ padding: '0 15px' }}>
