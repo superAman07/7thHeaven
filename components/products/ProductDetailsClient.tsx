@@ -370,10 +370,19 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                     <a className="review-link" href="#">({product.reviews.length} customer review)</a>
                                 </div>
 
-                                <div className="single-product-price">
+                                <div className="single-product-price" style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: '8px' }}>
                                     <span className="price new-price">{displayPrice.current.toFixed(2)}</span>
                                     {displayPrice.current < displayPrice.regular && (
-                                        <span className="regular-price">Rs. {displayPrice.regular.toFixed(2)}</span>
+                                        <>
+                                            <span className="regular-price">Rs. {displayPrice.regular.toFixed(2)}</span>
+                                            <span style={{
+                                                color: '#388e3c',
+                                                fontSize: '14px',
+                                                fontWeight: '600',
+                                            }}>
+                                                ({Math.round(((displayPrice.regular - displayPrice.current) / displayPrice.regular) * 100)}% off)
+                                            </span>
+                                        </>
                                     )}
                                 </div>
                                 
