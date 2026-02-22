@@ -143,7 +143,8 @@ export default function WishlistPage() {
                                                 {wishlistItems.map((item) => {
                                                     const product = item.product;
                                                     const basePrice = Number(product.variants?.[0]?.price) || 0;
-                                                    const sellingPrice = (product.variants?.[0] as any)?.sellingPrice;
+                                                    const rawSellingPrice = (product.variants?.[0] as any)?.sellingPrice;
+                                                    const sellingPrice = rawSellingPrice != null ? Number(rawSellingPrice) : null;
                                                     const hasDiscount = sellingPrice != null && sellingPrice < basePrice;
                                                     const finalPrice = hasDiscount ? sellingPrice : basePrice;
 
@@ -200,7 +201,8 @@ export default function WishlistPage() {
                                         {wishlistItems.map((item) => {
                                             const product = item.product;
                                             const basePrice = Number(product.variants?.[0]?.price) || 0;
-                                            const sellingPrice = (product.variants?.[0] as any)?.sellingPrice;
+                                            const rawSellingPrice = (product.variants?.[0] as any)?.sellingPrice;
+                                            const sellingPrice = rawSellingPrice != null ? Number(rawSellingPrice) : null;
                                             const hasDiscount = sellingPrice != null && sellingPrice < basePrice;
                                             const finalPrice = hasDiscount ? sellingPrice : basePrice;
 
