@@ -341,28 +341,33 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      {/* --- PROFILE SIDEBAR --- */}
+            {/* --- PROFILE SIDEBAR --- */}
       <AnimatePresence>
         {selectedProfile && (
             <>
+                {/* BACKDROP */}
                 <motion.div 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     onClick={() => setSelectedProfile(null)}
                     className="fixed inset-0 bg-black/40 z-60 backdrop-blur-sm"
                 />
+                
+                {/* SIDEBAR PANEL */}
                 <motion.div 
                     initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                     className="fixed top-0 right-0 h-full w-full md:w-[450px] bg-white z-70 shadow-2xl flex flex-col border-l border-gray-100"
                 >
-                    <div className="p-6 flex-1 overflow-y-auto">
-                        {/* Header */}
-                        <div className="flex justify-between items-start mb-8">
+                    {/* SCROLLABLE CONTENT AREA */}
+                    <div className="flex-1 overflow-y-auto p-6 pb-4">
+                        
+                        {/* HEADER */}
+                        <div className="flex justify-between items-start mb-6">
                             <div className="flex items-center gap-4">
                                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white shadow-lg ${selectedProfile.isAdmin ? 'bg-purple-600' : selectedProfile.is7thHeaven ? 'bg-[#ddb040]' : 'bg-gray-800'}`}>
                                     {selectedProfile.fullName.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <h2 className="text-xl! font-bold! text-gray-900!">{selectedProfile.fullName}</h2>
+                                    <h2 className="text-xl! font-bold! text-gray-900! m-0!">{selectedProfile.fullName}</h2>
                                     <div className="text-xs text-gray-400 font-mono mt-0.5 flex items-center gap-2">
                                         <span className="font-bold! text-gray-300 text-[10px]! uppercase! tracking-wider! bg-gray-50! px-1! rounded!">ID</span>
                                         <span>{selectedProfile.id}</span>
@@ -373,226 +378,139 @@ export default function CustomersPage() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex gap-4 mt-6 border-b border-gray-100">
-                                <button 
-                                    onClick={() => setActiveTab('profile')}
-                                    className={`pb-2 text-sm font-bold ${activeTab === 'profile' ? 'text-gray-900 border-b-2 border-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                                >
-                                    Profile & Orders
-                                </button>
-                                <button 
-                                    onClick={() => setActiveTab('history')}
-                                    className={`pb-2 text-sm font-bold ${activeTab === 'history' ? 'text-gray-900 border-b-2 border-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                                >
-                                    Message History
-                                </button>
-                            </div>
                             <button onClick={() => setSelectedProfile(null)} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><X size={20}/></button>
                         </div>
 
-                        {/* --- PROFILE SIDEBAR --- */}
-                        <AnimatePresence>
-                            {selectedProfile && (
-                                <>
-                                    {/* BACKDROP */}
-                                    <motion.div 
-                                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                                        onClick={() => setSelectedProfile(null)}
-                                        className="fixed! inset-0! bg-black/40 z-60! backdrop-blur-sm"
-                                    />
-                                    
-                                    {/* SIDEBAR PANEL */}
-                                    <motion.div 
-                                        initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                                        className="fixed! top-0! right-0! h-100vh! w-full md:w-[450px]! bg-white z-70! shadow-2xl flex! flex-col! border-l border-gray-100"
-                                    >
-                                        {/* SCROLLABLE CONTENT AREA */}
-                                        <div className="p-6 flex-1! overflow-y-auto!">
-                                            
-                                            {/* HEADER */}
-                                            <div className="flex! justify-between items-start mb-8">
-                                                <div className="flex! items-center gap-4">
-                                                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white shadow-lg ${selectedProfile.isAdmin ? 'bg-purple-600' : selectedProfile.is7thHeaven ? 'bg-[#ddb040]' : 'bg-gray-800'}`}>
-                                                        {selectedProfile.fullName.charAt(0).toUpperCase()}
-                                                    </div>
-                                                    <div>
-                                                        <h2 className="text-xl! font-bold! text-gray-900! m-0!">{selectedProfile.fullName}</h2>
-                                                        <div className="text-xs text-gray-400 font-mono mt-0.5 flex! items-center gap-2">
-                                                            <span className="font-bold! text-gray-300 text-[10px]! uppercase! tracking-wider! bg-gray-50! px-1! rounded!">ID</span>
-                                                            <span>{selectedProfile.id}</span>
-                                                        </div>
-                                                        <div className="mt-1 flex! gap-2">
-                                                            {selectedProfile.is7thHeaven && <span className="text-[10px]! font-bold! bg-[#ddb040]/10! text-[#ddb040]! px-2! py-0.5! rounded!">VIP MEMBER</span>}
-                                                            <span className="text-[10px]! font-bold! bg-gray-100! text-gray-500! px-2! py-0.5! rounded!">Joined {new Date(selectedProfile.createdAt).toLocaleDateString()}</span>
-                                                        </div>
-                                                    </div>
+                        {/* TAB SWITCHER */}
+                        <div className="flex gap-6 border-b border-gray-100 mb-6">
+                            <button 
+                                onClick={() => setActiveTab('profile')}
+                                className={`pb-3 text-sm font-bold! transition-colors ${activeTab === 'profile' ? 'text-gray-900 border-b-2 border-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
+                            >
+                                Profile & Orders
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('history')}
+                                className={`pb-3 text-sm font-bold! transition-colors ${activeTab === 'history' ? 'text-gray-900 border-b-2 border-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
+                            >
+                                Message History
+                            </button>
+                        </div>
+
+                        {/* CONDITIONAL RENDER: PROFILE vs HISTORY */}
+                        {activeTab === 'profile' ? (
+                            <div className="space-y-6">
+                                {/* CONTACT INFO */}
+                                <div className="bg-gray-50 rounded-xl p-4 space-y-3 border border-gray-100">
+                                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Contact Details</h3>
+                                    <div className="flex! items-center gap-3 text-sm text-gray-700">
+                                        <Mail size={16} className="text-gray-400 min-w-[16px]" /> {selectedProfile.email}
+                                    </div>
+                                    <div className="flex! items-center gap-3 text-sm text-gray-700">
+                                        <Smartphone size={16} className="text-gray-400 min-w-[16px]" /> {selectedProfile.phone}
+                                    </div>
+                                    <div className="flex! items-center gap-3 text-sm text-gray-700">
+                                        <MapPin size={16} className="text-gray-400 min-w-[16px]" /> {selectedProfile.address}
+                                    </div>
+                                </div>
+
+                                {/* STATS */}
+                                <div className="grid! grid-cols-2 gap-4">
+                                    <div className="border border-gray-100 rounded-xl p-4 text-center">
+                                        <div className="text-xs text-gray-400 font-bold uppercase mb-1">Total Spent</div>
+                                        <div className="text-xl font-black text-gray-900">₹{parseFloat(selectedProfile.lifetimeSpend).toLocaleString()}</div>
+                                    </div>
+                                    <div className="border border-gray-100 rounded-xl p-4 text-center">
+                                        <div className="text-xs text-gray-400 font-bold uppercase mb-1">Referrals</div>
+                                        <div className="text-xl font-black text-blue-600">{selectedProfile.networkSize}</div>
+                                    </div>
+                                </div>
+
+                                {/* RECENT ORDERS */}
+                                <div>
+                                    <h3 className="text-sm font-bold text-gray-900 mb-4 flex! items-center gap-2"><Package size={16}/> Recent Orders</h3>
+                                    <div className="space-y-3">
+                                        {selectedProfile.orders && selectedProfile.orders.length > 0 ? selectedProfile.orders.slice(0, 5).map(order => (
+                                            <div key={order.id} className="border border-gray-100 rounded-lg p-3 hover:border-gray-300 transition-colors">
+                                                <div className="flex! justify-between items-center mb-2">
+                                                    <span className="text-xs font-mono font-bold text-gray-600 bg-gray-50 px-2 py-1 rounded border border-gray-100">
+                                                        Order #{order.id.slice(-6)}
+                                                    </span>
+                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{order.status}</span>
                                                 </div>
-                                                <button onClick={() => setSelectedProfile(null)} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><X size={20}/></button>
-                                            </div>
-
-                                            {/* TAB SWITCHER UI */}
-                                            <div className="flex! gap-6 border-b border-gray-100 mb-6">
-                                                <button 
-                                                    onClick={() => setActiveTab('profile')}
-                                                    className={`pb-3 text-sm font-bold! transition-colors ${activeTab === 'profile' ? 'text-gray-900 border-b-2 border-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                                                >
-                                                    Profile & Orders
-                                                </button>
-                                                <button 
-                                                    onClick={() => setActiveTab('history')}
-                                                    className={`pb-3 text-sm font-bold! transition-colors ${activeTab === 'history' ? 'text-gray-900 border-b-2 border-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                                                >
-                                                    Message History
-                                                </button>
-                                            </div>
-
-                                            {/* CONDITIONAL RENDER: PROFILE vs HISTORY */}
-                                            {activeTab === 'profile' ? (
-                                                <div className="space-y-6">
-                                                    {/* CONTACT INFO */}
-                                                    <div className="bg-gray-50 rounded-xl p-4 space-y-3 border border-gray-100">
-                                                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Contact Details</h3>
-                                                        <div className="flex! items-center gap-3 text-sm text-gray-700">
-                                                            <Mail size={16} className="text-gray-400 min-w-[16px]" /> {selectedProfile.email}
-                                                        </div>
-                                                        <div className="flex! items-center gap-3 text-sm text-gray-700">
-                                                            <Smartphone size={16} className="text-gray-400 min-w-[16px]" /> {selectedProfile.phone}
-                                                        </div>
-                                                        <div className="flex! items-center gap-3 text-sm text-gray-700">
-                                                            <MapPin size={16} className="text-gray-400 min-w-[16px]" /> {selectedProfile.address}
-                                                        </div>
+                                                <div className="flex! justify-between items-end">
+                                                    <div className="text-xs text-gray-600 truncate max-w-[200px]">
+                                                        {Array.isArray(order.items) && order.items.map((i: any) => `${i.quantity}x ${i.name}`).join(', ')}
                                                     </div>
-
-                                                    {/* STATS */}
-                                                    <div className="grid! grid-cols-2 gap-4">
-                                                        <div className="border border-gray-100 rounded-xl p-4 text-center">
-                                                            <div className="text-xs text-gray-400 font-bold uppercase mb-1">Total Spent</div>
-                                                            <div className="text-xl font-black text-gray-900">₹{parseFloat(selectedProfile.lifetimeSpend).toLocaleString()}</div>
-                                                        </div>
-                                                        <div className="border border-gray-100 rounded-xl p-4 text-center">
-                                                            <div className="text-xs text-gray-400 font-bold uppercase mb-1">Referrals</div>
-                                                            <div className="text-xl font-black text-blue-600">{selectedProfile.networkSize}</div>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* RECENT ORDERS */}
-                                                    <div>
-                                                        <h3 className="text-sm font-bold text-gray-900 mb-4 flex! items-center gap-2"><Package size={16}/> Recent Orders</h3>
-                                                        <div className="space-y-3">
-                                                            {selectedProfile.orders && selectedProfile.orders.length > 0 ? selectedProfile.orders.slice(0, 5).map(order => (
-                                                                <div key={order.id} className="border border-gray-100 rounded-lg p-3 hover:border-gray-300 transition-colors">
-                                                                    <div className="flex! justify-between items-center mb-2">
-                                                                        <span className="text-xs font-mono font-bold text-gray-600 bg-gray-50 px-2 py-1 rounded border border-gray-100">
-                                                                            Order #{order.id.slice(-6)}
-                                                                        </span>
-                                                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{order.status}</span>
-                                                                    </div>
-                                                                    <div className="flex! justify-between items-end">
-                                                                        <div className="text-xs text-gray-600 truncate max-w-[200px]">
-                                                                            {Array.isArray(order.items) && order.items.map((i: any) => `${i.quantity}x ${i.name}`).join(', ')}
-                                                                        </div>
-                                                                        <span className="font-bold text-sm min-w-fit">₹{order.subtotal}</span>
-                                                                    </div>
-                                                                </div>
-                                                            )) : (
-                                                                <div className="text-center py-6 text-gray-400 text-sm">No orders found.</div>
-                                                            )}
-                                                            {selectedProfile.orders && selectedProfile.orders.length > 5 && (
-                                                                <a href={`/celsius-7th-heaven/orders?customer=${selectedProfile.id}`} className="block text-center text-xs text-blue-600 font-bold py-2 hover:underline">
-                                                                    View All {selectedProfile.orders.length} Orders →
-                                                                </a>
-                                                            )}
-                                                        </div>
-                                                    </div>
+                                                    <span className="font-bold text-sm min-w-fit">₹{order.subtotal}</span>
                                                 </div>
-                                            ) : (
-                                                // --- MESSAGE HISTORY VIEW ---
-                                                <div className="space-y-4 animate-in fade-in zoom-in duration-300">
-                                                    <h3 className="text-sm font-bold text-gray-900 mb-4 flex! items-center gap-2">
-                                                        <Mail size={16}/> Message History
-                                                    </h3>
-                                                    
-                                                    <div className="space-y-3">
-                                                        {selectedProfile.messages && selectedProfile.messages.length > 0 ? (
-                                                            selectedProfile.messages.map((msg) => (
-                                                                <div key={msg.id} className="bg-gray-50 border border-gray-100 rounded-lg p-4">
-                                                                    <div className="flex! justify-between items-start mb-2">
-                                                                        <h4 className="font-bold text-sm text-gray-800">{msg.subject || "No Subject"}</h4>
-                                                                        <span className="text-[10px] text-gray-400 font-mono bg-white px-2 py-1 rounded border border-gray-100 whitespace-nowrap ml-2">
-                                                                            {new Date(msg.sentAt).toLocaleDateString()}
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap pl-2 border-l-2 border-blue-200">
-                                                                        {msg.message}
-                                                                    </div>
-                                                                </div>
-                                                            ))
-                                                        ) : (
-                                                            <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                                                                <Mail className="mx-auto h-8 w-8 text-gray-300 mb-2" />
-                                                                <p className="text-sm text-gray-400 font-medium">No messages sent yet.</p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-                                            
-                                            {/* BOTTOM PADDING to ensure content isn't hidden behind sticky footer */}
-                                            <div className="h-24"></div>
-                                        </div>
-
-                                        {/* STICKY FOOTER ACTIONS */}
-                                        <div className="p-6 pt-4 border-t border-gray-100 bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.03)] z-80! relative!">
-                                            <div className="grid! grid-cols-2 gap-3">
-                                                <button onClick={() => { handleOpenNetwork(selectedProfile); }} className="w-full! py-3 rounded-lg border border-blue-100 text-blue-600 font-bold text-sm hover:bg-blue-50 transition-colors flex! items-center justify-center gap-2">
-                                                    <Network size={16} /> View Network
-                                                </button>
-                                                <button 
-                                                    onClick={() => { setMessageTarget({ ids: [selectedProfile.id], name: selectedProfile.fullName }); setShowMessageModal(true); }}
-                                                    disabled={sending}
-                                                    className="w-full! px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold flex! items-center justify-center gap-2"
-                                                >
-                                                    {sending ? <Loader2 className="animate-spin w-4 h-4" /> : <Send size={16} />}
-                                                    {sending ? "Sending..." : "Send Msg"}
-                                                </button>
-                                                {!selectedProfile.is7thHeaven && (
-                                                    <button 
-                                                        onClick={() => handleUpgradeToVIP(selectedProfile.id)}
-                                                        className="col-span-2 w-full! py-3 rounded-lg bg-linear-to-r from-[#ddb040] to-amber-500 text-white font-bold text-sm hover:opacity-90 transition-opacity flex! items-center justify-center gap-2 shadow-lg"
-                                                    >
-                                                        <Zap size={16} fill="currentColor" /> Grant 7th Heaven Access
-                                                    </button>
-                                                )}
                                             </div>
-                                        </div>
-                                    </motion.div>
-                                </>
-                            )}
-                        </AnimatePresence>
-
-                        {/* Action Buttons */}
-                         <div className="p-6 pt-4 border-t border-gray-100 bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.03)] z-10">
-                            <div className="grid grid-cols-2 gap-3">
-                                <button onClick={() => { handleOpenNetwork(selectedProfile); }} className="w-full py-3 rounded-lg border border-blue-100 text-blue-600 font-bold text-sm hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
-                                    <Network size={16} /> View Network
-                                </button>
-                                <button 
-                                    onClick={handleSendMessage} 
-                                    disabled={sending}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2"
-                                >
-                                    {sending ? <Loader2 className="animate-spin w-4 h-4" /> : <Send size={16} />}
-                                    {sending ? "Sending..." : "Send"}
-                                </button>
-                                {!selectedProfile.is7thHeaven && (
-                                    <button 
-                                        onClick={() => handleUpgradeToVIP(selectedProfile.id)}
-                                        className="col-span-2 w-full py-3 rounded-lg bg-linear-to-r from-[#ddb040] to-amber-500 text-white font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-lg"
-                                    >
-                                        <Zap size={16} fill="currentColor" /> Grant 7th Heaven Access
-                                    </button>
-                                )}
+                                        )) : (
+                                            <div className="text-center py-6 text-gray-400 text-sm">No orders found.</div>
+                                        )}
+                                        {selectedProfile.orders && selectedProfile.orders.length > 5 && (
+                                            <a href={`/celsius-7th-heaven/orders?customer=${selectedProfile.id}`} className="block text-center text-xs text-blue-600 font-bold py-2 hover:underline">
+                                                View All {selectedProfile.orders.length} Orders →
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
+                        ) : (
+                            // --- MESSAGE HISTORY VIEW ---
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-bold text-gray-900 mb-4 flex! items-center gap-2">
+                                    <Mail size={16}/> Message History
+                                </h3>
+                                
+                                <div className="space-y-3">
+                                    {selectedProfile.messages && selectedProfile.messages.length > 0 ? (
+                                        selectedProfile.messages.map((msg) => (
+                                            <div key={msg.id} className="bg-gray-50 border border-gray-100 rounded-lg p-4">
+                                                <div className="flex! justify-between items-start mb-2">
+                                                    <h4 className="font-bold text-sm text-gray-800">{msg.subject || "No Subject"}</h4>
+                                                    <span className="text-[10px] text-gray-400 font-mono bg-white px-2 py-1 rounded border border-gray-100 whitespace-nowrap ml-2">
+                                                        {new Date(msg.sentAt).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                                <div className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap pl-2 border-l-2 border-blue-200">
+                                                    {msg.message}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                            <Mail className="mx-auto h-8 w-8 text-gray-300 mb-2" />
+                                            <p className="text-sm text-gray-400 font-medium">No messages sent yet.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* STICKY FOOTER ACTIONS - Always visible at bottom */}
+                    <div className="p-4 border-t border-gray-100 bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+                        <div className="grid grid-cols-2 gap-3">
+                            <button onClick={() => { handleOpenNetwork(selectedProfile); }} className="w-full py-3 rounded-lg border border-blue-100 text-blue-600 font-bold text-sm hover:bg-blue-50 transition-colors flex! items-center! justify-center! gap-2">
+                                <Network size={16} /> View Network
+                            </button>
+                            <button 
+                                onClick={() => { setMessageTarget({ ids: [selectedProfile.id], name: selectedProfile.fullName }); setShowMessageModal(true); }}
+                                disabled={sending}
+                                className="w-full py-3 bg-blue-600 text-white rounded-lg text-sm font-bold flex! items-center! justify-center! gap-2 hover:bg-blue-700 transition-colors"
+                            >
+                                {sending ? <Loader2 className="animate-spin w-4 h-4" /> : <Send size={16} />}
+                                {sending ? "Sending..." : "Send Msg"}
+                            </button>
+                            {!selectedProfile.is7thHeaven && (
+                                <button 
+                                    onClick={() => handleUpgradeToVIP(selectedProfile.id)}
+                                    className="col-span-2 w-full py-3 rounded-lg bg-linear-to-r from-[#ddb040] to-amber-500 text-white font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-lg"
+                                >
+                                    <Zap size={16} fill="currentColor" /> Grant 7th Heaven Access
+                                </button>
+                            )}
                         </div>
                     </div>
                 </motion.div>
