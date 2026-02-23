@@ -320,6 +320,7 @@ model SiteSettings {
   state           String?
   country         String   @default("India")
   pincode         String?
+  gstNumber       String?
   
   businessHours   String?
   

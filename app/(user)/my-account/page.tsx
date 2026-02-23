@@ -224,7 +224,8 @@ function ProfileContent() {
                     address: `${siteSettings?.address || ''}, ${siteSettings?.city || ''}`,
                     phone: siteSettings?.phone || "",
                     email: siteSettings?.email || "",
-                    logoUrl: logoBase64
+                    logoUrl: logoBase64,
+                    gstNumber: siteSettings?.gstNumber || ""
                 }
             };
 

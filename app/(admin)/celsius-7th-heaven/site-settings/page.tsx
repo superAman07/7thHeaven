@@ -18,6 +18,7 @@ interface SiteSettings {
     state: string;
     country: string;
     pincode: string;
+    gstNumber: string;
     businessHours: string;
     instagram: string;
     facebook: string;
@@ -44,6 +45,7 @@ const defaultSettings: SiteSettings = {
     state: '',
     country: 'India',
     pincode: '',
+    gstNumber: '',
     businessHours: '',
     instagram: '',
     facebook: '',
@@ -363,6 +365,15 @@ export default function SiteSettingsPage() {
                         <InputField label="State" value={settings.state} onChange={v => handleChange('state', v)} />
                         <InputField label="Pincode" value={settings.pincode} onChange={v => handleChange('pincode', v)} />
                         <InputField label="Country" value={settings.country} onChange={v => handleChange('country', v)} />
+                    </div>
+                    <div className="grid! grid-cols-1! gap-4! mt-4!">
+                        <label>GST Number: </label>
+                        <input 
+                            type="text" 
+                            value={settings.gstNumber || ''} 
+                            onChange={(e) => setSettings({...settings, gstNumber: e.target.value})}
+                            placeholder="e.g. 22AAAAA0000A1Z5"
+                        />
                     </div>
                 </div>
             )}
