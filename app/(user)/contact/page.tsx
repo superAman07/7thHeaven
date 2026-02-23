@@ -53,7 +53,6 @@ export default function ContactPage() {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
-    const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
 
     // Form state
     const [subject, setSubject] = useState('');
@@ -68,12 +67,6 @@ export default function ContactPage() {
         
         const init = async () => {
             try {
-                // Fetch dynamic settings
-                const settingsRes = await axios.get('/api/v1/site-settings');
-                if (settingsRes.data.success && isMounted) {
-                    setSiteSettings(settingsRes.data.data);
-                }
-
                 const res = await axios.get('/api/v1/auth/me');
                 if (!isMounted) return;
                 if (res.data.success) {
@@ -208,67 +201,8 @@ export default function ContactPage() {
                         </div>
                     ) : (
                         <div className="row">
-                            {/* Dynamic Contact Info */}
-                            <div className="col-lg-4 col-12" style={{ marginBottom: '30px' }}>
-                                <div className="contact-info" style={{ background: '#fff', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(45,42,38,0.08)' }}>
-                                    <h3 style={{ color: '#2D2A26', marginBottom: '20px', fontSize: '20px', fontWeight: '600' }}>Get In Touch</h3>
-                                    
-                                    {/* 1. Legal Name */}
-                                    {siteSettings?.companyName && (
-                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '18px' }}>
-                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                <i className="fa fa-briefcase" style={{ color: 'white', fontSize: '16px' }}></i>
-                                            </div>
-                                            <div>
-                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Our Company</h5>
-                                                <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{siteSettings.companyName}</p>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* 3. Phone */}
-                                    {siteSettings?.phone && (
-                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '18px' }}>
-                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                <i className="fa fa-phone" style={{ color: 'white', fontSize: '16px' }}></i>
-                                            </div>
-                                            <div>
-                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Phone</h5>
-                                                <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{siteSettings.phone}</p>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* 4. Email */}
-                                    {siteSettings?.email && (
-                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '18px' }}>
-                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                <i className="fa fa-envelope" style={{ color: 'white', fontSize: '14px' }}></i>
-                                            </div>
-                                            <div>
-                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Email</h5>
-                                                <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{siteSettings.email}</p>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* 5. Hours */}
-                                    {siteSettings?.businessHours && (
-                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #C9A227, #B8860B)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                <i className="fa fa-clock-o" style={{ color: 'white', fontSize: '16px' }}></i>
-                                            </div>
-                                            <div>
-                                                <h5 style={{ margin: '0 0 3px 0', fontSize: '14px', fontWeight: '600' }}>Hours</h5>
-                                                <p style={{ margin: 0, color: '#5C5550', fontSize: '13px' }}>{siteSettings.businessHours}</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
                             {/* Contact Form */}
-                            <div className="col-lg-8 col-12">
+                            <div className="col-lg-12 col-12">
                                 <div style={{ background: '#fff', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(45,42,38,0.08)' }}>
                                     <h3 style={{ marginBottom: '8px', color: '#2D2A26', fontSize: '20px', fontWeight: '600' }}>Submit a Support Ticket</h3>
                                     <p style={{ color: '#5C5550', marginBottom: '20px', fontSize: '14px' }}>We'll respond within 24-48 hours.</p>
