@@ -293,7 +293,7 @@ export async function sendTicketResponseEmail(to: string, ticketId: string, tick
                    <p style="margin: 10px 0 0 0; color: #555; line-height: 1.6;">${responseMessage}</p>
                 </div>
                 <div style="text-align: center;">
-                    <a href="${SITE_URL}/contact-us" style="color: #ddb040; text-decoration: none; font-weight: bold;">View Ticket</a>
+                    <a href="${SITE_URL}/contact" style="color: #ddb040; text-decoration: none; font-weight: bold;">View Ticket</a>
                 </div>
             </div>
         </div>
