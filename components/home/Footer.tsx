@@ -22,41 +22,22 @@ type Props = {
   logoSrc?: string;
 };
 
-const defaultQuickLinks: LinkItem[] = [
-  { label: "About Us", href: "/about" },
-  { label: "Contact Us", href: "/contact" },
-  { label: "Track Order", href: "/track-order" },
-  { label: "My Account", href: "/my-account" },
-  { label: "Privacy Policy", href: "/policies/legal_privacy" },
-  { label: "Terms & Conditions", href: "/policies/legal_terms" },
-  { label: "Refund Policy", href: "/policies/legal_refund" },
-  { label: "Shipping Policy", href: "/policies/legal_shipping" },
-];
-
-const defaultCollectionLinks: LinkItem[] = [
-  { label: "Men's Perfumes", href: "/collections/perfumes?gender=Male" },
-  { label: "Women's Perfumes", href: "/collections/perfumes?gender=Female" },
-  { label: "Unisex Perfumes", href: "/collections/perfumes?gender=Unisex" },
-  { label: "New Arrivals", href: "/collections/perfumes?sort=newest" },
-];
 export default function FooterPage({
   settings,
-  aboutText = "Experience the essence of 'Make in Bharat' luxury. The Celsius Collection offers premium, long-lasting fragrances crafted with the world's best oils—luxury within reach.",
+  aboutText = "",
   quickLinks = [
     { label: "About Us", href: "/about" },
-    { label: "Contact Us", href: "/contact" },
-    { label: "Track Order", href: "/track-order" },
-    { label: "My Account", href: "/my-account" },
     { label: "Privacy Policy", href: "/policies/legal_privacy" },
     { label: "Terms & Conditions", href: "/policies/legal_terms" },
     { label: "Refund Policy", href: "/policies/legal_refund" },
     { label: "Shipping Policy", href: "/policies/legal_shipping" },
   ],
   collectionLinks = [
-    { label: "Men's Perfumes", href: "/collections/perfumes?gender=Male" },
-    { label: "Women's Perfumes", href: "/collections/perfumes?gender=Female" },
-    { label: "Unisex Perfumes", href: "/collections/perfumes?gender=Unisex" },
-    { label: "New Arrivals", href: "/collections/perfumes?sort=newest" },
+    { label: "Perfumes", href: "/collections/perfumes" },
+    { label: "Tatva Series", href: "/collections/tatva-series" },
+    { label: "Corporate Collection", href: "/collections/corporate-collection" },
+    { label: "Skyline Series", href: "/collections/skyline-series" },
+    { label: "Gift Sets", href: "/collections/gift-sets" },
   ],
   contact = {
     address: "",
@@ -85,20 +66,32 @@ export default function FooterPage({
       <footer className="footer-section section bg-dark">
         <div className="footer-top section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-45 pb-lg-25 pb-md-15 pb-sm-5 pb-xs-0">
           <div className="container">
-            <div className="row row-25">            
-              
-              <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
-                <div className="footer-logo w-full! flex! justify-center! md:justify-start!">
+                        <div className="row row-25">              
+              {/* Column 1: Logo + About + Social */}
+              <div className="footer-widget col-lg-3 col-md-12 col-sm-12 col-12 mb-40 mb-xs-35">
+                <div className="footer-logo w-full! flex! justify-center! lg:justify-start! mb-3!">
                     <Link href="/">
                         <img 
                             src={settings?.logoUrl || "/celsius-logo.png"} 
                             alt="7th Heaven" 
-                            className="w-full! max-w-[220px]! object-contain! h-auto!"
+                            className="w-full! max-w-[200px]! object-contain! h-auto!"
                         />
                     </Link>
                 </div>
+                <p className="d-none d-lg-block" style={{ color: '#999', fontSize: '13px', lineHeight: '1.7', marginTop: '10px' }}>
+                  {aboutText}
+                </p>
+                {/* Social Icons */}
+                <div className="d-none d-lg-flex" style={{ gap: '12px', marginTop: '15px' }}>
+                  {instagram && <a href={instagram} target="_blank" rel="noopener noreferrer" style={{ color: '#999', fontSize: '16px' }}><i className="fa fa-instagram"></i></a>}
+                  {facebook && <a href={facebook} target="_blank" rel="noopener noreferrer" style={{ color: '#999', fontSize: '16px' }}><i className="fa fa-facebook"></i></a>}
+                  {twitter && <a href={twitter} target="_blank" rel="noopener noreferrer" style={{ color: '#999', fontSize: '16px' }}><i className="fa fa-twitter"></i></a>}
+                  {youtube && <a href={youtube} target="_blank" rel="noopener noreferrer" style={{ color: '#999', fontSize: '16px' }}><i className="fa fa-youtube-play"></i></a>}
+                </div>
               </div>
-              <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
+
+              {/* Column 2: Quick Links (Policies) */}
+              <div className="footer-widget col-lg-3 col-md-4 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default" 
                   onClick={() => toggleSection('quick')}
@@ -115,7 +108,9 @@ export default function FooterPage({
                   ))}
                 </ul>
               </div>
-              <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
+
+              {/* Column 3: Collections & Categories */}
+              <div className="footer-widget col-lg-3 col-md-4 col-sm-6 col-12 mb-40 mb-xs-35">
                 <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
                   onClick={() => toggleSection('collections')}
@@ -132,38 +127,21 @@ export default function FooterPage({
                   ))}
                 </ul>
               </div>
-              <div className="footer-widget col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-35">
-                 <h4 
+
+              {/* Column 4: Customer Care */}
+              <div className="footer-widget col-lg-3 col-md-4 col-sm-6 col-12 mb-40 mb-xs-35">
+                <h4 
                   className="title d-flex justify-content-between align-items-center cursor-pointer md:cursor-default"
-                  onClick={() => toggleSection('contact')}
+                  onClick={() => toggleSection('care')}
                   style={{ cursor: 'pointer' }}
                 >
-                  <span className="text">Contact Us</span>
-                  <span className="d-md-none text-[#E6B422]">{openSection === 'contact' ? '−' : '+'}</span>
+                  <span className="text">Customer Care</span>
+                  <span className="d-md-none text-[#E6B422]">{openSection === 'care' ? '−' : '+'}</span>
                 </h4>
-                <ul className={`address ${openSection === 'contact' ? '' : 'd-none d-md-block'}`}>
-                  {displayPhone && (
-                    <li>
-                      <i className="fa fa-phone" />
-                      <span className="text-sm">
-                        <a href={`tel:${displayPhone}`}>{displayPhone}</a>
-                      </span>
-                    </li>
-                  )}
-                  {displaySiteName && (
-                    <li>
-                      <i className="fa fa-building-o" />
-                      <span className="text-sm">{displaySiteName}</span>
-                    </li>
-                  )}
-                  {displayEmail && (
-                    <li>
-                      <i className="fa fa-envelope-o" />
-                      <span className="text-sm">
-                        <a href={`mailto:${displayEmail}`}>{displayEmail}</a>
-                      </span>
-                    </li>
-                  )}
+                <ul className={`ft-menu list-none pl-0 ${openSection === 'care' ? '' : 'd-none d-md-block'}`}>
+                  <li><Link href="/contact" className="text-sm">Contact Us</Link></li>
+                  <li><Link href="/track-order" className="text-sm">Track Order</Link></li>
+                  <li><Link href="/my-account" className="text-sm">My Account</Link></li>
                 </ul>
               </div>
             </div>
