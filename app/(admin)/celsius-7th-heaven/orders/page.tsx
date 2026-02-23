@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ChevronLeft, ChevronRight, Eye, Search, X, Package, Truck, CheckCircle, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDebounce } from 'use-debounce';
+import { useSearchParams } from 'next/navigation';
 
 interface OrderUser {
   fullName: string;
@@ -75,6 +76,9 @@ export default function OrdersPage() {
   const [refundPendingCount, setRefundPendingCount] = useState(0);
   const [newOrdersCount, setNewOrdersCount] = useState(0);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const searchParams = useSearchParams();
+  const customerFilter = searchParams.get('customer') || '';
+
 
   const itemsPerPage = 10;
 
@@ -86,6 +90,7 @@ export default function OrdersPage() {
         limit: itemsPerPage.toString(),
         search: debouncedSearchTerm,
         status: statusFilter,
+        customer: customerFilter,
       });
       const response = await axios.get(`/api/v1/admin/orders?${params.toString()}`);
       setOrders(response.data.data);
@@ -101,7 +106,7 @@ export default function OrdersPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, debouncedSearchTerm, statusFilter, itemsPerPage]);
+  }, [currentPage, debouncedSearchTerm, statusFilter, itemsPerPage, customerFilter]);
 
   useEffect(() => {
     fetchOrders();

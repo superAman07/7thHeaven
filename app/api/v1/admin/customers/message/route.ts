@@ -30,15 +30,30 @@ export async function POST(req: NextRequest) {
         let sentCount = 0;
         await Promise.all(users.map(async (user) => {
             if (user.email) {
+                const LOGO_URL = "https://celsius-brand.s3.ap-south-1.amazonaws.com/celsius-logo.png"; // Use the same URL from lib/email.ts
+                const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://celsiusfragrances.com";
+
                 const html = `
-                    <div style="font-family: sans-serif; padding: 20px; background: #f4f4f4;">
-                        <div style="background: white; padding: 30px; border-radius: 8px;">
-                            <h2 style="color: #333;">Message from Celsius 7th Heaven</h2>
-                            <p>Dear ${user.fullName || 'Member'},</p>
-                            <p style="font-size: 16px; color: #555; line-height: 1.6;">${message}</p>
-                            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-                            <p style="font-size: 12px; color: #999;">You received this because you are a valued member of Celsius.</p>
+                    <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f4f4f4; padding: 20px;">
+                    
+                    <div style="background: #0d0b09; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                        <img src="${LOGO_URL}" alt="Celsius" style="max-height: 50px; width: auto;" />
+                    </div>
+
+                    <div style="background: #ffffff; padding: 40px; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h2 style="color: #333; margin-top: 0; font-weight: 600;">Hello ${user.fullName || 'Member'},</h2>
+                        <div style="font-size: 15px; color: #555; line-height: 1.8; white-space: pre-wrap;">${message}</div>
+                        
+                        <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+                        
+                        <div style="text-align: center;">
+                        <a href="${SITE_URL}" style="background: #ddb040; color: #000; padding: 12px 28px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Visit Store</a>
                         </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+                        <p>&copy; 2026 Celsius. All rights reserved.</p>
+                        <p style="font-size: 11px; color: #bbb;">You received this because you are a valued member of Celsius.</p>
+                    </div>
                     </div>
                 `;
 

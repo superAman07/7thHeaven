@@ -9,11 +9,14 @@ export async function GET(req: NextRequest) {
         const limit = parseInt(searchParams.get('limit') || '10');
         const search = searchParams.get('search') || '';
         const status = searchParams.get('status') || '';
+        const customer = searchParams.get('customer') || '';
 
         const skip = (page - 1) * limit;
 
         const where: Prisma.OrderWhereInput = {};
-
+        if (customer) {
+            where.userId = customer;
+        }
         // Special Filter for Refund Pending
         if (status === 'REFUND_PENDING') {
             where.status = 'CANCELLED';
