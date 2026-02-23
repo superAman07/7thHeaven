@@ -121,15 +121,10 @@ export default function CollectionsContent({ categorySlug }: { categorySlug: str
           if (selectedStatus.includes('Out of Stock')) params.append('status', 'false');
       }
 
-      // Logic: If we are on specifics (e.g. /collections/skyline), use that. 
-      // If on /collections/perfumes, use the checkboxes.
-      if (categorySlug && categorySlug !== 'perfumes') {
-         params.append('collectionSlug', categorySlug); 
-      } 
-      
-      // 2. User Filters (Checkboxes) - Always apply if selected
       if (selectedCategories.length > 0) {
          params.append('category', selectedCategories.join(','));
+      } else if (categorySlug) {
+         params.append('collectionSlug', categorySlug);
       }
       
       params.append('sort', sortBy);
