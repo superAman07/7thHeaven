@@ -194,7 +194,7 @@ export async function getCategories(collectionSlug?: string) {
         where: whereClause,
         include: {
             _count: {
-                select: { products: true }
+                select: { products: { where: { isArchived: false } } }
             },
             collection: { select: { name: true, slug: true } }
         },
