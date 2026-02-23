@@ -38,7 +38,7 @@ export default function AboutPageContent() {
     // Default content if not set in admin
     const companyName = settings?.companyName || 'Celsius';
     const aboutTitle = settings?.aboutTitle || 'Our Story';
-    const rawContent = settings?.aboutContent || `Welcome to ${companyName}, where passion meets perfection in every bottle.
+    const rawContent = settings?.aboutContent || `Welcome to Celsius, where passion meets perfection in every bottle.
     
     Founded with a vision to bring the world's finest fragrances to discerning individuals, we have curated an exceptional collection of premium perfumes that transcend ordinary scents.
     
@@ -143,44 +143,16 @@ export default function AboutPageContent() {
                                 )
                             ))}
                         </div>
-
-                         {/* Signature */}
-                        <div className="mt-12 text-center">
-                            <img src="/images/signature.png" alt="" className="h-16 mx-auto opacity-50 mb-4 invert" style={{ display: 'none' }} /> {/* Place signature image here if available */}
-                            <div className="text-[#ddb040] font-serif italic text-xl">The {companyName} Team</div>
-                        </div>
-
                     </div>
                 </div>
             </div>
-
-            {/* --- STATS SECTION (Keep existing but align colors) --- */}
-            <div className="py-20 bg-[#12100e] border-t border-white/5">
-                <div className="container">
-                    <div className="row text-center g-4">
-                        {[
-                            { val: '500+', label: 'Products' },
-                            { val: '10K+', label: 'Happy Customers' },
-                            { val: '50+', label: 'Brands' },
-                            { val: '4.8★', label: 'Rating' },
-                        ].map((item, idx) => (
-                            <div key={idx} className="col-6 col-md-3">
-                                <div className="text-4xl font-serif font-bold text-[#C9A227] mb-2">{item.val}</div>
-                                <div className="text-xs text-gray-500 uppercase tracking-widest">{item.label}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
             {/* --- WHY CHOOSE US (Keep existing) --- */}
             <div className="py-24 bg-[#0d0b09]">
                 <div className="container">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-serif font-bold text-white mb-3">Why Choose {companyName}?</h2>
+                        <h2 className="text-3xl font-serif font-bold text-white mb-3">Why Choose Celsius?</h2>
                         <p className="text-gray-500 max-w-lg mx-auto text-sm">Committed to finest fragrances and unmatched quality.</p>
                     </div>
-
                     <div className="row g-4">
                         {[
                             { icon: 'fa-diamond', title: 'Premium Selection', desc: 'Curated collection of authentic luxury fragrances.' },
