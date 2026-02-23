@@ -117,6 +117,7 @@ export default function PaymentStatusPage() {
             // 2. Wrap the order with Company Details so the PDF generator sees them
             const brandedOrder: any = {
                 ...order,
+                couponCode: order.couponCode || "",
                 companyDetails: {
                     name: siteSettings?.companyName || "Celsius",
                     address: `${siteSettings?.address || ''}, ${siteSettings?.city || ''}`,

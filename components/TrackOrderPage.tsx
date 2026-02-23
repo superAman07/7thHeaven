@@ -98,6 +98,7 @@ export default function TrackOrderPage() {
                 id: orderData.orderId || orderData.id,
                 status: orderData.status,
                 createdAt: orderData.createdAt,
+                couponCode: orderData.couponCode || "",
                 subtotal: parseFloat(orderData.subtotal),
                 discount: parseFloat(orderData.discount) || 0,
                 netAmountPaid: parseFloat(orderData.netAmountPaid) || (parseFloat(orderData.subtotal) - (parseFloat(orderData.discount) || 0)),

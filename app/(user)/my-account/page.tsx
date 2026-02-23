@@ -213,6 +213,7 @@ function ProfileContent() {
                 id: order.id,
                 status: order.status,
                 createdAt: order.createdAt,
+                couponCode: order.couponCode || "",
                 subtotal: parseFloat(order.subtotal),
                 discount: parseFloat(order.discount || '0'),
                 netAmountPaid: parseFloat(order.netAmountPaid || (parseFloat(order.subtotal) - (parseFloat(order.discount || '0'))).toString()),
