@@ -30,8 +30,8 @@ export async function POST(req: NextRequest) {
         let sentCount = 0;
         await Promise.all(users.map(async (user) => {
             if (user.email) {
-                const LOGO_URL = "https://celsius-brand.s3.ap-south-1.amazonaws.com/celsius-logo.png"; // Use the same URL from lib/email.ts
-                const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://celsiusfragrances.com";
+                const SITE_URL = 'https://www.celsiuspop.com';
+                const LOGO_URL = `${SITE_URL}/assets/images/logo.png`;
 
                 const html = `
                     <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f4f4f4; padding: 20px;">
