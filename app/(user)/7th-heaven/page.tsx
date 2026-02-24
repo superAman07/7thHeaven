@@ -184,7 +184,13 @@ export default function SeventhHeavenPage() {
     <div className="bg-gray-50 min-h-screen pb-20">
       <div className="w-full bg-[#1a1a1a] pt-[200px] md:pt-[220px] lg:pt-[260px] pb-24 md:pb-24 relative">
         <div className="container mx-auto px-4 pt-3 text-center">
-          <h1 className="text-white font-serif text-4xl mb-2">7th Heaven Club</h1>
+          <h1 className="text-white font-serif text-4xl font-bold! mb-2"><span style={{
+              background: 'linear-gradient(135deg, #8B5CF6, #F59E0B, #EC4899)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>7th Heaven Club</span>
+          </h1>
           <p className="text-[#ddb040] text-lg tracking-wider uppercase">Your Empire Dashboard</p>
         </div>
       </div>
@@ -192,7 +198,7 @@ export default function SeventhHeavenPage() {
       <div className="container mx-auto px-4 relative z-10 -mt-16">
         {/* 1. STATUS CARD */}
           <div className="bg-white rounded-xl shadow-lg p-6 mb-12 border-t-4 border-[#ddb040] relative overflow-hidden">
-                        {!data ? (
+            {!data ? (
               <div className="flex items-center justify-center py-8">
                   <div className="w-10 h-10 border-4 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
               </div>
@@ -461,13 +467,13 @@ export default function SeventhHeavenPage() {
 
         <div className="container mx-auto px-4 mt-12 text-center">
             <button
-                onClick={() => setShowHowItWorks(!showHowItWorks)}
-                className="inline-flex! items-center! gap-3! px-8! py-4! bg-linear-to-r! from-[#1a1a1a]! to-[#2a2a2a]! text-white! rounded-full! font-bold! uppercase! tracking-widest! text-xs! hover:from-[#ddb040]! hover:to-[#b6902e]! hover:text-black! transition-all! duration-300! shadow-lg! hover:shadow-xl! group!"
+              onClick={() => setShowHowItWorks(!showHowItWorks)}
+              className="inline-flex! items-center! gap-3! px-8! py-4! bg-linear-to-r! from-[#1a1a1a]! to-[#2a2a2a]! text-white! rounded-full! font-bold! uppercase! tracking-widest! text-xs! hover:from-[#ddb040]! hover:to-[#b6902e]! hover:text-black! transition-all! duration-300! shadow-lg! hover:shadow-xl! group!"
             >
-                <span className="w-8 h-8 rounded-full bg-[#ddb040]/20 group-hover:bg-black/10 flex items-center justify-center transition-colors">
-                    <i className={`fa ${showHowItWorks ? 'fa-chevron-up' : 'fa-question'} text-[#ddb040] group-hover:text-black transition-colors`} />
-                </span>
-                {showHowItWorks ? 'Hide Guide' : 'How 7th Heaven Works'}
+              <span className="w-8 h-8 rounded-full bg-[#ddb040]/20 group-hover:bg-white/30 flex! items-center! justify-center! transition-colors!">
+                <i className={`fa ${showHowItWorks ? 'fa-chevron-up' : 'fa-question'} text-[#ddb040] group-hover:text-white! transition-colors!`} />
+              </span>
+              {showHowItWorks ? 'Hide Guide' : 'How 7th Heaven Works'}
             </button>
         </div>
         <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showHowItWorks ? 'max-h-[5000px] opacity-100 mt-8' : 'max-h-0 opacity-0'}`}>
