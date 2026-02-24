@@ -69,6 +69,15 @@ export async function GET(req: NextRequest) {
                 fullName: true,
                 referralCode: true,
                 is7thHeaven: true,
+                rewardClaims: {
+                    select: {
+                        level: true,
+                        status: true,
+                        claimedAt: true,
+                        processedAt: true,
+                        amount: true,
+                    }
+                },
                 children: { // Level 1
                     where: { is7thHeaven: true },
                     select: {
@@ -154,6 +163,7 @@ export async function GET(req: NextRequest) {
         });
 
         // Define Targets (Powers of 5)
+        // const targets = [0, 0, 0, 0, 0, 0, 0];
         const targets = [5, 25, 125, 625, 3125, 15625, 78125];
 
         // Calculate Completion Status
@@ -180,7 +190,8 @@ export async function GET(req: NextRequest) {
                 //         { name: "Rahul Verma", joinedAt: new Date(Date.now() - 86400000).toISOString() },
                 //         { name: "Priya Singh", joinedAt: new Date(Date.now() - 172800000).toISOString() }
                 //       ]
-                directReferrals: level1.map(u => ({ name: u.fullName, joinedAt: u.createdAt }))
+                directReferrals: level1.map(u => ({ name: u.fullName, joinedAt: u.createdAt })),
+                rewardClaims: userNetwork.rewardClaims || [],
             }
         });
 

@@ -25,6 +25,14 @@ interface DirectReferral {
   joinedAt: string;
 }
 
+interface RewardClaim {
+    level: number;
+    status: string; // PENDING | APPROVED | DELIVERED
+    claimedAt: string;
+    processedAt?: string;
+    amount: string;
+}
+
 interface NetworkData {
   fullName: string;
   referralCode: string;
@@ -32,6 +40,7 @@ interface NetworkData {
   levels: LevelData[];
   totalTeamSize: number;
   directReferrals: DirectReferral[];
+  rewardClaims: RewardClaim[];
 }
 
 export default function SeventhHeavenPage() {
@@ -47,6 +56,7 @@ export default function SeventhHeavenPage() {
   const [graphData, setGraphData] = useState<any>(null);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [minAmount, setMinAmount] = useState(2000);
+  const [claimingLevel, setClaimingLevel] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -141,6 +151,25 @@ export default function SeventhHeavenPage() {
     }
   };
 
+  const handleClaimReward = async (level: number) => {
+    setClaimingLevel(level);
+    try {
+        const res = await axios.post('/api/v1/network/claim', { level });
+        if (res.data.success) {
+            toast.success(res.data.message);
+            // Refresh data so button state updates
+            const refreshRes = await axios.get('/api/v1/network');
+            if (refreshRes.data.success) {
+                setData(refreshRes.data.data);
+            }
+        }
+    } catch (error: any) {
+        const msg = error.response?.data?.error || 'Failed to claim reward';
+        toast.error(msg);
+    } finally {
+        setClaimingLevel(null);
+    }
+  };
 
   if (isGuest) {
     return <MarketingView isLoggedIn={false} />; 
@@ -284,30 +313,89 @@ export default function SeventhHeavenPage() {
                   {data.levels.map((level) => {
                     const previousLevel = data.levels.find(l => l.level === level.level - 1);
                     const isUnlocked = level.level === 1 || previousLevel?.isCompleted;
+                    const isOddLevel = [1, 3, 5, 7].includes(level.level);
+                    const REWARD_AMOUNTS: Record<number, string> = { 
+                        1: 'Prize worth ₹5,000', 
+                        3: 'Prize worth ₹25,000', 
+                        5: 'Prize worth ₹1,25,000', 
+                        7: '₹1 Crore Cash Prize' 
+                    };
+                    
+                    // Find claim status for this level
+                    const claim = isOddLevel ? data.rewardClaims?.find(c => c.level === level.level) : null;
+
                     return (
-                      <div
-                        key={level.level}
-                        className={`relative rounded-xl p-6 border bg-white transition-all duration-300 ${level.isCompleted ? 'border-[#ddb040] shadow-md ring-1 ring-[#ddb040]/30' : 'border-gray-100 hover:border-gray-200'}`}
-                      >
-                        <div className="flex justify-between items-start mb-4">
-                          <h4 className={`text-2xl font-serif ${level.isCompleted ? 'text-[#ddb040]' : 'text-gray-800'}`}>
-                            Heaven 0{level.level}
-                          </h4>
-                          <i className={`fa ${level.isCompleted ? 'fa-check-circle text-[#ddb040]' : 'fa-lock text-gray-200'} text-xl`} />
+                        <div
+                            key={level.level}
+                            className={`relative rounded-xl p-6 border bg-white transition-all duration-300 ${level.isCompleted ? 'border-[#ddb040] shadow-md ring-1 ring-[#ddb040]/30' : 'border-gray-100 hover:border-gray-200'}`}
+                        >
+                            <div className="flex justify-between items-start mb-4">
+                                <h4 className={`text-2xl font-serif ${level.isCompleted ? 'text-[#ddb040]' : 'text-gray-800'}`}>
+                                    Heaven 0{level.level}
+                                </h4>
+                                <i className={`fa ${level.isCompleted ? 'fa-check-circle text-[#ddb040]' : 'fa-lock text-gray-200'} text-xl`} />
+                            </div>
+                            <div className="w-full bg-gray-100 rounded-full h-1.5 mb-3 overflow-hidden">
+                                <div 
+                                    className={`h-full rounded-full transition-all duration-1000 ${level.isCompleted ? 'bg-[#ddb040]' : 'bg-gray-300'}`} 
+                                    style={{ width: isUnlocked ? `${level.progress}%` : '0%' }} 
+                                />
+                            </div>
+                            <div className="flex justify-between text-[10px] uppercase tracking-widest font-bold text-gray-400">
+                                <span>Progress</span>
+                                <span className={level.isCompleted ? 'text-[#ddb040]' : ''}>
+                                    {isUnlocked ? `${level.count} / ${level.target}` : '???'}
+                                </span>
+                            </div>
+
+                            {/* === REWARD CLAIM BUTTON (Odd Levels) === */}
+                            {isOddLevel && level.isCompleted && (
+                                <div className="mt-4 pt-3 border-t border-gray-100">
+                                    {claim ? (
+                                        <div className={`text-center py-2 px-3 rounded-lg text-xs font-bold uppercase tracking-wider ${
+                                            claim.status === 'PENDING' 
+                                                ? 'bg-amber-50 text-amber-700 border border-amber-200' 
+                                                : 'bg-green-50 text-green-700 border border-green-200'
+                                        }`}>
+                                            {claim.status === 'PENDING' && '⏳ Claim Pending'}
+                                            {claim.status === 'APPROVED' && '✅ Reward Approved'}
+                                            {claim.status === 'DELIVERED' && '🎁 Reward Delivered'}
+                                            <span className="block text-[9px] font-normal mt-0.5 opacity-70">
+                                                {claim.amount}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <button 
+                                            onClick={() => handleClaimReward(level.level)}
+                                            disabled={claimingLevel === level.level}
+                                            className="w-full py-2.5 bg-linear-to-r from-[#ddb040] to-[#f4d03f] text-black rounded-lg font-bold text-xs uppercase tracking-wider hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        >
+                                            {claimingLevel === level.level ? (
+                                                <><i className="fa fa-spinner fa-spin" /> Claiming...</>
+                                            ) : (
+                                                <><i className="fa fa-gift" /> Claim {level.level === 7 ? '₹1 Crore Cash Prize' : REWARD_AMOUNTS[level.level]}</>
+                                            )}
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* === EVEN LEVEL MOTIVATION (Levels 2, 4, 6) === */}
+                            {!isOddLevel && level.isCompleted && (
+                                <div className="mt-4 pt-3 border-t border-gray-100">
+                                    <p className="text-center text-xs text-gray-500 italic">
+                                        ✨ You're one step closer to <strong className="text-[#ddb040]">Heaven 0{level.level + 1}</strong>!
+                                    </p>
+                                </div>
+                            )}
+                            {!isOddLevel && !level.isCompleted && isUnlocked && level.progress > 0 && (
+                                <div className="mt-4 pt-3 border-t border-gray-100">
+                                    <p className="text-center text-[10px] text-gray-400 uppercase tracking-wider">
+                                        Keep growing to unlock <span className="text-[#ddb040] font-bold">Heaven 0{level.level + 1}</span> reward
+                                    </p>
+                                </div>
+                            )}
                         </div>
-                        <div className="w-full bg-gray-100 rounded-full h-1.5 mb-3 overflow-hidden">
-                          <div 
-                              className={`h-full rounded-full transition-all duration-1000 ${level.isCompleted ? 'bg-[#ddb040]' : 'bg-gray-300'}`} 
-                              style={{ width: isUnlocked ? `${level.progress}%` : '0%' }} 
-                          />
-                        </div>
-                        <div className="flex justify-between text-[10px] uppercase tracking-widest font-bold text-gray-400">
-                          <span>Progress</span>
-                          <span className={level.isCompleted ? 'text-[#ddb040]' : ''}>
-                            {isUnlocked ? `${level.count} / ${level.target}` : '???'}
-                          </span>
-                        </div>
-                      </div>
                     );
                   })}
                 </div>

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, Bell, MessageSquare, Settings, Layers, Ticket, Mail } from 'lucide-react';
+import { LayoutDashboard, Package, Tags, ShoppingCart, Users, Share2, Bell, MessageSquare, Settings, Layers, Ticket, Mail, Gift } from 'lucide-react';
 
 const getNavItems = (newOrdersCount: number, openTicketsCount: number, pendingRewardsCount: number, subscriberCount: number) => [
   { href: '/celsius-7th-heaven/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -13,7 +13,8 @@ const getNavItems = (newOrdersCount: number, openTicketsCount: number, pendingRe
   { href: '/celsius-7th-heaven/orders', label: 'Orders', icon: ShoppingCart, badgeCount: newOrdersCount },
   { href: '/celsius-7th-heaven/coupons', label: 'Coupons', icon: Ticket },
   { href: '/celsius-7th-heaven/customers', label: 'Customers', icon: Users },
-  { href: '/celsius-7th-heaven/network', label: 'Network', icon: Share2, badgeCount: pendingRewardsCount },
+  { href: '/celsius-7th-heaven/network', label: 'Network', icon: Share2 },
+  { href: '/celsius-7th-heaven/reward-claims', label: 'Reward Claims', icon: Gift, badgeCount: pendingRewardsCount },
   { href: '/celsius-7th-heaven/support-tickets', label: 'Support Tickets', icon: MessageSquare, badgeCount: openTicketsCount },
   { href: '/celsius-7th-heaven/notifications', label: 'Notifications', icon: Bell },
   { href: '/celsius-7th-heaven/subscribers', label: 'Subscribers', icon: Mail, badgeCount: subscriberCount },
@@ -81,15 +82,14 @@ const SideNav: React.FC<SideNavProps> = ({ isOpen, setIsOpen }) => {
         if (ticketsData.success) {
           setOpenTicketsCount(ticketsData.tickets?.length || 0);
         }
-        const networkRes = await fetch('/api/v1/admin/mlm/leaders');
-        
-        const networkData = await networkRes.json();
-        if (networkData.success) {
-          const usersWithRewards = networkData.data.filter(
-            (leader: { stats: { completedLevels: number[] } }) => leader.stats.completedLevels.length > 0
-          ).length;
-          setPendingRewardsCount(usersWithRewards);
-        }
+        // Fetch pending reward claims count
+        try {
+            const claimsRes = await fetch('/api/v1/admin/mlm/claims?status=PENDING');
+            const claimsData = await claimsRes.json();
+            if (claimsData.success) {
+                setPendingRewardsCount(claimsData.pendingCount || 0);
+            }
+        } catch {}
         try {
             const subsRes = await fetch('/api/v1/notify-me');
             const subsData = await subsRes.json();

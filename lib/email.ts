@@ -413,3 +413,128 @@ export async function sendCustomNotifyEmail(
     </div>`;
     return sendEmail({ to: email, subject: customSubject, html });
 }
+
+// ----------------------------------------------------------------------
+// 11. REWARD CLAIM NOTIFICATION (To Admin)
+// ----------------------------------------------------------------------
+export async function sendRewardClaimToAdmin(details: {
+  userName: string;
+  userEmail: string;
+  userPhone: string;
+  level: number;
+  amount: string;
+}) {
+  const adminEmail = process.env.ADMIN_EMAIL || 'support@celsiuspop.com';
+  
+  const html = `
+    <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f4f4f4; padding: 20px;">
+      <div style="background: #0d0b09; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <img src="${LOGO_URL}" alt="Celsius" style="max-height: 50px; width: auto;" />
+      </div>
+      <div style="background: #ffffff; padding: 40px; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h2 style="color: #333; margin-top: 0; font-weight: 600; text-align: center;">🔔 New Reward Claim</h2>
+        <p style="color: #666; text-align: center; margin-bottom: 30px;">
+          A 7th Heaven member has claimed their reward.
+        </p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 12px; color: #888; font-weight: 600;">Member</td>
+            <td style="padding: 12px; color: #333; font-weight: 700;">${details.userName}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 12px; color: #888; font-weight: 600;">Email</td>
+            <td style="padding: 12px; color: #333;">${details.userEmail}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 12px; color: #888; font-weight: 600;">Phone</td>
+            <td style="padding: 12px; color: #333;">${details.userPhone || 'N/A'}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 12px; color: #888; font-weight: 600;">Level Completed</td>
+            <td style="padding: 12px; color: #ddb040; font-weight: 700; font-size: 16px;">Heaven ${details.level}</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; color: #888; font-weight: 600;">Reward Amount</td>
+            <td style="padding: 12px; color: #333; font-weight: 700; font-size: 18px;">${details.amount}</td>
+          </tr>
+        </table>
+
+        <div style="text-align: center; margin-top: 40px;">
+          <a href="${SITE_URL}/celsius-7th-heaven/reward-claims" style="background: #ddb040; color: #000; padding: 14px 30px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Review Claim</a>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+        <p>&copy; 2026 Celsius. All rights reserved.</p>
+      </div>
+    </div>
+  `;
+
+  return sendEmail({
+    to: adminEmail,
+    subject: details.level === 7 
+        ? `🔔 Reward Claim: ${details.userName} — Heaven 7 (₹1 Crore Cash Prize!)` 
+        : `🔔 Reward Claim: ${details.userName} — Heaven ${details.level} (${details.amount})`,
+    html
+  });
+}
+
+// ----------------------------------------------------------------------
+// 12. REWARD APPROVED EMAIL (To User)
+// ----------------------------------------------------------------------
+export async function sendRewardApprovedEmail(email: string, details: {
+  customerName: string;
+  level: number;
+  amount: string;
+  note?: string;
+}) {
+  const noteSection = details.note ? `
+    <div style="background: #f9f9f9; border-left: 4px solid #ddb040; padding: 15px; margin: 20px 0; border-radius: 0 4px 4px 0;">
+      <p style="color: #888; font-size: 12px; margin: 0 0 5px; text-transform: uppercase; letter-spacing: 1px;">Admin Note</p>
+      <p style="color: #333; margin: 0;">${details.note}</p>
+    </div>
+  ` : '';
+
+  const html = `
+    <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f4f4f4; padding: 20px;">
+      <div style="background: #0d0b09; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <img src="${LOGO_URL}" alt="Celsius" style="max-height: 50px; width: auto;" />
+      </div>
+      <div style="background: #ffffff; padding: 40px; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #ddb040, #f4d03f); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px;">🎉</div>
+          <h2 style="color: #333; margin: 0; font-weight: 700;">Congratulations, ${details.customerName}!</h2>
+          <p style="color: #ddb040; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Heaven ${details.level} Reward Approved</p>
+        </div>
+        
+        <p style="color: #666; text-align: center; line-height: 1.6;">
+            Your reward claim for <strong>Heaven ${details.level}</strong> has been approved! 
+            ${details.level === 7 
+                ? `You've won the <strong style="color: #ddb040; font-size: 18px;">₹1 Crore Cash Prize</strong>!`
+                : `You've earned a <strong style="color: #ddb040; font-size: 18px;">${details.amount}</strong>.`
+            }
+        </p>
+
+        ${noteSection}
+
+        <p style="color: #666; text-align: center; line-height: 1.6; margin-top: 20px;">
+          Please log in to your 7th Heaven dashboard to view your reward status and continue building your empire.
+        </p>
+
+        <div style="text-align: center; margin-top: 40px;">
+          <a href="${SITE_URL}/7th-heaven" style="background: #ddb040; color: #000; padding: 14px 30px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">View Dashboard</a>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+        <p>&copy; 2026 Celsius. All rights reserved.</p>
+        <p><a href="${SITE_URL}" style="color: #999; text-decoration: none;">Visit Store</a></p>
+      </div>
+    </div>
+  `;
+
+  return sendEmail({
+    to: email,
+    subject: `🎉 Congratulations! Your Heaven ${details.level} Reward is Approved!`,
+    html
+  });
+}
