@@ -43,7 +43,7 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
   return (
     <section
       ref={sectionRef}
-      className="how-it-works-section py-16 md:py-24 bg-gradient-to-b from-[#1a1a1a] to-[#252525] overflow-hidden"
+      className="how-it-works-section py-16 md:py-24 bg-linear-to-b from-[#1a1a1a] to-[#252525] overflow-hidden"
     >
       <div className="container mx-auto px-4">
         {/* Section Header */}
@@ -246,7 +246,7 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          <div className="bg-gradient-to-r from-[#E6B422]/10 via-[#E6B422]/20 to-[#E6B422]/10 border border-[#E6B422]/30 rounded-xl p-6 md:p-8">
+          <div className="bg-linear-to-r from-[#E6B422]/10 via-[#E6B422]/20 to-[#E6B422]/10 border border-[#E6B422]/30 rounded-xl p-6 md:p-8">
             <div className="text-3xl mb-3">🎁</div>
             <h4 className="text-lg! md:text-xl! font-serif! text-[#E6B422]! mb-2!">
               Rewards at Every Odd Heaven
