@@ -562,7 +562,12 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
             className="text-2xl! md:text-4xl! font-serif! mb-6! text-[#E6B422]! font-bold!"
             style={{ fontFamily: '"Cormorant Garamond", serif' }}
           >
-            7th Heaven Club
+            <span style={{
+              background: 'linear-gradient(135deg, #8B5CF6, #F59E0B, #EC4899)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}> 7th Heaven </span> Club
           </h1>
 
           <p className="text-xl md:text-2xl text-[#E6B422] tracking-widest uppercase mb-8">The Path to Prestige</p>
