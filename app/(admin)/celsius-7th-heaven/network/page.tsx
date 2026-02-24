@@ -90,16 +90,9 @@ export default function NetworkLeadersPage() {
         setIsModalOpen(true);
     };
 
-    // NEW: Simulate sending the digital message
-    const handleSendCongratulation = async () => {
-        if (!selectedLeader) return;
-        setProcessingStep('sending');
-        
-        // In real life: await axios.post('/api/v1/admin/mlm/notify-winner', { userId: selectedLeader.id });
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Fake delay
-        
-        toast.success(`Official congratulation sent to ${selectedLeader.fullName}`);
-        setProcessingStep('completed');
+    const handleViewClaims = () => {
+        setIsModalOpen(false);
+        window.location.href = '/celsius-7th-heaven/reward-claims';
     };
 
     const filteredLeaders = leaders.filter(l => 
@@ -363,25 +356,11 @@ export default function NetworkLeadersPage() {
                                             </p>
                                         </div>
                                         <div className="flex gap-3">
-                                            {processingStep === 'completed' ? (
-                                                <div className="flex items-center gap-2 text-green-600">
-                                                    <CheckCircle className="w-5 h-5" />
-                                                    <span className="font-bold">Notification Sent!</span>
-                                                </div>
-                                            ) : (
-                                                <button 
-                                                    onClick={handleSendCongratulation}
-                                                    disabled={processingStep === 'sending'}
-                                                    className="px-6 py-2 bg-[#E6B422] text-white rounded-lg font-bold hover:bg-[#b5952f] transition-all flex items-center gap-2"
-                                                >
-                                                    {processingStep === 'sending' ? 'Sending...' : <><Send className="w-4 h-4" /> Send Notification</>}
-                                                </button>
-                                            )}
                                             <button 
-                                                onClick={() => setIsModalOpen(false)}
-                                                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+                                                onClick={handleViewClaims}
+                                                className="px-6 py-2 bg-[#E6B422] text-white rounded-lg font-bold hover:bg-[#b5952f] transition-all flex items-center gap-2"
                                             >
-                                                Close
+                                                <Gift className="w-4 h-4" /> View Reward Claims
                                             </button>
                                         </div>
                                     </>
