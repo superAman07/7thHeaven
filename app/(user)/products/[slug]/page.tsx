@@ -54,6 +54,7 @@ async function getProductData(slug: string) {
       id: {
         not: productData.id,
       },
+      isArchived: false,
     },
     take: 8,
     include: {

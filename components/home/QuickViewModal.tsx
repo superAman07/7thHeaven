@@ -454,17 +454,6 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                         </React.Fragment>
                                                     ))}
                                                 </span>
-                                                {product && product.genderTags && product.genderTags.length > 0 && (
-                                                    <span className="posted-in">
-                                                        Made for:{` `}
-                                                        {product.genderTags.map((tag, index) => (
-                                                            <React.Fragment key={tag}>
-                                                                <a href="#">{tag}</a>
-                                                                {index < product.genderTags.length - 1 && ', '}
-                                                            </React.Fragment>
-                                                        ))}
-                                                    </span>
-                                                )}
                                             </div>
                                             <div className="single-product-sharing">
                                                 <h3>Share this product</h3>

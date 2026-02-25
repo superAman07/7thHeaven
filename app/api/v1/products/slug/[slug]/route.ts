@@ -56,6 +56,7 @@ export async function GET(
                 id: {
                     not: product.id,
                 },
+                isArchived: false,
                 inStock: true
             },
             take: 6,
