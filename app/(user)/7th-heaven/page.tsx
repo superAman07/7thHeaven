@@ -299,7 +299,7 @@ export default function SeventhHeavenPage() {
 
               <div className="row">
                 {clubProducts.map((product) => (
-                  <div className="col-lg-3 col-md-4 col-sm-6" key={product.id}>
+                  <div className="col-lg-3 col-md-6 col-sm-6" key={product.id}>
                     <ProductCard product={product} onQuickView={handleOpenModal} />
                   </div>
                 ))}
@@ -477,7 +477,7 @@ export default function SeventhHeavenPage() {
             </button>
         </div>
         <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showHowItWorks ? 'max-h-[5000px] opacity-100 mt-8' : 'max-h-0 opacity-0'}`}>
-          <div className="w-full bg-linear-to-b from-[#1a1a1a] to-[#252525] py-12 px-4 md:px-8">
+          <div className="w-full bg-linear-to-b">
               <HowItWorks minPurchaseAmount={minAmount} />
           </div>
         </div>
