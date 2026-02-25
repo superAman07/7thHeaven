@@ -46,62 +46,99 @@ export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
                     position: relative;
                     width: 100%;
                     max-width: 600px;
-                    margin: 0 auto;
+                    margin: 10px auto;
                     padding: 50px 40px;
                     text-align: center;
-                    background: linear-gradient(135deg, #fdfbf7 0%, #f5f0e8 100%);
-                    border: 1px solid rgba(182, 144, 46, 0.2);
-                    border-radius: 4px;
+                    background: linear-gradient(145deg, #1a1a1a 0%, #2a2520 50%, #1a1a1a 100%);
+                    border: 1px solid rgba(212, 175, 55, 0.3);
+                    border-radius: 8px;
                     overflow: hidden;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(212, 175, 55, 0.1);
                 }
                 .coming-soon-luxury::before {
                     content: '';
                     position: absolute;
-                    top: 12px;
-                    left: 12px;
-                    right: 12px;
-                    bottom: 12px;
-                    border: 1px solid rgba(182, 144, 46, 0.15);
-                    border-radius: 2px;
+                    top: 10px;
+                    left: 10px;
+                    right: 10px;
+                    bottom: 10px;
+                    border: 1px solid rgba(212, 175, 55, 0.15);
+                    border-radius: 4px;
+                    pointer-events: none;
+                }
+                .coming-soon-luxury::after {
+                    content: '';
+                    position: absolute;
+                    top: -50%;
+                    left: -50%;
+                    width: 200%;
+                    height: 200%;
+                    background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.05) 0%, transparent 60%);
                     pointer-events: none;
                 }
                 .cs-gold-line {
-                    width: 50px;
+                    width: 60px;
                     height: 2px;
-                    background: linear-gradient(90deg, transparent, #B6902E, transparent);
-                    margin: 0 auto 20px;
+                    background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+                    margin: 0 auto 24px;
                 }
                 .cs-subtitle {
                     font-size: 10px;
                     font-weight: 700;
-                    letter-spacing: 4px;
+                    letter-spacing: 5px;
                     text-transform: uppercase;
-                    color: #B6902E;
-                    margin-bottom: 12px;
+                    color: #D4AF37;
+                    margin-bottom: 14px;
                 }
                 .cs-title {
                     font-family: 'Cormorant Garamond', serif;
                     font-size: 2rem;
                     font-weight: 600;
-                    color: #1a1a1a;
-                    margin-bottom: 8px;
+                    color: #ffffff;
+                    margin-bottom: 10px;
                     letter-spacing: 1px;
                 }
                 .cs-desc {
-                    color: #888;
+                    color: #999;
                     font-size: 0.85rem;
-                    line-height: 1.7;
+                    line-height: 1.8;
                     max-width: 380px;
-                    margin: 0 auto 28px;
+                    margin: 0 auto 30px;
                 }
                 .cs-notify-form {
                     display: flex;
                     gap: 0;
-                    max-width: 360px;
+                    max-width: 340px;
                     margin: 0 auto 20px;
-                    border: 1px solid #ddd;
-                    border-radius: 2px;
+                    border: 1px solid rgba(212, 175, 55, 0.3);
+                    border-radius: 4px;
                     overflow: hidden;
+                }
+                @media (max-width: 480px) {
+                    .coming-soon-luxury {
+                        padding: 40px 20px;
+                        margin: 10px 10px;
+                    }
+                    .cs-notify-form {
+                        flex-direction: column;
+                        max-width: 100%;
+                        border: none;
+                        gap: 10px;
+                    }
+                    .cs-notify-form input {
+                        border: 1px solid rgba(212, 175, 55, 0.3) !important;
+                        border-radius: 4px !important;
+                        background: rgba(255,255,255,0.05) !important;
+                        color: #fff !important;
+                    }
+                    .cs-notify-btn {
+                        border-radius: 4px !important;
+                        width: 100% !important;
+                        padding: 14px 22px !important;
+                    }
+                    .cs-title {
+                        font-size: 1.6rem;
+                    }
                 }
                 .cs-notify-form input {
                     flex: 1;
@@ -109,17 +146,18 @@ export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
                     border: none;
                     outline: none;
                     font-size: 13px;
-                    background: white;
-                    color: #333;
+                    background: rgba(255, 255, 255, 0.08);
+                    color: #fff;
+                    min-width: 0;
                 }
                 .cs-notify-form input::placeholder {
-                    color: #bbb;
+                    color: #777;
                     letter-spacing: 0.5px;
                 }
                 .cs-notify-btn {
                     padding: 12px 22px;
-                    background: #1a1a1a;
-                    color: #D4AF37;
+                    background: linear-gradient(135deg, #D4AF37, #B6902E);
+                    color: #1a1a1a;
                     border: none;
                     font-size: 11px;
                     font-weight: 700;
@@ -128,10 +166,11 @@ export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
                     cursor: pointer;
                     transition: all 0.3s ease;
                     white-space: nowrap;
+                    flex-shrink: 0;
                 }
                 .cs-notify-btn:hover {
-                    background: #B6902E;
-                    color: #fff;
+                    background: linear-gradient(135deg, #e8c84a, #D4AF37);
+                    color: #000;
                 }
                 .cs-notify-btn:disabled {
                     opacity: 0.6;
@@ -143,7 +182,7 @@ export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
                     gap: 12px;
                     margin: 20px auto;
                     max-width: 300px;
-                    color: #ccc;
+                    color: #555;
                     font-size: 11px;
                     letter-spacing: 2px;
                     text-transform: uppercase;
@@ -153,25 +192,26 @@ export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
                     content: '';
                     flex: 1;
                     height: 1px;
-                    background: #e0d9cc;
+                    background: rgba(212, 175, 55, 0.2);
                 }
                 .cs-browse-link {
                     display: inline-block;
-                    color: #1a1a1a;
+                    color: #D4AF37 !important;
                     font-size: 12px;
                     font-weight: 600;
                     letter-spacing: 2px;
                     text-transform: uppercase;
                     text-decoration: none;
-                    border-bottom: 1px solid #B6902E;
+                    border-bottom: 1px solid rgba(212, 175, 55, 0.4);
                     padding-bottom: 2px;
                     transition: all 0.3s ease;
                 }
                 .cs-browse-link:hover {
-                    color: #B6902E;
+                    color: #fff;
+                    border-bottom-color: #fff;
                 }
                 .cs-success {
-                    color: #B6902E;
+                    color: #D4AF37;
                     font-size: 13px;
                     font-weight: 600;
                     letter-spacing: 1px;
@@ -179,7 +219,7 @@ export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
                     margin-bottom: 0;
                 }
                 .cs-error {
-                    color: #dc3545;
+                    color: #e57373;
                     font-size: 12px;
                     margin-top: 8px;
                     animation: fadeIn 0.3s ease;
@@ -239,7 +279,7 @@ export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
                         <span>or</span>
                     </div>
 
-                    <Link href="/collections/perfumes" className="cs-browse-link">
+                    <Link href="/collections/perfumes" className="cs-browse-link" style={{ color: '#D4AF37' }}>
                         Browse All Fragrances
                     </Link>
                 </div>
