@@ -2,7 +2,7 @@
 import axios from 'axios';
 import React, { useState, useEffect, useMemo } from 'react';
 import { PublicProduct } from '../HeroPage';
-import { FacebookIcon, GooglePlusIcon, InstagramIcon, PinterestIcon, StarIcon, TwitterIcon, VimeoIcon } from '../icons';
+import { StarIcon } from '../icons';
 import ImageLightbox from '../ImageLightBox';
 import { useCart } from '../CartContext';
 import { useRouter } from 'next/navigation';
@@ -366,8 +366,18 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                     </div>
                                                 </div>
                                             )}
-                                            <div className="product-description">
-                                                <p>{displayProduct.description || 'No description available.'}</p>
+                                            <div className="product-description" style={{ 
+                                                maxHeight: '120px', 
+                                                overflowY: 'auto', 
+                                                paddingRight: '8px',
+                                                marginBottom: '10px',
+                                                fontSize: '13px',
+                                                lineHeight: '1.7',
+                                                color: '#555'
+                                            }}>
+                                                {(displayProduct.description || 'No description available.').split('\n').map((line, i) => (
+                                                    <p key={i} style={{ marginBottom: '6px' }}>{line}</p>
+                                                ))}
                                             </div>
                                             <div className="mb-3">
                                                 {isOutOfStock ? (
@@ -458,13 +468,51 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                             </div>
                                             <div className="single-product-sharing">
                                                 <h3>Share this product</h3>
-                                                <ul className="d-flex">
-                                                    <li><a href="#" title="Twitter"><TwitterIcon /></a></li>
-                                                    <li><a href="#" title="Facebook"><FacebookIcon /></a></li>
-                                                    <li><a href="#" title="Google Plus"><GooglePlusIcon /></a></li>
-                                                    <li><a href="#" title="Pinterest"><PinterestIcon /></a></li>
-                                                    <li><a href="#" title="Instagram"><InstagramIcon /></a></li>
-                                                    <li><a href="#" title="Vimeo"><VimeoIcon /></a></li>
+                                                <ul className="d-flex" style={{ gap: '10px', listStyle: 'none', padding: 0, margin: 0 }}>
+                                                    <li>
+                                                        <a 
+                                                            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(displayProduct.name)}&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin + '/products/' + (product?.slug || '') : '')}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            title="Share on Twitter"
+                                                            style={{ color: '#1DA1F2', fontSize: '18px' }}
+                                                        >
+                                                            <i className="fa fa-twitter"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a 
+                                                            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin + '/products/' + (product?.slug || '') : '')}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            title="Share on Facebook"
+                                                            style={{ color: '#4267B2', fontSize: '18px' }}
+                                                        >
+                                                            <i className="fa fa-facebook"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a 
+                                                            href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin + '/products/' + (product?.slug || '') : '')}&media=${encodeURIComponent(displayProduct.images[0] || '')}&description=${encodeURIComponent(displayProduct.name)}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            title="Share on Pinterest"
+                                                            style={{ color: '#E60023', fontSize: '18px' }}
+                                                        >
+                                                            <i className="fa fa-pinterest"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a 
+                                                            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(displayProduct.name + ' - ' + (typeof window !== 'undefined' ? window.location.origin + '/products/' + (product?.slug || '') : ''))}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            title="Share on WhatsApp"
+                                                            style={{ color: '#25D366', fontSize: '18px' }}
+                                                        >
+                                                            <i className="fa fa-whatsapp"></i>
+                                                        </a>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </div>
