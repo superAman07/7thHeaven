@@ -24,12 +24,19 @@ const CheckoutPageComponent: React.FC = () => {
     const [otpVerified, setOtpVerified] = useState(false);
     const [otpSending, setOtpSending] = useState(false);
     const [otpError, setOtpError] = useState('');
+    const [resendCooldown, setResendCooldown] = useState(0);
 
     const searchParams = useSearchParams();
     const [appliedCoupon, setAppliedCoupon] = useState<{
         code: string;
         discountAmount: number;
     } | null>(null);
+
+    useEffect(() => {
+        if (resendCooldown <= 0) return;
+        const timer = setTimeout(() => setResendCooldown(prev => prev - 1), 1000);
+        return () => clearTimeout(timer);
+    }, [resendCooldown]);
     useEffect(() => {
         const couponCode = searchParams.get('coupon');
         const discountAmount = searchParams.get('discount');
@@ -74,6 +81,7 @@ const CheckoutPageComponent: React.FC = () => {
                 referralCode: referralCode || undefined
             });
             setOtpSent(true);
+            setResendCooldown(30);
         } catch (err: any) {
             setOtpError(err.response?.data?.error?.message || 'Failed to send OTP');
         } finally {
@@ -541,21 +549,55 @@ const CheckoutPageComponent: React.FC = () => {
                                                                                                 {otpSending ? 'Sending...' : 'Send OTP to Email'}
                                                                                             </button>
                                                                                         ) : (
-                                                                                            <div className="flex gap-2">
-                                                                                                <input
-                                                                                                    type="text"
-                                                                                                    value={otpCode}
-                                                                                                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                                                                                    placeholder="Enter 6-digit OTP"
-                                                                                                    className="flex-1 p-2 border rounded"
-                                                                                                    maxLength={6}
-                                                                                                />
-                                                                                                <button 
+                                                                                            <div>
+                                                                                                <div className="flex gap-2 items-center">
+                                                                                                    <input
+                                                                                                        type="text"
+                                                                                                        value={otpCode}
+                                                                                                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                                                                                        placeholder="Enter 6-digit OTP"
+                                                                                                        className="flex-1 border rounded"
+                                                                                                        maxLength={6}
+                                                                                                        style={{ padding: '8px 12px', fontSize: '14px', height: '38px' }}
+                                                                                                    />
+                                                                                                    <button 
+                                                                                                        type="button"
+                                                                                                        onClick={handleVerifyOtp}
+                                                                                                        style={{
+                                                                                                            height: '38px',
+                                                                                                            padding: '0 16px',
+                                                                                                            backgroundColor: '#16a34a',
+                                                                                                            color: '#fff',
+                                                                                                            border: 'none',
+                                                                                                            borderRadius: '4px',
+                                                                                                            fontSize: '13px',
+                                                                                                            fontWeight: 600,
+                                                                                                            cursor: 'pointer',
+                                                                                                            whiteSpace: 'nowrap'
+                                                                                                        }}
+                                                                                                    >
+                                                                                                        Verify
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                                <button
                                                                                                     type="button"
-                                                                                                    onClick={handleVerifyOtp}
-                                                                                                    className="px-4 py-2 bg-green-600 text-white rounded text-sm"
+                                                                                                    onClick={handleSendOtp}
+                                                                                                    disabled={resendCooldown > 0 || otpSending}
+                                                                                                    style={{ 
+                                                                                                        marginTop: '10px',
+                                                                                                        padding: '6px 14px',
+                                                                                                        fontSize: '12px',
+                                                                                                        fontWeight: 600,
+                                                                                                        color: resendCooldown > 0 ? '#999' : '#333',
+                                                                                                        backgroundColor: resendCooldown > 0 ? '#f3f4f6' : '#e5e7eb',
+                                                                                                        border: '1px solid',
+                                                                                                        borderColor: resendCooldown > 0 ? '#e5e7eb' : '#d1d5db',
+                                                                                                        borderRadius: '4px',
+                                                                                                        cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer',
+                                                                                                        transition: 'all 0.2s ease'
+                                                                                                    }}
                                                                                                 >
-                                                                                                    Verify
+                                                                                                    {otpSending ? 'Sending...' : resendCooldown > 0 ? `Resend OTP in ${resendCooldown}s` : 'Resend OTP'}
                                                                                                 </button>
                                                                                             </div>
                                                                                         )}
