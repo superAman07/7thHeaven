@@ -90,6 +90,7 @@ export default function SeventhHeavenPage() {
               {
                 id: p.variantId || p.variants?.[0]?.id || '',
                 price: p.price,
+                sellingPrice: p.sellingPrice ?? null,
                 size: p.size || 'Standard',
                 stock: 100,
               },
