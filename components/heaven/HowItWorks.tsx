@@ -316,7 +316,7 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
                   <div className="stair-inner">
                     <div className="stair-left">
                       <span className="stair-level" style={{ color: h.color }}>Heaven {h.level}</span>
-                      <span className="stair-target">{h.target.toLocaleString('en-IN')} members</span>
+                      <span className="stair-target">{h.hasReward ? '🎁 Reward Level' : '↗ Growth Level'}</span>
                     </div>
                     {h.hasReward && (
                       <div className="stair-reward-badge" style={{ background: h.color + '18', borderColor: h.color + '40' }}>
