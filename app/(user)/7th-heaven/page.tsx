@@ -545,7 +545,7 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
             isBestSeller: p.isBestSeller || false,
             discountPercentage: p.discountPercentage,
             category: { name: p.category, slug: '' },
-            variants: [{ id: p.variantId || '', price: p.price, size: p.size || 'Standard', stock: 100 }],
+            variants: [{ id: p.variantId || '', price: p.price, sellingPrice: p.sellingPrice ?? null, size: p.size || 'Standard', stock: 100 }],
             reviews: [],
           }));
           setClubProducts(mappedProducts);
