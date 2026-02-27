@@ -94,8 +94,9 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
     {
       number: 1,
       title: 'Shop & Join the Club',
-      description: `Browse our premium collection and purchase any product worth ₹${minPurchaseAmount.toLocaleString('en-IN')} or more. During checkout, opt into the 7th Heaven Club — your gateway to massive rewards.`,
+      description: `Browse our premium fragrance collection and choose any product worth ₹${minPurchaseAmount.toLocaleString('en-IN')} or more. During checkout, simply opt into the 7th Heaven Club — it's completely free. No hidden charges, no subscription, no catch.`,
       detail: 'One purchase. Lifetime membership. Zero joining fees.',
+      tip: `💡 Pro Tip: You're already buying a luxury fragrance — the club membership is just a bonus!`,
       Icon: ShoppingBagIcon,
       color: POP.purple,
       colorLight: POP.purpleLight,
@@ -104,8 +105,9 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
     {
       number: 2,
       title: 'Receive Your Unique Referral Code',
-      description: 'Once you become a member, you\'ll receive a unique referral code via email. You can also find it on your Account Page anytime.',
+      description: 'Once you become a member, you\'ll instantly receive a unique referral code via email and on your 7th Heaven dashboard. This code is exclusively yours — it tracks every referral you make.',
       detail: 'Your code is your key to building your network.',
+      tip: '💡 Pro Tip: Save your referral code — you can share it unlimited times with anyone!',
       Icon: KeyIcon,
       color: POP.gold,
       colorLight: POP.goldLight,
@@ -114,8 +116,9 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
     {
       number: 3,
       title: 'Refer 5 People — Complete Heaven 1',
-      description: `Share your code with friends, family, or social media followers. Each person who purchases ₹${minPurchaseAmount.toLocaleString('en-IN')}+ using your code becomes a part of your Heaven 1 team.`,
-      detail: '5 direct referrals = Heaven 1 complete = ₹5,000 prize unlocked!',
+      description: `Share your exclusive code on WhatsApp, Instagram, or simply text it to friends who love premium fragrances. When someone purchases worth ₹${minPurchaseAmount.toLocaleString('en-IN')}+ using YOUR code — they become part of your Heaven 1 team and YOU move closer to your first reward.`,
+      detail: '5 direct referrals = Heaven 1 complete = ₹5,000 worth reward unlocked!',
+      tip: '💡 Pro Tip: Most members complete Heaven 1 within their first week just by sharing with close friends & family.',
       Icon: UsersIcon,
       color: POP.pink,
       colorLight: POP.pinkLight,
@@ -124,8 +127,9 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
     {
       number: 4,
       title: 'Your Network Grows Automatically',
-      description: 'Here\'s the magic: when YOUR referrals refer others, those new members count as YOUR Heaven 2 team. And when THEY refer — that\'s your Heaven 3. It keeps growing through 7 levels!',
-      detail: 'You build 5. They build 5 each. The network multiplies exponentially.',
+      description: 'Here\'s where it gets exciting: when YOUR referrals refer their friends, those new members automatically count as YOUR Heaven 2 team. And when THOSE people refer others — that\'s your Heaven 3. This chain continues through all 7 levels, growing your network exponentially without any extra effort from you.',
+      detail: 'You refer 5. They each refer 5. The network multiplies on its own.',
+      tip: '💡 Pro Tip: You only need to personally refer 5 active people. After that, your network grows through THEIR efforts!',
       Icon: NetworkIcon,
       color: POP.purple,
       colorLight: POP.purpleLight,
@@ -134,8 +138,9 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
     {
       number: 5,
       title: 'Claim Rewards at Every Milestone',
-      description: 'As your network reaches target sizes at Heaven 1, 3, 5 and 7 — you unlock massive prizes. From gifts worth ₹5,000 all the way up to the grand prize of ₹1 CRORE at Heaven 7!',
-      detail: 'The bigger your tree grows, the bigger your rewards.',
+      description: 'As your network grows and hits milestones at Heaven 1, 3, 5 and 7 — you unlock massive prizes. Simply click "Claim Reward" from your dashboard, and our team will process it within 7 business days. From gifts worth ₹5,000 all the way up to the grand prize of ₹1 CRORE!',
+      detail: 'The bigger your tree grows, the bigger your rewards get.',
+      tip: '💡 Pro Tip: Track your progress in real-time on your 7th Heaven dashboard — you\'ll see exactly how close you are to each milestone!',
       Icon: TrophyIcon,
       color: POP.gold,
       colorLight: POP.goldLight,
@@ -218,6 +223,7 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
                     <p className="hiw-step-detail" style={{ color: step.color }}>
                       ✦ {step.detail}
                     </p>
+                    {step.tip && <p className="hiw-step-tip">{step.tip}</p>}
                   </div>
                 </div>
               </div>
@@ -365,6 +371,78 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
           </div>
         </div>
       </div>
+
+      {/* ═══ GROWTH MATH ═══ */}
+      <div className={`mb-16 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="growth-math-card">
+            <h4 className="text-base md:text-lg font-bold text-white mb-4 text-center">
+              🧮 See How Your Network Grows
+            </h4>
+            <div className="growth-math-steps">
+              <div className="growth-step">
+                <span className="growth-you">You</span>
+                <span className="growth-arrow">→</span>
+                <span className="growth-action">refer <strong>5</strong> friends</span>
+                <span className="growth-result" style={{ color: POP.purple }}>= Heaven 1 → ₹5,000</span>
+              </div>
+              <div className="growth-step">
+                <span className="growth-you">Your 5</span>
+                <span className="growth-arrow">→</span>
+                <span className="growth-action">each refer <strong>5</strong></span>
+                <span className="growth-result" style={{ color: POP.blue }}>= 25 in Heaven 2</span>
+              </div>
+              <div className="growth-step">
+                <span className="growth-you">Those 25</span>
+                <span className="growth-arrow">→</span>
+                <span className="growth-action">each refer <strong>5</strong></span>
+                <span className="growth-result" style={{ color: POP.pink }}>= Heaven 3 → ₹25,000</span>
+              </div>
+            </div>
+            <p className="text-gray-500 text-xs text-center mt-4">
+              You only did <span style={{ color: POP.gold, fontWeight: 700 }}>ONE thing</span>: referred 5 people. The rest grows on its own.
+            </p>
+          </div>
+        </div>
+
+        {/* ═══ FAQ SECTION ═══ */}
+        <div className={`mb-16 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h3 className="hiw-subtitle text-center mb-8">
+            Frequently Asked <span className="hiw-title-gradient">Questions</span>
+          </h3>
+          <div className="faq-grid">
+            {[
+              { q: 'Is there a joining fee?', a: `No! Your membership is automatically activated FREE with any purchase of ₹${minPurchaseAmount.toLocaleString('en-IN')}+. No hidden charges ever.` },
+              { q: 'Do I need to sell anything?', a: 'Absolutely not. Just share your referral code. When someone buys using your code, they join your network. No inventory, no pressure.' },
+              { q: 'How do I claim my rewards?', a: 'Once you hit a milestone (Heaven 1, 3, 5, or 7), a "Claim Reward" button appears on your dashboard. Click it and our team processes your reward within 7 business days.' },
+              { q: 'Is there a time limit?', a: 'No deadline at all! Your network keeps growing as long as your referrals stay active. Take your time — the rewards will wait for you.' },
+              { q: 'Can I track my progress?', a: 'Yes! Your 7th Heaven dashboard shows real-time stats — your team size, current level, and exactly how close you are to the next reward.' },
+              { q: 'What if my referral returns the product?', a: 'If a referred purchase is returned or cancelled, that referral won\'t count toward your network. Only confirmed purchases qualify.' },
+            ].map((faq, idx) => (
+              <div key={idx} className="faq-item">
+                <h5 className="faq-q">{faq.q}</h5>
+                <p className="faq-a">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ═══ FINAL CTA ═══ */}
+        <div className={`text-center transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="cta-banner">
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              Ready to Start Your Journey?
+            </h3>
+            <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
+              Join the 7th Heaven Club today and start earning rewards with every referral.
+            </p>
+            <Link
+              href="/collections/perfumes"
+              className="cta-button"
+            >
+              Shop & Join Now →
+            </Link>
+          </div>
+        </div>
 
       {/* ═══ BACKGROUND PARTICLES ═══ */}
       <div className="hiw-particles" aria-hidden="true">
@@ -637,6 +715,85 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
           50% { opacity: 1; transform: scale(1.3); }
         }
 
+                /* Pro Tip in Steps */
+        .hiw-step-tip {
+          font-size: 0.75rem;
+          color: #6b7280;
+          background: rgba(255,255,255,0.03);
+          border-left: 2px solid var(--accent, #666);
+          padding: 6px 12px;
+          margin-top: 8px;
+          border-radius: 0 6px 6px 0;
+          font-style: italic;
+          line-height: 1.5;
+        }
+
+        /* Growth Math */
+        .growth-math-card {
+          max-width: 600px; margin: 0 auto;
+          background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 16px; padding: 1.5rem; overflow: hidden;
+        }
+        .growth-math-steps { display: flex; flex-direction: column; gap: 10px; }
+        .growth-step {
+          display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+          padding: 8px 12px; border-radius: 8px;
+          background: rgba(255,255,255,0.02);
+          font-size: 0.85rem; color: #ccc;
+        }
+        .growth-you { font-weight: 700; color: #fff; min-width: 60px; }
+        .growth-arrow { color: #555; }
+        .growth-action { color: #9ca3af; }
+        .growth-action strong { color: #fff; }
+        .growth-result { font-weight: 700; margin-left: auto; white-space: nowrap; }
+
+        /* FAQ */
+        .faq-grid {
+          max-width: 720px; margin: 0 auto;
+          display: grid; grid-template-columns: 1fr; gap: 12px;
+        }
+        @media (min-width: 640px) {
+          .faq-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .faq-item {
+          background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 12px; padding: 1.25rem;
+          transition: all 0.3s;
+        }
+        .faq-item:hover {
+          border-color: ${POP.gold}30;
+          background: rgba(255,255,255,0.04);
+        }
+        .faq-q {
+          color: #fff; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px;
+        }
+        .faq-a {
+          color: #9ca3af; font-size: 0.8rem; line-height: 1.6; margin: 0;
+        }
+
+        /* CTA */
+        .cta-banner {
+          background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(245,158,11,0.08), rgba(236,72,153,0.08));
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 20px; padding: 2.5rem 1.5rem;
+        }
+        .cta-button {
+          display: inline-block;
+          padding: 14px 36px;
+          background: linear-gradient(135deg, ${POP.gold}, ${POP.goldDark});
+          color: #000 !important;
+          font-weight: 700; font-size: 0.85rem;
+          letter-spacing: 0.08em; text-transform: uppercase;
+          border-radius: 100px; text-decoration: none;
+          transition: all 0.3s;
+          box-shadow: 0 4px 20px ${POP.gold}40;
+        }
+        .cta-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 30px ${POP.gold}60;
+          color: #000 !important;
+        }
+
         /* ═══ RESPONSIVE ═══ */
         @media (max-width: 768px) {
           .how-it-works-section { padding: 3rem 0 4rem; }
@@ -654,6 +811,10 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
           .hiw-step-number { width: 38px; height: 38px; font-size: 0.95rem; }
           .hiw-connector { left: 18px; }
           .rewards-banner { padding: 1.25rem; }
+          .growth-step { font-size: 0.75rem; gap: 4px; }
+          .growth-result { margin-left: 0; margin-top: 2px; width: 100%; }
+          .growth-you { min-width: auto; }
+          .faq-grid { grid-template-columns: 1fr; }
         }
       `}</style>
     </section>
