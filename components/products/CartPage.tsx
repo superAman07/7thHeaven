@@ -122,8 +122,8 @@ const CartPageComponent: React.FC = () => {
         }
 
         const checkoutUrl = appliedCoupon 
-        ? `/cart/checkout?coupon=${appliedCoupon.code}&discount=${appliedCoupon.discountAmount}`
-        : '/cart/checkout';
+            ? `/cart/checkout?coupon=${appliedCoupon.code}&couponType=${appliedCoupon.type}&couponValue=${appliedCoupon.value}`
+            : '/cart/checkout';
 
         
         // Check for unavailable items

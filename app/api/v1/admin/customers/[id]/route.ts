@@ -22,6 +22,8 @@ export async function PATCH(
         if (!userCheck?.referralCode) {
             updateData.referralCode = '7H-' + Math.random().toString(36).substring(2, 8).toUpperCase();
         }
+    } else if (body.is7thHeaven === false) {
+        updateData.is7thHeaven = false;
     }
 
     const updatedUser = await prisma.user.update({

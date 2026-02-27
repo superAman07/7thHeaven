@@ -184,6 +184,21 @@ export default function CustomersPage() {
     }
   };
 
+  const handleRevokeVIP = async (userId: string) => {
+    if(!confirm("Are you sure you want to revoke 7th Heaven membership? (Referral network will be preserved)")) return;
+    
+    try {
+        const res = await axios.patch(`/api/v1/admin/customers/${userId}`, { is7thHeaven: false });
+        if (res.data.success) {
+            toast.success("7th Heaven access revoked");
+            fetchCustomers();
+            setSelectedProfile(null);
+        }
+    } catch (error) {
+        toast.error("Failed to revoke access");
+    }
+  };
+
   return (
     <div className="p-6 relative min-h-screen">
       <Toaster />
@@ -503,12 +518,19 @@ export default function CustomersPage() {
                                 {sending ? <Loader2 className="animate-spin w-4 h-4" /> : <Send size={16} />}
                                 {sending ? "Sending..." : "Send Msg"}
                             </button>
-                            {!selectedProfile.is7thHeaven && (
+                            {!selectedProfile.is7thHeaven ? (
                                 <button 
                                     onClick={() => handleUpgradeToVIP(selectedProfile.id)}
-                                    className="col-span-2 w-full py-3 rounded-lg bg-linear-to-r from-[#ddb040] to-amber-500 text-white font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-lg"
+                                    className="col-span-2 w-full py-3 rounded-lg bg-linear-to-r from-[#ddb040] to-amber-500 text-white font-bold text-sm hover:opacity-90 transition-opacity flex! items-center! justify-center! gap-2 shadow-lg"
                                 >
                                     <Zap size={16} fill="currentColor" /> Grant 7th Heaven Access
+                                </button>
+                            ) : (
+                                <button 
+                                    onClick={() => handleRevokeVIP(selectedProfile.id)}
+                                    className="col-span-2 w-full py-3 rounded-lg bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors flex! items-center! justify-center! gap-2"
+                                >
+                                    <Zap size={16} /> Revoke 7th Heaven Access
                                 </button>
                             )}
                         </div>

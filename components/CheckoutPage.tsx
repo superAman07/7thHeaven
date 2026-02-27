@@ -13,10 +13,14 @@ const CheckoutPageComponent: React.FC = () => {
     const [shipToDifferentAddress, setShipToDifferentAddress] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [is7thHeavenOptIn, setIs7thHeavenOptIn] = useState(false);
+    const [agreeToTerms, setAgreeToTerms] = useState(false);
     const [minPurchaseLimit, setMinPurchaseLimit] = useState(2000);
 
     const [isAlreadyMember, setIsAlreadyMember] = useState(false);
     const [referralCode, setReferralCode] = useState('');
+    const [referralVerified, setReferralVerified] = useState(false);
+    const [referralError, setReferralError] = useState('');
+    const [isVerifyingReferral, setIsVerifyingReferral] = useState(false);
     const [referralLocked, setReferralLocked] = useState(false);
     // OTP states
     const [otpSent, setOtpSent] = useState(false);
@@ -39,15 +43,20 @@ const CheckoutPageComponent: React.FC = () => {
     }, [resendCooldown]);
     useEffect(() => {
         const couponCode = searchParams.get('coupon');
-        const discountAmount = searchParams.get('discount');
+        const couponType = searchParams.get('couponType');
+        const couponValue = searchParams.get('couponValue');
         
-        if (couponCode && discountAmount) {
+        if (couponCode && couponType && couponValue) {
+            const value = parseFloat(couponValue);
+            const discount = couponType === 'PERCENT' 
+                ? Math.round(cartTotal * (value / 100)) 
+                : value;
             setAppliedCoupon({
                 code: couponCode,
-                discountAmount: parseFloat(discountAmount)
+                discountAmount: discount
             });
         }
-    }, [searchParams]);
+    }, [searchParams, cartTotal]);
 
     useEffect(() => {
         const ref = searchParams.get('ref');
@@ -86,6 +95,24 @@ const CheckoutPageComponent: React.FC = () => {
             setOtpError(err.response?.data?.error?.message || 'Failed to send OTP');
         } finally {
             setOtpSending(false);
+        }
+    };
+
+    const handleVerifyReferral = async () => {
+        if (!referralCode.trim()) return;
+        setIsVerifyingReferral(true);
+        setReferralError('');
+        try {
+            const res = await axios.post('/api/v1/referral/validate', { code: referralCode });
+            if (res.data.success) {
+                setReferralVerified(true);
+                setReferralError('');
+            }
+        } catch (err: any) {
+            setReferralError(err.response?.data?.error || 'Invalid referral code');
+            setReferralVerified(false);
+        } finally {
+            setIsVerifyingReferral(false);
         }
     };
 
@@ -205,8 +232,8 @@ const CheckoutPageComponent: React.FC = () => {
     };
 
     const handlePlaceOrder = async (e: React.FormEvent) => {
-        if (!isLoggedIn && is7thHeavenOptIn && !otpVerified) {
-            alert("Please verify your email via OTP before placing an order with 7th Heaven membership.");
+        if (!isLoggedIn && !otpVerified) {
+            alert("Please verify your email via OTP before placing an order.");
             setIsProcessing(false);
             return;
         }
@@ -503,7 +530,7 @@ const CheckoutPageComponent: React.FC = () => {
                                                     </div>
                                                 ) : (
                                                     cartTotal > 0 && (
-                                                        cartTotal >= minPurchaseLimit ? (
+                                                        (cartTotal - (appliedCoupon?.discountAmount || 0)) >= minPurchaseLimit ? (
                                                             <div className="p-3" style={{ backgroundColor: '#ddb040', color: '#000', border: '1px solid #cca33b', borderRadius: '5px' }}>
                                                                 <div className="flex justify-center gap-x-2 mb-2">
                                                                     <input 
@@ -521,16 +548,36 @@ const CheckoutPageComponent: React.FC = () => {
                                                                         {/* Referral Code Input */}
                                                                         <div className="mb-3">
                                                                             <label className="block text-sm font-semibold mb-1">Referral Code (Optional)</label>
-                                                                            <input
-                                                                                type="text"
-                                                                                value={referralCode}
-                                                                                onChange={(e) => !referralLocked && setReferralCode(e.target.value.toUpperCase())}
-                                                                                placeholder="Enter referral code"
-                                                                                disabled={referralLocked}
-                                                                                className="w-full p-2 border rounded"
-                                                                                style={{ backgroundColor: referralLocked ? '#e9ecef' : '#fff' }}
-                                                                            />
+                                                                            <div className="flex gap-2">
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={referralCode}
+                                                                                    onChange={(e) => {
+                                                                                        if (!referralLocked) {
+                                                                                            setReferralCode(e.target.value.toUpperCase());
+                                                                                            setReferralVerified(false);
+                                                                                            setReferralError('');
+                                                                                        }
+                                                                                    }}
+                                                                                    placeholder="Enter referral code"
+                                                                                    disabled={referralLocked || referralVerified}
+                                                                                    className="flex-1 p-2 border rounded"
+                                                                                    style={{ backgroundColor: (referralLocked || referralVerified) ? '#e9ecef' : '#fff' }}
+                                                                                />
+                                                                                {!referralLocked && !referralVerified && referralCode.trim() && (
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        onClick={handleVerifyReferral}
+                                                                                        disabled={isVerifyingReferral}
+                                                                                        style={{ padding: '8px 16px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                                                                                    >
+                                                                                        {isVerifyingReferral ? 'Checking...' : 'Verify'}
+                                                                                    </button>
+                                                                                )}
+                                                                            </div>
                                                                             {referralLocked && <small className="text-gray-600">Referral code auto-applied</small>}
+                                                                            {referralVerified && <small style={{ color: '#16a34a', fontWeight: 600 }}>✓ Valid referral code</small>}
+                                                                            {referralError && <small style={{ color: '#dc2626' }}>{referralError}</small>}
                                                                         </div>
 
                                                                         {/* OTP Section for Guests */}
@@ -624,7 +671,7 @@ const CheckoutPageComponent: React.FC = () => {
                                                         ) : (
                                                             <div className="p-3 text-center" style={{ backgroundColor: '#f8f9fa', border: '1px dashed #ddb040', borderRadius: '5px' }}>
                                                                 <p className="mb-1" style={{ fontSize: '14px', fontWeight: 600, color: '#555' }}>Want to join the <strong>7th Heaven Club</strong>?</p>
-                                                                <p className="mb-0" style={{ fontSize: '13px', color: '#ddb040', fontWeight: 700 }}>Add items worth Rs.{(minPurchaseLimit - cartTotal).toFixed(2)} more to unlock!</p>
+                                                                <p className="mb-0" style={{ fontSize: '13px', color: '#ddb040', fontWeight: 700 }}>Add items worth Rs.{(minPurchaseLimit - (cartTotal - (appliedCoupon?.discountAmount || 0))).toFixed(2)} more to unlock!</p>
                                                             </div>
                                                         )
                                                     )
@@ -661,11 +708,82 @@ const CheckoutPageComponent: React.FC = () => {
                                                     </div>
 
                                                     <div className="single-method">
-                                                        <input type="checkbox" id="accept_terms" required />
-                                                        <label htmlFor="accept_terms">I’ve read and accept the terms & conditions</label>
+                                                        <input 
+                                                            type="checkbox" 
+                                                            id="accept_terms" 
+                                                            checked={agreeToTerms}
+                                                            onChange={(e) => setAgreeToTerms(e.target.checked)}
+                                                        />
+                                                        <label htmlFor="accept_terms">
+                                                            I've read and accept the{' '}
+                                                            <Link href="/policies/legal_terms" target="_blank" style={{ color: '#ddb040', textDecoration: 'underline' }}>Terms & Conditions</Link>
+                                                            {' '}and{' '}
+                                                            <Link href="/policies/legal_refund" target="_blank" style={{ color: '#ddb040', textDecoration: 'underline' }}>Refund Policy</Link>
+                                                        </label>
+                                                        {is7thHeavenOptIn && (
+                                                            <p style={{ fontSize: '12px', color: '#dc2626', marginTop: '8px', marginBottom: '0', fontWeight: 600 }}>
+                                                                ⚠️ By opting into 7th Heaven, you agree that this order cannot be cancelled after payment. Membership is activated immediately upon successful payment.
+                                                            </p>
+                                                        )}
                                                     </div>
                                                 </div>
-                                                <button className="place-order btn btn-lg btn-round" disabled={isProcessing || (!isLoggedIn && is7thHeavenOptIn && !otpVerified)}>
+                                                {/* Email Verification for Guest Users */}
+                                                {!isLoggedIn && !otpVerified && (
+                                                    <div className="mb-4 p-3" style={{ backgroundColor: '#fff3cd', border: '1px solid #ffc107', borderRadius: '8px' }}>
+                                                        <label className="block text-sm font-semibold mb-2" style={{ color: '#856404' }}>
+                                                            <i className="fa fa-envelope mr-2"></i>Verify Your Email to Place Order
+                                                        </label>
+                                                        {!otpSent ? (
+                                                            <button 
+                                                                type="button"
+                                                                onClick={handleSendOtp}
+                                                                disabled={otpSending || !billing.email}
+                                                                className="px-4 py-2 bg-black text-white rounded text-sm"
+                                                            >
+                                                                {otpSending ? 'Sending...' : 'Send OTP to Email'}
+                                                            </button>
+                                                        ) : (
+                                                            <div>
+                                                                <div className="flex gap-2 items-center">
+                                                                    <input
+                                                                        type="text"
+                                                                        value={otpCode}
+                                                                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                                                        placeholder="Enter 6-digit OTP"
+                                                                        className="flex-1 border rounded"
+                                                                        maxLength={6}
+                                                                        style={{ padding: '8px 12px', fontSize: '14px', height: '38px' }}
+                                                                    />
+                                                                    <button 
+                                                                        type="button"
+                                                                        onClick={handleVerifyOtp}
+                                                                        style={{ height: '38px', padding: '0 16px', backgroundColor: '#16a34a', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                                                                    >
+                                                                        Verify
+                                                                    </button>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={handleSendOtp}
+                                                                    disabled={resendCooldown > 0 || otpSending}
+                                                                    style={{ marginTop: '10px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, color: resendCooldown > 0 ? '#999' : '#333', backgroundColor: resendCooldown > 0 ? '#f3f4f6' : '#e5e7eb', border: '1px solid', borderColor: resendCooldown > 0 ? '#e5e7eb' : '#d1d5db', borderRadius: '4px', cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer' }}
+                                                                >
+                                                                    {otpSending ? 'Sending...' : resendCooldown > 0 ? `Resend OTP in ${resendCooldown}s` : 'Resend OTP'}
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                        {otpError && <p className="text-red-600 text-sm mt-1">{otpError}</p>}
+                                                    </div>
+                                                )}
+                                                {!isLoggedIn && otpVerified && (
+                                                    <div className="mb-4 p-3" style={{ backgroundColor: '#d4edda', border: '1px solid #c3e6cb', borderRadius: '8px' }}>
+                                                        <p className="mb-0 text-green-700 font-semibold">
+                                                            <i className="fa fa-check-circle mr-2"></i>Email Verified Successfully!
+                                                        </p>
+                                                    </div>
+                                                )}
+
+                                                <button className="place-order btn btn-lg btn-round" disabled={isProcessing || !agreeToTerms || (!isLoggedIn && !otpVerified)}>
                                                     {isProcessing ? 'Processing...' : 'Place Order'}
                                                 </button>
                                             </div>

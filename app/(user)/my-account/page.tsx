@@ -55,6 +55,7 @@ interface Order {
     items: any[];
     genderTags: string[];
     shippingAddress: any;
+    mlmOptInRequested?: boolean;
 }
 
 interface Notification {
@@ -572,7 +573,28 @@ function ProfileContent() {
                                                     <div className="welcome">
                                                         <p>Hello, <strong>{user?.fullName}</strong> (If Not <strong>{user?.fullName} !</strong> <a href="#" onClick={handleLogout} className="logout"> Logout</a>)</p>
                                                     </div>
-                                                    <p className="mb-0">From your account dashboard. you can easily check & view your recent orders, manage your shipping and billing addresses and edit your password and account details.</p>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginTop: '8px' }}>
+                                                        <div onClick={() => setActiveTab('orders')} style={{ padding: '16px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee', cursor: 'pointer', transition: 'all 0.2s' }}>
+                                                            <i className="fa fa-shopping-bag" style={{ fontSize: '20px', color: '#ddb040', marginBottom: '8px', display: 'block' }}></i>
+                                                            <strong style={{ fontSize: '14px' }}>My Orders</strong>
+                                                            <p style={{ fontSize: '12px', color: '#888', margin: '4px 0 0' }}>View order history, track status & download invoices</p>
+                                                        </div>
+                                                        <div onClick={() => setActiveTab('address')} style={{ padding: '16px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee', cursor: 'pointer', transition: 'all 0.2s' }}>
+                                                            <i className="fa fa-map-marker" style={{ fontSize: '20px', color: '#ddb040', marginBottom: '8px', display: 'block' }}></i>
+                                                            <strong style={{ fontSize: '14px' }}>Address</strong>
+                                                            <p style={{ fontSize: '12px', color: '#888', margin: '4px 0 0' }}>Update your shipping & billing address</p>
+                                                        </div>
+                                                        <div onClick={() => setActiveTab('account-info')} style={{ padding: '16px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee', cursor: 'pointer', transition: 'all 0.2s' }}>
+                                                            <i className="fa fa-user" style={{ fontSize: '20px', color: '#ddb040', marginBottom: '8px', display: 'block' }}></i>
+                                                            <strong style={{ fontSize: '14px' }}>Account Details</strong>
+                                                            <p style={{ fontSize: '12px', color: '#888', margin: '4px 0 0' }}>Edit your name, email, phone & password</p>
+                                                        </div>
+                                                        <div onClick={() => setActiveTab('notifications')} style={{ padding: '16px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee', cursor: 'pointer', transition: 'all 0.2s' }}>
+                                                            <i className="fa fa-bell" style={{ fontSize: '20px', color: '#ddb040', marginBottom: '8px', display: 'block' }}></i>
+                                                            <strong style={{ fontSize: '14px' }}>Notifications</strong>
+                                                            <p style={{ fontSize: '12px', color: '#888', margin: '4px 0 0' }}>View order updates & important alerts</p>
+                                                        </div>
+                                                    </div>
                                                     
                                                     {/* 7th Heaven Section */}
                                                     <div className="mt-4 p-4 rounded" style={{ backgroundColor: '#fdf8e4', border: '1px solid #faebcc' }}>
@@ -599,7 +621,7 @@ function ProfileContent() {
                                                                 </div>
                                                                 
                                                                 <Link href="/7th-heaven" className="btn btn-primary" style={{ backgroundColor: '#ddb040', borderColor: '#ddb040', color: '#fff' }}>
-                                                                    View My Network & Progress <i className="fa fa-arrow-right ml-2"></i>
+                                                                    View My Network <i className="fa fa-arrow-right ml-2"></i>
                                                                 </Link>
                                                             </>
                                                         ) : (
@@ -951,7 +973,7 @@ function ProfileContent() {
                         <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                                    {!['DELIVERED', 'CANCELLED', 'FAILED', 'REFUNDED', 'RETURNED'].includes(selectedOrder.status.toUpperCase()) && (
+                                    {!['DELIVERED', 'CANCELLED', 'FAILED', 'REFUNDED', 'RETURNED'].includes(selectedOrder.status.toUpperCase()) && !selectedOrder.mlmOptInRequested && (
                                         <button 
                                             onClick={handleCancelOrder} 
                                             disabled={isCancelling}

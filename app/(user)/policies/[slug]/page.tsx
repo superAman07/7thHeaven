@@ -63,40 +63,26 @@ export default async function PolicyPage({
     <div id="main-wrapper">
       {/* Page Banner */}
       <div
-        className="page-banner-section section min-h-[35vh] lg:min-h-[45vh] flex items-end pb-[20px]"
+        className="page-banner-section section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]!"
         style={{ background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)' }}
       >
         <div className="container-fluid px-4 md:px-5">
           <div className="row">
             <div className="col-12 p-0">
-              <div className="page-banner w-100 d-flex flex-column md:flex-row justify-between items-center md:items-end">
+              <div className="page-banner w-100 d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-end">
                 {/* Breadcrumbs */}
-                <div className="order-2 order-md-1 mt-2 md:mt-0">
-                  <ul
-                    className="page-breadcrumb flex justify-center md:justify-start mb-0 text-sm"
-                    style={{ fontSize: '14px' }}
-                  >
-                    <li>
-                      <Link href="/" className="hover:text-[#D4AF37] transition-colors">
-                        Home
-                      </Link>
-                    </li>
-                    <li className="text-white/80 ml-3">{title}</li>
-                  </ul>
+                <div className="order-2 order-md-1 mt-2 mt-md-0">
+                    <ul className="page-breadcrumb justify-content-center justify-content-md-start mb-0!" style={{ fontSize: '14px' }}>
+                        <li><Link href="/" className="hover:text-[#D4AF37] transition-colors">Home</Link></li>
+                        <li className="text-white/80">{title}</li>
+                    </ul>
                 </div>
 
                 {/* Title */}
-                <div className="order-1 order-md-2 text-center md:text-end">
-                  <h1
-                    className="text-white mb-0"
-                    style={{
-                      fontSize: 'clamp(22px, 3vw, 36px)',
-                      lineHeight: 1.1,
-                      letterSpacing: '0.05em',
-                    }}
-                  >
-                    {title}
-                  </h1>
+                <div className="order-1 order-md-2 text-center text-md-end">
+                    <h1 className="text-white! mb-0!" style={{ fontSize: 'clamp(22px, 3vw, 36px)', lineHeight: 1.1, letterSpacing: '0.05em' }}>
+                        {title}
+                    </h1>
                 </div>
               </div>
             </div>
