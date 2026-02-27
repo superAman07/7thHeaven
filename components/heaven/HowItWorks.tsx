@@ -432,9 +432,13 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
             <h3 className="text-xl md:text-2xl font-bold text-white mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               Ready to Start Your Journey?
             </h3>
-            <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
+            <p className="text-gray-400 text-sm mb-4 max-w-lg mx-auto">
               Join the 7th Heaven Club today and start earning rewards with every referral.
             </p>
+            <div className="cta-dashboard-note">
+              <span style={{ fontSize: '1rem', marginRight: '6px' }}>📊</span>
+              <span>After your purchase, you'll get access to your <strong style={{ color: '#fff' }}>personal 7th Heaven Dashboard</strong> — right on this page. Track your referrals, view your network, monitor your level progress, and claim rewards — all in one place.</span>
+            </div>
             <Link
               href="/collections/perfumes"
               className="cta-button"
@@ -466,7 +470,7 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
       <style jsx>{`
         .how-it-works-section {
           padding: 5rem 0;
-          background: linear-gradient(180deg, #0f0f12 0%, #16141f 40%, #1a1520 60%, #111015 100%);
+          background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.15) 70%, transparent 100%);
           position: relative;
         }
 
@@ -792,6 +796,21 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
           transform: translateY(-2px);
           box-shadow: 0 8px 30px ${POP.gold}60;
           color: #000 !important;
+        }
+        .cta-dashboard-note {
+          display: flex;
+          align-items: flex-start;
+          gap: 6px;
+          max-width: 480px;
+          margin: 0 auto 1.5rem;
+          padding: 10px 16px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(245,158,11,0.15);
+          border-radius: 10px;
+          font-size: 0.78rem;
+          color: #9ca3af;
+          line-height: 1.6;
+          text-align: left;
         }
 
         /* ═══ RESPONSIVE ═══ */
