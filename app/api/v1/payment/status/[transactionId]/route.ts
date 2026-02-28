@@ -100,6 +100,10 @@ import axios from 'axios';
  *                           type: string
  *                         phone:
  *                           type: string
+ *                         isGuest:
+ *                           type: boolean
+ *                           description: True if user has no password set (guest checkout)
+ *                           example: true
  *       404:
  *         description: Order not found
  *       500:
@@ -131,7 +135,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                     select: {
                         fullName: true,
                         email: true,
-                        phone: true
+                        phone: true,
+                        passwordHash: true
                     }
                 }
             }
@@ -146,7 +151,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
             if (cart) {
                 await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
             }
-            return NextResponse.json({ success: true, order });
+            const { user, ...orderData } = order!;
+            return NextResponse.json({ 
+                success: true, 
+                order: { 
+                    ...orderData, 
+                    user: { fullName: user?.fullName, email: user?.email, phone: user?.phone },
+                    isGuest: !user?.passwordHash 
+                } 
+            });
         }
 
         // 2. ACTIVE STATUS CHECK: If DB says PENDING, ask PhonePe directly
@@ -238,7 +251,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                         gatewayOrderId: true,
                         userId: true,
                         mlmOptInRequested: true,
-                        user: { select: { fullName: true, email: true, phone: true } }
+                        user: { select: { fullName: true, email: true, phone: true, passwordHash: true } }
                     }
                 });
 
@@ -247,8 +260,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
             }
         }
 
-        return NextResponse.json({ success: true, order });
-
+        const { user: usr, ...rest } = order!;
+        return NextResponse.json({ 
+            success: true, 
+            order: { 
+                ...rest, 
+                user: { fullName: usr?.fullName, email: usr?.email, phone: usr?.phone },
+                isGuest: !usr?.passwordHash 
+            } 
+        });
     } catch (error) {
         console.error('Get Payment Status Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

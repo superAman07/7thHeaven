@@ -579,84 +579,6 @@ const CheckoutPageComponent: React.FC = () => {
                                                                             {referralVerified && <small style={{ color: '#16a34a', fontWeight: 600 }}>✓ Valid referral code</small>}
                                                                             {referralError && <small style={{ color: '#dc2626' }}>{referralError}</small>}
                                                                         </div>
-
-                                                                        {/* OTP Section for Guests */}
-                                                                        {!isLoggedIn && (
-                                                                            <div className="pt-3 border-t">
-                                                                                <label className="block text-sm font-semibold mb-1">Verify Your Email</label>
-                                                                                {!otpVerified ? (
-                                                                                    <>
-                                                                                        {!otpSent ? (
-                                                                                            <button 
-                                                                                                type="button"
-                                                                                                onClick={handleSendOtp}
-                                                                                                disabled={otpSending || !billing.email}
-                                                                                                className="px-4 py-2 bg-black text-white rounded text-sm"
-                                                                                            >
-                                                                                                {otpSending ? 'Sending...' : 'Send OTP to Email'}
-                                                                                            </button>
-                                                                                        ) : (
-                                                                                            <div>
-                                                                                                <div className="flex gap-2 items-center">
-                                                                                                    <input
-                                                                                                        type="text"
-                                                                                                        value={otpCode}
-                                                                                                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                                                                                        placeholder="Enter 6-digit OTP"
-                                                                                                        className="flex-1 border rounded"
-                                                                                                        maxLength={6}
-                                                                                                        style={{ padding: '8px 12px', fontSize: '14px', height: '38px' }}
-                                                                                                    />
-                                                                                                    <button 
-                                                                                                        type="button"
-                                                                                                        onClick={handleVerifyOtp}
-                                                                                                        style={{
-                                                                                                            height: '38px',
-                                                                                                            padding: '0 16px',
-                                                                                                            backgroundColor: '#16a34a',
-                                                                                                            color: '#fff',
-                                                                                                            border: 'none',
-                                                                                                            borderRadius: '4px',
-                                                                                                            fontSize: '13px',
-                                                                                                            fontWeight: 600,
-                                                                                                            cursor: 'pointer',
-                                                                                                            whiteSpace: 'nowrap'
-                                                                                                        }}
-                                                                                                    >
-                                                                                                        Verify
-                                                                                                    </button>
-                                                                                                </div>
-                                                                                                <button
-                                                                                                    type="button"
-                                                                                                    onClick={handleSendOtp}
-                                                                                                    disabled={resendCooldown > 0 || otpSending}
-                                                                                                    style={{ 
-                                                                                                        marginTop: '10px',
-                                                                                                        padding: '6px 14px',
-                                                                                                        fontSize: '12px',
-                                                                                                        fontWeight: 600,
-                                                                                                        color: resendCooldown > 0 ? '#999' : '#333',
-                                                                                                        backgroundColor: resendCooldown > 0 ? '#f3f4f6' : '#e5e7eb',
-                                                                                                        border: '1px solid',
-                                                                                                        borderColor: resendCooldown > 0 ? '#e5e7eb' : '#d1d5db',
-                                                                                                        borderRadius: '4px',
-                                                                                                        cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer',
-                                                                                                        transition: 'all 0.2s ease'
-                                                                                                    }}
-                                                                                                >
-                                                                                                    {otpSending ? 'Sending...' : resendCooldown > 0 ? `Resend OTP in ${resendCooldown}s` : 'Resend OTP'}
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        )}
-                                                                                        {otpError && <p className="text-red-600 text-sm mt-1">{otpError}</p>}
-                                                                                    </>
-                                                                                ) : (
-                                                                                    <p className="text-green-600 font-semibold">
-                                                                                        <i className="fa fa-check-circle mr-1"></i> Email Verified!
-                                                                                    </p>
-                                                                                )}
-                                                                            </div>
-                                                                        )}
                                                                     </div>
                                                                 )}
 
@@ -678,6 +600,65 @@ const CheckoutPageComponent: React.FC = () => {
                                                 )}
                                             </div>
 
+                                            {/* Email Verification for Guest Users */}
+                                            {!isLoggedIn && !otpVerified && (
+                                                <div className="col-12 mb-30">
+                                                    <div style={{ backgroundColor: '#fff3cd', border: '1px solid #ffc107', borderRadius: '8px', padding: '16px' }}>
+                                                        <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '10px', color: '#856404' }}>
+                                                            ✉️ Verify Your Email to Place Order
+                                                        </label>
+                                                        {!otpSent ? (
+                                                            <button 
+                                                                type="button"
+                                                                onClick={handleSendOtp}
+                                                                disabled={otpSending || !billing.email}
+                                                                style={{ padding: '8px 16px', backgroundColor: '#000', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+                                                            >
+                                                                {otpSending ? 'Sending...' : 'Send OTP to Email'}
+                                                            </button>
+                                                        ) : (
+                                                            <div>
+                                                                <div style={{ display: 'flex !important', gap: '8px !important', alignItems: 'center !important' }}>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={otpCode}
+                                                                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                                                        placeholder="Enter 6-digit OTP"
+                                                                        maxLength={6}
+                                                                        style={{ flex: 1, padding: '8px 12px', fontSize: '14px', height: '38px', border: '1px solid #ccc', borderRadius: '4px' }}
+                                                                    />
+                                                                    <button 
+                                                                        type="button"
+                                                                        onClick={handleVerifyOtp}
+                                                                        style={{ height: '38px', padding: '0 16px', backgroundColor: '#16a34a', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                                                                    >
+                                                                        Verify
+                                                                    </button>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={handleSendOtp}
+                                                                    disabled={resendCooldown > 0 || otpSending}
+                                                                    style={{ marginTop: '10px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, color: resendCooldown > 0 ? '#999' : '#333', backgroundColor: resendCooldown > 0 ? '#f3f4f6' : '#e5e7eb', border: '1px solid', borderColor: resendCooldown > 0 ? '#e5e7eb' : '#d1d5db', borderRadius: '4px', cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer' }}
+                                                                >
+                                                                    {otpSending ? 'Sending...' : resendCooldown > 0 ? `Resend OTP in ${resendCooldown}s` : 'Resend OTP'}
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                        {otpError && <p style={{ color: '#dc2626', fontSize: '13px', marginTop: '6px', marginBottom: 0 }}>{otpError}</p>}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {!isLoggedIn && otpVerified && (
+                                                <div className="col-12 mb-30">
+                                                    <div style={{ backgroundColor: '#d4edda', border: '1px solid #c3e6cb', borderRadius: '8px', padding: '16px' }}>
+                                                        <p style={{ marginBottom: 0, color: '#155724', fontWeight: 600 }}>
+                                                            ✅ Email Verified Successfully!
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             {/* Payment Method */}
                                             <div className="col-12 mb-30">
                                                 <h4 className="checkout-title">Payment Method</h4>
@@ -692,7 +673,7 @@ const CheckoutPageComponent: React.FC = () => {
                                                             readOnly
                                                         />
                                                         <label htmlFor="payment_phonepe">
-                                                            PhonePe / UPI / Cards / NetBanking
+                                                            PayU / UPI / Cards / NetBanking
                                                         </label>
                                                         <p style={{
                                                             maxHeight: '150px',
@@ -727,61 +708,6 @@ const CheckoutPageComponent: React.FC = () => {
                                                         )}
                                                     </div>
                                                 </div>
-                                                {/* Email Verification for Guest Users */}
-                                                {!isLoggedIn && !otpVerified && (
-                                                    <div className="mb-4 p-3" style={{ backgroundColor: '#fff3cd', border: '1px solid #ffc107', borderRadius: '8px' }}>
-                                                        <label className="block text-sm font-semibold mb-2" style={{ color: '#856404' }}>
-                                                            <i className="fa fa-envelope mr-2"></i>Verify Your Email to Place Order
-                                                        </label>
-                                                        {!otpSent ? (
-                                                            <button 
-                                                                type="button"
-                                                                onClick={handleSendOtp}
-                                                                disabled={otpSending || !billing.email}
-                                                                className="px-4 py-2 bg-black text-white rounded text-sm"
-                                                            >
-                                                                {otpSending ? 'Sending...' : 'Send OTP to Email'}
-                                                            </button>
-                                                        ) : (
-                                                            <div>
-                                                                <div className="flex gap-2 items-center">
-                                                                    <input
-                                                                        type="text"
-                                                                        value={otpCode}
-                                                                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                                                        placeholder="Enter 6-digit OTP"
-                                                                        className="flex-1 border rounded"
-                                                                        maxLength={6}
-                                                                        style={{ padding: '8px 12px', fontSize: '14px', height: '38px' }}
-                                                                    />
-                                                                    <button 
-                                                                        type="button"
-                                                                        onClick={handleVerifyOtp}
-                                                                        style={{ height: '38px', padding: '0 16px', backgroundColor: '#16a34a', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
-                                                                    >
-                                                                        Verify
-                                                                    </button>
-                                                                </div>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={handleSendOtp}
-                                                                    disabled={resendCooldown > 0 || otpSending}
-                                                                    style={{ marginTop: '10px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, color: resendCooldown > 0 ? '#999' : '#333', backgroundColor: resendCooldown > 0 ? '#f3f4f6' : '#e5e7eb', border: '1px solid', borderColor: resendCooldown > 0 ? '#e5e7eb' : '#d1d5db', borderRadius: '4px', cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer' }}
-                                                                >
-                                                                    {otpSending ? 'Sending...' : resendCooldown > 0 ? `Resend OTP in ${resendCooldown}s` : 'Resend OTP'}
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                        {otpError && <p className="text-red-600 text-sm mt-1">{otpError}</p>}
-                                                    </div>
-                                                )}
-                                                {!isLoggedIn && otpVerified && (
-                                                    <div className="mb-4 p-3" style={{ backgroundColor: '#d4edda', border: '1px solid #c3e6cb', borderRadius: '8px' }}>
-                                                        <p className="mb-0 text-green-700 font-semibold">
-                                                            <i className="fa fa-check-circle mr-2"></i>Email Verified Successfully!
-                                                        </p>
-                                                    </div>
-                                                )}
 
                                                 <button className="place-order btn btn-lg btn-round" disabled={isProcessing || !agreeToTerms || (!isLoggedIn && !otpVerified)}>
                                                     {isProcessing ? 'Processing...' : 'Place Order'}

@@ -35,7 +35,7 @@ export default function PaymentStatusPage() {
     const { clearCart } = useCart();
 
     const [status, setStatus] = useState<'loading' | 'success' | 'failed' | 'error'>('loading');
-    const [order, setOrder] = useState<InvoiceData | null>(null);
+    const [order, setOrder] = useState<(InvoiceData & { isGuest?: boolean }) | null>(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [retries, setRetries] = useState(0);
 
@@ -258,15 +258,53 @@ export default function PaymentStatusPage() {
                             <h2 className="text-3xl md:text-4xl font-serif text-white mt-6 mb-4">
                                 You Have Ascended.
                             </h2>
-                            <p className="text-white/60 max-w-xl mx-auto text-lg mb-8">
-                                Your empire begins now. Your exclusive referral code has been activated.
+                            {order.isGuest ? (
+                                <>
+                                    <p className="text-white/60 max-w-xl mx-auto text-lg mb-4">
+                                        Your 7th Heaven membership is activated! Create your account to access your dashboard, track orders, and start referring.
+                                    </p>
+                                    <p className="text-[#ddb040]/80 text-sm mb-8">
+                                        Use <strong>Login with OTP</strong> or <strong>Sign Up</strong> with the same email to get started.
+                                    </p>
+                                    <Link 
+                                        href="/login?from=checkout" 
+                                        style={primaryBtnStyle}
+                                        className="inline-block hover:scale-105 transition-transform"
+                                    >
+                                        🔑 Create Your Account
+                                    </Link>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="text-white/60 max-w-xl mx-auto text-lg mb-8">
+                                        Your empire begins now. Your exclusive referral code has been activated.
+                                    </p>
+                                    <Link 
+                                        href="/7th-heaven" 
+                                        style={primaryBtnStyle}
+                                        className="inline-block hover:scale-105 transition-transform"
+                                    >
+                                        🌟 Enter Your Dashboard
+                                    </Link>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Guest Account CTA (for non-member guests) */}
+                {order.isGuest && !order.mlmOptInRequested && (
+                    <div className="bg-[#faf9f7] border-b border-gray-200 py-10 text-center">
+                        <div className="container">
+                            <p className="text-gray-600 mb-4">
+                                🛍️ Create an account to <strong>track your orders</strong> and manage future purchases.
                             </p>
                             <Link 
-                                href="/7th-heaven" 
-                                style={primaryBtnStyle}
-                                className="inline-block hover:scale-105 transition-transform"
+                                href="/login?from=checkout" 
+                                style={outlineBtnStyle}
+                                className="inline-block hover:bg-gray-100"
                             >
-                                🌟 Enter Your Dashboard
+                                Create Account
                             </Link>
                         </div>
                     </div>

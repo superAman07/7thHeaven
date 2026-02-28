@@ -187,6 +187,14 @@ export default function AuthPage() {
     useEffect(() => {
         if (hasCheckedReferral.current) return;
         
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('from') === 'checkout') {
+            hasCheckedReferral.current = true;
+            setView(View.LOGIN_OTP);
+            toast('Welcome! Use OTP login with the same email you used during checkout.', { icon: '🛍️', duration: 5000 });
+            return;
+        }
+        
         const match = document.cookie.match(new RegExp('(^| )referralCode=([^;]+)'));
         if (match) {
             hasCheckedReferral.current = true;
@@ -404,6 +412,19 @@ export default function AuthPage() {
                             </div>
                             <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
                             <p className="text-gray-500 mt-1">Sign in to your account</p>
+                            
+                            {/* Guest Purchase Info */}
+                            <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
+                                <span>Purchased as guest?</span>
+                                <button
+                                    type="button"
+                                    onClick={() => toast('Use Login with OTP (recommended) or Sign Up with the same email you used during checkout.', { icon: 'ℹ️', duration: 5000 })}
+                                    className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 hover:bg-[#E6B422]/20 text-gray-600 hover:text-[#E6B422] transition-colors text-xs font-bold cursor-pointer"
+                                    title="Guest login help"
+                                >
+                                    i
+                                </button>
+                            </div>
                         </div>
                         <form onSubmit={handleLoginSubmit} className="space-y-4">
                             <AuthInput id="identifier" label="Email or Phone" icon={<MailIcon className="w-5 h-5" />} value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />

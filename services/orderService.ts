@@ -163,7 +163,8 @@ export async function completeOrder(orderId: string, transactionId: string, amou
                 items: emailItems,
                 total: amountPaid,
                 subtotal: order.subtotal ? Number(order.subtotal) : undefined,
-                discount: order.discount ? Number(order.discount) : 0
+                discount: order.discount ? Number(order.discount) : 0,
+                isGuest: !order.user.passwordHash
             }).catch(e => console.error("Order Confirmation Email Failed", e));
         }
     }

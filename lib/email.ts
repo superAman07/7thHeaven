@@ -46,6 +46,7 @@ export async function sendOrderConfirmation(email: string, orderDetails: {
   total: number;
   subtotal?: number;
   discount?: number;
+  isGuest?: boolean;
 }) {
   const itemsHtml = orderDetails.items.map(item =>
     `<tr>
@@ -106,6 +107,14 @@ export async function sendOrderConfirmation(email: string, orderDetails: {
         <div style="text-align: center; margin-top: 40px;">
           <a href="${SITE_URL}/track-order" style="background: #ddb040; color: #000; padding: 14px 30px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Track Your Order</a>
         </div>
+
+        ${orderDetails.isGuest ? `
+        <div style="background: #fffbeb; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin-top: 25px; text-align: center;">
+          <p style="color: #92400e; font-weight: 600; margin: 0 0 8px 0; font-size: 14px;">🔑 Create Your Account</p>
+          <p style="color: #a16207; margin: 0 0 15px 0; font-size: 13px;">Sign up with this email to track orders, manage purchases & access your 7th Heaven membership.</p>
+          <a href="${SITE_URL}/login?from=checkout" style="background: #333; color: #fff; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 13px;">Create Account</a>
+        </div>
+        ` : ''}
       </div>
 
       <!-- FOOTER -->
