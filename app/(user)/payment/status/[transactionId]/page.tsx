@@ -170,7 +170,7 @@ export default function PaymentStatusPage() {
             <div id="main-wrapper">
                 {/* Dark Banner */}
                 <div 
-                    className="page-banner-section  section min-h-[50vh]! lg:min-h-[60vh]! flex! items-end! pb-0! pt-[180px]! lg:pt-[240px]!" 
+                    className="page-banner-section section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]! pt-[180px]! lg:pt-[240px]!"
                     style={{ background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)' }}
                 >
                     <div className="container-fluid px-4 px-md-5">
@@ -212,7 +212,7 @@ export default function PaymentStatusPage() {
             <div id="main-wrapper">
                 {/* Celebration Banner */}
                 <div 
-                    className="page-banner-section pb-0! section min-h-[60vh]! lg:min-h-[70vh]! flex! items-center! justify-center! relative overflow-hidden pt-[180px]! lg:pt-[240px]!" 
+                    className="page-banner-section pb-0! section min-h-[50vh]! lg:min-h-[55vh]! flex! items-center! justify-center! relative overflow-hidden pt-[180px]! lg:pt-[240px]!" 
                     style={{ background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)' }}
                 >
                     {/* Animated Background */}
@@ -228,7 +228,7 @@ export default function PaymentStatusPage() {
 
                     <div className="container text-center relative z-10 py-8">
                         {/* Success Icon */}
-                        <div className="mb-3 mt-4 animate-bounce">
+                        <div className="mb-3 mt-2 animate-bounce">
                             <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-linear-to-br from-green-400 to-green-600 shadow-2xl">
                                 <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
@@ -273,7 +273,7 @@ export default function PaymentStatusPage() {
                 )}
 
                 {/* Order Details Section */}
-                <div className="pt-32 pb-20 bg-[#faf9f7]">
+                <div className={`${order.mlmOptInRequested ? 'pt-12' : 'pt-16'} pb-20 bg-[#faf9f7]`}>
                     <div className="container">
                         <div className="max-w-lg mx-auto">
                             {/* Order Card */}
@@ -285,7 +285,7 @@ export default function PaymentStatusPage() {
                                 <div className="text-center mb-6">
                                     <p className="text-gray-500 text-sm mb-2">Order ID</p>
                                     <div className="flex items-center justify-center gap-3">
-                                        <span className="font-mono text-md sm:text-xl font-bold text-gray-800">{order.id}</span>
+                                        <span className="font-mono text-xs sm:text-lg font-bold text-gray-800 break-all">{order.id}</span>
                                         <button 
                                             onClick={copyToClipboard}
                                             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -352,7 +352,7 @@ export default function PaymentStatusPage() {
             <div id="main-wrapper">
                 {/* Error Banner */}
                 <div 
-                    className="page-banner-section pb-0! section min-h-[50vh]! lg:min-h-[60vh]! flex! items-end! pt-[180px]! lg:pt-[240px]!" 
+                    className="page-banner-section pb-0! section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]! pt-[180px]! lg:pt-[240px]!"
                     style={{ background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)' }}
                 >
                     <div className="container-fluid px-4 px-md-5">
