@@ -52,6 +52,21 @@ export async function PUT(
                     type: 'ORDER_UPDATE'
                 }
             });
+
+            // Send refund email
+            if (updatedOrder.shippingAddress) {
+                const shippingAddr = updatedOrder.shippingAddress as any;
+                const customerEmail = shippingAddr.email || updatedOrder.user?.email;
+                const customerName = shippingAddr.fullName || updatedOrder.user?.fullName || 'Customer';
+                if (customerEmail) {
+                    sendOrderStatusUpdate(customerEmail, {
+                        orderId: updatedOrder.id,
+                        customerName,
+                        status: 'REFUNDED',
+                        message: getStatusMessage('REFUNDED')
+                    }).catch(err => console.error('Refund email error:', err));
+                }
+            }
         }
 
         return NextResponse.json({ success: true, data: updatedOrder });
