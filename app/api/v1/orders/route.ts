@@ -252,6 +252,15 @@ export async function POST(req: NextRequest) {
                 priceAtPurchase: price,
             };
         });
+        let resolvedReferrerId: string | null = null;
+        if (mlmOptIn && referrerCode) {
+            const referrer = await prisma.user.findFirst({
+                where: { referralCode: referrerCode, is7thHeaven: true }
+            });
+            if (referrer && referrer.id !== userId) {
+                resolvedReferrerId = referrer.id;
+            }
+        }
         const newOrder = await prisma.order.create({
             data: {
                 userId: userId!,
@@ -265,6 +274,12 @@ export async function POST(req: NextRequest) {
                 items: orderItemsData,
             },
         });
+        if (resolvedReferrerId) {
+            await prisma.user.update({
+                where: { id: userId! },
+                data: { referrerId: resolvedReferrerId }
+            });
+        }
         if (userId) {
             await prisma.user.update({
                 where: { id: userId },
