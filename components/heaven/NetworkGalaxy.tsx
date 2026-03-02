@@ -44,7 +44,7 @@ const getHeavenName = (level: number) => {
 const getNextHeavenName = (level: number) => getHeavenName(level + 1);
 
 const countDescendantsAtDepth = (node: NetworkNode, targetDepth: number): number => {
-    if (targetDepth === 1) return node.children ? node.children.filter(c => c.status !== 'EMPTY').length : 0;
+    if (targetDepth === 1) return node.children ? node.children.filter(c => c.status === 'ACTIVE').length : 0;
     if (!node.children || node.children.length === 0) return 0;
     return node.children.reduce((acc, child) => acc + countDescendantsAtDepth(child, targetDepth - 1), 0);
 };
@@ -253,7 +253,7 @@ const GalaxyTree = ({ node, onNodeClick, isDark, depth = 0 }: {
     const canHaveChildren = !isEmpty && !isDormant;
     const paddedChildren = canHaveChildren ? padChildren(node) : [];
     const hasChildren = paddedChildren.length > 0;
-    const realChildCount = paddedChildren.filter(c => c.status !== 'EMPTY').length;
+    const realChildCount = paddedChildren.filter(c => c.status === 'ACTIVE').length;
     const parentColors = getNodeStyle(node.status, isDark);
 
     return (
@@ -382,7 +382,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
 
     const nextRankName = getNextHeavenName(node.level);
     let currentProgressCount = 0, progressLabel = "", target = 0;
-    const directCount = node.children ? node.children.filter(c => c.status !== 'EMPTY').length : 0;
+    const directCount = node.children ? node.children.filter(c => c.status === 'ACTIVE').length : 0;
 
     if (directCount < 5) {
         currentProgressCount = directCount; target = 5; progressLabel = "Direct Souls";

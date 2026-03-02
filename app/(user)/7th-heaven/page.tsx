@@ -478,8 +478,8 @@ export default function SeventhHeavenPage() {
             </button>
         </div>
         <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showHowItWorks ? 'max-h-[5000px] opacity-100 mt-8' : 'max-h-0 opacity-0'}`}>
-          <div className="w-full bg-linear-to-b">
-              <HowItWorks minPurchaseAmount={minAmount} />
+          <div style={{ background: 'linear-gradient(to bottom, #0a0a0f, #12101a, #0a0a0f)' }}>
+            <HowItWorks minPurchaseAmount={minAmount} />
           </div>
         </div>
 
