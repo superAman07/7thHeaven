@@ -117,7 +117,12 @@ export const ComingSoonCard = ({ collectionSlug }: ComingSoonCardProps) => {
                 @media (max-width: 480px) {
                     .coming-soon-luxury {
                         padding: 40px 20px;
-                        margin: 10px 10px;
+                        margin: 10px 0;
+                        box-sizing: border-box;
+                        width: 100%;
+                    }
+                    .coming-soon-luxury::after {
+                        display: none;
                     }
                     .cs-notify-form {
                         flex-direction: column;
