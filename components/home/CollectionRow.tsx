@@ -46,7 +46,7 @@ export default async function CollectionRow({ title, type, categorySlug, collect
                                         <div className="tab-pane fade active show">
                                             <div className="product-slider tf-element-carousel">
                                                 {showComingSoon ? (
-                                                    <div className="row justify-content-center">
+                                                    <div className="row justify-content-center" style={{ overflowX: 'hidden', marginLeft: 0, marginRight: 0 }}>
                                                         <ComingSoonCard collectionSlug={collectionSlug || categorySlug} />
                                                     </div>
                                                 ) : (
