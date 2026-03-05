@@ -324,7 +324,7 @@ export default function NetworkLeadersPage() {
                         <div className="bg-black p-6 text-center relative">
                             <button 
                                 onClick={() => setIsModalOpen(false)}
-                                className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                                className="absolute top-4 right-4 text-gray-400! hover:text-white!"
                             >
                                 <X className="w-5 h-5" />
                             </button>
