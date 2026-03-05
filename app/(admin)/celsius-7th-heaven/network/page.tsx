@@ -19,6 +19,10 @@ interface Leader {
     phone: string;
     referralCode: string;
     createdAt: string;
+    referrer?: {
+        fullName: string;
+        referralCode: string;
+    } | null;
     stats: {
         totalTeam: number;
         levelCounts: number[];
@@ -172,6 +176,7 @@ export default function NetworkLeadersPage() {
                                 <th className="px-6 py-4 font-bold">Leader Profile</th>
                                 <th className="px-6 py-4 font-bold text-center">Direct Referrals</th>
                                 <th className="px-6 py-4 font-bold text-center">Total Team</th>
+                                <th className="px-6 py-4 font-bold">Heaven Breakdown</th>
                                 <th className="px-6 py-4 font-bold">Level 7 Progress</th>
                                 <th className="px-6 py-4 font-bold text-right">Actions</th>
                             </tr>
@@ -189,6 +194,7 @@ export default function NetworkLeadersPage() {
                             ) : filteredLeaders.length > 0 ? (
                                 filteredLeaders.map((leader) => (
                                     <tr key={leader.id} className="hover:bg-gray-50 transition-colors group">
+                                        {/* Leader Profile */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-[#E6B422]/10 text-[#E6B422] flex items-center justify-center font-bold text-lg border border-[#E6B422]/20">
@@ -197,18 +203,35 @@ export default function NetworkLeadersPage() {
                                                 <div>
                                                     <p className="font-bold text-gray-900">{leader.fullName}</p>
                                                     <p className="text-xs text-gray-500">{leader.email}</p>
-                                                    <span className="inline-block mt-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-mono rounded">
-                                                        {leader.referralCode}
-                                                    </span>
+                                                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                                        <span className="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-mono rounded">
+                                                            {leader.referralCode}
+                                                        </span>
+                                                        {leader.referrer ? (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] rounded border border-blue-100">
+                                                                <Users className="w-2.5 h-2.5" />
+                                                                via <span className="font-semibold">{leader.referrer.fullName.split(' ')[0]}</span>
+                                                                <span className="font-mono opacity-70">· {leader.referrer.referralCode}</span>
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-block px-2 py-0.5 bg-green-50 text-green-600 text-[10px] rounded border border-green-100 font-semibold">
+                                                                Direct / Root
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
+
+                                        {/* Direct Referrals */}
                                         <td className="px-6 py-4 text-center">
                                             <span className="font-bold text-gray-700">{leader.stats.level1Count}</span>
                                         </td>
+
+                                        {/* Total Team */}
                                         <td className="px-6 py-4 text-center">
                                             <div className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-bold text-sm">
-                                                <button 
+                                                <button
                                                     onClick={() => handleOpenNetwork(leader)}
                                                     className="group/btn relative inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full font-bold text-sm hover:text-white transition-all cursor-pointer border border-blue-100"
                                                 >
@@ -218,6 +241,29 @@ export default function NetworkLeadersPage() {
                                                 </button>
                                             </div>
                                         </td>
+
+                                        {/* Heaven Breakdown */}
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-1 flex-wrap">
+                                                {leader.stats.levelCounts.map((count, idx) => (
+                                                    count > 0 ? (
+                                                        <span
+                                                            key={idx}
+                                                            className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold border"
+                                                            style={{
+                                                                background: idx % 2 === 0 ? '#F9F5E7' : '#F3F4F6',
+                                                                color: idx % 2 === 0 ? '#92700C' : '#4B5563',
+                                                                borderColor: idx % 2 === 0 ? '#E6B422' : '#D1D5DB',
+                                                            }}
+                                                        >
+                                                            H{idx + 1}:{count}
+                                                        </span>
+                                                    ) : null
+                                                ))}
+                                            </div>
+                                        </td>
+
+                                        {/* Level 7 Progress */}
                                         <td className="px-6 py-4">
                                             <div className="w-full max-w-[140px]">
                                                 <div className="flex justify-between text-xs mb-1">
@@ -225,10 +271,10 @@ export default function NetworkLeadersPage() {
                                                     <span className="text-[#E6B422] font-bold">{leader.stats.level7Progress.toFixed(1)}%</span>
                                                 </div>
                                                 <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                                                    <div 
+                                                    <div
                                                         className="bg-linear-to-r from-[#E6B422] to-[#F3E5AB] h-full rounded-full transition-all duration-500"
                                                         style={{ width: `${Math.max(5, leader.stats.level7Progress)}%` }}
-                                                    ></div>
+                                                    />
                                                 </div>
                                                 {leader.stats.level7Progress >= 100 && (
                                                     <span className="text-[10px] text-green-600 font-bold mt-1 flex items-center gap-1">
@@ -237,19 +283,21 @@ export default function NetworkLeadersPage() {
                                                 )}
                                             </div>
                                         </td>
+
+                                        {/* Actions */}
                                         <td className="px-6 py-4 text-right">
-                                            <button 
+                                            <button
                                                 onClick={() => openRewardModal(leader)}
-                                                className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all shadow-sm cursor-pointer border ${
-                                                    leader.stats.level7Progress >= 100 
-                                                    ? 'bg-[#E6B422] text-white border-[#E6B422] hover:bg-black hover:border-black' 
+                                                className={`inline-flex! items-center gap-2 px-3 py-2 rounded-lg text-xs! font-bold uppercase tracking-wide transition-all shadow-sm cursor-pointer border ${
+                                                    leader.stats.level7Progress >= 100
+                                                    ? 'bg-[#E6B422] text-white border-[#E6B422] hover:bg-black hover:border-black'
                                                     : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
                                                 }`}
                                             >
                                                 {leader.stats.level7Progress >= 100 ? (
-                                                     <><Gift className="w-4 h-4" /> Process Reward</>
+                                                    <><Gift className="w-4 h-4" /> Process Reward</>
                                                 ) : (
-                                                     <><Activity className="w-4 h-4" /> Check Status</>
+                                                    <><Activity className="w-4 h-4" /> Check Status</>
                                                 )}
                                             </button>
                                         </td>

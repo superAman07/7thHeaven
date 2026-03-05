@@ -15,7 +15,13 @@ export async function GET() {
                 phone: true,
                 is7thHeaven: true,
                 createdAt: true,
-                referralCode: true
+                referralCode: true,
+                referrer: {
+                    select: {
+                        fullName: true,
+                        referralCode: true,
+                    }
+                }
             }
         });
 
