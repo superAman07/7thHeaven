@@ -63,6 +63,7 @@ export default function PaymentStatusPage() {
                     if (orderData.paymentStatus === 'PAID') {
                         setStatus('success');
                         clearCart();
+                        localStorage.removeItem('7thHeavenReferral'); 
                         toast.success("Payment Confirmed!");
                     } else if (orderData.paymentStatus === 'FAILED' || orderData.paymentStatus === 'CANCELLED') {
                         setStatus('failed');

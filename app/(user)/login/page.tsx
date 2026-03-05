@@ -195,12 +195,12 @@ export default function AuthPage() {
             return;
         }
         
-        const match = document.cookie.match(new RegExp('(^| )referralCode=([^;]+)'));
-        if (match) {
+        const storedRef = localStorage.getItem('7thHeavenReferral');
+        if (storedRef) {
             hasCheckedReferral.current = true;
-            setReferralCode(match[2]);
+            setReferralCode(storedRef);
             setView(View.SIGNUP_STEP_1_PHONE);
-            toast.success(`You were referred by ${match[2]}! Create your account to get started.`, { duration: 4000, icon: '🎁' });
+            toast.success(`You were referred! Create your account to get started.`, { duration: 4000, icon: '🎁' });
         }
     }, []);
 
