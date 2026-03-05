@@ -42,29 +42,25 @@ export async function GET() {
         // 3. Helper to calculate stats for a specific user
         const calculateStats = (rootId: string) => {
             let totalTeam = 0;
-            const levelCounts = [0, 0, 0, 0, 0, 0, 0]; // Levels 1-7
-            
-            // BFS to traverse 7 levels
+            const levelCounts = [0, 0, 0, 0, 0, 0, 0];
+            const activeLevelCounts = [0, 0, 0, 0, 0, 0, 0];
             let currentLevelNodes = childrenMap.get(rootId) || [];
             let currentLevel = 0;
-
             while (currentLevel < 7 && currentLevelNodes.length > 0) {
                 levelCounts[currentLevel] = currentLevelNodes.length;
+                activeLevelCounts[currentLevel] = currentLevelNodes.filter(
+                    id => userMap.get(id)?.is7thHeaven === true
+                ).length;
                 totalTeam += currentLevelNodes.length;
-
                 const nextLevelNodes: string[] = [];
                 currentLevelNodes.forEach(childId => {
                     const grandChildren = childrenMap.get(childId);
-                    if (grandChildren) {
-                        nextLevelNodes.push(...grandChildren);
-                    }
+                    if (grandChildren) nextLevelNodes.push(...grandChildren);
                 });
-
                 currentLevelNodes = nextLevelNodes;
                 currentLevel++;
             }
-
-            return { totalTeam, levelCounts };
+            return { totalTeam, levelCounts, activeLevelCounts };
         };
 
         const leaders = allUsers
@@ -81,28 +77,28 @@ export async function GET() {
 
                 const oddLevelProgress = {
                     level1: {
-                        count: stats.levelCounts[0],
+                        count: stats.activeLevelCounts[0],
                         target: oddLevelTargets[1],
-                        progress: Math.min(100, (stats.levelCounts[0] / oddLevelTargets[1]) * 100),
-                        complete: stats.levelCounts[0] >= oddLevelTargets[1]
+                        progress: Math.min(100, (stats.activeLevelCounts[0] / oddLevelTargets[1]) * 100),
+                        complete: stats.activeLevelCounts[0] >= oddLevelTargets[1]
                     },
                     level3: {
-                        count: stats.levelCounts[2],
+                        count: stats.activeLevelCounts[2],
                         target: oddLevelTargets[3],
-                        progress: Math.min(100, (stats.levelCounts[2] / oddLevelTargets[3]) * 100),
-                        complete: stats.levelCounts[2] >= oddLevelTargets[3]
+                        progress: Math.min(100, (stats.activeLevelCounts[2] / oddLevelTargets[3]) * 100),
+                        complete: stats.activeLevelCounts[2] >= oddLevelTargets[3]
                     },
                     level5: {
-                        count: stats.levelCounts[4],
+                        count: stats.activeLevelCounts[4],
                         target: oddLevelTargets[5],
-                        progress: Math.min(100, (stats.levelCounts[4] / oddLevelTargets[5]) * 100),
-                        complete: stats.levelCounts[4] >= oddLevelTargets[5]
+                        progress: Math.min(100, (stats.activeLevelCounts[4] / oddLevelTargets[5]) * 100),
+                        complete: stats.activeLevelCounts[4] >= oddLevelTargets[5]
                     },
                     level7: {
-                        count: stats.levelCounts[6],
+                        count: stats.activeLevelCounts[6],
                         target: oddLevelTargets[7],
-                        progress: Math.min(100, (stats.levelCounts[6] / oddLevelTargets[7]) * 100),
-                        complete: stats.levelCounts[6] >= oddLevelTargets[7]
+                        progress: Math.min(100, (stats.activeLevelCounts[6] / oddLevelTargets[7]) * 100),
+                        complete: stats.activeLevelCounts[6] >= oddLevelTargets[7]
                     }
                 };
 
@@ -118,8 +114,8 @@ export async function GET() {
                         levelCounts: stats.levelCounts,
                         oddLevelProgress,
                         completedLevels,
-                        level1Count: stats.levelCounts[0],
-                        level7Count: stats.levelCounts[6],
+                        level1Count: stats.activeLevelCounts[0],
+                        level7Count: stats.activeLevelCounts[6],
                         level7Progress: oddLevelProgress.level7.progress
                     }
                 };
