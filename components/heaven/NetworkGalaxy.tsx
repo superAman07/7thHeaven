@@ -481,8 +481,8 @@ const StatsRibbon = ({ data, isDark }: { data: NetworkNode, isDark: boolean }) =
                     border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'}`,
                 }}>
                     <span className="font-bold" style={{ color: POP.gold }}>H{s.level}</span>
-                    <span className="font-bold" style={{ color: s.active + s.dormant >= s.total ? '#10B981' : isDark ? '#9CA3AF' : '#6B7280' }}>
-                        {s.active + s.dormant}
+                    <span className="font-bold" style={{ color: s.active >= s.total ? '#10B981' : isDark ? '#9CA3AF' : '#6B7280' }}>
+                        {s.active}
                     </span>
                 </div>
             ))}
