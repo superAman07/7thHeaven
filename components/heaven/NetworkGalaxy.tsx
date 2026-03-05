@@ -51,7 +51,7 @@ const countDescendantsAtDepth = (node: NetworkNode, targetDepth: number): number
 
 const padChildren = (node: NetworkNode): NetworkNode[] => {
     const existing = (node.children || []).filter(c => c.status !== 'EMPTY');
-    if (existing.length >= 5) return existing.slice(0, 5);
+    if (existing.length >= 5) return existing; 
     const padded = [...existing];
     for (let i = existing.length; i < 5; i++) {
         padded.push({
@@ -411,7 +411,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                 }} />
                 <div className="flex items-center justify-between mb-3 pb-2" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'}` }}>
                     <div>
-                        <h4 className="text-base font-bold font-sans" style={{ color: isDark ? '#fff' : '#111' }}>{node.name}</h4>
+                        <h4 className="text-base! font-bold font-sans " style={{ color: isDark ? '#fff' : '#111' }}>{node.name}</h4>
                         <div className="text-[10px] uppercase tracking-widest font-sans" style={{ color: isDark ? '#6B7280' : '#9CA3AF' }}>Joined {node.joinedAt}</div>
                     </div>
                     <span className="text-[9px] font-bold px-3 py-1 rounded-full font-sans" style={{
