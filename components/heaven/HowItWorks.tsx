@@ -339,37 +339,6 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
             </div>
           </div>
         </div>
-
-        {/* ═══ REWARD SUMMARY BANNER ═══ */}
-        <div className={`mb-8 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="rewards-banner">
-            <div className="rewards-banner-glow" />
-            <div className="text-center relative z-10">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <GiftIcon className="w-6 h-6" style={{ stroke: POP.gold }} />
-                <h4 className="text-lg md:text-xl font-bold text-white">
-                  Rewards at Every Odd Heaven
-                </h4>
-              </div>
-              <div className="flex flex-wrap justify-center gap-3 mt-4">
-                {[
-                  { level: 1, amount: '₹5,000',    color: POP.purple },
-                  { level: 3, amount: '₹25,000',   color: POP.pink },
-                  { level: 5, amount: '₹1,25,000', color: POP.purple },
-                  { level: 7, amount: '₹1 CRORE',  color: POP.gold },
-                ].map((r) => (
-                  <div key={r.level} className="reward-pill" style={{ '--pill-color': r.color } as React.CSSProperties}>
-                    <span className="reward-pill-level">H{r.level}</span>
-                    <span className="reward-pill-amount">{r.amount}</span>
-                  </div>
-                ))}
-              </div>
-              <p className="text-gray-500 text-xs mt-5 max-w-lg mx-auto">
-                Complete Heaven 1 to unlock your first prize. Keep growing to reach ₹1 Crore at Heaven 7!
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* ═══ GROWTH MATH ═══ */}
