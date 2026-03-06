@@ -104,10 +104,10 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
     },
     {
       number: 2,
-      title: 'Receive Your Unique Referral Code',
-      description: 'Once you become a member, you\'ll instantly receive a unique referral code via email and on your 7th Heaven dashboard. This code is exclusively yours — it tracks every referral you make.',
+      title: 'Receive Your Unique Marketing Code',
+      description: 'Once you become a member, you\'ll instantly receive a unique invite code via email and on your 7th Heaven dashboard. This code is exclusively yours — it tracks every invitation you send.',
       detail: 'Your code is your key to building your network.',
-      tip: '💡 Pro Tip: Save your referral code — you can share it unlimited times with anyone!',
+      tip: '💡 Pro Tip: Save your invite code — you can share it unlimited times with anyone!',
       Icon: KeyIcon,
       color: POP.gold,
       colorLight: POP.goldLight,
@@ -115,9 +115,9 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
     },
     {
       number: 3,
-      title: 'Refer 5 People — Complete Heaven 1',
+      title: 'Invite 5 People — Complete Heaven 1',
       description: `Share your exclusive code on WhatsApp, Instagram, or simply text it to friends who love premium fragrances. When someone purchases worth ₹${minPurchaseAmount.toLocaleString('en-IN')}+ using YOUR code — they become part of your Heaven 1 team and YOU move closer to your first reward.`,
-      detail: '5 direct referrals = Heaven 1 complete = ₹5,000 worth reward unlocked!',
+      detail: '5 direct invitations = Heaven 1 complete = ₹5,000 worth reward unlocked!',
       tip: '💡 Pro Tip: Most members complete Heaven 1 within their first week just by sharing with close friends & family.',
       Icon: UsersIcon,
       color: POP.pink,
@@ -127,9 +127,9 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
     {
       number: 4,
       title: 'Your Network Grows Automatically',
-      description: 'Here\'s where it gets exciting: when YOUR referrals refer their friends, those new members automatically count as YOUR Heaven 2 team. And when THOSE people refer others — that\'s your Heaven 3. This chain continues through all 7 levels, growing your network exponentially without any extra effort from you.',
-      detail: 'You refer 5. They each refer 5. The network multiplies on its own.',
-      tip: '💡 Pro Tip: You only need to personally refer 5 active people. After that, your network grows through THEIR efforts!',
+      description: 'Here\'s where it gets exciting: when YOUR network members invite their friends, those new members automatically count as YOUR Heaven 2 team. And when THOSE people invite others — that\'s your Heaven 3. This chain continues through all 7 levels, growing your network exponentially without any extra effort from you.',
+      detail: 'You invite 5. They each invite 5. The network multiplies on its own.',
+      tip: '💡 Pro Tip: You only need to personally invite 5 active people. After that, your network grows through THEIR efforts!',
       Icon: NetworkIcon,
       color: POP.purple,
       colorLight: POP.purpleLight,
@@ -191,7 +191,7 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
             How <span className="hiw-title-gradient">7th Heaven</span> Works
           </h2>
           <p className="text-gray-400 text-sm md:text-base max-w-3xl mx-auto mt-4 leading-relaxed">
-            Join thousands earning rewards through the power of referrals.
+            Join thousands earning rewards through the power of community.
             Your journey to <span className="hiw-highlight-gold">₹1 Crore</span> starts
             with a single purchase — here&apos;s exactly how it works.
           </p>
@@ -382,19 +382,19 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
               <div className="growth-step">
                 <span className="growth-you">You</span>
                 <span className="growth-arrow">→</span>
-                <span className="growth-action">refer <strong>5</strong> friends</span>
+                <span className="growth-action">invite <strong>5</strong> friends</span>
                 <span className="growth-result" style={{ color: POP.purple }}>= Heaven 1 → ₹5,000</span>
               </div>
               <div className="growth-step">
                 <span className="growth-you">Your 5</span>
                 <span className="growth-arrow">→</span>
-                <span className="growth-action">each refer <strong>5</strong></span>
+                <span className="growth-action">each invite <strong>5</strong></span>
                 <span className="growth-result" style={{ color: POP.blue }}>= 25 in Heaven 2</span>
               </div>
               <div className="growth-step">
                 <span className="growth-you">Those 25</span>
                 <span className="growth-arrow">→</span>
-                <span className="growth-action">each refer <strong>5</strong></span>
+                <span className="growth-action">each invite <strong>5</strong></span>
                 <span className="growth-result" style={{ color: POP.pink }}>= Heaven 3 → ₹25,000</span>
               </div>
             </div>
@@ -412,11 +412,11 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
           <div className="faq-grid">
             {[
               { q: 'Is there a joining fee?', a: `No! Your membership is automatically activated FREE with any purchase of ₹${minPurchaseAmount.toLocaleString('en-IN')}+. No hidden charges ever.` },
-              { q: 'Do I need to sell anything?', a: 'Absolutely not. Just share your referral code. When someone buys using your code, they join your network. No inventory, no pressure.' },
+              { q: 'Do I need to sell anything?', a: 'Absolutely not. Just share your invite code. When someone buys using your code, they join your network. No inventory, no pressure.' },
               { q: 'How do I claim my rewards?', a: 'Once you hit a milestone (Heaven 1, 3, 5, or 7), a "Claim Reward" button appears on your dashboard. Click it and our team processes your reward within 7 business days.' },
-              { q: 'Is there a time limit?', a: 'No deadline at all! Your network keeps growing as long as your referrals stay active. Take your time — the rewards will wait for you.' },
+              { q: 'Is there a time limit?', a: 'No deadline at all! Your network keeps growing as long as your network stays active. Take your time — the rewards will wait for you.' },
               { q: 'Can I track my progress?', a: 'Yes! Your 7th Heaven dashboard shows real-time stats — your team size, current level, and exactly how close you are to the next reward.' },
-              { q: 'What if my referral returns the product?', a: 'If a referred purchase is returned or cancelled, that referral won\'t count toward your network. Only confirmed purchases qualify.' },
+              { q: 'What if an invited member returns the product?', a: 'If an invited purchase is returned or cancelled, that invitation won\'t count toward your network. Only confirmed purchases qualify.' },
             ].map((faq, idx) => (
               <div key={idx} className="faq-item">
                 <h5 className="faq-q">{faq.q}</h5>
@@ -433,11 +433,11 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
               Ready to Start Your Journey?
             </h3>
             <p className="text-gray-400 text-sm mb-4 max-w-lg mx-auto">
-              Join the 7th Heaven Club today and start earning rewards with every referral.
+              Join the 7th Heaven Club today and start earning rewards with every connection.
             </p>
             <div className="cta-dashboard-note">
               <span style={{ fontSize: '1rem', marginRight: '6px' }}>📊</span>
-              <span>After your purchase, you'll get access to your <strong style={{ color: '#fff' }}>personal 7th Heaven Dashboard</strong> — right on this page. Track your referrals, view your network, monitor your level progress, and claim rewards — all in one place.</span>
+              <span>After your purchase, you'll get access to your <strong style={{ color: '#fff' }}>personal 7th Heaven Dashboard</strong> — right on this page. Track your network, view your team, monitor your level progress, and claim rewards — all in one place.</span>
             </div>
             <Link
               href="/collections/perfumes"
