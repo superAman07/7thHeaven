@@ -91,6 +91,7 @@ function ProfileContent() {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isCancelling, setIsCancelling] = useState(false);
     const [siteSettings, setSiteSettings] = useState<any>(null);
+    const [heaven1Complete, setHeaven1Complete] = useState(false);
 
     useEffect(() => {
         axios.get('/api/v1/site-settings').then(res => {
@@ -130,6 +131,14 @@ function ProfileContent() {
             }
         }
     }, [activeTab, notifications]);
+
+    useEffect(() => {
+        if (user?.is7thHeaven) {
+            axios.get('/api/v1/network').then(res => {
+                setHeaven1Complete(res.data?.data?.levels?.[0]?.isCompleted || false);
+            }).catch(() => {});
+        }
+    }, [user?.is7thHeaven]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -604,23 +613,34 @@ function ProfileContent() {
                                                         </h4>
                                                         {user?.is7thHeaven ? (
                                                             <>
-                                                                <p className="mb-2">You are an active member! Share your referral code to grow your network.</p>
-                                                                <div className="d-flex align-items-center gap-3 flex-wrap mb-3">
-                                                                    <div style={{ background: '#fff', padding: '8px 15px', border: '1px dashed #8a6d3b', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '1px' }}>
-                                                                        {user.referralCode}
+                                                                {heaven1Complete ? (
+                                                                    <div className="mb-3 p-3 rounded" style={{ background: '#fff9e6', border: '1px solid #ddb040' }}>
+                                                                        <p className="mb-1 font-bold" style={{ color: '#8a6d3b' }}>🏆 Heaven 1 Complete!</p>
+                                                                        <p className="mb-0 text-sm" style={{ color: '#666' }}>
+                                                                            Your 5-member team is full. Your invite code is <strong>locked</strong>. 
+                                                                            Focus on your team's growth to unlock higher levels.
+                                                                        </p>
                                                                     </div>
-                                                                    <button 
-                                                                        className="btn btn-sm btn-secondary"
-                                                                        onClick={() => {
-                                                                            navigator.clipboard.writeText(`${window.location.origin}/login?ref=${user.referralCode}`);
-                                                                            toast.success("Referral link copied!");
-                                                                        }}
-                                                                    >
-                                                                        Copy Link
-                                                                    </button>
-                                                                </div>
-                                                                
-                                                                <Link href="/7th-heaven" className="btn btn-primary" style={{ backgroundColor: '#ddb040', borderColor: '#ddb040', color: '#fff' }}>
+                                                                ) : (
+                                                                    <>
+                                                                        <p className="mb-2">You are an active member! Share your referral code to grow your network.</p>
+                                                                        <div className="d-flex align-items-center gap-3 flex-wrap mb-3">
+                                                                            <div style={{ background: '#fff', padding: '8px 15px', border: '1px dashed #8a6d3b', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '1px' }}>
+                                                                                {user.referralCode}
+                                                                            </div>
+                                                                            <button 
+                                                                                className="btn btn-sm btn-secondary"
+                                                                                onClick={() => {
+                                                                                    navigator.clipboard.writeText(`${window.location.origin}/login?ref=${user.referralCode}`);
+                                                                                    toast.success("Referral link copied!");
+                                                                                }}
+                                                                            >
+                                                                                Copy Link
+                                                                            </button>
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                                <Link href="/7th-heaven" className="btn btn-primary btn-sm" style={{ backgroundColor: '#ddb040', borderColor: '#ddb040', color: '#fff' }}>
                                                                     View My Network <i className="fa fa-arrow-right ml-2"></i>
                                                                 </Link>
                                                             </>
