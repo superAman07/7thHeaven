@@ -74,7 +74,7 @@ import { sendOrderConfirmation } from '@/lib/email';
  *                 description: "Optional referral code from existing 7th Heaven member"
  *     responses:
  *       200:
- *         description: Order placed successfully
+ *         description: Order placed successfully. If mlmSkipped is true, invite code was valid but referrer's slots were full — order still succeeds.
  *         content:
  *           application/json:
  *             schema:
@@ -86,6 +86,12 @@ import { sendOrderConfirmation } from '@/lib/email';
  *                   type: string
  *                 totalAmount:
  *                   type: number
+ *                 mlmSkipped:
+ *                   type: boolean
+ *                   description: "Present and true if MLM opt-in was skipped due to full slots"
+ *                 mlmSkipReason:
+ *                   type: string
+ *                   description: "Human-readable reason why MLM opt-in was skipped"
  */
 
 function generateReferralCode() {
@@ -253,12 +259,21 @@ export async function POST(req: NextRequest) {
             };
         });
         let resolvedReferrerId: string | null = null;
+        let mlmSkipped = false;
+        let mlmSkipReason: string | undefined;
         if (mlmOptIn && referrerCode) {
             const referrer = await prisma.user.findFirst({
                 where: { referralCode: referrerCode, is7thHeaven: true }
             });
             if (referrer && referrer.id !== userId) {
-                resolvedReferrerId = referrer.id;
+                const { canJoinUnderReferrer } = await import('@/lib/mlm-slot-validator');
+                const slotCheck = await canJoinUnderReferrer(referrer.id);
+                if (slotCheck.allowed) {
+                    resolvedReferrerId = referrer.id;
+                } else {
+                    mlmSkipped = true;
+                    mlmSkipReason = slotCheck.message;
+                }
             }
         }
         const newOrder = await prisma.order.create({
@@ -292,140 +307,11 @@ export async function POST(req: NextRequest) {
                 }
             });
         }
-        // --- BYPASS LOGIC START (Immediate Success + Admin Upgrade) ---
-        // const BYPASS_FOR_TESTING = true;
-        // if (BYPASS_FOR_TESTING) {
-        //      const merchantTransactionId = `TEST-${Date.now()}`;
-             
-        //      // 1. Update Order to PAID
-        //      await prisma.order.update({
-        //         where: { id: newOrder.id },
-        //         data: {
-        //             paymentStatus: 'PAID',
-        //             status: 'PROCESSING',
-        //             netAmountPaid: Math.round(subtotal - (discountAmount || 0)),
-        //             gatewayOrderId: merchantTransactionId
-        //         }
-        //      });
-        //      // 2. Update User (IsAdmin + 7th Heaven + Referral)
-        //      if (mlmOptIn) {
-        //         let userRef = await prisma.user.findUnique({ where: { id: userId! } });
-        //         let newReferralCode = userRef?.referralCode;
-        //         if (!newReferralCode) newReferralCode = generateReferralCode();
-        //         let referrerId = userRef?.referrerId;
-        //         if (!referrerId && referrerCode) {
-        //             const referrer = await prisma.user.findUnique({ 
-        //                 where: { referralCode: referrerCode } 
-        //             });
-        //             if (referrer && referrer.id !== userId) {
-        //                 referrerId = referrer.id;
-        //             }
-        //         }
-        //         await prisma.user.update({
-        //             where: { id: userId! },
-        //             data: { 
-        //                 is7thHeaven: true, 
-        //                 referralCode: newReferralCode,
-        //                 ...(referrerId ? { referrerId } : {})
-        //             } 
-        //         });
-        //      } else {
-        //          // Even if no OptIn, user apparently wants admin bypass? 
-        //          // Uncomment below if you want EVERY order to make user admin:
-        //          /*
-        //          await prisma.user.update({
-        //             where: { id: userId! },
-        //             data: { isAdmin: true } 
-        //          });
-        //          */
-        //      }
-        //      // 3. Inventory Update
-        //      for (const item of orderItemsData) {
-        //         try {
-        //             const quantityToDeduct = item.quantity;
-        //             if (item.variantId) {
-        //                  await prisma.productVariant.update({
-        //                     where: { id: item.variantId },
-        //                     data: { stock: { decrement: quantityToDeduct } }
-        //                 });
-        //             } else if (item.productId) {
-        //                  await prisma.product.update({
-        //                     where: { id: item.productId }, 
-        //                     data: { stock: { decrement: quantityToDeduct } }
-        //                 });
-        //             }
-        //         } catch (e) { console.error("Inventory update failed", e); }
-        //      }
-        //      // 4. Clear Cart
-        //      const cart = await prisma.cart.findUnique({ where: { userId: userId! } });
-        //      if (cart) {
-        //         await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
-        //      }
-             
-        //      // 5. Send Order Confirmation Email
-        //      if (shippingDetails.email) {
-        //         sendOrderConfirmation(shippingDetails.email, {
-        //           orderId: newOrder.id,
-        //           customerName: shippingDetails.fullName,
-        //           items: orderItemsData.map(item => ({
-        //             name: item.name,
-        //             quantity: item.quantity,
-        //             price: item.priceAtPurchase
-        //           })),
-        //           total: Math.round(subtotal - (discountAmount || 0))
-        //         }).catch(err => console.error('Email send error:', err));
-        //      }
-        //      // 3. Record coupon usage
-        //      if (couponCode) {
-        //          const coupon = await prisma.coupon.findUnique({
-        //              where: { code: couponCode }
-        //          });
-                 
-        //          if (coupon) {
-        //              // Increment usage count
-        //              await prisma.coupon.update({
-        //                  where: { id: coupon.id },
-        //                  data: { usedCount: { increment: 1 } }
-        //              });
-                     
-        //              // Record usage history
-        //              const user = await prisma.user.findUnique({ where: { id: userId! } });
-        //              await prisma.couponUsage.create({
-        //                  data: {
-        //                      couponId: coupon.id,
-        //                      orderId: newOrder.id,
-        //                      userId: userId,
-        //                      userName: user?.fullName || shippingDetails.fullName,
-        //                      discountAmount: discountAmount || 0,
-        //                      orderTotal: Math.round(subtotal - (discountAmount || 0))
-        //                  }
-        //              });
-        //          }
-        //      }
-             
-        //      return NextResponse.json({
-        //         success: true,
-        //         orderId: newOrder.id,
-        //         totalAmount: Math.round(subtotal - (discountAmount || 0)),
-        //         bypassed: true, 
-        //         transactionId: merchantTransactionId
-        //     });
-        // }
-        // --- BYPASS LOGIC END ---
-        // await prisma.user.update({
-        //     where: { id: userId },
-        //     data: {
-        //         fullAddress: shippingDetails.fullAddress,
-        //         city: shippingDetails.city,
-        //         state: shippingDetails.state,
-        //         pincode: shippingDetails.pincode,
-        //         country: shippingDetails.country
-        //     }
-        // });
         return NextResponse.json({
             success: true,
             orderId: newOrder.id,
-            totalAmount: newOrder.subtotal 
+            totalAmount: newOrder.subtotal,
+            ...(mlmSkipped ? { mlmSkipped: true, mlmSkipReason } : {})
         });
     } catch (error) {
         console.error('Create Order Error:', error);

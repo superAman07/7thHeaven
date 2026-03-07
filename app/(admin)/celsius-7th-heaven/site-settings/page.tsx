@@ -64,12 +64,14 @@ export default function SiteSettingsPage() {
     const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState<'contact' | 'about' | 'homeAbout' | 'social' | 'announcement' | 'footer'>('contact');
+    const [activeTab, setActiveTab] = useState<'contact' | 'about' | 'homeAbout' | 'social' | 'announcement' | 'footer' | 'mlm'>('contact');
     const [hasFetched, setHasFetched] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const logoInputRef = useRef<HTMLInputElement>(null);
     const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+    const [mlmSettings, setMlmSettings] = useState({ dormantSlotExpiryDays: 30 });
+    const [mlmLoaded, setMlmLoaded] = useState(false);
     const [homeAbout, setHomeAbout] = useState({
         displayTitle: 'The Celsius Story',
         image: '/assets/images/bg-hero.png',
@@ -118,6 +120,19 @@ export default function SiteSettingsPage() {
                 .finally(() => setHomeAboutLoaded(true));
         }
     }, [activeTab, homeAboutLoaded]);
+
+    useEffect(() => {
+        if (activeTab === 'mlm' && !mlmLoaded) {
+            axios.get('/api/v1/content/mlm_settings')
+                .then(res => {
+                    if (res.data.success && res.data.data) {
+                        setMlmSettings(prev => ({ ...prev, ...res.data.data }));
+                    }
+                })
+                .catch(() => {})
+                .finally(() => setMlmLoaded(true));
+        }
+    }, [activeTab, mlmLoaded]);
 
     const handleSave = async () => {
         setSaving(true);
@@ -202,6 +217,20 @@ export default function SiteSettingsPage() {
             setSaving(false);
         }
     };
+
+    const handleSaveMlmSettings = async () => {
+        setSaving(true);
+        try {
+            const res = await axios.put('/api/v1/content/mlm_settings', mlmSettings);
+            if (res.data.success) {
+                toast.success('MLM settings saved!');
+            }
+        } catch (error) {
+            toast.error('Failed to save MLM settings');
+        } finally {
+            setSaving(false);
+        }
+    };
     // Image upload for Homepage About section
     const handleHomeAboutImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
@@ -266,7 +295,8 @@ export default function SiteSettingsPage() {
         { id: 'homeAbout', label: '🏠 Homepage About' },
         { id: 'social', label: '🔗 Social Links' },
         { id: 'announcement', label: '📢 Announcement' },
-        { id: 'footer', label: '📄 Footer' }
+        { id: 'footer', label: '📄 Footer' },
+        { id: 'mlm', label: '🌐 MLM Settings' },
     ];
 
     return (
@@ -277,7 +307,11 @@ export default function SiteSettingsPage() {
                     <p className="text-gray-500! text-sm!">Manage your website's contact info, about page, and footer</p>
                 </div>
                 <button
-                    onClick={activeTab === 'homeAbout' ? handleSaveHomeAbout : handleSave}
+                    onClick={
+                        activeTab === 'homeAbout' ? handleSaveHomeAbout 
+                        : activeTab === 'mlm' ? handleSaveMlmSettings 
+                        : handleSave
+                    }
                     disabled={saving}
                     className="px-6! py-2.5! bg-amber-600! text-white! rounded-lg! font-medium! hover:bg-amber-700! disabled:opacity-50! flex! items-center! gap-2!"
                 >
@@ -646,6 +680,31 @@ export default function SiteSettingsPage() {
                             rows={3}
                             className="w-full! px-4! py-2.5! border! border-gray-200! rounded-lg! focus:ring-2! focus:ring-amber-500! focus:border-transparent!"
                             placeholder="© 2024 Celsius. All rights reserved."
+                        />
+                    </div>
+                </div>
+            )}
+            {activeTab === 'mlm' && (
+                <div className="bg-white! rounded-xl! p-6! shadow-sm!">
+                    <h3 className="text-lg! font-semibold! mb-1! text-gray-800!">MLM / 7th Heaven Settings</h3>
+                    <p className="text-sm! text-gray-500! mb-6!">
+                        Configure the rules for the 7th Heaven invite network.
+                    </p>
+                    <div className="max-w-sm!">
+                        <label className="block! text-sm! font-medium! text-gray-700! mb-1!">
+                            Dormant Slot Expiry (days)
+                        </label>
+                        <p className="text-xs! text-gray-400! mb-2!">
+                            If an invited member doesn't activate within this many days, 
+                            their slot becomes available for a new invite.
+                        </p>
+                        <input
+                            type="number"
+                            min={1}
+                            max={365}
+                            value={mlmSettings.dormantSlotExpiryDays}
+                            onChange={e => setMlmSettings({ dormantSlotExpiryDays: parseInt(e.target.value) || 30 })}
+                            className="w-full! px-4! py-2.5! border! border-gray-200! rounded-lg! focus:ring-2! focus:ring-amber-500! focus:border-transparent!"
                         />
                     </div>
                 </div>

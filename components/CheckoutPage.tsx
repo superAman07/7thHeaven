@@ -21,6 +21,7 @@ const CheckoutPageComponent: React.FC = () => {
     const [referralVerified, setReferralVerified] = useState(false);
     const [referralError, setReferralError] = useState('');
     const [isVerifyingReferral, setIsVerifyingReferral] = useState(false);
+    const [referralSlotsFull, setReferralSlotsFull] = useState<string | null>(null);
     const [referralLocked, setReferralLocked] = useState(false);
     // OTP states
     const [otpSent, setOtpSent] = useState(false);
@@ -61,16 +62,40 @@ const CheckoutPageComponent: React.FC = () => {
     useEffect(() => {
         const ref = searchParams.get('ref');
         if (ref) {
-            setReferralCode(ref);
-            setReferralLocked(true);
-            setIs7thHeavenOptIn(true);
             localStorage.setItem('7thHeavenReferral', ref);
+            axios.post('/api/v1/referral/validate', { code: ref })
+                .then(() => {
+                    setReferralCode(ref);
+                    setReferralLocked(true);
+                    setIs7thHeavenOptIn(true);
+                })
+                .catch((err) => {
+                    const reason = err?.response?.data?.reason;
+                    if (reason === 'HEAVEN1_COMPLETE' || reason === 'SLOTS_FULL') {
+                        localStorage.removeItem('7thHeavenReferral');
+                        document.cookie = 'referralCode=; path=/; max-age=0';
+                        setReferralError(err?.response?.data?.error || 'This invite code is no longer available.');
+                        setReferralSlotsFull(reason);
+                    }
+                });
         } else {
             const storedRef = localStorage.getItem('7thHeavenReferral');
             if (storedRef) {
-                setReferralCode(storedRef);
-                setReferralLocked(true);
-                setIs7thHeavenOptIn(true);
+                axios.post('/api/v1/referral/validate', { code: storedRef })
+                    .then(() => {
+                        setReferralCode(storedRef);
+                        setReferralLocked(true);
+                        setIs7thHeavenOptIn(true);
+                    })
+                    .catch((err) => {
+                        const reason = err?.response?.data?.reason;
+                        if (reason === 'HEAVEN1_COMPLETE' || reason === 'SLOTS_FULL') {
+                            localStorage.removeItem('7thHeavenReferral');
+                            document.cookie = 'referralCode=; path=/; max-age=0';
+                            setReferralError(err?.response?.data?.error || 'This invite code is no longer available.');
+                            setReferralSlotsFull(reason);
+                        }
+                    });
             }
         }
     }, [searchParams]);
@@ -107,10 +132,14 @@ const CheckoutPageComponent: React.FC = () => {
             if (res.data.success) {
                 setReferralVerified(true);
                 setReferralError('');
+                localStorage.setItem('7thHeavenReferral', referralCode);
+                document.cookie = `referralCode=${referralCode}; path=/; max-age=${60 * 60 * 24 * 30}`;
             }
         } catch (err: any) {
-            setReferralError(err.response?.data?.error || 'Invalid referral code');
+            const reason = err.response?.data?.reason;
+            setReferralError(err.response?.data?.error || 'Invalid invite code');
             setReferralVerified(false);
+            setReferralSlotsFull(reason === 'HEAVEN1_COMPLETE' || reason === 'SLOTS_FULL' ? reason : null);
         } finally {
             setIsVerifyingReferral(false);
         }
@@ -578,6 +607,37 @@ const CheckoutPageComponent: React.FC = () => {
                                                                             {referralLocked && <small className="text-gray-600">Referral code auto-applied</small>}
                                                                             {referralVerified && <small style={{ color: '#16a34a', fontWeight: 600 }}>✓ Valid referral code</small>}
                                                                             {referralError && <small style={{ color: '#dc2626' }}>{referralError}</small>}
+                                                                            {referralSlotsFull && (
+                                                                                <div style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        onClick={() => {
+                                                                                            setReferralCode('');
+                                                                                            setReferralError('');
+                                                                                            setReferralSlotsFull(null);
+                                                                                            setReferralVerified(false);
+                                                                                            setReferralLocked(false);
+                                                                                        }}
+                                                                                        style={{ fontSize: '12px', padding: '6px 12px', backgroundColor: '#1a1a1a', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                                                                                    >
+                                                                                        Try Another Code
+                                                                                    </button>
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        onClick={() => {
+                                                                                            setReferralCode('');
+                                                                                            setReferralError('');
+                                                                                            setReferralSlotsFull(null);
+                                                                                            setReferralVerified(false);
+                                                                                            setReferralLocked(false);
+                                                                                            localStorage.removeItem('7thHeavenReferral');
+                                                                                        }}
+                                                                                        style={{ fontSize: '12px', padding: '6px 12px', backgroundColor: 'transparent', color: '#555', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}
+                                                                                    >
+                                                                                        Continue Without Code
+                                                                                    </button>
+                                                                                </div>
+                                                                            )}
                                                                         </div>
                                                                     </div>
                                                                 )}

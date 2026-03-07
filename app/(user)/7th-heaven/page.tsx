@@ -221,15 +221,26 @@ export default function SeventhHeavenPage() {
                   <p className="text-gray-500 text-xs mb-4">Your dashboard for empire expansion.</p>
 
                   {/* Referral Section - Compact & Professional */}
-                  <div className="flex items-center gap-2 w-full md:max-w-md bg-gray-50 p-1.5 rounded-xl border border-gray-200 shadow-sm">
-                    
-                    {/* Code Display */}
-                    <div className="flex-1 px-3 py-2 bg-white rounded-lg font-mono text-sm md:text-base font-bold text-gray-800 tracking-wider text-center border border-gray-100 shadow-inner">
-                      {data?.referralCode || 'NO CODE'}
+                  {data.levels[0]?.isCompleted ? (
+                    <div className="w-full md:max-w-md p-4 rounded-xl border border-[#ddb040]/40 bg-gradient-to-br from-[#fffbf0] to-white shadow-sm">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-[#ddb040] text-lg">🏆</span>
+                        <span className="font-bold text-gray-900 text-sm">Heaven 1 Complete!</span>
+                      </div>
+                      <p className="text-xs text-gray-600 leading-relaxed">
+                        Your 5-member team is confirmed. Your invite code is now <strong>locked</strong>.{' '}
+                        Focus on supporting your 5 members as they build their own teams —
+                        their progress automatically unlocks your Heaven 2 and beyond.
+                      </p>
                     </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex items-center gap-2 shrink-0">
+                  ) : (
+                    <div className="flex items-center gap-2 w-full md:max-w-md bg-gray-50 p-1.5 rounded-xl border border-gray-200 shadow-sm">
+                      {/* Code Display */}
+                      <div className="flex-1 px-3 py-2 bg-white rounded-lg font-mono text-sm md:text-base font-bold text-gray-800 tracking-wider text-center border border-gray-100 shadow-inner">
+                        {data?.referralCode || 'NO CODE'}
+                      </div>
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-2 shrink-0">
                         <button
                           onClick={copyToClipboard}
                           className="group bg-[#1a1a1a] hover:bg-black text-white h-[40px] px-3 md:px-5 rounded-lg shadow-sm flex items-center justify-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all hover:shadow-md"
@@ -238,13 +249,12 @@ export default function SeventhHeavenPage() {
                           <i className={`fa ${copySuccess ? 'fa-check text-[#ddb040]' : 'fa-copy group-hover:scale-110 transition-transform'}`} />
                           <span className="hidden md:inline">{copySuccess ? 'Copied' : 'Copy'}</span>
                         </button>
-                        
                         <div className="h-[40px] w-[40px] flex items-center justify-center bg-[#ddb040] hover:bg-[#b6902e] text-black rounded-lg shadow-sm transition-all cursor-pointer hover:shadow-md hover:scale-105">
-                           <ShareButton referralCode={data?.referralCode || ''} variant="icon" />
+                          <ShareButton referralCode={data?.referralCode || ''} variant="icon" />
                         </div>
+                      </div>
                     </div>
-                  </div>
-
+                  )}
                 </div>
 
                 {/* Right Column: Key Metrics (Animated) */}

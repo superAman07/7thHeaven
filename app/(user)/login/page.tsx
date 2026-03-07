@@ -183,6 +183,9 @@ export default function AuthPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [referralCode, setReferralCode] = useState<string | null>(null);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+    const [referralCodeWarning, setReferralCodeWarning] = useState<string | null>(null);
+    const [showReferralInput, setShowReferralInput] = useState(false);
+    const [referralInput, setReferralInput] = useState('');
 
     useEffect(() => {
         if (hasCheckedReferral.current) return;
@@ -198,9 +201,23 @@ export default function AuthPage() {
         const storedRef = localStorage.getItem('7thHeavenReferral');
         if (storedRef) {
             hasCheckedReferral.current = true;
-            setReferralCode(storedRef);
             setView(View.SIGNUP_STEP_1_PHONE);
-            toast.success(`You were referred! Create your account to get started.`, { duration: 4000, icon: '🎁' });
+            // Validate slots BEFORE accepting the code
+            axios.post('/api/v1/referral/validate', { code: storedRef })
+                .then(() => {
+                    setReferralCode(storedRef);
+                    toast.success('You were referred! Create your account to get started.', { duration: 4000, icon: '🎁' });
+                })
+                .catch((err) => {
+                    const reason = err?.response?.data?.reason;
+                    if (reason === 'HEAVEN1_COMPLETE' || reason === 'SLOTS_FULL') {
+                        localStorage.removeItem('7thHeavenReferral');
+                        setReferralCodeWarning(
+                            "The person who shared this link already has a full team. You can still create your account — you just won't be part of their network."
+                        );
+                    }
+                    // Truly invalid code — silently drop it
+                });
         }
     }, []);
 
@@ -297,7 +314,12 @@ export default function AuthPage() {
             const res = await axios.post('/api/v1/auth/request-otp', { fullName, email, phone, referralCode: referralCode || undefined  });
             toast.success(res.data.message || 'OTP sent to your email.');
             switchView(View.SIGNUP_STEP_2_OTP);
-        } catch (err) {
+        } catch (err: any) {
+            const reason = err?.response?.data?.error?.reason;
+            if (reason === 'HEAVEN1_COMPLETE' || reason === 'SLOTS_FULL') {
+                localStorage.removeItem('7thHeavenReferral');
+                setReferralCode(null);
+            }
             setError(getErrorMessage(err));
         } finally {
             setIsLoading(false);
@@ -474,6 +496,61 @@ export default function AuthPage() {
                             {referralCode && (
                                 <div className="mt-3 inline-block bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm border border-green-200">
                                     ✓ Referred by: <strong>{referralCode}</strong>
+                                </div>
+                            )}
+                            {referralCodeWarning && (
+                                <div className="mt-3 bg-amber-50 text-amber-800 px-3 py-2 rounded-lg text-sm border border-amber-200 text-left">
+                                    ⚠️ {referralCodeWarning}
+                                </div>
+                            )}
+                            {/* Invite Code Input — show when slots full OR user wants to add one */}
+                            {(referralCodeWarning || (!referralCode && !referralCodeWarning)) && (
+                                <div className="mt-3">
+                                    {!referralCode && !referralCodeWarning && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowReferralInput(prev => !prev)}
+                                            className="text-xs text-gray-400 hover:text-[#E6B422] underline"
+                                        >
+                                            Have an invite code? Enter it here
+                                        </button>
+                                    )}
+                                    {(referralCodeWarning || showReferralInput) && (
+                                        <div className="mt-2 flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={referralInput}
+                                                onChange={e => setReferralInput(e.target.value.toUpperCase())}
+                                                placeholder="Enter invite code"
+                                                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#E6B422]"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={async () => {
+                                                    if (!referralInput.trim()) return;
+                                                    try {
+                                                        await axios.post('/api/v1/referral/validate', { code: referralInput });
+                                                        setReferralCode(referralInput);
+                                                        localStorage.setItem('7thHeavenReferral', referralInput);
+                                                        setReferralCodeWarning(null);
+                                                        setShowReferralInput(false);
+                                                        toast.success('Invite code applied!');
+                                                    } catch (err: any) {
+                                                        const reason = err?.response?.data?.reason;
+                                                        const msg = err?.response?.data?.error || 'Invalid invite code';
+                                                        setReferralCodeWarning(
+                                                            reason === 'HEAVEN1_COMPLETE' || reason === 'SLOTS_FULL'
+                                                                ? "This member's team is also full. Try a different code."
+                                                                : msg
+                                                        );
+                                                    }
+                                                }}
+                                                className="px-3 py-2 text-xs font-bold bg-[#1a1a1a] text-white rounded-lg"
+                                            >
+                                                Apply
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>

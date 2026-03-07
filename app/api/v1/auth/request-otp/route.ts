@@ -33,7 +33,10 @@ import { sendOTPEmail } from '@/lib/email';
  *       200:
  *         description: OTP sent successfully
  *       400:
- *         description: Email is already registered
+ *         description: Invalid input OR referrer's invite slots are full (reason - HEAVEN1_COMPLETE or SLOTS_FULL)
+ *       409:
+ *         description: Account already exists with this phone/email
+
  */
 
 const requestOtpSchema = z.object({
@@ -74,10 +77,17 @@ export async function POST(request: NextRequest) {
         where: { referralCode }
       });
       if (referrer) {
+        const { canJoinUnderReferrer } = await import('@/lib/mlm-slot-validator');
+        const slotCheck = await canJoinUnderReferrer(referrer.id);
+        if (!slotCheck.allowed) {
+          return NextResponse.json({
+            success: false,
+            error: { message: slotCheck.message, reason: slotCheck.reason }
+          }, { status: 400 });
+        }
         referrerId = referrer.id;
       }
     }
-
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     const salt = await bcrypt.genSalt(10);

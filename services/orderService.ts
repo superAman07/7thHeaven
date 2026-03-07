@@ -149,23 +149,25 @@ export async function completeOrder(orderId: string, transactionId: string, amou
     // Email Confirmation
     if (order.shippingAddress) {
         // cast to any to access properties safely
-        const shipping = order.shippingAddress as any;
-        if (shipping.email) {
+        const shipping = (order.shippingAddress as any) || {};
+        const emailRecipient = shipping.email || order.user?.email;
+        const customerName = shipping.fullName || order.user?.fullName || 'Customer';
+        if (emailRecipient) {
             const emailItems = orderItems.map(item => ({
                 name: item.name,
                 quantity: item.quantity,
                 price: item.priceAtPurchase
             }));
 
-            await sendOrderConfirmation(shipping.email, {
+            await sendOrderConfirmation(emailRecipient, {
                 orderId: order.id,
-                customerName: shipping.fullName,
+                customerName: customerName,
                 items: emailItems,
                 total: amountPaid,
                 subtotal: order.subtotal ? Number(order.subtotal) : undefined,
                 discount: order.discount ? Number(order.discount) : 0,
                 isGuest: !order.user.passwordHash
-            }).catch(e => console.error("Order Confirmation Email Failed", e));
+            }).catch(e => console.error("Order Confirmation Email Failed:", e));
         }
     }
 

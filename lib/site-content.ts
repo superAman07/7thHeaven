@@ -63,6 +63,14 @@ export const defaultGlobalSettings: GlobalSettings = {
   logoUrl: "/assets/images/logo.png"
 };
 
+export interface MlmSettings {
+  dormantSlotExpiryDays: number;
+}
+
+export const defaultMlmSettings: MlmSettings = {
+  dormantSlotExpiryDays: 30,
+};
+
 export const defaultHomeAbout: HomeAboutSection = {
   displayTitle: "The Celsius Story",
   image: "/assets/images/bg-hero.png",

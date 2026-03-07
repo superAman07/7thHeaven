@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { canJoinUnderReferrer } from '@/lib/mlm-slot-validator';
 
 /**
  * @swagger
@@ -24,7 +25,7 @@ import prisma from '@/lib/prisma';
  *                 example: "7H-LPY75W"
  *     responses:
  *       200:
- *         description: Referral code is valid
+ *         description: Invite code is valid and slots are available
  *         content:
  *           application/json:
  *             schema:
@@ -35,11 +36,11 @@ import prisma from '@/lib/prisma';
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: "Valid referral code"
+ *                   example: "Valid invite code"
  *       400:
- *         description: Referral code is required
+ *         description: Code is valid but slots are full (HEAVEN1_COMPLETE or SLOTS_FULL)
  *       404:
- *         description: Invalid or inactive referral code
+ *         description: Invalid or inactive invite code
  */
 
 export async function POST(req: NextRequest) {
@@ -57,5 +58,13 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Invalid or inactive referral code' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, message: 'Valid referral code' });
+    const slotCheck = await canJoinUnderReferrer(user.id);
+    if (!slotCheck.allowed) {
+        return NextResponse.json({
+            error: slotCheck.message,
+            reason: slotCheck.reason,
+        }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true, message: 'Valid invite code' });
 }
