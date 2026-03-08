@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getUserIdFromToken } from '@/lib/auth';
 
 /**
  * @swagger
  * /api/v1/coupon/validate:
  *   post:
  *     summary: Validate Coupon Code
- *     description: Validates a coupon code and calculates the discount amount based on cart total.
+ *     description: Validates a coupon code and calculates the discount amount. If user is logged in, also checks if coupon was already used by this customer (one-time use per user).
  *     tags:
  *       - Coupons
  *     requestBody:
@@ -105,12 +106,26 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Check usage limit
+        // Check global usage limit
         if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
             return NextResponse.json(
                 { success: false, error: 'This coupon has reached its usage limit' },
                 { status: 400 }
             );
+        }
+
+        // ✅ NEW: Per-user usage check (logged-in user)
+        const userId = await getUserIdFromToken(req).catch(() => null);
+        if (userId) {
+            const alreadyUsed = await prisma.couponUsage.findFirst({
+                where: { couponId: coupon.id, userId: userId }
+            });
+            if (alreadyUsed) {
+                return NextResponse.json(
+                    { success: false, error: 'You have already used this coupon' },
+                    { status: 400 }
+                );
+            }
         }
 
         // Check minimum order amount

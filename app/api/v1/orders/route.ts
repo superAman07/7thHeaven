@@ -72,6 +72,13 @@ import { sendOrderConfirmation } from '@/lib/email';
  *               referrerCode:
  *                 type: string
  *                 description: "Optional referral code from existing 7th Heaven member"
+ *               couponCode:
+ *                 type: string
+ *                 nullable: true
+ *                 description: "Coupon code to apply (one-time use per customer)"
+ *               discountAmount:
+ *                 type: number
+ *                 description: "Pre-calculated discount amount"
  *     responses:
  *       200:
  *         description: Order placed successfully. If mlmSkipped is true, invite code was valid but referrer's slots were full — order still succeeds.
@@ -92,6 +99,8 @@ import { sendOrderConfirmation } from '@/lib/email';
  *                 mlmSkipReason:
  *                   type: string
  *                   description: "Human-readable reason why MLM opt-in was skipped"
+ *       400:
+ *         description: "Coupon already used, invalid items, or out of stock"
  */
 
 function generateReferralCode() {
@@ -258,6 +267,39 @@ export async function POST(req: NextRequest) {
                 priceAtPurchase: price,
             };
         });
+        // ✅ Per-user coupon usage check (safety net)
+        if (couponCode) {
+            const coupon = await prisma.coupon.findUnique({
+                where: { code: couponCode.toUpperCase().trim() }
+            });
+            if (coupon) {
+                // Check by userId
+                const alreadyUsedByUser = await prisma.couponUsage.findFirst({
+                    where: { couponId: coupon.id, userId: userId! }
+                });
+                if (alreadyUsedByUser) {
+                    return NextResponse.json(
+                        { error: 'You have already used this coupon' },
+                        { status: 400 }
+                    );
+                }
+                // Check by guest email (for guest checkout)
+                if (!await getUserIdFromToken(req).catch(() => null) && shippingDetails.email) {
+                    const guestUser = await prisma.user.findUnique({ where: { email: shippingDetails.email } });
+                    if (guestUser) {
+                        const usedByEmail = await prisma.couponUsage.findFirst({
+                            where: { couponId: coupon.id, userId: guestUser.id }
+                        });
+                        if (usedByEmail) {
+                            return NextResponse.json(
+                                { error: 'This coupon has already been used with this email' },
+                                { status: 400 }
+                            );
+                        }
+                    }
+                }
+            }
+        }
         let resolvedReferrerId: string | null = null;
         let mlmSkipped = false;
         let mlmSkipReason: string | undefined;
