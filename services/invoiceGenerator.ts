@@ -259,7 +259,16 @@ export const generateInvoice = (order: InvoiceData) => {
 
     const finalTotal = order.netAmountPaid || (order.subtotal - (order.discount || 0));
     doc.setTextColor(...brandColor);
-    doc.text(`Rs. ${finalTotal.toLocaleString('en-IN')}`, marginRight, nextY, { align: 'right' });
+    
+    // Add the (18% GST included) text next to the total
+    const totalText = `Rs. ${finalTotal.toLocaleString('en-IN')}`;
+    doc.text(totalText, marginRight, nextY, { align: 'right' });
+
+    // Add tiny GST disclaimer right below the Grand Total
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "italic");
+    doc.setTextColor(150, 150, 150);
+    doc.text("(18% GST included)", marginRight, nextY + 4, { align: 'right' });
 
     // --- 11. TERMS & CONDITIONS ---
     const termsY = nextY + 20;
