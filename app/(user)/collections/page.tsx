@@ -39,8 +39,10 @@ export default function CollectionsPage() {
   return (
     <div id="main-wrapper">
       <div 
-        className="page-banner-section section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]!"
-        style={{ background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)' }}
+        className="page-banner-section section min-h-[max(320px,35vh)]! lg:min-h-[45vh]! flex! items-end! pb-[20px]!" 
+        style={{ 
+            background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)',
+        }}
       >
         <div className="container-fluid px-4 px-md-5"> 
           <div className="row">

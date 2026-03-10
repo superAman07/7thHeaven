@@ -61,7 +61,7 @@ export default function AboutPageContent() {
             
             {/* --- KEEPING YOUR ORIGINAL BANNER --- */}
             <div 
-                className="page-banner-section section min-h-[35vh] lg:min-h-[45vh] flex items-end pb-[20px]" 
+                className="page-banner-section section min-h-[max(320px,35vh)]! lg:min-h-[45vh]! flex! items-end! pb-[20px]!" 
                 style={{ 
                     background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)',
                 }}

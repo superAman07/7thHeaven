@@ -341,7 +341,7 @@ const CheckoutPageComponent: React.FC = () => {
         <div id="main-wrapper">
             {/* Page Banner */}
             <div 
-                className="page-banner-section section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]!" 
+                className="page-banner-section section min-h-[max(320px,35vh)]! lg:min-h-[45vh]! flex! items-end! pb-[20px]!" 
                 style={{ 
                     background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)',
                 }}
@@ -456,13 +456,6 @@ const CheckoutPageComponent: React.FC = () => {
                                                 <div className="col-md-6 col-12 mb-20">
                                                     <label>State*</label>
                                                     <input type="text" placeholder="State" value={billing.state} onChange={e => setBilling({ ...billing, state: e.target.value })} required />
-                                                </div>
-
-                                                <div className="col-12 mb-20">
-                                                    <div className="check-box">
-                                                        <input type="checkbox" id="shiping_address" checked={shipToDifferentAddress} onChange={e => setShipToDifferentAddress(e.target.checked)} />
-                                                        <label htmlFor="shiping_address">Ship to Different Address</label>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

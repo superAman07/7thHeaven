@@ -171,7 +171,7 @@ export default function PaymentStatusPage() {
             <div id="main-wrapper">
                 {/* Dark Banner */}
                 <div 
-                    className="page-banner-section section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]! pt-[180px]! lg:pt-[240px]!"
+                    className="page-banner-section pb-0! section min-h-[max(320px,50vh)]! lg:min-h-[55vh]! flex! items-center! justify-center! relative overflow-hidden pt-[180px]! lg:pt-[240px]!"
                     style={{ background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)' }}
                 >
                     <div className="container-fluid px-4 px-md-5">
@@ -213,7 +213,7 @@ export default function PaymentStatusPage() {
             <div id="main-wrapper">
                 {/* Celebration Banner */}
                 <div 
-                    className="page-banner-section pb-0! section min-h-[50vh]! lg:min-h-[55vh]! flex! items-center! justify-center! relative overflow-hidden pt-[180px]! lg:pt-[240px]!" 
+                    className="page-banner-section pb-0! section min-h-[max(320px,50vh)]! lg:min-h-[55vh]! flex! items-center! justify-center! relative overflow-hidden pt-[180px]! lg:pt-[240px]!" 
                     style={{ background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)' }}
                 >
                     {/* Animated Background */}
@@ -391,7 +391,7 @@ export default function PaymentStatusPage() {
             <div id="main-wrapper">
                 {/* Error Banner */}
                 <div 
-                    className="page-banner-section pb-0! section min-h-[35vh]! lg:min-h-[45vh]! flex! items-end! pb-[20px]! pt-[180px]! lg:pt-[240px]!"
+                    className="page-banner-section pb-0! section min-h-[max(320px,35vh)]! lg:min-h-[45vh]! flex! items-end! pb-[20px]! pt-[180px]! lg:pt-[240px]!"
                     style={{ background: 'linear-gradient(180deg, #0d0b09 0%, #1a1511 100%)' }}
                 >
                     <div className="container-fluid px-4 px-md-5">
