@@ -76,12 +76,12 @@ export default function ShareButton({
       {/* MODAL OVERLAY */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-99999 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         >
           {/* MODAL CONTENT */}
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all scale-100 animate-fade-in"
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all scale-100 animate-fade-in mt-24 md:mt-60"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with Premium Gradient */}
