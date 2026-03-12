@@ -131,6 +131,9 @@ model Order {
   couponCode         String?
   paymentStatus      String //<-- enum PENDING / PAID / FAILED / REFUNDED
   status             String    @default("PENDING")
+  awb                String?
+  courierUrl         String?
+  shippedAt          DateTime?
   paymentGateway     String?
   gatewayOrderId     String?
   shippingAddress    Json?

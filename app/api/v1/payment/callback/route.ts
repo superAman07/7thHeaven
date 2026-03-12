@@ -87,7 +87,9 @@ if (!order) {
     console.error(`Most recent pending order:`, recentOrder);
     
     // Redirect to home instead of showing JSON error
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/checkout?error=order_not_found`, 303);
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const fallbackUrl = baseUrl.startsWith('http') ? `${baseUrl}/cart/checkout?error=order_not_found` : `https://${baseUrl}/cart/checkout?error=order_not_found`;
+    return NextResponse.redirect(fallbackUrl, 303);
 }
 
         if (status === 'success') {
@@ -100,7 +102,9 @@ if (!order) {
         }
 
         // Redirect to Status Page
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/status/${txnid}`, 303);
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        const redirectUrl = baseUrl.startsWith('http') ? `${baseUrl}/payment/status/${txnid}` : `https://${baseUrl}/payment/status/${txnid}`;
+        return NextResponse.redirect(redirectUrl, 303);
 
     } catch (error) {
         console.error('Payment Callback Error:', error);

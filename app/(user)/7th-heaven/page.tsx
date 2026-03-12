@@ -243,15 +243,15 @@ export default function SeventhHeavenPage() {
                       <div className="flex items-center gap-2 shrink-0">
                         <button
                           onClick={copyToClipboard}
-                          className="group bg-[#1a1a1a] hover:bg-black text-white h-[40px] px-3 md:px-5 rounded-lg shadow-sm flex items-center justify-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all hover:shadow-md"
+                          className="group bg-[#1a1a1a] hover:bg-black text-white h-[42px] px-3 md:px-5 rounded-lg shadow-sm flex items-center justify-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all hover:shadow-md"
                           title="Copy Code"
                         >
                           <i className={`fa ${copySuccess ? 'fa-check text-[#ddb040]' : 'fa-copy group-hover:scale-110 transition-transform'}`} />
                           <span className="hidden md:inline">{copySuccess ? 'Copied' : 'Copy'}</span>
                         </button>
-                        <div className="h-[40px] w-[40px] flex items-center justify-center bg-[#ddb040] hover:bg-[#b6902e] text-black rounded-lg shadow-sm transition-all cursor-pointer hover:shadow-md hover:scale-105">
-                          <ShareButton referralCode={data?.referralCode || ''} variant="icon" />
-                        </div>
+                        
+                        {/* We removed the wrapper div to stop the CSS fixed-position modal blinking bug! */}
+                        <ShareButton referralCode={data?.referralCode || ''} variant="icon" />
                       </div>
                     </div>
                   )}

@@ -5,6 +5,7 @@ import { z } from 'zod';
 import uniqid from 'uniqid';
 import { sendNotification } from '@/lib/notifications';
 import { sendOrderConfirmation } from '@/lib/email';
+import { pushOrderToShipquickr, ShipquickrOrderItem, ShipquickrOrderPayload } from '@/lib/services/shipquickr';
 
 /**
  * @swagger
@@ -318,8 +319,10 @@ export async function POST(req: NextRequest) {
                 }
             }
         }
+        const customOrderId = 'CELSIUS-' + Math.random().toString(36).substring(2, 8).toUpperCase();
         const newOrder = await prisma.order.create({
             data: {
+                id: customOrderId,
                 userId: userId!,
                 subtotal: Math.round(subtotal),
                 discount: discountAmount || 0,
@@ -348,6 +351,38 @@ export async function POST(req: NextRequest) {
                     country: shippingDetails.country,
                 }
             });
+        }
+         try {
+            const shipquickrItems: ShipquickrOrderItem[] = orderItemsData.map(item => ({
+                productName: item.name,
+                category: 'Apparel',
+                quantity: item.quantity,
+                price: item.priceAtPurchase
+            }));
+            const shipquickrPayload: ShipquickrOrderPayload = {
+                orderId: newOrder.id,
+                orderDate: new Date().toISOString(),
+                customerName: shippingDetails.fullName,
+                mobile: shippingDetails.phone,
+                email: shippingDetails.email || '',
+                address: shippingDetails.fullAddress,
+                city: shippingDetails.city,
+                state: shippingDetails.state,
+                pincode: shippingDetails.pincode,
+                paymentMode: 'Prepaid', // Update if you support COD later
+                totalAmount: Number(newOrder.netAmountPaid),
+                physicalWeight: 0.3, // Default 0.3kg
+                length: 1,
+                breadth: 1,
+                height: 1,
+                items: shipquickrItems
+            };
+            // Fire and forget (runs asynchronously with out blocking the user's checkout response)
+            pushOrderToShipquickr(shipquickrPayload).catch(err => {
+                 console.error("Non-blocking Shipquickr Error:", err);
+            });
+        } catch (syncError) {
+            console.error("Failed to map data for Shipquickr:", syncError);
         }
         return NextResponse.json({
             success: true,

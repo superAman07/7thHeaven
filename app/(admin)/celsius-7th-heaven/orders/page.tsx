@@ -48,9 +48,10 @@ const StatusBadge: React.FC<{ status: string; type: 'payment' | 'order' }> = ({ 
   } else {
     // Order Status
     if (s === 'DELIVERED') { colorClass = 'bg-green-100 text-green-800'; icon = <CheckCircle className="w-3 h-3 mr-1" />; }
-    else if (s === 'SHIPPED') { colorClass = 'bg-blue-100 text-blue-800'; icon = <Truck className="w-3 h-3 mr-1" />; }
-    else if (s === 'PROCESSING') { colorClass = 'bg-purple-100 text-purple-800'; icon = <Package className="w-3 h-3 mr-1" />; }
-    else if (s === 'CANCELLED') { colorClass = 'bg-red-100 text-red-800'; icon = <AlertCircle className="w-3 h-3 mr-1" />; }
+    else if (s === 'SHIPPED' || s === 'IN_TRANSIT' || s === 'OUT_FOR_DELIVERY') { colorClass = 'bg-blue-100 text-blue-800'; icon = <Truck className="w-3 h-3 mr-1" />; }
+    else if (s === 'PROCESSING' || s === 'MANIFESTED') { colorClass = 'bg-purple-100 text-purple-800'; icon = <Package className="w-3 h-3 mr-1" />; }
+    else if (s === 'CANCELLED' || s === 'RTO' || s === 'LOST') { colorClass = 'bg-red-100 text-red-800'; icon = <AlertCircle className="w-3 h-3 mr-1" />; }
+    else if (s === 'UNSHIPPED') { colorClass = 'bg-gray-100 text-gray-800'; icon = <AlertCircle className="w-3 h-3 mr-1" />; }
     else { colorClass = 'bg-yellow-100 text-yellow-800'; icon = <Clock className="w-3 h-3 mr-1" />; }
   }
 
@@ -212,8 +213,14 @@ export default function OrdersPage() {
               <option value="REFUND_PENDING">⚠ Refund Awaiting ({refundPendingCount})</option>
               <option value="PENDING">Pending</option>
               <option value="PROCESSING">Processing</option>
+              <option value="UNSHIPPED">Unshipped</option>
+              <option value="MANIFESTED">Manifested (Packed)</option>
               <option value="SHIPPED">Shipped</option>
+              <option value="IN_TRANSIT">In Transit</option>
+              <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
               <option value="DELIVERED">Delivered</option>
+              <option value="RTO">Return to Origin</option>
+              <option value="LOST">Lost</option>
               <option value="CANCELLED">Cancelled</option>
               <option value="REFUNDED">Refunded</option>
             </select>
@@ -305,15 +312,21 @@ export default function OrdersPage() {
                   </div>
                 )}
                 <label className="block text-sm font-medium text-gray-700 mb-2">Update Order Status</label>
-                <select
+                                <select
                   value={currentOrder.status}
                   onChange={(e) => handleStatusUpdate(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-gray-800 focus:border-gray-800"
                 >
                   <option value="PENDING">Pending</option>
                   <option value="PROCESSING">Processing</option>
+                  <option value="UNSHIPPED">Unshipped</option>
+                  <option value="MANIFESTED">Manifested (Packed)</option>
                   <option value="SHIPPED">Shipped</option>
+                  <option value="IN_TRANSIT">In Transit</option>
+                  <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
                   <option value="DELIVERED">Delivered</option>
+                  <option value="RTO">Return to Origin</option>
+                  <option value="LOST">Lost</option>
                   <option value="CANCELLED">Cancelled</option>
                 </select>
               </div>
