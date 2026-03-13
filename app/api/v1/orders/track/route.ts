@@ -81,6 +81,9 @@ export async function POST(req: NextRequest) {
                 netAmountPaid: true,
                 items: true,
                 shippingAddress: true,
+                awb: true,
+                courierUrl: true,
+                shippedAt: true,
                 // Include user name for display if needed
                 user: {
                     select: {

@@ -56,6 +56,9 @@ interface Order {
     genderTags: string[];
     shippingAddress: any;
     mlmOptInRequested?: boolean;
+    awb?: string;           
+    courierUrl?: string;    
+    shippedAt?: string;
 }
 
 interface Notification {
@@ -376,29 +379,32 @@ function ProfileContent() {
         }
     }, [addressData.pincode]);
 
-    const getStatusBadge = (status: string) => {
+        const getStatusBadge = (status: string) => {
         const s = status.toUpperCase();
-        let color = 'badge-secondary';
-        if (s === 'DELIVERED' || s === 'PAID') color = 'badge-success';
-        if (s === 'SHIPPED') color = 'badge-info';
-        if (s === 'CANCELLED' || s === 'FAILED') color = 'badge-danger';
-        if (s === 'PENDING') color = 'badge-warning';
 
         const styleMap: any = {
             'DELIVERED': { backgroundColor: '#28a745', color: 'white' },
             'PAID': { backgroundColor: '#28a745', color: 'white' },
             'SHIPPED': { backgroundColor: '#17a2b8', color: 'white' },
+            'IN_TRANSIT': { backgroundColor: '#0d6efd', color: 'white' },
+            'OUT_FOR_DELIVERY': { backgroundColor: '#0dcaf0', color: 'black' },
+            'MANIFESTED': { backgroundColor: '#6f42c1', color: 'white' },
             'CANCELLED': { backgroundColor: '#dc3545', color: 'white' },
             'FAILED': { backgroundColor: '#dc3545', color: 'white' },
+            'RTO': { backgroundColor: '#dc3545', color: 'white' },
+            'LOST': { backgroundColor: '#dc3545', color: 'white' },
             'PENDING': { backgroundColor: '#ffc107', color: 'black' },
+            'UNSHIPPED': { backgroundColor: '#6c757d', color: 'white' },
             'PROCESSING': { backgroundColor: '#6f42c1', color: 'white' },
-            'REFUNDED': { backgroundColor: '#0dcaf0', color: 'black', border: '1px solid #0dcaf0' }, // Cyan with black text for Visibility
+            'REFUNDED': { backgroundColor: '#0dcaf0', color: 'black', border: '1px solid #0dcaf0' },
             'RETURNED': { backgroundColor: '#6c757d', color: 'white' }
         };
 
+        const displayLabel = s.replace(/_/g, ' ');
+
         return (
             <span className="badge" style={{ padding: '5px 10px', borderRadius: '15px', ...styleMap[s] }}>
-                {status}
+                {displayLabel}
             </span>
         );
     };
@@ -899,6 +905,27 @@ function ProfileContent() {
                             </div>
                         </div>
 
+                        {/* AWB Tracking */}
+                        {(selectedOrder as any).awb && (
+                            <div style={{ backgroundColor: '#e8f4fd', border: '1px solid #b6d4fe', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                                <div>
+                                    <div style={{ fontSize: '10px', color: '#0d6efd', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tracking Number (AWB)</div>
+                                    <div style={{ fontFamily: 'monospace', fontWeight: 'bold', color: '#084298', fontSize: '14px' }}>{(selectedOrder as any).awb}</div>
+                                </div>
+                                {(selectedOrder as any).courierUrl && (
+                                    <a 
+                                        href={(selectedOrder as any).courierUrl} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="btn btn-sm"
+                                        style={{ backgroundColor: '#0d6efd', color: '#fff', padding: '6px 14px', fontWeight: 'bold', fontSize: '12px', textDecoration: 'none' }}
+                                    >
+                                        🔗 Track on Courier
+                                    </a>
+                                )}
+                            </div>
+                        )}
+
                          {selectedOrder.status === 'CANCELLED' && (
                              <div className={`p-4 mb-6 rounded-lg border ${selectedOrder.paymentStatus === 'PAID' ? 'bg-amber-50 border-[#ddb040]/30' : 'bg-gray-50 border-gray-200'}`}>
                                 <div className="flex items-start gap-3">
@@ -953,11 +980,6 @@ function ProfileContent() {
                                                             {item.product?.name || 'Product Unavailable'}
                                                         </p>
                                                         <div className="text-muted small" style={{ fontSize: '0.85rem', color: '#666' }}>
-                                                            {item.product?.genderTags && (
-                                                                <span className="badge badge-light mr-1" style={{ backgroundColor: '#25252b', marginRight: '5px', fontWeight: 'normal' }}>
-                                                                    {item.product.genderTags.join(', ')}
-                                                                </span>
-                                                            )}
                                                             {item.product?.category?.name && (
                                                                 <span style={{ color: '#888' }}>
                                                                     {item.product.category.name}
@@ -993,7 +1015,7 @@ function ProfileContent() {
                         <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                                    {!['DELIVERED', 'CANCELLED', 'FAILED', 'REFUNDED', 'RETURNED'].includes(selectedOrder.status.toUpperCase()) && !selectedOrder.mlmOptInRequested && (
+                                    {!['DELIVERED', 'CANCELLED', 'FAILED', 'REFUNDED', 'RETURNED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'RTO', 'LOST'].includes(selectedOrder.status.toUpperCase()) && !selectedOrder.mlmOptInRequested && (
                                         <button 
                                             onClick={handleCancelOrder} 
                                             disabled={isCancelling}

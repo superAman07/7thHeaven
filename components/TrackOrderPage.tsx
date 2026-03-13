@@ -154,16 +154,16 @@ export default function TrackOrderPage() {
             </div>
 
             {/* Tracking Form Section */}
-            <div className="py-16 md:py-24 px-4 min-h-[50vh] bg-[#f9f9f9]">
-                <div className="container mx-auto max-w-lg">
-                    <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
+            <div className="px-4! min-h-[50vh]! bg-[#f9f9f9]!" style={{ clear: 'both', paddingTop: '30px', paddingBottom: '60px' }}>
+                <div className="container mx-auto max-w-lg" style={{ position: 'relative', zIndex: 2 }}>
+                    <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100" style={{ marginTop: '20px' }}>
                         <form onSubmit={handleTrack}>
                             <div className="space-y-5">
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-1">Order ID</label>
                                     <input 
                                         type="text" 
-                                        placeholder="e.g. CMLIHUZ7..." 
+                                        placeholder="e.g. CELSIUS-4A9XYZ"
                                         value={orderId}
                                         onChange={(e) => setOrderId(e.target.value)}
                                         required
@@ -192,89 +192,167 @@ export default function TrackOrderPage() {
                         </form>
                     </div>
 
-                    {/* Order Details Result - Compact & Responsive */}
+                    {/* Order Details Result */}
                     {orderData && (
-                        <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="mt-8! bg-white! rounded-xl! shadow-lg! border! border-gray-100! overflow-hidden!">
                             {/* Header */}
-                            <div className="bg-[#1a1511] p-5 flex flex-wrap justify-between items-center gap-3">
+                            <div className="bg-[#1a1511]! p-5! flex! flex-wrap! justify-between! items-center! gap-3!">
                                 <div>
-                                    <div className="text-white/60 text-[10px] uppercase tracking-wider mb-0.5">Order Status</div>
-                                    <div className="text-[#ddb040] text-lg font-bold uppercase">{orderData.status}</div>
+                                    <div className="text-white/60! text-[10px]! uppercase! tracking-wider! mb-0.5!">Order Status</div>
+                                    <div className="text-[#ddb040]! text-lg! font-bold! uppercase!">{orderData.status?.replace(/_/g, ' ')}</div>
                                 </div>
                                 {(['PAID', 'REFUNDED'].includes((orderData.paymentStatus || '').toString().trim().toUpperCase()) || 
                                   orderData.status === 'DELIVERED') && (
                                         <button 
                                         onClick={handleDownloadInvoice}
-                                        className="px-4 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-full text-xs font-medium backdrop-blur-sm transition-all flex items-center gap-2"
+                                        className="px-4! py-1.5! bg-white/10! hover:bg-white/20! text-white! rounded-full! text-xs! font-medium! backdrop-blur-sm! transition-all! flex! items-center! gap-2!"
                                     >
                                         <i className="fa fa-download"></i> Invoice
                                     </button>
                                 )}
                             </div>
+
+                            {/* ===== VISUAL PROGRESS TRACKER (Amazon-style) ===== */}
+                            <div className="px-5! pt-6! pb-2!">
+                                {(() => {
+                                    const STEPS = ['PENDING', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'];
+                                    const LABELS = ['Ordered', 'Shipped', 'In Transit', 'Out for Delivery', 'Delivered'];
+                                    const ICONS = ['📦', '🚚', '🛣️', '🏠', '✅'];
+                                    const s = (orderData.status || '').toUpperCase();
+                                    
+                                    // Handle error/cancelled states
+                                    if (['CANCELLED', 'RTO', 'LOST', 'REFUNDED'].includes(s)) {
+                                        const errorLabels: any = { CANCELLED: 'Order Cancelled', RTO: 'Returned to Origin', LOST: 'Package Lost', REFUNDED: 'Refunded' };
+                                        return (
+                                            <div className="text-center! py-4!">
+                                                <div className="text-3xl! mb-2!">❌</div>
+                                                <div className="text-red-600! font-bold! text-sm!">{errorLabels[s] || s}</div>
+                                            </div>
+                                        );
+                                    }
+
+                                    // Map statuses to step index
+                                    let activeIdx = STEPS.indexOf(s);
+                                    if (s === 'PROCESSING' || s === 'MANIFESTED' || s === 'UNSHIPPED') activeIdx = 0;
+                                    if (activeIdx === -1) activeIdx = 0;
+
+                                    return (
+                                        <div className="flex! items-center! justify-between! relative! mb-2!">
+                                            {/* Background line */}
+                                            <div className="absolute! top-5! left-[10%]! right-[10%]! h-[3px]! bg-gray-200! z-0!"></div>
+                                            {/* Active line */}
+                                            <div 
+                                                className="absolute! top-5! left-[10%]! h-[3px]! bg-[#ddb040]! z-[1]! transition-all! duration-700!"
+                                                style={{ width: `${activeIdx * (80 / (STEPS.length - 1))}%` }}
+                                            ></div>
+                                            {STEPS.map((step, i) => (
+                                                <div key={step} className="flex! flex-col! items-center! z-[2]! flex-1!">
+                                                    <div className={`w-10! h-10! rounded-full! flex! items-center! justify-center! text-lg! border-2! transition-all! duration-300! ${
+                                                        i <= activeIdx 
+                                                            ? 'bg-[#252525]! border-[#ddb040]! shadow-md!' 
+                                                            : 'bg-white! border-gray-300!'
+                                                    }`}>
+                                                        {i <= activeIdx ? ICONS[i] : <span className="text-gray-400! text-xs!">{i + 1}</span>}
+                                                    </div>
+                                                    <span className={`text-[9px]! mt-1.5! font-semibold! text-center! leading-tight! ${
+                                                        i <= activeIdx ? 'text-[#ddb040]!' : 'text-gray-400!'
+                                                    }`}>{LABELS[i]}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+
+                            {/* AWB Tracking Info */}
+                            {orderData.awb && (
+                                <div className="mx-5! mb-4! p-3! bg-blue-50! border! border-blue-200! rounded-lg! flex! items-center! justify-between! gap-3! flex-wrap!">
+                                    <div>
+                                        <div className="text-[10px]! text-blue-500! uppercase! font-bold! tracking-wider!">Tracking Number (AWB)</div>
+                                        <div className="font-mono! font-bold! text-blue-800! text-sm!">{orderData.awb}</div>
+                                    </div>
+                                    {orderData.courierUrl && (
+                                        <a 
+                                            href={orderData.courierUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="px-4! py-2! bg-blue-600! text-white! rounded-lg! text-xs! font-bold! hover:bg-blue-700! transition-colors! no-underline!"
+                                        >
+                                            🔗 Track on Courier
+                                        </a>
+                                    )}
+                                </div>
+                            )}
                             
                             {/* Details Grid */}
-                            <div className="p-5 md:p-6">
-                                <div className="grid grid-cols-1 gap-6 mb-6">
-                                    <div className="space-y-2 text-sm">
-                                        <div className="flex justify-between border-b border-dashed border-gray-200 pb-2">
-                                            <span className="text-gray-500">Order ID</span>
-                                            <span className="font-mono font-medium">{orderData.orderId || orderData.id}</span>
+                            <div className="p-5! md:p-6!">
+                                <div className="grid! grid-cols-1! gap-6! mb-6!">
+                                    <div className="space-y-2! text-sm!">
+                                        <div className="flex! justify-between! border-b! border-dashed! border-gray-200! pb-2!">
+                                            <span className="text-gray-500!">Order ID</span>
+                                            <span className="font-mono! font-medium!">{orderData.orderId || orderData.id}</span>
                                         </div>
-                                        <div className="flex justify-between border-b border-dashed border-gray-200 pb-2">
-                                            <span className="text-gray-500">Date</span>
-                                            <span className="font-medium">{new Date(orderData.createdAt).toLocaleDateString()}</span>
+                                        <div className="flex! justify-between! border-b! border-dashed! border-gray-200! pb-2!">
+                                            <span className="text-gray-500!">Date</span>
+                                            <span className="font-medium!">{new Date(orderData.createdAt).toLocaleDateString()}</span>
                                         </div>
-                                        <div className="flex justify-between border-b border-dashed border-gray-200 pb-2">
-                                            <span className="text-gray-500">Payment</span>
-                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${orderData.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                        <div className="flex! justify-between! border-b! border-dashed! border-gray-200! pb-2!">
+                                            <span className="text-gray-500!">Payment</span>
+                                            <span className={`px-2! py-0.5! rounded! text-[10px]! font-bold! ${orderData.paymentStatus === 'PAID' ? 'bg-green-100! text-green-700!' : 'bg-yellow-100! text-yellow-700!'}`}>
                                                 {orderData.paymentStatus}
                                             </span>
                                         </div>
+                                        {orderData.shippedAt && (
+                                            <div className="flex! justify-between! border-b! border-dashed! border-gray-200! pb-2!">
+                                                <span className="text-gray-500!">Shipped On</span>
+                                                <span className="font-medium!">{new Date(orderData.shippedAt).toLocaleDateString()}</span>
+                                            </div>
+                                        )}
                                     </div>
                                     
-                                    <div className="bg-gray-50 p-3 rounded-lg text-sm">
-                                        <h4 className="text-[10px] font-bold text-gray-900 uppercase tracking-wide mb-2">Shipping To</h4>
-                                        <p className="text-gray-600 leading-relaxed">
-                                            <strong className="block text-gray-900">{orderData.shippingAddress?.name || orderData.customerName}</strong>
-                                            {orderData.shippingAddress?.street}, {orderData.shippingAddress?.city}<br/>
-                                            {orderData.shippingAddress?.state} {orderData.shippingAddress?.postalCode}
+                                    <div className="bg-gray-50! p-3! rounded-lg! text-sm!">
+                                        <h4 className="text-[10px]! font-bold! text-gray-900! uppercase! tracking-wide! mb-2!">Shipping To</h4>
+                                        <p className="text-gray-600! leading-relaxed!">
+                                            <strong className="block! text-gray-900!">{orderData.shippingAddress?.fullName || orderData.shippingAddress?.name || orderData.user?.fullName}</strong>
+                                            {orderData.shippingAddress?.fullAddress || orderData.shippingAddress?.street}, {orderData.shippingAddress?.city}<br/>
+                                            {orderData.shippingAddress?.state} {orderData.shippingAddress?.pincode || orderData.shippingAddress?.postalCode}
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Items */}
                                 <div>
-                                    <h4 className="text-[10px] font-bold text-gray-900 uppercase tracking-wide mb-3 border-b pb-1">Order Items</h4>
-                                    <div className="space-y-3">
+                                    <h4 className="text-[10px]! font-bold! text-gray-900! uppercase! tracking-wide! mb-3! border-b! pb-1!">Order Items</h4>
+                                    <div className="space-y-3!">
                                         {Array.isArray(orderData.items) && orderData.items.map((item: any, idx: number) => (
-                                            <div key={idx} className="flex justify-between items-center group hover:bg-gray-50 p-2 rounded transition-colors text-sm">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                                                        <i className="fa fa-cube text-xs"></i>
+                                            <div key={idx} className="flex! justify-between! items-center! group hover:bg-gray-50! p-2! rounded! transition-colors! text-sm!">
+                                                <div className="flex! items-center! gap-3!">
+                                                    <div className="w-10! h-10! bg-gray-100! rounded-lg! flex! items-center! justify-center! text-gray-400!">
+                                                        <i className="fa fa-cube text-xs!"></i>
                                                     </div>
                                                     <div>
-                                                        <div className="font-medium text-gray-900">{item.name}</div>
-                                                        <div className="text-xs text-gray-500">Qty: {item.quantity} × Rs. {item.priceAtPurchase}</div>
+                                                        <div className="font-medium! text-gray-900!">{item.name}</div>
+                                                        <div className="text-xs! text-gray-500!">Qty: {item.quantity} × Rs. {item.priceAtPurchase}</div>
                                                     </div>
                                                 </div>
-                                                <div className="font-bold text-gray-900">Rs. {item.priceAtPurchase * item.quantity}</div>
+                                                <div className="font-bold! text-gray-900!">Rs. {item.priceAtPurchase * item.quantity}</div>
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="mt-4 pt-3 border-t border-gray-200">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <span className="text-gray-500">Subtotal</span>
-                                            <span className="font-semibold">Rs. {parseFloat(orderData.subtotal).toLocaleString()}</span>
+                                    <div className="mt-4! pt-3! border-t! border-gray-200!">
+                                        <div className="flex! justify-between! items-center! mb-2!">
+                                            <span className="text-gray-500!">Subtotal</span>
+                                            <span className="font-semibold!">Rs. {parseFloat(orderData.subtotal).toLocaleString()}</span>
                                         </div>
                                         {orderData.discount && parseFloat(orderData.discount) > 0 && (
-                                            <div className="flex justify-between items-center mb-2 text-green-600">
+                                            <div className="flex! justify-between! items-center! mb-2! text-green-600!">
                                                 <span>Discount</span>
                                                 <span>- Rs. {parseFloat(orderData.discount).toLocaleString()}</span>
                                             </div>
                                         )}
-                                        <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                                            <span className="text-base font-bold text-gray-900">Total Paid</span>
-                                            <span className="text-lg font-serif text-[#ddb040] font-bold">
+                                        <div className="flex! justify-between! items-center! pt-2! border-t! border-gray-100!">
+                                            <span className="text-base! font-bold! text-gray-900!">Total Paid</span>
+                                            <span className="text-lg! font-serif! text-[#ddb040]! font-bold!">
                                                 Rs. {(parseFloat(orderData.netAmountPaid) || parseFloat(orderData.subtotal) - (parseFloat(orderData.discount) || 0)).toLocaleString()}
                                             </span>
                                         </div>
