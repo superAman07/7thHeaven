@@ -1015,23 +1015,6 @@ function ProfileContent() {
                         <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                                    {!['DELIVERED', 'CANCELLED', 'FAILED', 'REFUNDED', 'RETURNED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'RTO', 'LOST'].includes(selectedOrder.status.toUpperCase()) && !selectedOrder.mlmOptInRequested && (
-                                        <button 
-                                            onClick={handleCancelOrder} 
-                                            disabled={isCancelling}
-                                            className="btn btn-danger btn-sm"
-                                            style={{ 
-                                                fontWeight: 'bold',
-                                                padding: '8px 16px'
-                                            }}
-                                        >
-                                            {isCancelling ? (
-                                                <><i className="fa fa-spinner fa-spin mr-1"></i> Cancelling...</>
-                                            ) : (
-                                                <><i className="fa fa-times-circle mr-1"></i> Cancel Order</>
-                                            )}
-                                        </button>
-                                    )}
                                     {selectedOrder.paymentStatus === 'PAID' && (
                                         <button 
                                             onClick={() => handleDownloadInvoice(selectedOrder)}
