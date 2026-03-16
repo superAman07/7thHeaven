@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
             await prisma.order.update({
                 where: { id: orderId },
                 data: {
-                    status: 'SHIPPED',
+                    status: 'MANIFESTED',
                     awb: awb,
                     courierUrl: courierUrl || null,
                     shippedAt: new Date()

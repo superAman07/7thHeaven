@@ -215,8 +215,8 @@ export default function TrackOrderPage() {
                             {/* ===== VISUAL PROGRESS TRACKER (Amazon-style) ===== */}
                             <div className="px-5! pt-6! pb-2!">
                                 {(() => {
-                                    const STEPS = ['PENDING', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'];
-                                    const LABELS = ['Ordered', 'Shipped', 'In Transit', 'Out for Delivery', 'Delivered'];
+                                    const STEPS = ['MANIFESTED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'];
+                                    const LABELS = ['Processing', 'Shipped', 'In Transit', 'Out for Delivery', 'Delivered'];
                                     const ICONS = ['📦', '🚚', '🛣️', '🏠', '✅'];
                                     const s = (orderData.status || '').toUpperCase();
                                     
@@ -233,7 +233,7 @@ export default function TrackOrderPage() {
 
                                     // Map statuses to step index
                                     let activeIdx = STEPS.indexOf(s);
-                                    if (s === 'PROCESSING' || s === 'MANIFESTED' || s === 'UNSHIPPED') activeIdx = 0;
+                                    if (s === 'PROCESSING' || s === 'UNSHIPPED' || s === 'PENDING') activeIdx = 0; // Removed MANIFESTED from here
                                     if (activeIdx === -1) activeIdx = 0;
 
                                     return (
