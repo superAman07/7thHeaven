@@ -291,7 +291,7 @@ export const generateInvoice = (order: InvoiceData) => {
         "2. Discount percentage shown is approximate (rounded off). Actual savings are reflected in the selling price.",
         "3. Goods once sold will not be taken back or exchanged unless under our return policy.",
         "4. All disputes are subject to jurisdiction of the courts in Mumbai, Maharashtra.",
-        "5. For queries or returns, please contact us within 7 days of delivery."
+        "5. For queries, please contact us within 7 days of delivery."
     ];
 
     let termY = termsY + 11;
