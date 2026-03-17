@@ -621,9 +621,9 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
         <div id="club-products" className="py-20 bg-[#f5f5f5]"> {/* Light background */}
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl! md:text-4xl! font-serif! text-[#1a1a1a]! mb-4!">Best Sellers</h2>
+              <h2 className="text-2xl! md:text-4xl! font-serif! text-[#1a1a1a]! mb-4!">7th Heaven Products Gallery</h2>
               <p className="text-gray-600 max-w-xl mx-auto">
-                Purchase any product worth ₹{minAmount.toLocaleString()}+ to become a 7th Heaven member
+                Unlock 7th Heaven membership when you spend ₹{minAmount.toLocaleString()}+ or more at 7th Heaven Gallery
               </p>
             </div>
             <div className="row">
