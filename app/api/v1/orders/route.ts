@@ -371,10 +371,10 @@ export async function POST(req: NextRequest) {
                 pincode: shippingDetails.pincode,
                 paymentMode: 'Prepaid', // Update if you support COD later
                 totalAmount: Number(newOrder.netAmountPaid),
-                physicalWeight: 0.3, // Default 0.3kg
-                length: 1,
-                breadth: 1,
-                height: 1,
+                physicalWeight: 1, // Default 0.3kg
+                length: 13,
+                breadth: 3,
+                height: 7,
                 items: shipquickrItems
             };
             // Fire and forget (runs asynchronously with out blocking the user's checkout response)
