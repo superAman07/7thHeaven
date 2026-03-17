@@ -312,7 +312,7 @@ export default function PaymentStatusPage() {
                 )}
 
                 {/* Order Details Section */}
-                <div className={`${order.mlmOptInRequested ? 'pt-12' : 'pt-16'} pb-20 bg-[#faf9f7]`}>
+                <div className="px-4! min-h-[50vh]! bg-[#faf9f7]!" style={{ clear: 'both', paddingTop: order.mlmOptInRequested ? '30px' : '50px', paddingBottom: '60px' }}>
                     <div className="container">
                         <div className="max-w-lg mx-auto">
                             {/* Order Card */}
