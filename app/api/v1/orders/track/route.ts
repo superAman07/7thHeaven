@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
+import { getUserIdFromToken } from '@/lib/auth';
 
 /**
  * @swagger
  * /api/v1/orders/track:
  *   post:
  *     summary: Track Order
- *     description: Track an order using Order ID (Full or Last 8 chars) and either Phone or Email.
+ *     description: Track an order using Order ID. Phone or Email is optional if the user is logged in.
  *     tags:
  *       - Orders
  *     requestBody:
@@ -28,6 +29,8 @@ import { z } from 'zod';
  *     responses:
  *       200:
  *         description: Order details found
+ *       400:
+ *         description: Verification details required (if not logged in) or invalid request
  *       404:
  *         description: Order not found
  */
@@ -35,10 +38,7 @@ import { z } from 'zod';
 const trackSchema = z.object({
     orderId: z.string().min(1, "Order ID is required"),
     phone: z.string().optional(),
-    email: z.string().email("Invalid email format").optional(),
-}).refine(data => data.phone || data.email, {
-    message: "Either Phone Number or Email is required for verification",
-    path: ["phone"], // Error path
+    email: z.string().email("Invalid email format").optional().or(z.literal('')),
 });
 
 export async function POST(req: NextRequest) {
@@ -47,25 +47,33 @@ export async function POST(req: NextRequest) {
         const validation = trackSchema.safeParse(body);
 
         if (!validation.success) {
-            // Return specific error message
             const msg = validation.error.issues[0].message;
             return NextResponse.json({ error: msg }, { status: 400 });
         }
 
-        const { orderId, phone, email } = validation.data;
+        let { orderId, phone, email } = validation.data;
 
-        // Build search conditions
+        if (email === '') email = undefined;
+        if (phone === '') phone = undefined;
+        const userId = await getUserIdFromToken(req);
+        if (!userId && !phone && !email) {
+            return NextResponse.json({ 
+                error: "Either Phone Number or Email is required for tracking, unless you are logged in." 
+            }, { status: 400 });
+        }
+
         const where: any = {
-            // Support partial search (last 8 chars) OR full ID
-            // "endsWith" works for both cases perfectly
             id: { endsWith: orderId.trim() },
         };
 
-        // Add user verification condition (Phone OR Email)
-        if (phone) {
-            where.user = { phone: phone.trim() };
-        } else if (email) {
-            where.user = { email: email.trim() };
+        if (userId && !phone && !email) {
+            where.userId = userId;
+        } else {
+            if (phone) {
+                where.user = { phone: phone.trim() };
+            } else if (email) {
+                where.user = { email: email.trim() };
+            }
         }
 
         // Find match

@@ -50,13 +50,22 @@ export default function TrackOrderPage() {
         e.preventDefault();
         setLoading(true);
         setOrderData(null);
-        const isEmail = identifier.includes('@');
-        const payload = {
-            orderId: orderId.trim(),
-            ...(isEmail ? { email: identifier.trim() } : { phone: identifier.trim() })
-        };
+        
+        let payload: any = { orderId: orderId.trim() };
+        if (identifier.trim() !== '') {
+            const isEmail = identifier.includes('@');
+            if (isEmail) {
+                payload.email = identifier.trim();
+            } else {
+                payload.phone = identifier.trim();
+            }
+        }
+
         try {
-            const res = await axios.post('/api/v1/orders/track', payload);
+            // Added { withCredentials: true } so auth cookies are sent!
+            const res = await axios.post('/api/v1/orders/track', payload, {
+                withCredentials: true
+            });
             if (res.data.success) {
                 setOrderData(res.data.order);
                 toast.success("Order found!");
@@ -172,13 +181,14 @@ export default function TrackOrderPage() {
                                     <p className="text-[10px] text-gray-400 mt-1 ml-1">Found in your confirmation email.</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number OR Email</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                        Phone Number OR Email <span className="text-gray-400 font-normal">(Optional if logged in)</span>
+                                    </label>
                                     <input 
                                         type="text" 
                                         placeholder="Enter phone or email used at checkout" 
                                         value={identifier}
                                         onChange={(e) => setIdentifier(e.target.value)}
-                                        required
                                         className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#ddb040] focus:ring-1 focus:ring-[#ddb040] outline-none transition-all text-sm"
                                     />
                                 </div>
