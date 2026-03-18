@@ -8,6 +8,39 @@ const tokenSchema = z.object({
   platform: z.enum(['ANDROID', 'IOS', 'WEB']).default('ANDROID'),
 });
 
+/**
+ * @swagger
+ * /api/v1/notifications/register:
+ *   post:
+ *     summary: Register device for notifications
+ *     tags:
+ *       - Notifications
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 minLength: 10
+ *               platform:
+ *                 type: string
+ *                 enum: [ANDROID, IOS, WEB]
+ *                 default: ANDROID
+ *     responses:
+ *       200:
+ *         description: Device registered for notifications
+ *       400:
+ *         description: Invalid request
+ *       401:
+ *         description: Unauthorized
+ */
 export async function POST(req: NextRequest) {
   try {
     const userId = await getUserIdFromToken(req);

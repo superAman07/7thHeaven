@@ -100,6 +100,23 @@ async function calculateLevelCounts(userId: string): Promise<number[]> {
 }
 
 // ─── GET: Fetch user's existing claims ───
+/**
+ * @swagger
+ * /api/v1/network/claim:
+ *   get:
+ *     summary: Fetch user's existing reward claims
+ *     tags:
+ *       - MLM Network
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of reward claims
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET(req: NextRequest) {
     try {
         const userId = await getUserIdFromToken(req);
@@ -120,6 +137,44 @@ export async function GET(req: NextRequest) {
 }
 
 // ─── POST: Claim a level reward ───
+/**
+ * @swagger
+ * /api/v1/network/claim:
+ *   post:
+ *     summary: Claim a level reward
+ *     tags:
+ *       - MLM Network
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - level
+ *             properties:
+ *               level:
+ *                 type: integer
+ *                 enum: [1, 3, 5, 7]
+ *                 description: The Heaven level to claim reward for (1, 3, 5, 7)
+ *     responses:
+ *       200:
+ *         description: Reward claimed successfully
+ *       400:
+ *         description: Invalid level
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Level not completed yet
+ *       404:
+ *         description: User not found
+ *       409:
+ *         description: Reward already claimed
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function POST(req: NextRequest) {
     try {
         const userId = await getUserIdFromToken(req);

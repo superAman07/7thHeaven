@@ -9,6 +9,118 @@ const reviewSchema = z.object({
   text: z.string().min(10).max(1000).optional(),
 });
 
+/**
+ * @swagger
+ * /api/v1/products/{productId}/reviews:
+ *   get:
+ *     summary: Get reviews for a product
+ *     tags:
+ *       - Reviews
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of reviews
+ *       500:
+ *         description: Server error
+ *   post:
+ *     summary: Submit a review for a product
+ *     tags:
+ *       - Reviews
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - rating
+ *             properties:
+ *               rating:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               text:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Review submitted successfully
+ *       400:
+ *         description: Invalid input or already reviewed
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Product not found
+ *   put:
+ *     summary: Update an existing review
+ *     tags:
+ *       - Reviews
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - rating
+ *             properties:
+ *               rating:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               text:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Review updated successfully
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Review not found
+ *   delete:
+ *     summary: Delete a review
+ *     tags:
+ *       - Reviews
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Review deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Review not found
+ *       500:
+ *         description: Server error
+ */
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ productId: string }> }

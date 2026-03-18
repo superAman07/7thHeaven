@@ -27,6 +27,12 @@ async function generate() {
         version: '1.0',
         description: 'Celsius Mobile API Documentation', // Keep it simple for debug
       },
+      servers: [
+        {
+          url: 'https://celsiuspop.com',
+          description: 'Production Server',
+        },
+      ],
       components: {
         securitySchemes: {
           BearerAuth: {

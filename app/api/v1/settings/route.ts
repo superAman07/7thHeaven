@@ -2,6 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromToken, verifyToken } from '@/lib/auth';
 
+/**
+ * @swagger
+ * /api/v1/settings:
+ *   get:
+ *     summary: Get MLM Settings
+ *     tags:
+ *       - Settings
+ *     responses:
+ *       200:
+ *         description: MLM settings retrieved successfully
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET() {
     try {
         const setting = await prisma.mLMSettings.findFirst();

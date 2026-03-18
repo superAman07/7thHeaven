@@ -32,6 +32,12 @@ export const getApiDocs = async () => {
             Header: \`Authorization: Bearer <token>\`
             `,
       },
+      servers: [
+        {
+          url: 'https://celsiuspop.com',
+          description: 'Production Server',
+        },
+      ],
       components: {
         securitySchemes: {
           BearerAuth: {

@@ -2,6 +2,32 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromToken } from '@/lib/auth';
 
+/**
+ * @swagger
+ * /api/v1/wishlist/{productId}:
+ *   delete:
+ *     summary: Remove a product from wishlist
+ *     tags:
+ *       - Wishlist
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Removed from wishlist
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Wishlist not found
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function DELETE(
     req: NextRequest,
     { params }: { params: Promise<{ productId: string }> }

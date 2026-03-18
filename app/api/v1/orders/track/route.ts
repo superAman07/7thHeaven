@@ -11,6 +11,9 @@ import { getUserIdFromToken } from '@/lib/auth';
  *     description: Track an order using Order ID. Phone or Email is optional if the user is logged in.
  *     tags:
  *       - Orders
+ *     security:
+ *       - BearerAuth: []
+ *       - {}
  *     requestBody:
  *       required: true
  *       content:

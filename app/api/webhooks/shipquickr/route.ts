@@ -1,6 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+/**
+ * @swagger
+ * /api/webhooks/shipquickr:
+ *   post:
+ *     summary: Shipquickr Webhook
+ *     description: Receives order status updates and AWB tracking info from Shipquickr
+ *     tags:
+ *       - Webhooks
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - orderId
+ *               - event
+ *             properties:
+ *               orderId:
+ *                 type: string
+ *               event:
+ *                 type: string
+ *               awb:
+ *                 type: string
+ *               courierUrl:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Webhook processed successfully
+ *       400:
+ *         description: Missing required fields
+ *       404:
+ *         description: Order not found
+ *       500:
+ *         description: Internal Server Error processing webhook
+ */
 export async function POST(req: NextRequest) {
     try {
         const payload = await req.json();

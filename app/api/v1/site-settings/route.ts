@@ -3,6 +3,19 @@ import prisma from '@/lib/prisma';
 import { getUserIdFromToken } from '@/lib/auth';
 
 // GET - Public: Fetch site settings
+/**
+ * @swagger
+ * /api/v1/site-settings:
+ *   get:
+ *     summary: Get Site Settings
+ *     tags:
+ *       - Settings
+ *     responses:
+ *       200:
+ *         description: Site settings retrieved successfully
+ *       500:
+ *         description: Internal Server Error
+ */
 export async function GET() {
     try {
         let settings = await prisma.siteSettings.findUnique({
