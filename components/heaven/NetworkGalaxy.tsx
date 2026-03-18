@@ -340,7 +340,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
     const isEmpty = node.status === 'EMPTY';
     const colors = getNodeStyle(node.status, isDark);
 
-        if (isEmpty) {
+    if (isEmpty) {
         const isRootChild = node.level === 1;
         return (
             <div className="fixed z-10000 pointer-events-none" style={{ top, left }}>
@@ -380,18 +380,41 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
         );
     }
 
-    const nextRankName = getNextHeavenName(node.level);
-    let currentProgressCount = 0, progressLabel = "", target = 0;
-    const directCount = node.children ? node.children.filter(c => c.status === 'ACTIVE').length : 0;
+    const isRoot = node.level === 0;
+    const tooltipColors = isRoot ? { bg: POP.gold, border: POP.goldDark, glow: `${POP.gold}40`, text: '#111' } : colors;
 
-    if (directCount < 5) {
-        currentProgressCount = directCount; target = 5; progressLabel = "Direct Souls";
+    const directCount = node.children ? node.children.filter(c => c.status === 'ACTIVE').length : 0;
+    
+    // Evaluate ranks dynamically based on active structure for EVERYONE bypassing tree-depth!
+    const gen1 = directCount;
+    const gen2 = countDescendantsAtDepth(node, 2);
+    const gen3 = countDescendantsAtDepth(node, 3);
+    const gen4 = countDescendantsAtDepth(node, 4);
+    
+    let rankName = "Ground Heaven"; 
+    let nextRankName = "Heaven 1"; 
+    let currentProgressCount = gen1; 
+    let target = 5; 
+    let progressLabel = "Direct Souls";
+
+    if (gen1 < 5) {
+        rankName = "Ground Heaven"; nextRankName = "Heaven 1"; currentProgressCount = gen1; target = 5; progressLabel = "Direct Souls";
+    } else if (gen2 < 25) {
+        rankName = "Heaven 1"; nextRankName = "Heaven 2"; currentProgressCount = gen2; target = 25; progressLabel = "Gen 2 Souls";
+    } else if (gen3 < 125) {
+        rankName = "Heaven 2"; nextRankName = "Heaven 3"; currentProgressCount = gen3; target = 125; progressLabel = "Gen 3 Souls";
     } else {
-        const requiredDepth = (node.level === 0 ? 1 : node.level) + 1;
-        currentProgressCount = countDescendantsAtDepth(node, requiredDepth);
-        target = node.nextLevelTarget || Math.pow(5, requiredDepth);
-        progressLabel = `Gen ${requiredDepth} Souls`;
+        rankName = "Heaven 3"; nextRankName = "Heaven 4"; currentProgressCount = gen4; target = 625; progressLabel = "Gen 4 Souls";
     }
+    
+    // Total Network Helper
+    const countTotalDescendants = (n: NetworkNode): number => {
+        if (!n.children || n.children.length === 0) return 0;
+        return n.children.filter(c => c.status !== 'EMPTY').length + 
+               n.children.reduce((acc, child) => acc + countTotalDescendants(child), 0);
+    };
+    
+    const displayNetwork = Math.max(node.teamSize || 0, countTotalDescendants(node));
     const progressPercent = Math.min((currentProgressCount / target) * 100, 100);
 
     return (
@@ -403,11 +426,11 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                 className="absolute -translate-x-1/2 w-72 backdrop-blur-xl rounded-2xl shadow-2xl p-4 font-serif"
                 style={{
                     background: isDark ? 'rgba(15,15,20,0.95)' : 'rgba(255,255,255,0.95)',
-                    border: `1px solid ${colors.border}40`,
+                    border: `1px solid ${tooltipColors.border}40`,
                 }}
             >
                 <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45 border-b border-r" style={{
-                    background: isDark ? '#0f0f14' : '#fff', borderColor: `${colors.border}40`,
+                    background: isDark ? '#0f0f14' : '#fff', borderColor: `${tooltipColors.border}40`,
                 }} />
                 <div className="flex items-center justify-between mb-3 pb-2" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'}` }}>
                     <div>
@@ -415,19 +438,30 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                         <div className="text-[10px] uppercase tracking-widest font-sans" style={{ color: isDark ? '#6B7280' : '#9CA3AF' }}>Joined {node.joinedAt}</div>
                     </div>
                     <span className="text-[9px] font-bold px-3 py-1 rounded-full font-sans" style={{
-                        background: `${colors.bg}18`, color: colors.bg, border: `1px solid ${colors.bg}30`,
+                        background: `${tooltipColors.bg}18`, color: tooltipColors.bg, border: `1px solid ${tooltipColors.bg}30`,
                     }}>
                         {isActive ? '● ACTIVE' : '○ DORMANT'}
                     </span>
                 </div>
                 <div className="flex justify-between items-center text-center mb-3 gap-2">
                     <div className="rounded-lg p-2 flex-1" style={{ background: isDark ? 'rgba(255,255,255,0.04)' : '#f9fafb' }}>
-                        <div className="text-sm font-bold font-sans" style={{ color: isDark ? '#E5E7EB' : '#374151' }}>{node.teamSize}</div>
+                        <div className="text-sm font-bold font-sans" style={{ color: isDark ? '#E5E7EB' : '#374151' }}>{displayNetwork}</div>
                         <div className="text-[8px] uppercase font-sans tracking-wide" style={{ color: isDark ? '#6B7280' : '#9CA3AF' }}>Network</div>
                     </div>
-                    <div className="rounded-lg p-2 flex-1" style={{ background: `${colors.bg}10`, border: `1px solid ${colors.bg}20` }}>
-                        <div className="text-xs font-bold font-sans whitespace-nowrap" style={{ color: colors.bg }}>{getHeavenName(node.level)}</div>
-                        <div className="text-[8px] uppercase font-sans tracking-wide" style={{ color: colors.bg }}>Rank</div>
+                    
+                    {/* UI Rank Box Check */}
+                    <div className="rounded-lg p-2 flex-[1.5] relative overflow-hidden" style={{ background: `${tooltipColors.bg}15`, border: `1px solid ${tooltipColors.bg}30` }}>
+                        {rankName !== "Ground Heaven" && (
+                            <div className="absolute -top-3 -right-2 opacity-20">
+                                <Star fill={tooltipColors.bg} size={40} />
+                            </div>
+                        )}
+                        <div className="text-xs font-bold font-sans whitespace-nowrap relative z-10" style={{ color: tooltipColors.bg }}>
+                            {rankName !== "Ground Heaven" ? `🌟 ${rankName}` : rankName}
+                        </div>
+                        <div className="text-[8px] uppercase font-sans tracking-wide relative z-10 font-bold" style={{ color: tooltipColors.bg }}>
+                            {rankName !== "Ground Heaven" ? 'Rank Unlocked!' : 'Current Rank'}
+                        </div>
                     </div>
                 </div>
                 <div className="font-sans">
@@ -437,7 +471,7 @@ const GlobalTooltip = ({ node, rect, isDark }: { node: NetworkNode, rect: DOMRec
                     </div>
                     <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}>
                         <motion.div initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1 }}
-                            className="h-full rounded-full" style={{ background: `linear-gradient(to right, ${colors.bg}, ${colors.border})` }} />
+                            className="h-full rounded-full" style={{ background: `linear-gradient(to right, ${tooltipColors.bg}, ${tooltipColors.border})` }} />
                     </div>
                 </div>
                 {!isActive && (
@@ -646,20 +680,20 @@ const NetworkGalaxy = ({ isOpen, onClose, data }: { isOpen: boolean, onClose: ()
                 {/* MAIN CANVAS */}
                 <main className="flex-1 relative flex touch-none">
                     {/* Legend */}
-                    <div className="absolute left-3 top-3 z-40 pointer-events-none flex flex-col gap-1.5 select-none p-2 rounded-xl" style={{
-                        background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.6)',
-                        backdropFilter: 'blur(8px)',
+                    <div className="absolute left-3 top-4 lg:top-6 z-40 pointer-events-none flex flex-col gap-2 lg:gap-3 select-none p-3 lg:p-4 rounded-xl shadow-sm" style={{
+                        background: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.8)',
+                        backdropFilter: 'blur(12px)',
                     }}>
-                        <div className="text-[9px] font-bold uppercase tracking-widest font-sans mb-0.5" style={{ color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }}>Guide</div>
+                        <div className="text-[9px] lg:text-[11px] font-bold uppercase tracking-widest font-sans mb-1" style={{ color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}>Guide</div>
                         {[
-                            { icon: <Crown size={11} />, label: 'You', color: POP.gold },
-                            { icon: <Star size={11} fill={POP.purple} />, label: 'Active', color: POP.purple },
-                            { icon: <User size={11} />, label: 'Dormant', color: POP.pink },
-                            { icon: <UserPlus size={11} />, label: 'Open', color: '#6B7280' },
+                            { icon: <Crown size={14} />, label: 'You', color: POP.gold },
+                            { icon: <Star size={14} fill={POP.purple} />, label: 'Active', color: POP.purple },
+                            { icon: <User size={14} />, label: 'Dormant', color: POP.pink },
+                            { icon: <UserPlus size={14} />, label: 'Open', color: '#6B7280' },
                         ].map(item => (
-                            <div key={item.label} className="flex items-center gap-1.5 opacity-80">
+                            <div key={item.label} className="flex items-center gap-2 lg:gap-3 opacity-90 py-0.5 lg:py-1">
                                 <div style={{ color: item.color }}>{item.icon}</div>
-                                <span className="text-[9px] md:text-[10px] font-bold font-sans" style={{ color: isDark ? '#D1D5DB' : '#4B5563' }}>
+                                <span className="text-[10px] lg:text-[12px] font-bold font-sans" style={{ color: isDark ? '#E5E7EB' : '#374151' }}>
                                     {item.label}
                                 </span>
                             </div>
