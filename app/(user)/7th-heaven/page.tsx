@@ -5,6 +5,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import confetti from 'canvas-confetti';
 import { ProductCard } from '@/components/home/ProductCard';
 import ProductQuickViewModal from '@/components/home/QuickViewModal';
 import { PublicProduct } from '@/components/HeroPage';
@@ -57,6 +58,7 @@ export default function SeventhHeavenPage() {
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [minAmount, setMinAmount] = useState(2000);
   const [claimingLevel, setClaimingLevel] = useState<number | null>(null);
+  const [showRankTooltip, setShowRankTooltip] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -136,6 +138,32 @@ export default function SeventhHeavenPage() {
     fetchGraphData();
   }, []);
 
+  // Celebration Confetti
+  useEffect(() => {
+    if (data?.levels[0]?.isCompleted) {
+      // NOTE: We temporarily removed the one-time limit so you can preview it!
+      const duration = 2.5 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+      
+      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+      const interval: any = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+        const particleCount = 50 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, { particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+        }));
+        confetti(Object.assign({}, defaults, { particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+        }));
+      }, 250);
+    }
+  }, [data?.levels[0]?.isCompleted]);
+
   const handleOpenModal = (product: PublicProduct) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
@@ -198,7 +226,7 @@ export default function SeventhHeavenPage() {
 
       <div className="container mx-auto px-4 relative z-10 -mt-16">
         {/* 1. STATUS CARD */}
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-12 border-t-4 border-[#ddb040] relative overflow-hidden">
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-12 border-t-4 border-[#ddb040] relative overflow-visible">
             {!data ? (
               <div className="flex items-center justify-center py-8">
                   <div className="w-10 h-10 border-4 border-[#ddb040] border-t-transparent rounded-full animate-spin" />
@@ -222,15 +250,30 @@ export default function SeventhHeavenPage() {
 
                   {/* Referral Section - Compact & Professional */}
                   {data.levels[0]?.isCompleted ? (
-                    <div className="w-full md:max-w-md p-4 rounded-xl border border-[#ddb040]/40 bg-gradient-to-br from-[#fffbf0] to-white shadow-sm">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[#ddb040] text-lg">🏆</span>
-                        <span className="font-bold text-gray-900 text-sm">Heaven 1 Complete!</span>
+                    <div className="w-full lg:w-[130%] xl:w-[140%] px-4 py-3 rounded-xl border border-[#ddb040] shadow-md relative overflow-hidden flex flex-col justify-center" 
+                         style={{ 
+                             background: 'linear-gradient(110deg, #fffbf0 25%, #fef5d4 50%, #fffbf0 75%)',
+                             backgroundSize: '200% 100%',
+                             animation: 'shimmer-bg 3s infinite linear',
+                             minHeight: '62px'
+                         }}>
+                      <style dangerouslySetInnerHTML={{__html: `
+                        @keyframes shimmer-bg {
+                          0% { background-position: 200% 0; }
+                          100% { background-position: -200% 0; }
+                        }
+                        @keyframes pulse-trophy {
+                          0%, 100% { transform: scale(1); }
+                          50% { transform: scale(1.15); }
+                        }
+                      `}} />
+                      <div className="flex items-center gap-2 relative z-10 mb-0.5">
+                        <span className="text-[#ddb040] text-lg inline-block" style={{ animation: 'pulse-trophy 2s infinite ease-in-out' }}>🏆</span>
+                        <span className="font-bold text-gray-900 text-[13px] md:text-sm tracking-wide">Victory! Heaven 1 Complete! 🎉</span>
                       </div>
-                      <p className="text-xs text-gray-600 leading-relaxed">
-                        Your 5-member team is confirmed. Your invite code is now <strong>locked</strong>.{' '}
-                        Focus on supporting your 5 members as they build their own teams —
-                        their progress automatically unlocks your Heaven 2 and beyond.
+                      <p className="text-[11px] md:text-xs text-gray-700 leading-tight relative z-10">
+                        Your Heaven 1 Empire is complete and your invite code is <strong>permanently secured</strong>! 
+                        Mentor your 5 members to build their teams and automatically unlock Heaven 2.
                       </p>
                     </div>
                   ) : (
@@ -267,22 +310,61 @@ export default function SeventhHeavenPage() {
                           <i className="fa fa-users text-xs md:text-xl text-gray-400 group-hover:text-[#ddb040] transition-colors" />
                       </div>
                       <div className="text-sm md:text-2xl font-bold text-gray-900 group-hover:text-[#ddb040] leading-none mb-0.5 transition-colors">{data?.totalTeamSize || 0}</div>
-                      <div className="text-[7px] md:text-[9px] uppercase tracking-widest text-gray-400 font-bold group-hover:text-[#ddb040]">Heaven Size</div>
+                      <div className="text-[7px] md:text-[9px] uppercase tracking-widest text-[#ddb040] font-bold">Total Network</div>
+                      {data?.levels[0]?.isCompleted && <div className="text-[8px] md:text-[10px] text-green-600 font-bold mt-1">Well Done!</div>}
                     </div>
-                    {/* Metric 2: Current Rank */}
-                    <div className="relative flex flex-col items-center justify-center p-2">
+
+                    {/* Metric 2: Current Rank with Hover Tooltip */}
+                    <div className="relative flex flex-col items-center justify-center p-2 group cursor-pointer lg:z-40"
+                         onMouseEnter={() => setShowRankTooltip(true)}
+                         onMouseLeave={() => setShowRankTooltip(false)}
+                         onClick={() => setShowRankTooltip(!showRankTooltip)}
+                    >
                        {/* Circle */}
                       <div className="relative flex items-center justify-center w-8 h-8 md:w-14 md:h-14 mb-1">
                           <div className="absolute inset-0 bg-[#ddb040] rounded-full opacity-20 animate-ping" />
-                          <div className="relative z-10 w-full h-full bg-linear-to-br from-[#ddb040] to-[#b6902e] rounded-full flex items-center justify-center shadow-sm text-white font-serif font-bold text-sm md:text-xl border md:border-2 border-white">
+                          <div className={`relative z-10 w-full h-full bg-linear-to-br from-[#ddb040] to-[#b6902e] rounded-full flex items-center justify-center shadow-sm text-white font-serif font-bold text-sm md:text-xl border md:border-2 border-white cursor-pointer transition-transform! duration-300! ${showRankTooltip ? 'scale-105!' : ''}`}>
                               {(data?.levels?.filter((l) => l.isCompleted).length || 0) + 1}
                           </div>
                       </div>
                       
-                      <div className="text-sm md:text-2xl font-bold text-gray-900 leading-none mb-0.5">
-                        Rank {(data?.levels?.filter((l) => l.isCompleted).length || 0) + 1}
+                      <div className={`text-sm md:text-2xl font-bold text-gray-900 leading-none mb-0.5 transition-colors! duration-300! ${showRankTooltip ? 'text-[#ddb040]!' : ''}`}>
+                        {(data?.levels?.filter((l) => l.isCompleted).length || 0) + 1 > 7 
+                          ? "Max Heaven" 
+                          : `Heaven ${(data?.levels?.filter((l) => l.isCompleted).length || 0) + 1}`}
                       </div>
-                      <div className="text-[7px] md:text-[9px] uppercase tracking-widest text-[#ddb040] font-bold">Current Rank</div>
+                      <div className={`text-[7px] md:text-[9px] uppercase tracking-widest text-gray-400 font-bold transition-colors! flex items-center gap-1 duration-300! ${showRankTooltip ? 'text-[#ddb040]!' : ''}`}>
+                        Current Rank <i className={`fa fa-chevron-down text-[6px] md:text-[8px] transition-transform! duration-300! ${showRankTooltip ? 'rotate-180!' : ''}`} />
+                      </div>
+
+                      {/* Amazon-Style Popup Tooltip */}
+                      <div className={`absolute top-full lg:top-auto lg:bottom-full lg:mb-2 mt-2 -right-4 lg:right-1/2 lg:translate-x-1/2 w-64 bg-white rounded-lg shadow-2xl border border-gray-200 transition-all! duration-300! z-50! p-4 ${showRankTooltip ? 'opacity-100! pointer-events-auto! visible!' : 'opacity-0! pointer-events-none! invisible!'}`} style={{ transformOrigin: 'top right' }}>
+                        {/* Tooltip Arrow */}
+                        <div className="absolute -top-2 lg:-bottom-2 right-8 lg:right-1/2 lg:translate-x-1/2 w-4 h-4 bg-white border-t border-l lg:border-t-0 lg:border-l-0 lg:border-b lg:border-r border-gray-200 rotate-45" />
+                        
+                        <div className="relative z-10">
+                            <h4 className="text-sm font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">Rank Breakdown</h4>
+                            <div className="flex flex-col gap-2">
+                                {data?.levels.map((level) => {
+                                    const currentWorkingLevel = (data?.levels?.filter((l) => l.isCompleted).length || 0) + 1;
+                                    
+                                    // Only show completed levels AND the current active level
+                                    if (level.level > currentWorkingLevel) return null;
+
+                                    return (
+                                        <div key={level.level} className="flex items-center justify-between text-xs">
+                                            <span className={`font-semibold ${level.isCompleted ? 'text-green-600' : 'text-[#ddb040]'}`}>
+                                                {level.isCompleted ? '✅' : '⏳'} Heaven {level.level}
+                                            </span>
+                                            <span className="font-mono text-gray-600">
+                                                {level.isCompleted ? 'Completed' : `${level.count} Members`}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
