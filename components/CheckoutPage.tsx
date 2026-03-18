@@ -36,6 +36,7 @@ const CheckoutPageComponent: React.FC = () => {
         code: string;
         discountAmount: number;
     } | null>(null);
+    const has7thHeavenProduct = cartItems.some(item => item.isFor7thHeaven);
 
     useEffect(() => {
         if (resendCooldown <= 0) return;
@@ -278,7 +279,12 @@ const CheckoutPageComponent: React.FC = () => {
         }
         setIsProcessing(true);
         try {
-            const finalShipping = shipToDifferentAddress ? shipping : billing;
+            const finalShipping = shipToDifferentAddress ? {
+                ...billing,
+                phone: shipping.phone || billing.phone,
+                address1: shipping.address1,
+                address2: ''
+            } : billing;
             const orderPayload = {
                 items: cartItems.map(item => ({
                     productId: item.originalProductId || item.id,
@@ -289,7 +295,7 @@ const CheckoutPageComponent: React.FC = () => {
                     fullName: `${finalShipping.firstName} ${finalShipping.lastName}`,
                     phone: finalShipping.phone.replace(/\D/g, '').slice(-10),
                     email: finalShipping.email,
-                    fullAddress: `${finalShipping.address1} ${finalShipping.address2}`,
+                    fullAddress: shipToDifferentAddress ? finalShipping.address1 : `${billing.address1} ${billing.address2}`.trim(),
                     city: finalShipping.city,
                     state: finalShipping.state,
                     pincode: finalShipping.zip,
@@ -436,8 +442,51 @@ const CheckoutPageComponent: React.FC = () => {
 
                                                 <div className="col-12 mb-20">
                                                     <label>Address*</label>
-                                                    <input type="text" placeholder="Address line 1" className="mb-2" value={billing.address1} onChange={e => setBilling({ ...billing, address1: e.target.value })} required />
-                                                    <input type="text" placeholder="Address line 2" value={billing.address2} onChange={e => setBilling({ ...billing, address2: e.target.value })} />
+                                                    <input type="text" placeholder="Full Address" className="mb-2" value={billing.address1} onChange={e => setBilling({ ...billing, address1: e.target.value })} required />
+                                                </div>
+
+                                                <div className="col-12 mb-20">
+                                                    <div className="d-flex align-items-center mb-2" style={{ backgroundColor: '#f8f9fa', padding: '12px 15px', borderRadius: '6px', border: '1px solid #e9ecef' }}>
+                                                        <input 
+                                                            type="checkbox" 
+                                                            id="ship_different_address" 
+                                                            checked={shipToDifferentAddress}
+                                                            onChange={(e) => setShipToDifferentAddress(e.target.checked)}
+                                                            style={{ width: '18px', height: '18px', marginRight: '10px', cursor: 'pointer', accentColor: '#ddb040' }}
+                                                        />
+                                                        <label htmlFor="ship_different_address" style={{ fontWeight: 600, fontSize: '15px', color: '#333', cursor: 'pointer', margin: 0, userSelect: 'none' }}>
+                                                            Ship to a different address?
+                                                        </label>
+                                                    </div>
+
+                                                    {shipToDifferentAddress && (
+                                                        <div className="p-4 mt-3" style={{ backgroundColor: '#fafafa', border: '1px solid #ddd', borderRadius: '8px', animation: 'fadeIn 0.3s ease-in-out' }}>
+                                                            <div className="row">
+                                                                <div className="col-12 mb-20">
+                                                                    <label style={{ fontSize: '14px', fontWeight: 600 }}>Full Different Address*</label>
+                                                                    <textarea 
+                                                                        className="form-control"
+                                                                        placeholder="Enter complete address including pin code, state, city" 
+                                                                        value={shipping.address1} 
+                                                                        onChange={e => setShipping({ ...shipping, address1: e.target.value })} 
+                                                                        required={shipToDifferentAddress}
+                                                                        rows={3}
+                                                                        style={{ resize: 'vertical' }}
+                                                                    />
+                                                                </div>
+                                                                <div className="col-12 mb-0">
+                                                                    <label style={{ fontSize: '14px', fontWeight: 600 }}>Phone Number (Optional)</label>
+                                                                    <input 
+                                                                        type="text" 
+                                                                        className="form-control"
+                                                                        placeholder="Enter different phone number" 
+                                                                        value={shipping.phone} 
+                                                                        onChange={e => setShipping({ ...shipping, phone: e.target.value })} 
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
 
                                                 {/* REORDERED FIELDS */}
@@ -460,51 +509,9 @@ const CheckoutPageComponent: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        {/* Shipping Address (Conditional & Fixed) */}
-                                        {shipToDifferentAddress && (
-                                            <div id="shipping-form">
-                                                <h4 className="checkout-title">Shipping Address</h4>
-                                                <div className="row">
-                                                    <div className="col-md-6 col-12 mb-20">
-                                                        <label>First Name*</label>
-                                                        <input type="text" placeholder="First Name" value={shipping.firstName} onChange={e => setShipping({ ...shipping, firstName: e.target.value })} required />
-                                                    </div>
-                                                    <div className="col-md-6 col-12 mb-20">
-                                                        <label>Last Name*</label>
-                                                        <input type="text" placeholder="Last Name" value={shipping.lastName} onChange={e => setShipping({ ...shipping, lastName: e.target.value })} required />
-                                                    </div>
-                                                    <div className="col-md-6 col-12 mb-20">
-                                                        <label>Email Address*</label>
-                                                        <input type="email" placeholder="Email Address" value={shipping.email} onChange={e => setShipping({ ...shipping, email: e.target.value })} required />
-                                                    </div>
-                                                    <div className="col-md-6 col-12 mb-20">
-                                                        <label>Phone no*</label>
-                                                        <input type="text" placeholder="Phone number" value={shipping.phone} onChange={e => setShipping({ ...shipping, phone: e.target.value })} required />
-                                                    </div>
-                                                    <div className="col-12 mb-20">
-                                                        <label>Address*</label>
-                                                        <input type="text" placeholder="Address line 1" className="mb-2" value={shipping.address1} onChange={e => setShipping({ ...shipping, address1: e.target.value })} required />
-                                                        <input type="text" placeholder="Address line 2" value={shipping.address2} onChange={e => setShipping({ ...shipping, address2: e.target.value })} />
-                                                    </div>
-                                                    <div className="col-md-6 col-12 mb-20">
-                                                        <label>Zip Code*</label>
-                                                        <input type="text" placeholder="Zip Code" value={shipping.zip} onChange={e => setShipping({ ...shipping, zip: e.target.value })} maxLength={6} required />
-                                                    </div>
-                                                    <div className="col-md-6 col-12 mb-20">
-                                                        <label>Country*</label>
-                                                        <input type="text" placeholder="Country" value={shipping.country} onChange={e => setShipping({ ...shipping, country: e.target.value })} required />
-                                                    </div>
-                                                    <div className="col-md-6 col-12 mb-20">
-                                                        <label>Town/City*</label>
-                                                        <input type="text" placeholder="Town/City" value={shipping.city} onChange={e => setShipping({ ...shipping, city: e.target.value })} required />
-                                                    </div>
-                                                    <div className="col-md-6 col-12 mb-20">
-                                                        <label>State*</label>
-                                                        <input type="text" placeholder="State" value={shipping.state} onChange={e => setShipping({ ...shipping, state: e.target.value })} required />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
+
+
+
                                     </div>
 
                                     <div className="col-lg-5">
@@ -553,23 +560,36 @@ const CheckoutPageComponent: React.FC = () => {
                                                 ) : (
                                                     cartTotal > 0 && (
                                                         (cartTotal - (appliedCoupon?.discountAmount || 0)) >= minPurchaseLimit ? (
-                                                            <div className="p-3" style={{ backgroundColor: '#ddb040', color: '#000', border: '1px solid #cca33b', borderRadius: '5px' }}>
-                                                                <div className="flex justify-center gap-x-2 mb-2">
+                                                            <div className="p-4" style={{ backgroundColor: '#fff', border: '2px solid #eab308', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+                                                                <div className="d-flex align-items-center mb-3">
                                                                     <input 
                                                                         type="checkbox" 
                                                                         id="heavenOptIn" 
-                                                                        className="mt-auto mb-auto" 
                                                                         checked={is7thHeavenOptIn} 
                                                                         onChange={(e) => setIs7thHeavenOptIn(e.target.checked)}
+                                                                        disabled={!has7thHeavenProduct}
+                                                                        style={{ width: '20px', height: '20px', marginRight: '12px', accentColor: '#eab308', cursor: has7thHeavenProduct ? 'pointer' : 'not-allowed' }}
                                                                     />
-                                                                    <label htmlFor="heavenOptIn" style={{ fontSize: '16px', fontWeight: 700 }}>Join 7th Heaven Club?</label>
+                                                                    <label htmlFor="heavenOptIn" style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#1a1a1a', cursor: has7thHeavenProduct ? 'pointer' : 'not-allowed' }}>
+                                                                        Join 7th Heaven Club
+                                                                    </label>
                                                                 </div>
+
+                                                                {!has7thHeavenProduct && (
+                                                                    <div className="mt-3 p-3 text-center" style={{ backgroundColor: '#f8f9fa', border: '1px dashed #ccc', borderRadius: '6px' }}>
+                                                                        <p className="mb-1" style={{ fontSize: '14px', fontWeight: 600, color: '#555' }}>
+                                                                            You are currently checking out as a regular customer.
+                                                                        </p>
+                                                                        <p className="mb-0 text-sm" style={{ color: '#666' }}>
+                                                                            Add at least one <Link href="/7th-heaven" className="font-bold underline" style={{ color: '#ddb040' }}>7th Heaven Product</Link> to your cart to join the club!
+                                                                        </p>
+                                                                    </div>
+                                                                )}
                                                                 
-                                                                {is7thHeavenOptIn && (
-                                                                    <div className="mt-3 p-3" style={{ backgroundColor: '#fff', borderRadius: '5px' }}>
-                                                                        {/* Referral Code Input */}
-                                                                        <div className="mb-3">
-                                                                            <label className="block text-sm font-semibold mb-1">Referral Code (Optional)</label>
+                                                                {is7thHeavenOptIn && has7thHeavenProduct && (
+                                                                    <div className="mt-4 pt-3" style={{ borderTop: '1px solid #eee' }}>
+                                                                        <div className="mb-2">
+                                                                            <label className="block text-sm font-semibold mb-2" style={{ color: '#444' }}>Referral Code (Optional)</label>
                                                                             <div className="flex gap-2">
                                                                                 <input
                                                                                     type="text"
@@ -581,27 +601,27 @@ const CheckoutPageComponent: React.FC = () => {
                                                                                             setReferralError('');
                                                                                         }
                                                                                     }}
-                                                                                    placeholder="Enter referral code"
+                                                                                    placeholder="Enter invite code"
                                                                                     disabled={referralLocked || referralVerified}
-                                                                                    className="flex-1 p-2 border rounded"
-                                                                                    style={{ backgroundColor: (referralLocked || referralVerified) ? '#e9ecef' : '#fff' }}
+                                                                                    className="flex-1 p-2 rounded"
+                                                                                    style={{ border: '1px solid #ccc', backgroundColor: (referralLocked || referralVerified) ? '#f3f4f6' : '#fff' }}
                                                                                 />
                                                                                 {!referralLocked && !referralVerified && referralCode.trim() && (
                                                                                     <button
                                                                                         type="button"
                                                                                         onClick={handleVerifyReferral}
                                                                                         disabled={isVerifyingReferral}
-                                                                                        style={{ padding: '8px 16px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                                                                                        style={{ padding: '8px 20px', backgroundColor: '#eab308', color: '#000', border: 'none', borderRadius: '4px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
                                                                                     >
-                                                                                        {isVerifyingReferral ? 'Checking...' : 'Verify'}
+                                                                                        {isVerifyingReferral ? 'Checking...' : 'Apply'}
                                                                                     </button>
                                                                                 )}
                                                                             </div>
-                                                                            {referralLocked && <small className="text-gray-600">Referral code auto-applied</small>}
-                                                                            {referralVerified && <small style={{ color: '#16a34a', fontWeight: 600 }}>✓ Valid referral code</small>}
-                                                                            {referralError && <small style={{ color: '#dc2626' }}>{referralError}</small>}
+                                                                            {referralLocked && <small className="text-gray-500 mt-1 block">Referral code auto-applied</small>}
+                                                                            {referralVerified && <small style={{ color: '#16a34a', fontWeight: 600, display: 'block', marginTop: '4px' }}>✓ Valid referral code</small>}
+                                                                            {referralError && <small style={{ color: '#dc2626', display: 'block', marginTop: '4px' }}>{referralError}</small>}
                                                                             {referralSlotsFull && (
-                                                                                <div style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                                                                <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                                                                     <button
                                                                                         type="button"
                                                                                         onClick={() => {
@@ -611,7 +631,7 @@ const CheckoutPageComponent: React.FC = () => {
                                                                                             setReferralVerified(false);
                                                                                             setReferralLocked(false);
                                                                                         }}
-                                                                                        style={{ fontSize: '12px', padding: '6px 12px', backgroundColor: '#1a1a1a', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                                                                                        style={{ fontSize: '13px', padding: '6px 14px', backgroundColor: '#1f2937', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                                                                                     >
                                                                                         Try Another Code
                                                                                     </button>
@@ -625,7 +645,7 @@ const CheckoutPageComponent: React.FC = () => {
                                                                                             setReferralLocked(false);
                                                                                             localStorage.removeItem('7thHeavenReferral');
                                                                                         }}
-                                                                                        style={{ fontSize: '12px', padding: '6px 12px', backgroundColor: 'transparent', color: '#555', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}
+                                                                                        style={{ fontSize: '13px', padding: '6px 14px', backgroundColor: 'transparent', color: '#4b5563', border: '1px solid #d1d5db', borderRadius: '4px', cursor: 'pointer' }}
                                                                                     >
                                                                                         Continue Without Code
                                                                                     </button>
@@ -635,9 +655,9 @@ const CheckoutPageComponent: React.FC = () => {
                                                                     </div>
                                                                 )}
 
-                                                                <p className="mt-2 mb-0 text-center" style={{ fontSize: '14px', fontWeight: 500 }}>
+                                                                <p className="mt-3 mb-0 text-center" style={{ fontSize: '13px', color: '#666', fontWeight: 500 }}>
                                                                     {!isLoggedIn && !otpVerified ? (
-                                                                        <span><i className="fa fa-lock"></i> Verify email to join</span>
+                                                                        <span className="text-amber-800"><i className="fa fa-lock mr-1"></i> Verify email below to join</span>
                                                                     ) : (
                                                                         "Unlock exclusive benefits and referral rewards!"
                                                                     )}
@@ -646,7 +666,7 @@ const CheckoutPageComponent: React.FC = () => {
                                                         ) : (
                                                             <div className="p-3 text-center" style={{ backgroundColor: '#f8f9fa', border: '1px dashed #ddb040', borderRadius: '5px' }}>
                                                                 <p className="mb-1" style={{ fontSize: '14px', fontWeight: 600, color: '#555' }}>Want to join the <strong>7th Heaven Club</strong>?</p>
-                                                                <p className="mb-0" style={{ fontSize: '13px', color: '#ddb040', fontWeight: 700 }}>Add items worth Rs.{(minPurchaseLimit - (cartTotal - (appliedCoupon?.discountAmount || 0))).toFixed(2)} more to unlock!</p>
+                                                                <p className="mb-0" style={{ fontSize: '13px', color: '#ddb040', fontWeight: 700 }}>Add items worth Rs.{(minPurchaseLimit - (cartTotal - (appliedCoupon?.discountAmount || 0))).toFixed(2)} more from the <Link href="/7th-heaven" style={{ textDecoration: 'underline' }}>7th Heaven collection</Link> to unlock!</p>
                                                             </div>
                                                         )
                                                     )
