@@ -52,7 +52,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     const { id } = await params;
     await prisma.product.update({
       where: { id },
-      data: { isArchived: true, inStock: false }
+      data: { isArchived: true, inStock: false, slug: `archived-${Date.now()}-${id}` }
     });
 
     return NextResponse.json({ success: true, data: { message: 'Product deleted successfully.' } });
