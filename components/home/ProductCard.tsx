@@ -79,13 +79,14 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
         e.stopPropagation();
         
         if (!selectedVariant || isOutOfStock) return;
-        
-        addToCart({
-            ...product,
-            discountPercentage: product.discountPercentage ?? 0,
-            selectedVariant: selectedVariant,
-            price: selectedVariant.price
-        }, 1);
+        if (!isInCart) {
+            addToCart({
+                ...product,
+                discountPercentage: product.discountPercentage ?? 0,
+                selectedVariant: selectedVariant,
+                price: selectedVariant.price
+            }, 1);
+        }
 
         setTimeout(() => {
             router.push('/cart/checkout');
