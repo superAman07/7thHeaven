@@ -460,7 +460,7 @@ const ProductDetailsClientPage = ({ product, relatedProducts }: ProductDetailsCl
                                                     borderColor: isOutOfStock ? '#ccc' : undefined
                                                 }}
                                             >
-                                                {isOutOfStock ? 'Out of Stock' : (isAdding ? 'Added to Cart!' : 'Add to cart')}
+                                                {isOutOfStock ? 'Coming Soon ' : (isAdding ? 'Added to Cart!' : 'Add to cart')}
                                             </button>
                                         </div>
                                     </form>
