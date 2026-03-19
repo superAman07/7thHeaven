@@ -109,13 +109,14 @@ export async function GET(req: NextRequest) {
             variantId: p.variants[0]?.id || null,
             size: p.variants[0]?.size || 'Standard',
             discountPercentage: p.discountPercentage ? Number(p.discountPercentage) : 0,
-            isBestSeller: p.isBestSeller || false
+            isBestSeller: p.isBestSeller || false,
+            isFor7thHeaven: true
         }));
 
-        return NextResponse.json({ 
-            success: true, 
+        return NextResponse.json({
+            success: true,
             maxPriceLimit: maxPrice,
-            products: formattedProducts 
+            products: formattedProducts
         });
 
     } catch (error) {

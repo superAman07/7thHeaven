@@ -86,6 +86,7 @@ export default function SeventhHeavenPage() {
             categoryId: '',
             isNewArrival: false,
             isBestSeller: p.isBestSeller || false,
+            isFor7thHeaven: p.isFor7thHeaven ?? true,
             discountPercentage: p.discountPercentage,
             category: { name: p.category, slug: '' },
             variants: [
@@ -635,6 +636,7 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
             categoryId: '',
             isNewArrival: false,
             isBestSeller: p.isBestSeller || false,
+            isFor7thHeaven: p.isFor7thHeaven ?? true,
             discountPercentage: p.discountPercentage,
             category: { name: p.category, slug: '' },
             variants: [{ id: p.variantId || '', price: p.price, sellingPrice: p.sellingPrice ?? null, size: p.size || 'Standard', stock: 100 }],

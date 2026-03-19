@@ -116,7 +116,7 @@ const CheckoutPageComponent: React.FC = () => {
                 referralCode: referralCode || undefined
             });
             setOtpSent(true);
-            setResendCooldown(30);
+            setResendCooldown(180);
         } catch (err: any) {
             setOtpError(err.response?.data?.error?.message || 'Failed to send OTP');
         } finally {
