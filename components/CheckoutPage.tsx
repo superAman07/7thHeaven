@@ -326,6 +326,7 @@ const CheckoutPageComponent: React.FC = () => {
             // const { paymentUrl } = paymentResponse.data;
             // router.push(paymentUrl);
             const { orderId } = orderResponse.data;
+            localStorage.removeItem('CelciusCart');
             router.push(`/payment/process/${orderId}`);
         } catch (error) {
             console.error("Checkout process failed", error);

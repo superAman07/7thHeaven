@@ -333,6 +333,14 @@ export async function POST(req: NextRequest) {
                 items: orderItemsData,
             },
         });
+        try {
+            const userCart = await prisma.cart.findUnique({ where: { userId: userId! } });
+            if (userCart) {
+                await prisma.cartItem.deleteMany({ where: { cartId: userCart.id } });
+            }
+        } catch (cartErr) {
+            console.error("Non-blocking: Failed to clear cart after order:", cartErr);
+        }
         if (resolvedReferrerId) {
             await prisma.user.update({
                 where: { id: userId! },
