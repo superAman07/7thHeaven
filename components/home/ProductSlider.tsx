@@ -39,6 +39,7 @@ function MobileProductCarousel({ products, onQuickView }: { products: PublicProd
             </button>
             <div className="w-[88%] mx-auto transition-opacity duration-300 ease-in-out">
                 <ProductCard 
+                    key={currentProduct.id}
                     product={currentProduct} 
                     onQuickView={onQuickView}
                 />
