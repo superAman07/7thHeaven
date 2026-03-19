@@ -654,7 +654,7 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
     <div className="bg-linear-to-b from-[#1a1a1a] to-[#252525] min-h-screen text-white">
       {/* Hero */}
-      <div className="relative h-[75vh] sm:h-screen flex items-center justify-center overflow-hidden pt-20! md:pt-40! lg:pt-20">
+      <div className="relative h-screen flex items-end justify-center overflow-hidden pb-[25vh] sm:pb-12 md:pb-20">
         <div className="absolute inset-0 bg-[url('/assets/images/hero/slider-1.jpg')] bg-cover bg-center opacity-40" />
         <div className="relative z-10 text-center px-4">
           <h1
@@ -669,9 +669,9 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
             }}> 7th Heaven </span> Club
           </h1>
 
-          <p className="text-xl md:text-2xl text-[#E6B422] tracking-widest uppercase mb-8">The Path to Prestige</p>
+          <p className="text-base sm:text-xl md:text-2xl text-[#E6B422] tracking-widest uppercase mb-4 sm:mb-8">The Path to Prestige</p>
 
-          <p className="max-w-2xl mx-auto text-gray-300 mb-10 text-lg">
+          <p className="max-w-2xl mx-auto text-gray-300 mb-6 sm:mb-10 text-sm sm:text-lg">
             Unlock exclusive luxury rewards, build your influence, and ascend through 7 levels of prestige. Join the elite circle of fragrance connoisseurs.
           </p>
 
@@ -683,7 +683,7 @@ function MarketingView({ isLoggedIn }: { isLoggedIn: boolean }) {
               } else {
                 window.location.href = `/collections/perfumes?maxPrice=${maxPriceLimit}&sort=price_asc`;
               }
-            }} className="px-4 py-3 md:px-8 md:py-4 bg-[#E6B422] text-black text-[10px] sm:text-xs md:text-base font-bold uppercase tracking-wider hover:bg-white transition-colors cursor-pointer">
+            }} className="px-4 py-3 md:px-8 md:py-4 bg-[#E6B422] text-black text-[10px]! sm:text-xs! md:text-base! font-bold uppercase tracking-wider hover:bg-white transition-colors cursor-pointer">
               Join The Club
             </button>
 
