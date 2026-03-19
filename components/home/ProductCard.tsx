@@ -374,7 +374,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                             onClick={handleQuickBuy}
                             disabled={isOutOfStock}
                         >
-                            {isOutOfStock ? 'Out of Stock' : 'Quick Buy'}
+                            {isOutOfStock ? 'Coming Soon' : 'Quick Buy'}
                         </button>
                     </div>
                 </div>
