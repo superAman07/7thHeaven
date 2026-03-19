@@ -5,7 +5,6 @@ import { z } from 'zod';
 import uniqid from 'uniqid';
 import { sendNotification } from '@/lib/notifications';
 import { sendOrderConfirmation } from '@/lib/email';
-import { pushOrderToShipquickr, ShipquickrOrderItem, ShipquickrOrderPayload } from '@/lib/services/shipquickr';
 
 /**
  * @swagger
@@ -125,7 +124,7 @@ const orderSchema = z.object({
         country: z.string(),
     }),
     mlmOptIn: z.boolean().optional(),
-    referrerCode: z.string().nullable().optional(), 
+    referrerCode: z.string().nullable().optional(),
     couponCode: z.string().nullable().optional(),
     discountAmount: z.number().optional(),
 });
@@ -189,7 +188,7 @@ export async function POST(req: NextRequest) {
         if (!validation.success) {
             return NextResponse.json({ error: 'Invalid request body', details: validation.error }, { status: 400 });
         }
-        const { items, shippingDetails, mlmOptIn , referrerCode , couponCode, discountAmount } = validation.data;
+        const { items, shippingDetails, mlmOptIn, referrerCode, couponCode, discountAmount } = validation.data;
         let userId = await getUserIdFromToken(req);
         if (!userId) {
             let user = await prisma.user.findUnique({
@@ -219,7 +218,7 @@ export async function POST(req: NextRequest) {
                 userId = newUser.id;
             }
         }
-    
+
         const productIds = items.map(item => item.productId);
         const productsFromDb = await prisma.product.findMany({
             where: { id: { in: productIds } },
@@ -228,7 +227,7 @@ export async function POST(req: NextRequest) {
         let subtotal = 0;
         const orderItemsData = items.map(item => {
             const product = productsFromDb.find(p => p.id === item.productId);
-            
+
             if (!product) {
                 throw new Error(`Product with ID ${item.productId} not found.`);
             }
@@ -236,7 +235,7 @@ export async function POST(req: NextRequest) {
                 throw new Error(`Item "${product.name}" is no longer available (Archived). Please remove it from your cart.`);
             }
             if (!product.inStock) {
-                 throw new Error(`Item "${product.name}" is currently out of stock.`);
+                throw new Error(`Item "${product.name}" is currently out of stock.`);
             }
             let selectedVariant;
             if (item.variantId) {
@@ -262,7 +261,7 @@ export async function POST(req: NextRequest) {
                 productId: item.productId,
                 variantId: selectedVariant.id,
                 name: product.name,
-                size: selectedVariant.size, 
+                size: selectedVariant.size,
                 image: product.images[0] || '',
                 quantity: item.quantity,
                 priceAtPurchase: price,
@@ -351,38 +350,6 @@ export async function POST(req: NextRequest) {
                     country: shippingDetails.country,
                 }
             });
-        }
-         try {
-            const shipquickrItems: ShipquickrOrderItem[] = orderItemsData.map(item => ({
-                productName: item.name,
-                category: 'Apparel',
-                quantity: item.quantity,
-                price: item.priceAtPurchase
-            }));
-            const shipquickrPayload: ShipquickrOrderPayload = {
-                orderId: newOrder.id,
-                orderDate: new Date().toISOString(),
-                customerName: shippingDetails.fullName,
-                mobile: shippingDetails.phone,
-                email: shippingDetails.email || '',
-                address: shippingDetails.fullAddress,
-                city: shippingDetails.city,
-                state: shippingDetails.state,
-                pincode: shippingDetails.pincode,
-                paymentMode: 'Prepaid', // Update if you support COD later
-                totalAmount: Number(newOrder.netAmountPaid),
-                physicalWeight: 1, // Default 0.3kg
-                length: 13,
-                breadth: 3,
-                height: 7,
-                items: shipquickrItems
-            };
-            // Fire and forget (runs asynchronously with out blocking the user's checkout response)
-            pushOrderToShipquickr(shipquickrPayload).catch(err => {
-                 console.error("Non-blocking Shipquickr Error:", err);
-            });
-        } catch (syncError) {
-            console.error("Failed to map data for Shipquickr:", syncError);
         }
         return NextResponse.json({
             success: true,

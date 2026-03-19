@@ -152,13 +152,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                 await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
             }
             const { user, ...orderData } = order!;
-            return NextResponse.json({ 
-                success: true, 
-                order: { 
-                    ...orderData, 
+            return NextResponse.json({
+                success: true,
+                order: {
+                    ...orderData,
                     user: { fullName: user?.fullName, email: user?.email, phone: user?.phone },
-                    isGuest: !user?.passwordHash 
-                } 
+                    isGuest: !user?.passwordHash
+                }
             });
         }
 
@@ -212,7 +212,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                                 }
                             } else if (productId) {
                                 const updatedProduct = await prisma.product.update({
-                                    where: { id: productId }, 
+                                    where: { id: productId },
                                     data: { stock: { decrement: quantityToDeduct } }
                                 });
                                 if (updatedProduct.stock <= 0) {
@@ -228,13 +228,47 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
                     }
                     // ------------------------------------------------/
 
+                    // Push to Shipquickr ONLY after payment is confirmed
+                    try {
+                        const { pushOrderToShipquickr } = await import('@/lib/services/shipquickr');
+                        const shipping = (order.shippingAddress as any) || {};
+                        const shipquickrPayload = {
+                            orderId: order.id,
+                            orderDate: new Date().toISOString(),
+                            customerName: shipping.fullName || order.user?.fullName || 'Customer',
+                            mobile: shipping.phone || order.user?.phone || '',
+                            email: shipping.email || order.user?.email || '',
+                            address: shipping.fullAddress || '',
+                            city: shipping.city || '',
+                            state: shipping.state || '',
+                            pincode: shipping.pincode || '',
+                            paymentMode: 'Prepaid',
+                            totalAmount: Number(order.netAmountPaid || order.subtotal),
+                            physicalWeight: 1,
+                            length: 13,
+                            breadth: 3,
+                            height: 7,
+                            items: orderItems.map(item => ({
+                                productName: item.name || 'Product',
+                                category: 'Apparel',
+                                quantity: item.quantity || 1,
+                                price: item.priceAtPurchase || 0
+                            }))
+                        };
+                        pushOrderToShipquickr(shipquickrPayload as any).catch(err => {
+                            console.error("Non-blocking Shipquickr Error:", err);
+                        });
+                    } catch (err) {
+                        console.error("Failed to load/push Shipquickr:", err);
+                    }
+
                 } else if (ppStatus === 'PAYMENT_ERROR' || ppStatus === 'PAYMENT_DECLINED') {
                     await prisma.order.update({
                         where: { id: order.id },
                         data: { paymentStatus: 'FAILED' }
                     });
                 }
-                
+
                 // Refresh order object after update
                 order = await prisma.order.findFirst({
                     where: { gatewayOrderId: transactionId },
@@ -261,13 +295,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tran
         }
 
         const { user: usr, ...rest } = order!;
-        return NextResponse.json({ 
-            success: true, 
-            order: { 
-                ...rest, 
+        return NextResponse.json({
+            success: true,
+            order: {
+                ...rest,
                 user: { fullName: usr?.fullName, email: usr?.email, phone: usr?.phone },
-                isGuest: !usr?.passwordHash 
-            } 
+                isGuest: !usr?.passwordHash
+            }
         });
     } catch (error) {
         console.error('Get Payment Status Error:', error);
