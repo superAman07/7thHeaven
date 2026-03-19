@@ -121,6 +121,7 @@ function formatCartForClient(cart: any) {
             discountPercentage: item.product.discountPercentage?.toNumber() || 0,
             images: item.product.images,
             quantity: item.quantity,
+            isFor7thHeaven: item.product.isFor7thHeaven,
             selectedVariant: activeVariant ? {
                 id: activeVariant.id,
                 price: activeVariant.price.toNumber(),

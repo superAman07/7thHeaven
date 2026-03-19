@@ -561,19 +561,30 @@ const CheckoutPageComponent: React.FC = () => {
                                                     cartTotal > 0 && (
                                                         (cartTotal - (appliedCoupon?.discountAmount || 0)) >= minPurchaseLimit ? (
                                                             <div className="p-4" style={{ backgroundColor: '#fff', border: '2px solid #eab308', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                                                                <div className="d-flex align-items-center mb-3">
+                                                                <label 
+                                                                    htmlFor="heavenOptIn" 
+                                                                    className="d-flex align-items-center mb-3"
+                                                                    style={{ cursor: has7thHeavenProduct ? 'pointer' : 'not-allowed', width: '100%', flexWrap: 'nowrap' }}
+                                                                >
                                                                     <input 
                                                                         type="checkbox" 
                                                                         id="heavenOptIn" 
                                                                         checked={is7thHeavenOptIn} 
                                                                         onChange={(e) => setIs7thHeavenOptIn(e.target.checked)}
                                                                         disabled={!has7thHeavenProduct}
-                                                                        style={{ width: '20px', height: '20px', marginRight: '12px', accentColor: '#eab308', cursor: has7thHeavenProduct ? 'pointer' : 'not-allowed' }}
+                                                                        style={{ 
+                                                                            width: '24px', 
+                                                                            height: '24px', 
+                                                                            minWidth: '24px',
+                                                                            marginRight: '12px', 
+                                                                            accentColor: '#eab308',
+                                                                            cursor: has7thHeavenProduct ? 'pointer' : 'not-allowed'
+                                                                        }}
                                                                     />
-                                                                    <label htmlFor="heavenOptIn" style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#1a1a1a', cursor: has7thHeavenProduct ? 'pointer' : 'not-allowed' }}>
+                                                                    <span style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#1a1a1a', flex: 1, userSelect: 'none' }}>
                                                                         Join 7th Heaven Club
-                                                                    </label>
-                                                                </div>
+                                                                    </span>
+                                                                </label>
 
                                                                 {!has7thHeavenProduct && (
                                                                     <div className="mt-3 p-3 text-center" style={{ backgroundColor: '#f8f9fa', border: '1px dashed #ccc', borderRadius: '6px' }}>
