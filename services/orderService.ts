@@ -137,7 +137,42 @@ export async function completeOrder(orderId: string, transactionId: string, amou
         }
     }
 
-    // 6. Notifications & Emails
+    // 6. Push to Shipquickr
+    try {
+        const { pushOrderToShipquickr } = await import('@/lib/services/shipquickr');
+        const shipping = (order.shippingAddress as any) || {};
+        const shipquickrPayload = {
+            orderId: order.id,
+            orderDate: new Date().toISOString(),
+            customerName: shipping.fullName || order.user?.fullName || 'Customer',
+            mobile: shipping.phone || order.user?.phone || '',
+            email: shipping.email || order.user?.email || '',
+            address: shipping.fullAddress || '',
+            city: shipping.city || '',
+            state: shipping.state || '',
+            pincode: shipping.pincode || '',
+            paymentMode: 'Prepaid',
+            totalAmount: Number(order.netAmountPaid || order.subtotal),
+            physicalWeight: 1,
+            length: 13,
+            breadth: 3,
+            height: 7,
+            items: orderItems.map(item => ({
+                productName: item.name || 'Product',
+                category: 'Apparel',
+                quantity: item.quantity || 1,
+                price: item.priceAtPurchase || 0
+            }))
+        };
+        // Run in background without awaiting (non-blocking)
+        pushOrderToShipquickr(shipquickrPayload as any).catch(err => {
+            console.error("[OrderService] Non-blocking Shipquickr Error:", err);
+        });
+    } catch (err) {
+        console.error("[OrderService] Failed to load/push Shipquickr:", err);
+    }
+
+    // 7. Notifications & Emails
     // In-App Notification
     await sendNotification(
         order.userId,
