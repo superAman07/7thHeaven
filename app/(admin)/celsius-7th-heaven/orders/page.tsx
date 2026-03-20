@@ -24,6 +24,8 @@ interface Order {
   status: string;
   shippingAddress: any;
   createdAt: string;
+  awb?: string;
+  courierUrl?: string;
 }
 
 interface PaginationMeta {
@@ -77,6 +79,8 @@ export default function OrdersPage() {
   const [refundPendingCount, setRefundPendingCount] = useState(0);
   const [newOrdersCount, setNewOrdersCount] = useState(0);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [editingTracking, setEditingTracking] = useState(false);
+  const [trackData, setTrackData] = useState({ awb: '', courierUrl: '' });
   const searchParams = useSearchParams();
   const customerFilter = searchParams.get('customer') || '';
 
@@ -121,21 +125,33 @@ export default function OrdersPage() {
   const closePanel = () => {
     setIsPanelOpen(false);
     setCurrentOrder(null);
+    setEditingTracking(false);
   };
 
-  // UPDATED: Handle Refund Status Update
-  const handleStatusUpdate = async (newStatus: string, type: 'status' | 'paymentStatus' = 'status') => {
+  // UPDATED: Handle Refund Status and Tracking Update
+  const handleStatusUpdate = async (newStatus: string | { awb: string, courierUrl: string }, type: 'status' | 'paymentStatus' | 'tracking' = 'status') => {
     if (!currentOrder) return;
     setIsUpdatingStatus(true);
     try {
-      const payload = type === 'status' ? { status: newStatus } : { paymentStatus: newStatus };
+      let payload: any = {};
+      let updatedFields: any = {};
+      
+      if (type === 'status') {
+          payload = { status: newStatus as string };
+          updatedFields = { status: newStatus as string };
+      } else if (type === 'paymentStatus') {
+          payload = { paymentStatus: newStatus as string };
+          updatedFields = { paymentStatus: newStatus as string };
+      } else if (type === 'tracking') {
+          const trackingData = newStatus as { awb: string, courierUrl: string };
+          payload = { awb: trackingData.awb, courierUrl: trackingData.courierUrl };
+          updatedFields = { awb: trackingData.awb, courierUrl: trackingData.courierUrl };
+      }
       
       await axios.put(`/api/v1/admin/orders/${currentOrder.id}`, payload);
       
-      const updatedFields = type === 'status' ? { status: newStatus } : { paymentStatus: newStatus };
       setCurrentOrder(prev => prev ? { ...prev, ...updatedFields } : null);
       
-      // Refresh list to update counts if we just refunded something
       fetchOrders();
       
       if (newStatus === 'REFUNDED') {
@@ -424,6 +440,93 @@ export default function OrdersPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Tracking Information */}
+              <div className="bg-white border rounded-lg overflow-hidden mb-6 mt-6">
+                <div className="px-4 py-3 bg-gray-50 border-b flex justify-between items-center">
+                  <h3 className="text-sm font-medium text-gray-700 uppercase">Tracking Information</h3>
+                  {!editingTracking ? (
+                    <button 
+                      onClick={() => {
+                        setTrackData({ awb: currentOrder.awb || '', courierUrl: currentOrder.courierUrl || '' });
+                        setEditingTracking(true);
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      {currentOrder.awb ? 'Edit Details' : 'Add Details'}
+                    </button>
+                  ) : (
+                    <div className="flex gap-2">
+                       <button 
+                        onClick={() => setEditingTracking(false)}
+                        className="text-xs text-gray-500 hover:text-gray-700 font-medium"
+                       >
+                         Cancel
+                       </button>
+                       <button 
+                        onClick={() => {
+                          handleStatusUpdate(trackData, 'tracking');
+                          setEditingTracking(false);
+                        }}
+                        className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 font-medium"
+                       >
+                         Save
+                       </button>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="p-4">
+                  {!editingTracking ? (
+                     <div className="space-y-2">
+                       {currentOrder.awb ? (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500 text-sm font-medium w-24">AWB Number:</span>
+                              <span className="text-gray-900 text-sm font-medium bg-gray-100 px-2 py-0.5 rounded">{currentOrder.awb}</span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <span className="text-gray-500 text-sm font-medium w-24">Tracking URL:</span>
+                              {currentOrder.courierUrl ? (
+                                <a href={currentOrder.courierUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline break-all">
+                                  {currentOrder.courierUrl}
+                                </a>
+                              ) : <span className="text-gray-400 text-sm italic">Not provided</span>}
+                            </div>
+                          </>
+                       ) : (
+                         <div className="text-center py-4 text-sm text-gray-500">
+                           <Truck className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                           <p>No tracking information added yet.</p>
+                         </div>
+                       )}
+                     </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">AWB / Tracking Number</label>
+                        <input
+                          type="text"
+                          value={trackData.awb}
+                          onChange={e => setTrackData(prev => ({ ...prev, awb: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="e.g. 1324567890"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Carrier Tracking Link</label>
+                        <input
+                          type="url"
+                          value={trackData.courierUrl}
+                          onChange={e => setTrackData(prev => ({ ...prev, courierUrl: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="https://track.delhivery.com/..."
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

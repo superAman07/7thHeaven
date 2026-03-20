@@ -9,9 +9,10 @@ export async function PUT(
     try {
         const { id } = await params;
         const body = await req.json();
-        const { status, paymentStatus } = body;
+        
+        const { status, paymentStatus, awb, courierUrl } = body;
 
-        const validStatuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED', 'RETURNED'];
+        const validStatuses = ['PENDING', 'PROCESSING', 'MANIFESTED', 'UNSHIPPED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED', 'REFUNDED', 'RETURNED', 'RTO', 'LOST'];
 
         if (status && !validStatuses.includes(status)) {
             return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
@@ -20,6 +21,9 @@ export async function PUT(
         const dataToUpdate: any = {};
         if (status) dataToUpdate.status = status;
         if (paymentStatus) dataToUpdate.paymentStatus = paymentStatus;
+        
+        if (awb !== undefined) dataToUpdate.awb = awb; // Allows clearing it with empty string
+        if (courierUrl !== undefined) dataToUpdate.courierUrl = courierUrl;
 
         const updatedOrder = await prisma.order.update({
             where: { id },
@@ -80,8 +84,14 @@ export async function PUT(
 function getStatusMessage(status: string): string {
     const messages: Record<string, string> = {
         PROCESSING: 'Your order is being prepared and will be shipped soon.',
+        UNSHIPPED: 'Your order is confirmed and waiting to be shipped.',
+        MANIFESTED: 'Your order has been packed and is ready for carrier pickup.',
         SHIPPED: 'Great news! Your order has been shipped and is on its way to you.',
+        IN_TRANSIT: 'Your order is currently in transit.',
+        OUT_FOR_DELIVERY: 'Your order is out for delivery today!',
         DELIVERED: 'Your order has been delivered. We hope you love your purchase!',
+        RTO: 'Your order is being returned to origin.',
+        LOST: 'There is an issue with your shipment. We will contact you soon.',
         CANCELLED: 'Your order has been cancelled. If you have any questions, please contact support.',
         REFUNDED: 'Your refund has been processed. It should reflect in your account within 5-7 business days.',
         RETURNED: 'We have received your returned items. Your refund will be processed shortly.'
