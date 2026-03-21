@@ -382,7 +382,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                             <div className="mb-3">
                                                 {isOutOfStock ? (
                                                     <span className="text-danger font-weight-bold" style={{ color: '#dc3545', fontWeight: 'bold' }}>
-                                                        <i className="fa fa-times-circle mr-1"></i> Currently Out of Stock
+                                                        <i className="fa fa-times-circle mr-1"></i> Coming Soon
                                                     </span>
                                                 ) : isLowStock ? (
                                                     <span className="font-weight-bold" style={{ color: '#e53935' }}>
