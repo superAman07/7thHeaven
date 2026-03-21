@@ -293,7 +293,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                             >
                                 {isGlobalOutOfStock 
                                     ? '' 
-                                    : (isVariantOutOfStock ? 'Sold Out' : (isAdding ? 'Added!' : (isInCart ? 'Remove' : 'Add to Cart')))}
+                                    : (isVariantOutOfStock ? 'Sold Out' : (isAdding ? 'Added!' : (isInCart ? 'Remove' : '+ Add to Cart')))}
                             </a>
                             <ul className="d-flex">
                                 <li>

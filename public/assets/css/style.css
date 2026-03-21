@@ -3175,7 +3175,7 @@ ul.cart-items li {
   }
 }
 .single-product .product-img .product-action .product-btn::before {
-  content: "+";
+  content: "";
   padding-right: 8px;
   font-size: 24px;
   vertical-align: sub;
