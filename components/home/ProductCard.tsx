@@ -292,7 +292,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
                                 style={{ cursor: isOutOfStock ? 'not-allowed' : 'pointer', color: isInCart ? '#ddb040' : undefined }}
                             >
                                 {isGlobalOutOfStock 
-                                    ? 'not in stock' 
+                                    ? '' 
                                     : (isVariantOutOfStock ? 'Sold Out' : (isAdding ? 'Added!' : (isInCart ? 'Remove' : 'Add to Cart')))}
                             </a>
                             <ul className="d-flex">
