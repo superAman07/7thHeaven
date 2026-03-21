@@ -420,7 +420,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ isOpen, o
                                                                 borderColor: isOutOfStock ? '#ccc' : undefined
                                                             }}
                                                         >
-                                                            {isOutOfStock ? 'Out of Stock' : (isAdding ? 'Redirecting...' : 'Add to cart')}
+                                                            {isOutOfStock ? 'Coming Soon' : (isAdding ? 'Redirecting...' : 'Add to cart')}
                                                         </button>                                                   </div>
                                                 </form>
                                             </div>
