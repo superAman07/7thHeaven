@@ -96,6 +96,8 @@ const SliderSection = () => {
           background-repeat: no-repeat;
           animation: slowZoom 20s ease-in-out infinite alternate;
           z-index: 0;
+          will-change: transform;
+          -webkit-transform: translateZ(0);
         }
         .hero-slide-2::before {
           content: '';
@@ -107,6 +109,8 @@ const SliderSection = () => {
           background-repeat: no-repeat;
           animation: slowZoom 20s ease-in-out infinite alternate;
           z-index: 0;
+          will-change: transform;
+          -webkit-transform: translateZ(0);
         }
 
         /* ===== NAVIGATION: Gucci-style bottom-right ===== */
@@ -186,6 +190,8 @@ const SliderSection = () => {
           animation: floatUp linear infinite;
           pointer-events: none;
           z-index: 5;
+          will-change: transform, opacity;
+          -webkit-transform: translateZ(0);
         }
         .shimmer-text {
           background: linear-gradient(90deg, #D4AF37 0%, #FFE088 25%, #D4AF37 50%, #FFE088 75%, #D4AF37 100%);
@@ -194,6 +200,8 @@ const SliderSection = () => {
           -webkit-text-fill-color: transparent;
           background-clip: text;
           animation: shimmer 3s linear infinite;
+          will-change: background-position;
+          -webkit-transform: translateZ(0);
         }
       `}</style>
 
@@ -265,6 +273,7 @@ const SliderSection = () => {
                           minWidth: '220px',
                           backgroundColor: 'rgba(0,0,0,0.4)',
                           backdropFilter: 'blur(10px)',
+                          WebkitBackdropFilter: 'blur(10px)',
                           border: '1px solid rgba(255,255,255,0.2)'
                       }}
                       onMouseEnter={(e) => {

@@ -160,9 +160,11 @@ export default function HowItWorks({ minPurchaseAmount = 2000 }: HowItWorksProps
 
   // Staircase observer + climbing animation
   useEffect(() => {
+    let hasAnimated = false;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !hasAnimated) {
+          hasAnimated = true;
           setStairsVisible(true);
           let step = 0;
           const interval = setInterval(() => {
