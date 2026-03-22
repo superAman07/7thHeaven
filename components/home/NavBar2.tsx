@@ -236,7 +236,7 @@ export default function NavBar({ isAnnouncementVisible }: { isAnnouncementVisibl
                                     className={`transition-all! duration-500! ease-in-out! object-contain! ${
                                         isSticky 
                                             ? 'h-[50px]! md:h-[60px]!'
-                                            : 'h-[160px]! md:h-[280px]! mt-[140px]!'
+                                            : 'h-[140px]! md:h-[250px]! mt-[140px]!'
                                     }`}
                                 />
                             </a>
