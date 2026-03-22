@@ -8,11 +8,13 @@ export async function GET() {
         const [revenueResult, totalOrders, totalProducts, eliteMembers] = await prisma.$transaction([
             // 1. Sum of Revenue (Only PAID orders)
             prisma.order.aggregate({
-                _sum: { subtotal: true },
+                _sum: { netAmountPaid: true },
                 where: { paymentStatus: 'PAID' }
             }),
-            // 2. Total Orders Count
-            prisma.order.count(),
+            // 2. Total Orders Count (Only PAID orders)
+            prisma.order.count({
+                where: { paymentStatus: 'PAID' }
+            }),
             // 3. Total Products Count
             prisma.product.count(),
             // 4. Elite Members Count
@@ -24,7 +26,7 @@ export async function GET() {
         return NextResponse.json({
             success: true,
             data: {
-                revenue: revenueResult._sum.subtotal || 0,
+                revenue: revenueResult._sum.netAmountPaid || 0,
                 orders: totalOrders,
                 products: totalProducts,
                 members: eliteMembers
